@@ -831,13 +831,6 @@
           ]
         }
       ]
-    },
-    {
-      "id": "8",
-      "name": "Deferred",
-      "description": "Tasks postponed for later consideration",
-      "status": "pending",
-      "tasks": []
     }
   ]
 }
