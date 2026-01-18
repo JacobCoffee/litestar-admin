@@ -267,7 +267,7 @@
       "name": "Authentication & Authorization",
       "description": "Implement security layer",
       "duration": "2 weeks",
-      "status": "in_progress",
+      "status": "completed",
       "dependencies": ["1"],
       "tasks": [
         {
@@ -368,7 +368,7 @@
           "id": "2.1.7",
           "title": "Security tests",
           "description": "Write comprehensive security tests",
-          "status": "pending",
+          "status": "completed",
           "priority": "critical",
           "agent_type": "security-auditor",
           "estimated_hours": 10,
