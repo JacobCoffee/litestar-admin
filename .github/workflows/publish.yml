@@ -1,0 +1,162 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  # ==================================================================================== #
+  # BUILD
+  # ==================================================================================== #
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v6
+        with:
+          enable-cache: true
+          version: "0.9.12"
+
+      - name: Build package
+        run: uv build
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  # ==================================================================================== #
+  # SIGN
+  # ==================================================================================== #
+  sign:
+    name: Sign Distributions
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Sign distributions with Sigstore
+        uses: sigstore/gh-action-sigstore-python@a5caf349bc536fbef3668a10ed7f5cd309a4b53d # v3.2.0
+        with:
+          inputs: ./dist/*
+
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: dist-signed
+          path: dist/
+          retention-days: 7
+
+  # ==================================================================================== #
+  # DRAFT RELEASE
+  # ==================================================================================== #
+  draft-release:
+    name: Create Draft Release
+    runs-on: ubuntu-latest
+    needs: [sign]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download signed artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        with:
+          name: dist-signed
+          path: dist/
+
+      - name: Generate release notes with git-cliff
+        id: changelog
+        uses: orhun/git-cliff-action@14bb67f1a42c7959d1eb81ee6ba2c5a15542078a # v4
+        with:
+          config: pyproject.toml
+          args: --current --strip header
+
+      - name: Create GitHub Release (Draft)
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        with:
+          draft: true
+          files: |
+            dist/*
+          body: ${{ steps.changelog.outputs.content }}
+
+  # ==================================================================================== #
+  # PUBLISH TO PYPI
+  # ==================================================================================== #
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [draft-release]
+    environment:
+      name: pypi
+      url: https://pypi.org/project/litestar-admin/
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # release/v1
+        with:
+          print-hash: true
+          attestations: true
+
+  # ==================================================================================== #
+  # FINALIZE RELEASE
+  # ==================================================================================== #
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: [publish]
+    steps:
+      - name: Mark Release as Published
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        with:
+          draft: false
+
+  # ==================================================================================== #
+  # CLEANUP ON FAILURE
+  # ==================================================================================== #
+  cleanup-draft:
+    name: Cleanup Draft Release
+    runs-on: ubuntu-latest
+    needs: [publish]
+    if: failure()
+    steps:
+      - name: Delete Draft Release
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7
+        with:
+          script: |
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const draft = releases.data.find(r => r.draft && r.tag_name === context.ref.replace('refs/tags/', ''));
+            if (draft) {
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: draft.id
+              });
+            }

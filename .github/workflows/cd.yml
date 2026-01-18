@@ -1,0 +1,58 @@
+name: Changelog
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to generate changelog for (e.g., v0.2.0)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  # ==================================================================================== #
+  # UPDATE CHANGELOG (direct commit to main)
+  # ==================================================================================== #
+  update-changelog:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CHANGELOG_PAT }}
+          persist-credentials: false
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@e16f179f0be49ecdfe63753837f20b9531642772 # v4.7.0
+        with:
+          config: pyproject.toml
+          args: --verbose
+        env:
+          OUTPUT: docs/changelog.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Commit and push changelog
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+          GH_TOKEN: ${{ secrets.CHANGELOG_PAT }}
+        run: |
+          if git diff --quiet docs/changelog.md; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git checkout main
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          git add docs/changelog.md
+          git commit -m "docs: regenerate changelog for ${TAG}"
+          git push origin main

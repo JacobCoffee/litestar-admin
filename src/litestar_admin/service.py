@@ -1,0 +1,480 @@
+"""AdminService for CRUD operations on models."""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
+
+from sqlalchemy import String, asc, desc, func, inspect, or_, select
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.schema import Column
+    from sqlalchemy.sql import ColumnElement
+
+    from litestar_admin.views import BaseModelView
+
+__all__ = ["AdminService"]
+
+T = TypeVar("T")
+
+# Type mapping for SQLAlchemy to JSON schema
+_SQLALCHEMY_TYPE_MAP: dict[str, dict[str, Any]] = {
+    "INTEGER": {"type": "integer"},
+    "BIGINTEGER": {"type": "integer"},
+    "SMALLINTEGER": {"type": "integer"},
+    "FLOAT": {"type": "number"},
+    "NUMERIC": {"type": "number"},
+    "DECIMAL": {"type": "number"},
+    "REAL": {"type": "number"},
+    "DOUBLE": {"type": "number"},
+    "BOOLEAN": {"type": "boolean"},
+    "STRING": {"type": "string"},
+    "VARCHAR": {"type": "string"},
+    "TEXT": {"type": "string"},
+    "CHAR": {"type": "string"},
+    "DATE": {"type": "string", "format": "date"},
+    "DATETIME": {"type": "string", "format": "date-time"},
+    "TIMESTAMP": {"type": "string", "format": "date-time"},
+    "TIME": {"type": "string", "format": "time"},
+    "UUID": {"type": "string", "format": "uuid"},
+    "JSON": {"type": "object"},
+    "JSONB": {"type": "object"},
+    "ARRAY": {"type": "array"},
+}
+
+
+class AdminService(Generic[T]):
+    """Service layer for admin CRUD operations.
+
+    This service provides a unified interface for performing CRUD operations
+    on SQLAlchemy models within the admin panel.
+
+    Example:
+        ```python
+        from litestar_admin import AdminService
+
+
+        async def get_users(session: AsyncSession) -> list[User]:
+            service = AdminService(UserAdmin, session)
+            records, total = await service.list_records(limit=10)
+            return records
+        ```
+    """
+
+    __slots__ = ("_session", "_view_class")
+
+    def __init__(
+        self,
+        view_class: type[BaseModelView],
+        session: AsyncSession,
+    ) -> None:
+        """Initialize the admin service.
+
+        Args:
+            view_class: The model view class.
+            session: The SQLAlchemy async session.
+        """
+        self._view_class = view_class
+        self._session = session
+
+    @property
+    def model(self) -> type[T]:
+        """Return the model class."""
+        return self._view_class.model
+
+    def _get_primary_key_column(self) -> Column[Any]:
+        """Get the primary key column for the model.
+
+        Returns:
+            The primary key column.
+
+        Raises:
+            ValueError: If no primary key is found.
+        """
+        mapper = inspect(self.model)
+        pk_columns = mapper.primary_key
+        if not pk_columns:
+            msg = f"Model {self.model.__name__} has no primary key"
+            raise ValueError(msg)
+        # For simplicity, use the first primary key column
+        # Composite primary keys would need additional handling
+        return pk_columns[0]
+
+    def _get_pk_value(self, record: T) -> Any:
+        """Extract the primary key value from a record.
+
+        Args:
+            record: The model instance.
+
+        Returns:
+            The primary key value.
+        """
+        pk_column = self._get_primary_key_column()
+        return getattr(record, pk_column.name)
+
+    def _build_filter_clause(
+        self,
+        column_name: str,
+        value: Any,
+    ) -> ColumnElement[bool] | None:
+        """Build a filter clause for a column and value.
+
+        Args:
+            column_name: The column name to filter on.
+            value: The filter value.
+
+        Returns:
+            A SQLAlchemy filter clause, or None if column doesn't exist.
+        """
+        if not hasattr(self.model, column_name):
+            return None
+
+        column = getattr(self.model, column_name)
+
+        # Handle string columns with contains for partial matching
+        if hasattr(column, "type") and isinstance(column.type, String) and isinstance(value, str):
+            return column.ilike(f"%{value}%")
+
+        # Exact match for other types
+        return column == value
+
+    def _build_search_clause(self, search: str) -> ColumnElement[bool] | None:
+        """Build a search clause across searchable columns.
+
+        Args:
+            search: The search string.
+
+        Returns:
+            A SQLAlchemy OR clause for searching, or None if no searchable columns.
+        """
+        searchable_columns = self._view_class.column_searchable_list
+        if not searchable_columns:
+            return None
+
+        search_clauses: list[ColumnElement[bool]] = []
+        for column_name in searchable_columns:
+            if hasattr(self.model, column_name):
+                column = getattr(self.model, column_name)
+                # Use ilike for case-insensitive search on string columns
+                if hasattr(column, "type") and isinstance(column.type, String):
+                    search_clauses.append(column.ilike(f"%{search}%"))
+
+        return or_(*search_clauses) if search_clauses else None
+
+    def _apply_sorting(
+        self,
+        query: Any,
+        sort_by: str | None,
+        sort_order: str,
+    ) -> Any:
+        """Apply sorting to a query.
+
+        Args:
+            query: The SQLAlchemy query.
+            sort_by: Column name to sort by.
+            sort_order: Sort order ("asc" or "desc").
+
+        Returns:
+            The query with sorting applied.
+        """
+        order_func = desc if sort_order.lower() == "desc" else asc
+
+        # Check if sort_by column exists and is sortable
+        is_sortable = sort_by in self._view_class.column_sortable_list or not self._view_class.column_sortable_list
+        if sort_by and hasattr(self.model, sort_by) and is_sortable:
+            column = getattr(self.model, sort_by)
+            return query.order_by(order_func(column))
+
+        # Apply default sort if defined
+        if self._view_class.column_default_sort:
+            default_column, default_order = self._view_class.column_default_sort
+            if hasattr(self.model, default_column):
+                column = getattr(self.model, default_column)
+                order_func = desc if default_order.lower() == "desc" else asc
+                return query.order_by(order_func(column))
+
+        return query
+
+    async def list_records(
+        self,
+        *,
+        offset: int = 0,
+        limit: int = 50,
+        sort_by: str | None = None,
+        sort_order: str = "asc",
+        filters: dict[str, Any] | None = None,
+        search: str | None = None,
+    ) -> tuple[Sequence[T], int]:
+        """List records with pagination, sorting, and filtering.
+
+        Args:
+            offset: Number of records to skip.
+            limit: Maximum number of records to return.
+            sort_by: Column name to sort by.
+            sort_order: Sort order ("asc" or "desc").
+            filters: Dictionary of column filters.
+            search: Search string for searchable columns.
+
+        Returns:
+            Tuple of (records, total_count).
+        """
+        # Build base query
+        query = select(self.model)
+        count_query = select(func.count()).select_from(self.model)
+
+        # Apply filters
+        if filters:
+            for column_name, value in filters.items():
+                filter_clause = self._build_filter_clause(column_name, value)
+                if filter_clause is not None:
+                    query = query.where(filter_clause)
+                    count_query = count_query.where(filter_clause)
+
+        # Apply search
+        if search:
+            search_clause = self._build_search_clause(search)
+            if search_clause is not None:
+                query = query.where(search_clause)
+                count_query = count_query.where(search_clause)
+
+        # Apply sorting
+        query = self._apply_sorting(query, sort_by, sort_order)
+
+        # Apply pagination
+        query = query.offset(offset).limit(limit)
+
+        # Execute queries
+        result = await self._session.scalars(query)
+        records = result.all()
+
+        count_result = await self._session.execute(count_query)
+        total_count = count_result.scalar() or 0
+
+        return records, total_count
+
+    async def get_record(self, pk: Any) -> T | None:
+        """Get a single record by primary key.
+
+        Args:
+            pk: The primary key value.
+
+        Returns:
+            The record if found, None otherwise.
+        """
+        pk_column = self._get_primary_key_column()
+        query = select(self.model).where(getattr(self.model, pk_column.name) == pk)
+        result = await self._session.scalars(query)
+        return result.first()
+
+    async def create_record(self, data: dict[str, Any]) -> T:
+        """Create a new record.
+
+        Args:
+            data: Dictionary of field values.
+
+        Returns:
+            The created record.
+        """
+        # Call the on_model_change hook to allow modification/validation
+        processed_data = await self._view_class.on_model_change(
+            data,
+            record=None,
+            is_create=True,
+        )
+
+        # Create model instance from data
+        record = self.model(**processed_data)
+
+        # Add to session and flush to get generated values (like auto-increment IDs)
+        self._session.add(record)
+        await self._session.flush()
+
+        # Call the after_model_change hook
+        await self._view_class.after_model_change(record, is_create=True)
+
+        return record
+
+    async def update_record(
+        self,
+        pk: Any,
+        data: dict[str, Any],
+        *,
+        partial: bool = False,
+    ) -> T | None:
+        """Update an existing record.
+
+        Args:
+            pk: The primary key value.
+            data: Dictionary of field values to update.
+            partial: If True, only update provided fields (PATCH).
+
+        Returns:
+            The updated record if found, None otherwise.
+        """
+        # Get existing record
+        record = await self.get_record(pk)
+        if record is None:
+            return None
+
+        # Call the on_model_change hook
+        processed_data = await self._view_class.on_model_change(
+            data,
+            record=record,
+            is_create=False,
+        )
+
+        # Apply updates
+        if partial:
+            # Only update provided fields
+            for key, value in processed_data.items():
+                if hasattr(record, key):
+                    setattr(record, key, value)
+        else:
+            # Full update - set all fields, using None for missing ones
+            self._apply_full_update(record, processed_data)
+
+        # Flush changes
+        await self._session.flush()
+
+        # Call the after_model_change hook
+        await self._view_class.after_model_change(record, is_create=False)
+
+        return record
+
+    def _apply_full_update(self, record: T, data: dict[str, Any]) -> None:
+        """Apply a full update to a record.
+
+        Args:
+            record: The record to update.
+            data: The data to apply.
+        """
+        mapper = inspect(self.model)
+        for column in mapper.columns:
+            column_name = column.name
+            # Skip primary key
+            if column.primary_key:
+                continue
+            if column_name in data:
+                setattr(record, column_name, data[column_name])
+            elif column.nullable:
+                # For full update, set missing nullable fields to None
+                setattr(record, column_name, None)
+
+    async def delete_record(self, pk: Any, *, soft_delete: bool = False) -> bool:
+        """Delete a record.
+
+        Args:
+            pk: The primary key value.
+            soft_delete: If True, perform soft delete if supported.
+
+        Returns:
+            True if the record was deleted, False if not found.
+        """
+        record = await self.get_record(pk)
+        if record is None:
+            return False
+
+        if soft_delete and hasattr(record, "deleted_at"):
+            # Soft delete: set deleted_at timestamp
+            record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+            await self._session.flush()
+        else:
+            # Hard delete
+            await self._session.delete(record)
+            await self._session.flush()
+
+        # Call the after_model_delete hook
+        await self._view_class.after_model_delete(record)
+
+        return True
+
+    async def bulk_delete(
+        self,
+        pks: list[Any],
+        *,
+        soft_delete: bool = False,
+    ) -> int:
+        """Delete multiple records.
+
+        Args:
+            pks: List of primary key values.
+            soft_delete: If True, perform soft delete if supported.
+
+        Returns:
+            Number of records deleted.
+        """
+        deleted_count = 0
+        for pk in pks:
+            if await self.delete_record(pk, soft_delete=soft_delete):
+                deleted_count += 1
+        return deleted_count
+
+    def get_model_schema(self) -> dict[str, Any]:
+        """Get JSON schema for the model.
+
+        This method generates a JSON schema representation of the model's
+        columns, useful for form generation in the frontend.
+
+        Returns:
+            Dictionary representing the JSON schema.
+        """
+        mapper = inspect(self.model)
+        properties: dict[str, Any] = {}
+        required: list[str] = []
+
+        for column in mapper.columns:
+            column_name = column.name
+            column_schema = self._column_to_schema(column)
+            properties[column_name] = column_schema
+
+            # Add to required list if not nullable and no default
+            if not column.nullable and column.default is None and not column.primary_key:
+                required.append(column_name)
+
+        return {
+            "type": "object",
+            "title": self._view_class.name,
+            "properties": properties,
+            "required": required,
+        }
+
+    def _column_to_schema(self, column: Any) -> dict[str, Any]:
+        """Convert a SQLAlchemy column to JSON schema.
+
+        Args:
+            column: The SQLAlchemy column.
+
+        Returns:
+            Dictionary representing the column's JSON schema.
+        """
+        schema: dict[str, Any] = {
+            "title": column.name.replace("_", " ").title(),
+        }
+
+        # Map SQLAlchemy types to JSON schema types
+        type_name = type(column.type).__name__.upper()
+        type_info = _SQLALCHEMY_TYPE_MAP.get(type_name, {"type": "string"})
+        schema.update(type_info)
+
+        # Add maxLength for string types with length
+        if type_name in ("STRING", "VARCHAR", "CHAR") and hasattr(column.type, "length") and column.type.length:
+            schema["maxLength"] = column.type.length
+
+        # Add nullable info using JSON schema pattern
+        if column.nullable:
+            current_type = schema.get("type")
+            if current_type:
+                schema["type"] = [current_type, "null"]
+
+        # Add primary key info
+        if column.primary_key:
+            schema["readOnly"] = True
+
+        # Add description from column doc if available
+        if column.doc:
+            schema["description"] = column.doc
+
+        return schema
