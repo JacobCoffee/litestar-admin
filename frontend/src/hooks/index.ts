@@ -56,3 +56,25 @@ export {
 // Auth hook (standalone, wraps useApi hooks)
 export { useAuth } from './useAuth';
 export type { UseAuthResult } from './useAuth';
+
+// Search and filter hook
+export {
+  useSearchFilter,
+  getOperatorsForType,
+  getOperatorLabel,
+  getDefaultOperator,
+  operatorRequiresValue,
+  serializeFiltersToUrl,
+  parseFiltersFromUrl,
+  validateFilterValue,
+} from './useSearchFilter';
+export type {
+  FilterOperator,
+  FilterableColumnType,
+  FilterableColumn,
+  ColumnFilter,
+  DateRangeValue,
+  FilterState,
+  UseSearchFilterOptions,
+  UseSearchFilterReturn,
+} from './useSearchFilter';

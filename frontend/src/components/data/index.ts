@@ -18,3 +18,13 @@ export {
   type UseDataTableOptions,
   type UseDataTableReturn,
 } from './DataTable';
+
+export {
+  SearchFilter,
+  type SearchFilterProps,
+  type FilterableColumn,
+  type FilterState,
+  type ColumnFilter,
+  type FilterOperator,
+  type DateRangeValue,
+} from './SearchFilter';
