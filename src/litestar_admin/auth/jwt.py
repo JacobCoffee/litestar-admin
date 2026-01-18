@@ -321,7 +321,7 @@ class JWTAuthBackend:
             msg = "PyJWT is required for JWT authentication. Install it with: pip install 'litestar-admin[jwt]'"
             raise ImportError(msg) from e
 
-        now = datetime.datetime.now(tz=datetime.UTC)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
 
         expiry = self.config.token_expiry if kind == "access" else self.config.refresh_token_expiry
         exp = now + datetime.timedelta(seconds=expiry)
@@ -427,9 +427,9 @@ class JWTAuthBackend:
         Returns:
             The extracted refresh token string, or None if not found.
         """
-        # Try to get from scope data (set by middleware/controller)
-        if hasattr(connection, "scope"):
-            refresh_token = connection.scope.get("refresh_token")
+        # Try to get from request state (set by controller)
+        if hasattr(connection, "state"):
+            refresh_token = getattr(connection.state, "refresh_token", None)
             if refresh_token:
                 return refresh_token
 

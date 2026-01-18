@@ -218,8 +218,8 @@ class AuthController(Controller):
         if admin_config.auth_backend is None:
             raise NotAuthorizedException(detail="Authentication is not configured")
 
-        # Store refresh token in request scope for the backend to access
-        request.scope["refresh_token"] = data.refresh_token
+        # Store refresh token in request state for the backend to access
+        request.state.refresh_token = data.refresh_token
 
         tokens = await admin_config.auth_backend.refresh(request)
 

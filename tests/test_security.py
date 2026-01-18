@@ -20,7 +20,7 @@ from __future__ import annotations
 import datetime
 from dataclasses import dataclass, field
 from datetime import timedelta, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -195,6 +195,7 @@ def create_mock_connection(
     cookies: dict[str, str] | None = None,
     user: MockAdminUser | None = None,
     client_ip: str = "192.168.1.100",
+    state_attrs: dict[str, Any] | None = None,
 ) -> MagicMock:
     """Create a mock ASGI connection with configurable properties."""
     connection = MagicMock()
@@ -204,6 +205,15 @@ def create_mock_connection(
     connection.user = user
     connection.client = MagicMock()
     connection.client.host = client_ip
+    # Create a proper state mock that returns None for missing attributes
+    state_mock = MagicMock()
+    if state_attrs:
+        for key, value in state_attrs.items():
+            setattr(state_mock, key, value)
+    else:
+        # No state attrs set, so make state not have refresh_token
+        del state_mock.refresh_token
+    connection.state = state_mock
     return connection
 
 

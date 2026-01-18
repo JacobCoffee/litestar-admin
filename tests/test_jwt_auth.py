@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -102,12 +102,24 @@ def jwt_backend_with_password(
 def create_mock_connection(
     headers: dict[str, str] | None = None,
     cookies: dict[str, str] | None = None,
+    state_attrs: dict[str, Any] | None = None,
 ) -> MagicMock:
     """Create a mock ASGI connection."""
     connection = MagicMock()
     connection.headers = headers or {}
     connection.cookies = cookies or {}
     connection.scope = {}
+    # Create a proper state mock that returns None for missing attributes
+    state_mock = MagicMock()
+    state_mock.configure_mock(**(state_attrs or {}))
+    # Override getattr behavior for state to return None for unset attributes
+    if state_attrs:
+        for key, value in state_attrs.items():
+            setattr(state_mock, key, value)
+    else:
+        # No state attrs set, so make state not have refresh_token
+        del state_mock.refresh_token
+    connection.state = state_mock
     return connection
 
 

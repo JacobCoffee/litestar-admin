@@ -124,7 +124,7 @@ class MockAuthBackend:
         connection: ASGIConnection,
     ) -> dict[str, str] | None:
         """Refresh access token."""
-        refresh_token = connection.scope.get("refresh_token")
+        refresh_token = getattr(connection.state, "refresh_token", None)
         if not refresh_token:
             return None
 

@@ -25,7 +25,7 @@ import asyncio
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, runtime_checkable
 
 from litestar.middleware import AbstractMiddleware
 from litestar.status_codes import HTTP_429_TOO_MANY_REQUESTS
@@ -90,7 +90,7 @@ class RateLimitConfig:
     requests_per_minute: int = 60
     requests_per_hour: int = 1000
     burst_size: int = 10
-    key_func: Callable[[ASGIConnection[Any, Any, Any]], str] | None = None
+    key_func: Callable[[ASGIConnection[Any, Any, Any, Any]], str] | None = None
     exclude_paths: list[str] = field(default_factory=list)
     include_paths: list[str] | None = None
     enabled: bool = True
@@ -172,6 +172,18 @@ class RateLimitStore(Protocol):
 
         Returns:
             The number of remaining requests allowed.
+        """
+        ...
+
+    async def get_reset_time(self, key: str, window: str) -> int:
+        """Get the Unix timestamp when the rate limit window resets.
+
+        Args:
+            key: The rate limit key (e.g., client IP or user ID).
+            window: The time window identifier (e.g., "minute" or "hour").
+
+        Returns:
+            Unix timestamp when the window resets.
         """
         ...
 
@@ -419,7 +431,7 @@ class InMemoryRateLimitStore:
 # ==============================================================================
 
 
-def get_client_ip(connection: ASGIConnection[Any, Any, Any]) -> str:
+def get_client_ip(connection: ASGIConnection[Any, Any, Any, Any]) -> str:
     """Extract the client IP address from a connection.
 
     This function checks common proxy headers (X-Forwarded-For, X-Real-IP)
@@ -458,7 +470,7 @@ def get_client_ip(connection: ASGIConnection[Any, Any, Any]) -> str:
     return "unknown"
 
 
-def get_rate_limit_key(connection: ASGIConnection[Any, Any, Any], config: RateLimitConfig) -> str:
+def get_rate_limit_key(connection: ASGIConnection[Any, Any, Any, Any], config: RateLimitConfig) -> str:
     """Generate a rate limit key for a connection.
 
     If a custom key function is provided in the config, it is used.
@@ -726,17 +738,23 @@ class RateLimitMiddleware(AbstractMiddleware):
         ]
 
         await send(
-            {
-                "type": "http.response.start",
-                "status": HTTP_429_TOO_MANY_REQUESTS,
-                "headers": headers,
-            }
+            cast(
+                "Message",
+                {
+                    "type": "http.response.start",
+                    "status": HTTP_429_TOO_MANY_REQUESTS,
+                    "headers": headers,
+                },
+            )
         )
         await send(
-            {
-                "type": "http.response.body",
-                "body": body,
-            }
+            cast(
+                "Message",
+                {
+                    "type": "http.response.body",
+                    "body": body,
+                },
+            )
         )
 
     def _wrap_send_with_headers(
@@ -770,8 +788,10 @@ class RateLimitMiddleware(AbstractMiddleware):
                         (b"x-ratelimit-reset", str(reset_time).encode()),
                     ]
                 )
-                message = {**message, "headers": headers}
-            await send(message)
+                updated_message = cast("Message", {**message, "headers": headers})
+                await send(updated_message)
+            else:
+                await send(message)
 
         return send_wrapper
 
