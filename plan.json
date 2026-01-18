@@ -31,7 +31,7 @@
   },
   "phases": [
     {
-      "id": "phase-1",
+      "id": "0",
       "name": "Core Foundation",
       "description": "Establish project structure and core plugin mechanics",
       "duration": "2 weeks",
@@ -39,7 +39,7 @@
       "dependencies": [],
       "tasks": [
         {
-          "id": "1.1",
+          "id": "0.1.1",
           "title": "Initialize repository structure",
           "description": "Create pyproject.toml, Makefile, .github/workflows, and directory structure",
           "status": "completed",
@@ -55,14 +55,14 @@
           ]
         },
         {
-          "id": "1.2",
+          "id": "0.1.2",
           "title": "Implement AdminPlugin",
           "description": "Create AdminPlugin class implementing InitPluginProtocol",
           "status": "completed",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["1.1"],
+          "depends_on": ["0.1.1"],
           "acceptance_criteria": [
             "AdminPlugin with on_app_init lifecycle",
             "Dependency injection for AdminService and ModelRegistry",
@@ -72,14 +72,14 @@
           ]
         },
         {
-          "id": "1.3",
+          "id": "0.1.3",
           "title": "Implement AdminConfig",
           "description": "Create AdminConfig dataclass with all configuration options",
           "status": "completed",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 4,
-          "dependencies": ["1.1"],
+          "depends_on": ["0.1.1"],
           "acceptance_criteria": [
             "All config options from ARCHITECTURE.md section 2.1",
             "Validation in __post_init__",
@@ -88,14 +88,14 @@
           ]
         },
         {
-          "id": "1.4",
+          "id": "0.1.4",
           "title": "Implement ModelRegistry",
           "description": "Create ModelRegistry for storing and managing model views",
           "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 6,
-          "dependencies": ["1.1"],
+          "depends_on": ["0.1.1"],
           "acceptance_criteria": [
             "Manual registration via register()",
             "Lookup by model class and name",
@@ -105,14 +105,14 @@
           ]
         },
         {
-          "id": "1.5",
+          "id": "0.1.5",
           "title": "Create BaseModelView",
           "description": "Implement BaseModelView class with column/form configuration",
           "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["1.4"],
+          "depends_on": ["0.1.4"],
           "acceptance_criteria": [
             "All class attributes from ARCHITECTURE.md section 4.1",
             "get_list_columns() with exclusion support",
@@ -123,14 +123,14 @@
           ]
         },
         {
-          "id": "1.6",
+          "id": "0.1.6",
           "title": "Unit tests for core components",
           "description": "Write comprehensive tests for plugin, config, registry, views",
           "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["1.2", "1.3", "1.4", "1.5"],
+          "depends_on": ["0.1.2", "0.1.3", "0.1.4", "0.1.5"],
           "acceptance_criteria": [
             "Tests for AdminPlugin initialization",
             "Tests for AdminConfig validation",
@@ -142,15 +142,15 @@
       ]
     },
     {
-      "id": "phase-2",
+      "id": "1",
       "name": "Model Views & CRUD",
       "description": "Implement model administration functionality",
       "duration": "2 weeks",
       "status": "completed",
-      "dependencies": ["phase-1"],
+      "dependencies": ["0"],
       "tasks": [
         {
-          "id": "2.1",
+          "id": "1.1.1",
           "title": "Implement auto-discovery",
           "description": "Add auto-discovery for SQLAlchemy models via DeclarativeBase introspection",
           "status": "completed",
@@ -165,7 +165,7 @@
           ]
         },
         {
-          "id": "2.2",
+          "id": "1.1.2",
           "title": "Create AdminService",
           "description": "Implement service layer for CRUD operations",
           "status": "completed",
@@ -182,14 +182,14 @@
           ]
         },
         {
-          "id": "2.3",
+          "id": "1.1.3",
           "title": "Implement ModelsController",
           "description": "Create REST API controller for model operations",
           "status": "completed",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 10,
-          "dependencies": ["2.2"],
+          "depends_on": ["1.1.2"],
           "acceptance_criteria": [
             "GET /models - list registered models",
             "GET /models/{model} - list records",
@@ -201,7 +201,7 @@
           ]
         },
         {
-          "id": "2.4",
+          "id": "1.1.4",
           "title": "Implement DashboardController",
           "description": "Create controller for dashboard data",
           "status": "completed",
@@ -215,7 +215,7 @@
           ]
         },
         {
-          "id": "2.5",
+          "id": "1.1.5",
           "title": "Implement ExportController",
           "description": "Add data export functionality",
           "status": "completed",
@@ -230,7 +230,7 @@
           ]
         },
         {
-          "id": "2.6",
+          "id": "1.1.6",
           "title": "Implement BulkActionsController",
           "description": "Add bulk operation endpoints",
           "status": "completed",
@@ -244,14 +244,14 @@
           ]
         },
         {
-          "id": "2.7",
+          "id": "1.1.7",
           "title": "Integration tests with database",
           "description": "Test CRUD operations with real SQLite database",
           "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["2.3", "2.4", "2.5", "2.6"],
+          "depends_on": ["1.1.3", "1.1.4", "1.1.5", "1.1.6"],
           "acceptance_criteria": [
             "Test full CRUD lifecycle",
             "Test pagination and filtering",
@@ -263,15 +263,15 @@
       ]
     },
     {
-      "id": "phase-3",
+      "id": "2",
       "name": "Authentication & Authorization",
       "description": "Implement security layer",
       "duration": "2 weeks",
       "status": "in_progress",
-      "dependencies": ["phase-2"],
+      "dependencies": ["1"],
       "tasks": [
         {
-          "id": "3.1",
+          "id": "2.1.1",
           "title": "Define AuthBackend protocol",
           "description": "Create AuthBackend and AdminUser protocols",
           "status": "completed",
@@ -285,14 +285,14 @@
           ]
         },
         {
-          "id": "3.2",
+          "id": "2.1.2",
           "title": "Implement JWTAuthBackend",
           "description": "Create JWT-based authentication backend",
           "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["3.1"],
+          "depends_on": ["2.1.1"],
           "acceptance_criteria": [
             "Token generation and validation",
             "Cookie and header token extraction",
@@ -301,14 +301,14 @@
           ]
         },
         {
-          "id": "3.3",
+          "id": "2.1.3",
           "title": "Implement AuthController",
           "description": "Create authentication API endpoints",
-          "status": "pending",
+          "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 6,
-          "dependencies": ["3.2"],
+          "depends_on": ["2.1.2"],
           "acceptance_criteria": [
             "POST /auth/login - credential authentication",
             "POST /auth/logout - clear session",
@@ -317,7 +317,7 @@
           ]
         },
         {
-          "id": "3.4",
+          "id": "2.1.4",
           "title": "Implement RBAC guards",
           "description": "Create permission and role-based guards",
           "status": "pending",
@@ -334,7 +334,7 @@
           ]
         },
         {
-          "id": "3.5",
+          "id": "2.1.5",
           "title": "Implement AuditLogger",
           "description": "Create audit logging system for admin actions",
           "status": "pending",
@@ -350,7 +350,7 @@
           ]
         },
         {
-          "id": "3.6",
+          "id": "2.1.6",
           "title": "Add rate limiting middleware",
           "description": "Implement rate limiting for admin API",
           "status": "pending",
@@ -365,14 +365,14 @@
           ]
         },
         {
-          "id": "3.7",
+          "id": "2.1.7",
           "title": "Security tests",
           "description": "Write comprehensive security tests",
           "status": "pending",
           "priority": "critical",
           "agent_type": "security-auditor",
           "estimated_hours": 10,
-          "dependencies": ["3.3", "3.4", "3.5", "3.6"],
+          "depends_on": ["2.1.3", "2.1.4", "2.1.5", "2.1.6"],
           "acceptance_criteria": [
             "Test authentication flow",
             "Test permission enforcement",
@@ -385,15 +385,15 @@
       ]
     },
     {
-      "id": "phase-4",
+      "id": "3",
       "name": "Frontend Foundation",
       "description": "Create the Next.js admin UI foundation",
       "duration": "2 weeks",
       "status": "pending",
-      "dependencies": ["phase-2"],
+      "dependencies": ["1"],
       "tasks": [
         {
-          "id": "4.1",
+          "id": "3.1.1",
           "title": "Initialize Next.js project",
           "description": "Set up Next.js with TypeScript, Tailwind, and OXC tools",
           "status": "pending",
@@ -410,14 +410,14 @@
           ]
         },
         {
-          "id": "4.2",
+          "id": "3.1.2",
           "title": "Create base UI components",
           "description": "Implement foundational UI components",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 12,
-          "dependencies": ["4.1"],
+          "depends_on": ["3.1.1"],
           "acceptance_criteria": [
             "Button component with variants",
             "Card component with header/body/footer",
@@ -429,14 +429,14 @@
           ]
         },
         {
-          "id": "4.3",
+          "id": "3.1.3",
           "title": "Implement layout components",
           "description": "Create Sidebar, Header, and page layouts",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["4.2"],
+          "depends_on": ["3.1.2"],
           "acceptance_criteria": [
             "Sidebar with model navigation",
             "Category grouping with expand/collapse",
@@ -447,14 +447,14 @@
           ]
         },
         {
-          "id": "4.4",
+          "id": "3.1.4",
           "title": "Create Dashboard page",
           "description": "Implement the main dashboard view",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["4.3"],
+          "depends_on": ["3.1.3"],
           "acceptance_criteria": [
             "Stats cards with metrics",
             "Sparkline charts for trends",
@@ -465,14 +465,14 @@
           ]
         },
         {
-          "id": "4.5",
+          "id": "3.1.5",
           "title": "Implement API client",
           "description": "Create TypeScript API client with types",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 6,
-          "dependencies": ["4.1"],
+          "depends_on": ["3.1.1"],
           "acceptance_criteria": [
             "Typed API client class",
             "All endpoint methods",
@@ -482,14 +482,14 @@
           ]
         },
         {
-          "id": "4.6",
+          "id": "3.1.6",
           "title": "Implement authentication UI",
           "description": "Create login page and auth state management",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["4.5"],
+          "depends_on": ["3.1.5"],
           "acceptance_criteria": [
             "Login page with email/password form",
             "useAuth hook for state management",
@@ -502,15 +502,15 @@
       ]
     },
     {
-      "id": "phase-5",
+      "id": "4",
       "name": "Frontend CRUD Views",
       "description": "Complete model management UI",
       "duration": "2 weeks",
       "status": "pending",
-      "dependencies": ["phase-4"],
+      "dependencies": ["3"],
       "tasks": [
         {
-          "id": "5.1",
+          "id": "4.1.1",
           "title": "Create DataTable component",
           "description": "Implement advanced data table for model lists",
           "status": "pending",
@@ -527,14 +527,14 @@
           ]
         },
         {
-          "id": "5.2",
+          "id": "4.1.2",
           "title": "Implement filtering and search",
           "description": "Add filter controls to model list view",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["5.1"],
+          "depends_on": ["4.1.1"],
           "acceptance_criteria": [
             "Search input with debounce",
             "Filter dropdown for columns",
@@ -545,14 +545,14 @@
           ]
         },
         {
-          "id": "5.3",
+          "id": "4.1.3",
           "title": "Create model list page",
           "description": "Implement the model records list page",
           "status": "pending",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["5.1", "5.2"],
+          "depends_on": ["4.1.1", "4.1.2"],
           "acceptance_criteria": [
             "Dynamic model loading from route",
             "DataTable with model columns",
@@ -563,7 +563,7 @@
           ]
         },
         {
-          "id": "5.4",
+          "id": "4.1.4",
           "title": "Create record form component",
           "description": "Implement dynamic form for create/edit",
           "status": "pending",
@@ -580,14 +580,14 @@
           ]
         },
         {
-          "id": "5.5",
+          "id": "4.1.5",
           "title": "Create record detail page",
           "description": "Implement view/edit page for single record",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
-          "dependencies": ["5.4"],
+          "depends_on": ["4.1.4"],
           "acceptance_criteria": [
             "View mode with formatted display",
             "Edit mode toggle",
@@ -598,14 +598,14 @@
           ]
         },
         {
-          "id": "5.6",
+          "id": "4.1.6",
           "title": "Create record create page",
           "description": "Implement new record creation page",
           "status": "pending",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 6,
-          "dependencies": ["5.4"],
+          "depends_on": ["4.1.4"],
           "acceptance_criteria": [
             "Empty form with defaults",
             "Create button submission",
@@ -614,14 +614,14 @@
           ]
         },
         {
-          "id": "5.7",
+          "id": "4.1.7",
           "title": "Implement bulk actions",
           "description": "Add bulk action UI to list view",
           "status": "pending",
           "priority": "medium",
           "agent_type": "developer",
           "estimated_hours": 6,
-          "dependencies": ["5.3"],
+          "depends_on": ["4.1.3"],
           "acceptance_criteria": [
             "Bulk selection toolbar",
             "Delete selected action",
@@ -632,14 +632,14 @@
           ]
         },
         {
-          "id": "5.8",
+          "id": "4.1.8",
           "title": "Implement export UI",
           "description": "Add export functionality to frontend",
           "status": "pending",
           "priority": "medium",
           "agent_type": "developer",
           "estimated_hours": 4,
-          "dependencies": ["5.3"],
+          "depends_on": ["4.1.3"],
           "acceptance_criteria": [
             "Export all button",
             "Format selection (CSV/JSON)",
@@ -651,15 +651,15 @@
       ]
     },
     {
-      "id": "phase-6",
+      "id": "5",
       "name": "Integration & Polish",
       "description": "Complete integration and prepare for release",
       "duration": "2 weeks",
       "status": "pending",
-      "dependencies": ["phase-3", "phase-5"],
+      "dependencies": ["2", "4"],
       "tasks": [
         {
-          "id": "6.1",
+          "id": "5.1.1",
           "title": "Configure static export build",
           "description": "Set up Next.js static export pipeline",
           "status": "pending",
@@ -674,14 +674,14 @@
           ]
         },
         {
-          "id": "6.2",
+          "id": "5.1.2",
           "title": "Integrate static serving",
           "description": "Configure Litestar to serve frontend",
           "status": "pending",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 4,
-          "dependencies": ["6.1"],
+          "depends_on": ["5.1.1"],
           "acceptance_criteria": [
             "create_static_files_router configuration",
             "SPA routing (html_mode=True)",
@@ -690,7 +690,7 @@
           ]
         },
         {
-          "id": "6.3",
+          "id": "5.1.3",
           "title": "Implement sqladmin bridge",
           "description": "Create bridge for sqladmin-litestar-plugin integration",
           "status": "pending",
@@ -705,7 +705,7 @@
           ]
         },
         {
-          "id": "6.4",
+          "id": "5.1.4",
           "title": "Implement litestar-oauth integration",
           "description": "Create OAuth auth backend using litestar-oauth",
           "status": "pending",
@@ -720,22 +720,7 @@
           ]
         },
         {
-          "id": "6.5",
-          "title": "Create example applications",
-          "description": "Build example apps demonstrating features",
-          "status": "pending",
-          "priority": "high",
-          "agent_type": "developer",
-          "estimated_hours": 8,
-          "acceptance_criteria": [
-            "Basic example with default config",
-            "Auth example with JWT",
-            "Custom views example",
-            "README for each example"
-          ]
-        },
-        {
-          "id": "6.6",
+          "id": "5.1.5",
           "title": "Write API documentation",
           "description": "Document REST API endpoints",
           "status": "pending",
@@ -750,7 +735,7 @@
           ]
         },
         {
-          "id": "6.7",
+          "id": "5.1.6",
           "title": "Write user documentation",
           "description": "Create Sphinx documentation",
           "status": "pending",
@@ -767,7 +752,7 @@
           ]
         },
         {
-          "id": "6.8",
+          "id": "5.1.7",
           "title": "Performance optimization",
           "description": "Optimize frontend and backend performance",
           "status": "pending",
@@ -782,7 +767,7 @@
           ]
         },
         {
-          "id": "6.9",
+          "id": "5.1.8",
           "title": "Accessibility audit",
           "description": "Ensure WCAG 2.1 AA compliance",
           "status": "pending",
@@ -798,14 +783,14 @@
           ]
         },
         {
-          "id": "6.10",
+          "id": "5.1.9",
           "title": "Final testing and bug fixes",
           "description": "End-to-end testing and bug fixing",
           "status": "pending",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 16,
-          "dependencies": ["6.1", "6.2", "6.5"],
+          "depends_on": ["5.1.1", "5.1.2"],
           "acceptance_criteria": [
             "E2E tests passing",
             "Cross-browser testing",
@@ -815,6 +800,44 @@
           ]
         }
       ]
+    },
+    {
+      "id": "6",
+      "name": "Bugs",
+      "description": "Tasks identified as bugs requiring fixes",
+      "status": "pending",
+      "tasks": []
+    },
+    {
+      "id": "7",
+      "name": "Examples",
+      "description": "Example applications demonstrating features",
+      "status": "pending",
+      "dependencies": ["5"],
+      "tasks": [
+        {
+          "id": "7.1.1",
+          "title": "Create example applications",
+          "description": "Create 1 minimal example app, example app in other frameworks, example app in raw asgi, and 1 full app example in litestar with all the bells and whistles and extras",
+          "status": "pending",
+          "priority": "high",
+          "agent_type": "developer",
+          "estimated_hours": 8,
+          "acceptance_criteria": [
+            "Basic example with default config",
+            "Auth example with JWT",
+            "Custom views example",
+            "README for each example"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Deferred",
+      "description": "Tasks postponed for later consideration",
+      "status": "pending",
+      "tasks": []
     }
   ]
 }

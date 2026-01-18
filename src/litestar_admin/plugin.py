@@ -121,13 +121,14 @@ class AdminPlugin(InitPluginProtocol):
         """Get admin controllers to register."""
         # Import controllers lazily to avoid circular imports
         from litestar_admin.controllers import (
+            AuthController,
             BulkActionsController,
             DashboardController,
             ExportController,
             ModelsController,
         )
 
-        return [BulkActionsController, DashboardController, ExportController, ModelsController]
+        return [AuthController, BulkActionsController, DashboardController, ExportController, ModelsController]
 
     def _configure_static_files(self, app_config: AppConfig) -> None:
         """Configure static file serving for the admin panel."""
