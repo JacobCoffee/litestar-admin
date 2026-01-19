@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { useState, useEffect, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -41,9 +43,11 @@ function adjustBrightness(hex: string, percent: number): string {
 
 /**
  * Component that loads and applies saved accent color on mount.
+ * Uses a <style> element for reliable CSS variable overrides.
  */
 function AccentColorLoader({ children }: { children: ReactNode }) {
   const { resolvedTheme } = useTheme();
+  const [accentStyles, setAccentStyles] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -51,22 +55,33 @@ function AccentColorLoader({ children }: { children: ReactNode }) {
       if (stored) {
         const color = accentColors.find((c) => c.value === stored);
         if (color) {
-          const root = document.documentElement;
           const colorValue = resolvedTheme === 'light' ? color.lightValue : color.value;
           const hoverColor = adjustBrightness(colorValue, -15);
 
-          // Apply to all primary/accent CSS variables for site-wide effect
-          root.style.setProperty('--color-primary', colorValue);
-          root.style.setProperty('--color-primary-hover', hoverColor);
-          root.style.setProperty('--color-accent', colorValue);
+          // Create CSS that overrides the theme variables
+          setAccentStyles(`
+            :root, .dark, .light {
+              --color-primary: ${colorValue} !important;
+              --color-primary-hover: ${hoverColor} !important;
+              --color-accent: ${colorValue} !important;
+            }
+          `);
         }
+      } else {
+        setAccentStyles(null);
       }
     } catch {
       // localStorage not available
+      setAccentStyles(null);
     }
   }, [resolvedTheme]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {accentStyles && <style dangerouslySetInnerHTML={{ __html: accentStyles }} />}
+      {children}
+    </>
+  );
 }
 
 /**
