@@ -29,36 +29,28 @@ export interface QuickActionsProps {
 
 const defaultActions: QuickAction[] = [
   {
-    id: 'create-user',
-    label: 'Create User',
-    description: 'Add a new user account',
-    href: '/models/User/create',
-    icon: <UserPlusIcon />,
+    id: 'browse-models',
+    label: 'Browse Models',
+    description: 'View and manage all models',
+    href: '/models',
+    icon: <ModelsIcon />,
     variant: 'primary',
+  },
+  {
+    id: 'create-record',
+    label: 'Create Record',
+    description: 'Add a new record to any model',
+    href: '/models',
+    icon: <UserPlusIcon />,
+    variant: 'secondary',
   },
   {
     id: 'export-data',
     label: 'Export Data',
-    description: 'Download records as CSV',
-    href: '/export',
+    description: 'Export from model list pages',
+    href: '/models',
     icon: <DownloadIcon />,
     variant: 'secondary',
-  },
-  {
-    id: 'view-logs',
-    label: 'View Logs',
-    description: 'Check audit trail',
-    href: '/audit',
-    icon: <ClipboardIcon />,
-    variant: 'secondary',
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    description: 'Configure admin panel',
-    href: '/settings',
-    icon: <SettingsIcon />,
-    variant: 'ghost',
   },
 ];
 
@@ -149,6 +141,25 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
 }
 
 // Icon components
+function ModelsIcon() {
+  return (
+    <svg
+      className="h-4 w-4 text-white"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+      />
+    </svg>
+  );
+}
+
 function UserPlusIcon() {
   return (
     <svg

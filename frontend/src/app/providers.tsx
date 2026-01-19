@@ -1,12 +1,52 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LayoutProvider } from '@/contexts/LayoutContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { ToastProvider } from '@/components/ui/Toast';
+
+const ACCENT_COLOR_KEY = 'admin_accent_color';
+
+const accentColors = [
+  { value: '#f6821f', lightValue: '#d4690e' },
+  { value: '#58a6ff', lightValue: '#0969da' },
+  { value: '#3fb950', lightValue: '#1a7f37' },
+  { value: '#a371f7', lightValue: '#8250df' },
+  { value: '#f778ba', lightValue: '#bf3989' },
+  { value: '#f85149', lightValue: '#cf222e' },
+  { value: '#2dd4bf', lightValue: '#14b8a6' },
+  { value: '#e3b341', lightValue: '#9a6700' },
+];
+
+/**
+ * Component that loads and applies saved accent color on mount.
+ */
+function AccentColorLoader({ children }: { children: ReactNode }) {
+  const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(ACCENT_COLOR_KEY);
+      if (stored) {
+        const color = accentColors.find((c) => c.value === stored);
+        if (color) {
+          const root = document.documentElement;
+          root.style.setProperty(
+            '--color-accent',
+            resolvedTheme === 'light' ? color.lightValue : color.value
+          );
+        }
+      }
+    } catch {
+      // localStorage not available
+    }
+  }, [resolvedTheme]);
+
+  return <>{children}</>;
+}
 
 /**
  * Query client configuration with optimized defaults for performance.
@@ -103,13 +143,15 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark">
-        <AuthProvider>
-          <LayoutProvider>
-            <ToastProvider defaultDuration={5000} maxToasts={5}>
-              {children}
-            </ToastProvider>
-          </LayoutProvider>
-        </AuthProvider>
+        <AccentColorLoader>
+          <AuthProvider>
+            <LayoutProvider>
+              <ToastProvider defaultDuration={5000} maxToasts={5}>
+                {children}
+              </ToastProvider>
+            </LayoutProvider>
+          </AuthProvider>
+        </AccentColorLoader>
       </ThemeProvider>
     </QueryClientProvider>
   );
