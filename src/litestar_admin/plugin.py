@@ -194,12 +194,13 @@ class AdminPlugin(InitPluginProtocol):
         # IMPORTANT: We only handle routes that are NOT static assets
         @get(
             path=[
+                f"{self._config.base_url}/models/",
                 f"{self._config.base_url}/models/{{path:path}}",
             ],
             name="admin_spa_fallback",
             include_in_schema=False,
         )
-        async def spa_fallback(path: str) -> Response[bytes]:  # noqa: ARG001
+        async def spa_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
             """Serve models/index.html for SPA client-side routing."""
             # Serve the models page HTML for all /models/* routes
             html_path = models_html_path if models_html_path.exists() else index_html_path
