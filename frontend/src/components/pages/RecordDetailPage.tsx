@@ -24,6 +24,7 @@ import {
   ModalFooter,
 } from '@/components/ui/Modal';
 import { Skeleton } from '@/components/ui/Loading';
+import { MainLayout } from '@/components/layout/MainLayout';
 import type { ModelRecord, SchemaProperty } from '@/types';
 
 // ============================================================================
@@ -760,11 +761,19 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   const isLoading = isLoadingRecord || isLoadingSchema;
 
   if (isLoading) {
-    return <RecordDetailSkeleton modelName={modelDisplayName} />;
+    return (
+      <MainLayout>
+        <RecordDetailSkeleton modelName={modelDisplayName} />
+      </MainLayout>
+    );
   }
 
   if (recordError || !record || !schema) {
-    return <NotFoundDisplay modelName={model} recordId={id} />;
+    return (
+      <MainLayout>
+        <NotFoundDisplay modelName={model} recordId={id} />
+      </MainLayout>
+    );
   }
 
   const orderedFields = Object.entries(schema.properties).sort(([aName], [bName]) => {
@@ -777,100 +786,102 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   });
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={recordTitle}
-        subtitle={`${modelDisplayName} Details`}
-        breadcrumbs={breadcrumbs}
-        actions={
-          mode === 'view' ? (
-            <div className="flex items-center gap-3">
-              <Link href={`/models/${model}`}>
+    <MainLayout>
+      <div className="space-y-6">
+        <PageHeader
+          title={recordTitle}
+          subtitle={`${modelDisplayName} Details`}
+          breadcrumbs={breadcrumbs}
+          actions={
+            mode === 'view' ? (
+              <div className="flex items-center gap-3">
+                <Link href={`/models/${model}`}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<BackIcon className="h-4 w-4" />}
+                  >
+                    Back to List
+                  </Button>
+                </Link>
                 <Button
                   variant="secondary"
                   size="sm"
-                  leftIcon={<BackIcon className="h-4 w-4" />}
+                  leftIcon={<EditIcon className="h-4 w-4" />}
+                  onClick={handleEdit}
                 >
-                  Back to List
+                  Edit
                 </Button>
-              </Link>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<EditIcon className="h-4 w-4" />}
-                onClick={handleEdit}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                leftIcon={<TrashIcon className="h-4 w-4" />}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Button variant="secondary" size="sm" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-          )
-        }
-      />
+                <Button
+                  variant="danger"
+                  size="sm"
+                  leftIcon={<TrashIcon className="h-4 w-4" />}
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Button variant="secondary" size="sm" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </div>
+            )
+          }
+        />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <h2 className="text-base font-medium text-[var(--color-foreground)]">
-                {mode === 'view' ? 'Record Details' : 'Edit Record'}
-              </h2>
-            </CardHeader>
-            <CardBody>
-              {mode === 'view' ? (
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                  {orderedFields.map(([name, property]) => (
-                    <FieldDisplay
-                      key={name}
-                      name={name}
-                      value={record[name]}
-                      property={property}
-                    />
-                  ))}
-                </dl>
-              ) : (
-                <RecordForm
-                  schema={schema}
-                  initialValues={record}
-                  onSubmit={handleSubmit}
-                  onCancel={handleCancel}
-                  isSubmitting={updateMutation.isPending}
-                  mode="edit"
-                  errors={serverErrors}
-                />
-              )}
-            </CardBody>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <h2 className="text-base font-medium text-[var(--color-foreground)]">
+                  {mode === 'view' ? 'Record Details' : 'Edit Record'}
+                </h2>
+              </CardHeader>
+              <CardBody>
+                {mode === 'view' ? (
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+                    {orderedFields.map(([name, property]) => (
+                      <FieldDisplay
+                        key={name}
+                        name={name}
+                        value={record[name]}
+                        property={property}
+                      />
+                    ))}
+                  </dl>
+                ) : (
+                  <RecordForm
+                    schema={schema}
+                    initialValues={record}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCancel}
+                    isSubmitting={updateMutation.isPending}
+                    mode="edit"
+                    errors={serverErrors}
+                  />
+                )}
+              </CardBody>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
+            <RelatedRecordsSection records={relatedRecords} />
+            <AuditLogSection entries={auditLog} />
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <RelatedRecordsSection records={relatedRecords} />
-          <AuditLogSection entries={auditLog} />
-        </div>
+        <DeleteConfirmModal
+          isOpen={showDeleteModal}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
+          isDeleting={deleteMutation.isPending}
+          recordTitle={recordTitle}
+          modelName={modelDisplayName}
+        />
       </div>
-
-      <DeleteConfirmModal
-        isOpen={showDeleteModal}
-        onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDelete}
-        isDeleting={deleteMutation.isPending}
-        recordTitle={recordTitle}
-        modelName={modelDisplayName}
-      />
-    </div>
+    </MainLayout>
   );
 }
 

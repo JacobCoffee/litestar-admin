@@ -618,6 +618,13 @@ class AdminService(Generic[T]):
         if type_name in ("STRING", "VARCHAR", "CHAR") and hasattr(column.type, "length") and column.type.length:
             schema["maxLength"] = column.type.length
 
+        # Add format for common field names
+        column_lower = column.name.lower()
+        if column_lower in ("email", "email_address", "user_email"):
+            schema["format"] = "email"
+        elif column_lower in ("url", "website", "homepage", "link"):
+            schema["format"] = "uri"
+
         # Add nullable info using JSON schema pattern
         if column.nullable:
             current_type = schema.get("type")
@@ -627,6 +634,17 @@ class AdminService(Generic[T]):
         # Add primary key info
         if column.primary_key:
             schema["readOnly"] = True
+
+        # Add default value if present (Python-side default)
+        if column.default is not None:
+            default_arg = column.default.arg
+            # Handle callable defaults (skip them) vs literal values
+            if not callable(default_arg):
+                # Handle enum defaults
+                if hasattr(default_arg, "value"):
+                    schema["default"] = default_arg.value
+                else:
+                    schema["default"] = default_arg
 
         # Add description from column doc if available
         if column.doc:

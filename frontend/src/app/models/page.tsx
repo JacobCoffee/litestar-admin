@@ -69,8 +69,8 @@ function parsePathParams(pathname: string): PathParams {
     return { model, id: null, action: null };
   }
 
-  // Check if second segment is 'create' action or a record ID
-  if (secondSegment === 'create') {
+  // Check if second segment is 'create' or 'new' action or a record ID
+  if (secondSegment === 'create' || secondSegment === 'new') {
     return { model, id: null, action: 'new' };
   }
 

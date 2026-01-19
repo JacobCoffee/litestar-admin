@@ -136,7 +136,7 @@ class BaseModelView:
         return []
 
     @classmethod
-    def get_form_extra_fields(cls, *, is_create: bool = False) -> dict[str, dict[str, Any]]:
+    def get_form_extra_fields(cls, *, is_create: bool = False) -> dict[str, dict[str, Any]]:  # noqa: ARG003
         """Get extra virtual fields to include in forms.
 
         Virtual fields are form-only fields that don't map directly to database
