@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from litestar_admin.relationships import RelationshipDetector, get_relationship_detector
 from litestar_admin.views.admin_view import BaseAdminView
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
+
+    from litestar_admin.relationships import RelationshipInfo
 
 __all__ = ["BaseModelView"]
 
@@ -82,6 +85,9 @@ class BaseModelView(BaseAdminView):
     # Pagination
     page_size: ClassVar[int] = 25
     page_size_options: ClassVar[list[int]] = [10, 25, 50, 100]
+
+    # Relationship configuration
+    _relationship_detector: ClassVar[RelationshipDetector | None] = None
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Initialize subclass with defaults."""
@@ -161,21 +167,43 @@ class BaseModelView(BaseAdminView):
 
     @classmethod
     def get_column_info(cls, column_name: str) -> dict[str, Any]:
-        """Get metadata for a column.
+        """Get metadata for a column, including relationship information.
 
         Args:
             column_name: The column name.
 
         Returns:
-            Dictionary with column metadata.
+            Dictionary with column metadata including:
+            - name: The column name
+            - sortable: Whether the column is sortable
+            - searchable: Whether the column is searchable
+            - type: The SQLAlchemy type (for regular columns)
+            - nullable: Whether the column is nullable
+            - primary_key: Whether this is a primary key
+            - is_relationship: Whether this is a relationship field
+            - relationship_type: The type of relationship (if is_relationship)
+            - related_model_name: Name of the related model (if is_relationship)
         """
         info: dict[str, Any] = {
             "name": column_name,
             "sortable": column_name in cls.column_sortable_list,
             "searchable": column_name in cls.column_searchable_list,
+            "is_relationship": False,
         }
 
-        # Get type info from model if available
+        # Check if this is a relationship field
+        rel_info = cls.get_relationship_info(column_name)
+        if rel_info is not None:
+            info["is_relationship"] = True
+            info["relationship_type"] = rel_info.relationship_type.value
+            info["related_model_name"] = rel_info.related_model_name
+            info["nullable"] = rel_info.nullable
+            info["uselist"] = rel_info.uselist
+            info["foreign_key_column"] = rel_info.foreign_key_column
+            info["back_populates"] = rel_info.back_populates
+            return info
+
+        # Get type info from model if available (regular columns)
         if hasattr(cls.model, "__table__"):
             for c in cls.model.__table__.columns:
                 if c.name == column_name:
@@ -185,6 +213,112 @@ class BaseModelView(BaseAdminView):
                     break
 
         return info
+
+    @classmethod
+    def get_relationship_detector(cls) -> RelationshipDetector:
+        """Get the relationship detector instance.
+
+        Returns:
+            The RelationshipDetector instance for this view.
+        """
+        if cls._relationship_detector is None:
+            cls._relationship_detector = get_relationship_detector()
+        return cls._relationship_detector
+
+    @classmethod
+    def relationship_fields(cls) -> list[RelationshipInfo]:
+        """Get all detected relationships for this model.
+
+        This property returns a list of RelationshipInfo objects describing
+        all relationships defined on the model.
+
+        Returns:
+            List of RelationshipInfo objects for all relationships.
+
+        Example::
+
+            class UserAdmin(ModelView, model=User):
+                pass
+
+            # Get all relationships
+            for rel in UserAdmin.relationship_fields():
+                print(f"{rel.name}: {rel.relationship_type.value}")
+        """
+        if not hasattr(cls, "model"):
+            return []
+        detector = cls.get_relationship_detector()
+        return detector.detect_relationships(cls.model)
+
+    @classmethod
+    def get_relationship_info(cls, field_name: str) -> RelationshipInfo | None:
+        """Get relationship info for a specific field.
+
+        Args:
+            field_name: The name of the relationship field to look up.
+
+        Returns:
+            RelationshipInfo if the field is a relationship, None otherwise.
+
+        Example::
+
+            class PostAdmin(ModelView, model=Post):
+                pass
+
+            # Get info about the 'author' relationship
+            rel_info = PostAdmin.get_relationship_info("author")
+            if rel_info:
+                print(f"Related to: {rel_info.related_model_name}")
+                print(f"FK column: {rel_info.foreign_key_column}")
+        """
+        if not hasattr(cls, "model"):
+            return None
+        detector = cls.get_relationship_detector()
+        return detector.get_relationship_info(cls.model, field_name)
+
+    @classmethod
+    def get_relationship_names(cls) -> list[str]:
+        """Get the names of all relationship fields on this model.
+
+        Returns:
+            List of relationship attribute names.
+        """
+        if not hasattr(cls, "model"):
+            return []
+        detector = cls.get_relationship_detector()
+        return detector.get_relationship_names(cls.model)
+
+    @classmethod
+    def is_relationship_field(cls, field_name: str) -> bool:
+        """Check if a field is a relationship.
+
+        Args:
+            field_name: The field name to check.
+
+        Returns:
+            True if the field is a relationship, False otherwise.
+        """
+        if not hasattr(cls, "model"):
+            return False
+        detector = cls.get_relationship_detector()
+        return detector.is_relationship(cls.model, field_name)
+
+    @classmethod
+    def get_display_column_for_related_model(cls, relationship_name: str) -> str | None:
+        """Get the best display column for a related model.
+
+        This is useful for showing related records in dropdowns or display fields.
+
+        Args:
+            relationship_name: The name of the relationship.
+
+        Returns:
+            The display column name for the related model, or None if not found.
+        """
+        rel_info = cls.get_relationship_info(relationship_name)
+        if rel_info is None:
+            return None
+        detector = cls.get_relationship_detector()
+        return detector.get_display_column(rel_info.related_model)
 
     @classmethod
     async def is_accessible(cls, connection: ASGIConnection) -> bool:  # noqa: ARG003
