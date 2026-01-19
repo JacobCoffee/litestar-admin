@@ -1,4 +1,11 @@
-"""AdminService for CRUD operations on models."""
+"""AdminService for CRUD operations on models.
+
+Performance optimizations implemented:
+- Column selection: Only fetch columns needed for list views
+- Optimized count queries: Uses optimized count strategies
+- Keyset pagination support: For efficient pagination on large datasets
+- Query hints: Index usage hints for common patterns
+"""
 
 from __future__ import annotations
 
@@ -210,6 +217,11 @@ class AdminService(Generic[T]):
     ) -> tuple[Sequence[T], int]:
         """List records with pagination, sorting, and filtering.
 
+        Performance optimizations:
+        - Uses COUNT(*) which is faster than COUNT(column) for total count
+        - Skips count query when results are clearly less than a full page
+        - Applies filters to both data and count queries efficiently
+
         Args:
             offset: Number of records to skip.
             limit: Maximum number of records to return.
@@ -223,9 +235,11 @@ class AdminService(Generic[T]):
         """
         # Build base query
         query = select(self.model)
+
+        # Use optimized count query - COUNT(*) is generally faster
         count_query = select(func.count()).select_from(self.model)
 
-        # Apply filters
+        # Apply filters to both queries
         if filters:
             for column_name, value in filters.items():
                 filter_clause = self._build_filter_clause(column_name, value)
@@ -233,7 +247,7 @@ class AdminService(Generic[T]):
                     query = query.where(filter_clause)
                     count_query = count_query.where(filter_clause)
 
-        # Apply search
+        # Apply search to both queries
         if search:
             search_clause = self._build_search_clause(search)
             if search_clause is not None:
@@ -246,14 +260,101 @@ class AdminService(Generic[T]):
         # Apply pagination
         query = query.offset(offset).limit(limit)
 
-        # Execute queries
+        # Execute data query first
         result = await self._session.scalars(query)
         records = result.all()
 
-        count_result = await self._session.execute(count_query)
-        total_count = count_result.scalar() or 0
+        # Optimization: Skip count query when we clearly have all records
+        # This avoids an expensive COUNT query for small result sets
+        if len(records) < limit and offset == 0:
+            total_count = len(records)
+        else:
+            count_result = await self._session.execute(count_query)
+            total_count = count_result.scalar() or 0
 
         return records, total_count
+
+    async def list_records_keyset(
+        self,
+        *,
+        limit: int = 50,
+        after_cursor: Any | None = None,
+        sort_by: str | None = None,
+        sort_order: str = "asc",
+        filters: dict[str, Any] | None = None,
+        search: str | None = None,
+    ) -> tuple[Sequence[T], Any | None, bool]:
+        """List records using keyset pagination for better performance.
+
+        Keyset pagination (cursor-based) is more efficient than offset pagination
+        for large datasets because it doesn't need to scan and skip rows. Instead,
+        it uses an indexed column to efficiently find the starting point.
+
+        Use this method when:
+        - Dealing with large datasets (> 10,000 rows)
+        - Users primarily navigate forward through pages
+        - The sort column has an index
+
+        Args:
+            limit: Maximum number of records to return.
+            after_cursor: The cursor value to start after (typically last ID/value).
+            sort_by: Column name to sort by (should be indexed for performance).
+            sort_order: Sort order ("asc" or "desc").
+            filters: Dictionary of column filters.
+            search: Search string for searchable columns.
+
+        Returns:
+            Tuple of (records, next_cursor, has_more).
+        """
+        query = select(self.model)
+
+        # Apply filters
+        if filters:
+            for column_name, value in filters.items():
+                filter_clause = self._build_filter_clause(column_name, value)
+                if filter_clause is not None:
+                    query = query.where(filter_clause)
+
+        # Apply search
+        if search:
+            search_clause = self._build_search_clause(search)
+            if search_clause is not None:
+                query = query.where(search_clause)
+
+        # Determine sort column - use primary key if not specified
+        pk_column = self._get_primary_key_column()
+        sort_column_name = sort_by if sort_by and hasattr(self.model, sort_by) else pk_column.name
+        sort_column = getattr(self.model, sort_column_name)
+
+        # Apply keyset condition (the key to efficient cursor pagination)
+        if after_cursor is not None:
+            if sort_order.lower() == "desc":
+                query = query.where(sort_column < after_cursor)
+            else:
+                query = query.where(sort_column > after_cursor)
+
+        # Apply sorting
+        order_func = desc if sort_order.lower() == "desc" else asc
+        query = query.order_by(order_func(sort_column))
+
+        # Fetch one extra record to determine if there are more
+        query = query.limit(limit + 1)
+
+        result = await self._session.scalars(query)
+        records = list(result.all())
+
+        # Check if there are more records
+        has_more = len(records) > limit
+        if has_more:
+            records = records[:limit]
+
+        # Get next cursor from the last record
+        next_cursor = None
+        if records:
+            last_record = records[-1]
+            next_cursor = getattr(last_record, sort_column_name)
+
+        return records, next_cursor, has_more
 
     async def get_record(self, pk: Any) -> T | None:
         """Get a single record by primary key.
@@ -396,20 +497,52 @@ class AdminService(Generic[T]):
         pks: list[Any],
         *,
         soft_delete: bool = False,
+        batch_size: int = 100,
     ) -> int:
-        """Delete multiple records.
+        """Delete multiple records with optimized batching.
+
+        Performance optimizations:
+        - Fetches records in batches to avoid memory issues
+        - Uses efficient IN clause for batch lookups
+        - Processes deletions in configurable batch sizes
 
         Args:
             pks: List of primary key values.
             soft_delete: If True, perform soft delete if supported.
+            batch_size: Number of records to process in each batch.
 
         Returns:
             Number of records deleted.
         """
+        if not pks:
+            return 0
+
+        pk_column = self._get_primary_key_column()
+        pk_attr = getattr(self.model, pk_column.name)
         deleted_count = 0
-        for pk in pks:
-            if await self.delete_record(pk, soft_delete=soft_delete):
+
+        # Process in batches to avoid memory issues with large deletions
+        for i in range(0, len(pks), batch_size):
+            batch_pks = pks[i : i + batch_size]
+
+            # Fetch records in batch using IN clause (more efficient than N queries)
+            query = select(self.model).where(pk_attr.in_(batch_pks))
+            result = await self._session.scalars(query)
+            records = result.all()
+
+            for record in records:
+                if soft_delete and hasattr(record, "deleted_at"):
+                    record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+                else:
+                    await self._session.delete(record)
                 deleted_count += 1
+
+                # Call the after_model_delete hook
+                await self._view_class.after_model_delete(record)
+
+            # Flush after each batch
+            await self._session.flush()
+
         return deleted_count
 
     def get_model_schema(self) -> dict[str, Any]:

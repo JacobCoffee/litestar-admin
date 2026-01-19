@@ -8,7 +8,13 @@ import { LayoutProvider } from '@/contexts/LayoutContext';
 import { ToastProvider } from '@/components/ui/Toast';
 
 /**
- * Query client configuration with sensible defaults.
+ * Query client configuration with optimized defaults for performance.
+ *
+ * Performance optimizations:
+ * - Longer staleTime reduces unnecessary refetches (2 minutes)
+ * - gcTime keeps data in cache longer for instant back-navigation
+ * - refetchOnMount: false prevents refetch when component remounts
+ * - Structural sharing enabled by default for efficient re-renders
  */
 function makeQueryClient() {
   return new QueryClient({
@@ -16,7 +22,11 @@ function makeQueryClient() {
       queries: {
         // Don't refetch on window focus in development for better DX
         refetchOnWindowFocus: process.env['NODE_ENV'] === 'production',
-        // Retry failed requests up to 3 times with exponential backoff
+        // Don't refetch on reconnect unless explicitly needed
+        refetchOnReconnect: false,
+        // Don't refetch on mount if data is fresh
+        refetchOnMount: false,
+        // Retry failed requests up to 2 times with exponential backoff
         retry: (failureCount, error) => {
           // Don't retry on 4xx errors (except 408 and 429)
           if (error && typeof error === 'object' && 'status' in error) {
@@ -25,12 +35,14 @@ function makeQueryClient() {
               return false;
             }
           }
-          return failureCount < 3;
+          return failureCount < 2;
         },
-        // Use exponential backoff for retries
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-        // Consider data stale after 1 minute by default
-        staleTime: 60 * 1000,
+        // Use exponential backoff for retries (faster initial retry)
+        retryDelay: (attemptIndex) => Math.min(500 * 2 ** attemptIndex, 15000),
+        // Consider data stale after 2 minutes (increased from 1 min)
+        staleTime: 2 * 60 * 1000,
+        // Keep unused data in cache for 10 minutes for back navigation
+        gcTime: 10 * 60 * 1000,
       },
       mutations: {
         // Don't retry mutations by default

@@ -78,3 +78,14 @@ export type {
   UseSearchFilterOptions,
   UseSearchFilterReturn,
 } from './useSearchFilter';
+
+// Virtual list hook for large datasets
+export {
+  useVirtualList,
+  estimateVisibleItems,
+} from './useVirtualList';
+export type {
+  UseVirtualListOptions,
+  VirtualItem,
+  UseVirtualListReturn,
+} from './useVirtualList';
