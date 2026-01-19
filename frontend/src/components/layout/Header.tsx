@@ -356,7 +356,7 @@ export function Header({
       {breadcrumb && <div className="hidden md:block">{breadcrumb}</div>}
 
       {/* Search */}
-      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md ml-auto md:ml-0">
+      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md">
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]" />
           <input
@@ -377,7 +377,7 @@ export function Header({
       </form>
 
       {/* Right section */}
-      <div className="flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2">
         {/* Theme toggle */}
         <button
           type="button"
