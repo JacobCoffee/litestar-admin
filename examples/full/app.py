@@ -327,6 +327,36 @@ async def seed_demo_data() -> None:
         # Flush to get user IDs
         await session.flush()
 
+        # Seed admin panel users (admin_users table)
+        # These are separate from the example app's User model
+        from litestar_admin.auth.models import AdminUser
+
+        admin_panel_users = [
+            AdminUser.create(
+                email="admin@example.com",
+                password="admin",
+                roles=["admin"],
+                is_superuser=True,
+                name="Admin User",
+            ),
+            AdminUser.create(
+                email="editor@example.com",
+                password="editor",
+                roles=["editor"],
+                name="Editor User",
+            ),
+            AdminUser.create(
+                email="viewer@example.com",
+                password="viewer",
+                roles=["viewer"],
+                name="Viewer User",
+            ),
+        ]
+        for admin_panel_user in admin_panel_users:
+            session.add(admin_panel_user)
+
+        await session.flush()
+
         # Create tags
         tags = [
             Tag(name="Python", slug="python"),

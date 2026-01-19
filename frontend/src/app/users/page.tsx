@@ -3,6 +3,8 @@
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { Spinner } from "@/components/ui/Loading";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserListPage } from "@/components/pages/UserListPage";
 import { UserDetailPage } from "@/components/pages/UserDetailPage";
 import { UserCreatePage } from "@/components/pages/UserCreatePage";
@@ -17,9 +19,13 @@ import { UserCreatePage } from "@/components/pages/UserCreatePage";
  */
 export default function UsersPage() {
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <UsersContent />
-    </Suspense>
+    <ProtectedRoute>
+      <MainLayout>
+        <Suspense fallback={<LoadingFallback />}>
+          <UsersContent />
+        </Suspense>
+      </MainLayout>
+    </ProtectedRoute>
   );
 }
 
