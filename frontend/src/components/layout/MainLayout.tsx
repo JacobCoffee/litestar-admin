@@ -1,13 +1,15 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/LayoutContext';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { useModels } from '@/hooks/useApi';
 import { Sidebar, type SidebarProps } from './Sidebar';
 import { Header, type HeaderProps } from './Header';
 import { Breadcrumb, generateBreadcrumbsFromPath } from './Breadcrumb';
+import type { NavCategory } from '@/types';
 
 export interface MainLayoutProps {
   /** Main content */
@@ -26,6 +28,21 @@ export interface MainLayoutProps {
   className?: string;
 }
 
+// Default model icon component
+const TableIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M3 3a1 1 0 011-1h12a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V3zm2 0v4h10V3H5zm10 6H5v8h10V9z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
 export function MainLayout({
   children,
   sidebar,
@@ -39,6 +56,47 @@ export function MainLayout({
   const { user, logout } = useAuthContext();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Fetch models for sidebar
+  const { data: models } = useModels();
+
+  // Build sidebar categories from models
+  const sidebarCategories = useMemo<NavCategory[]>(() => {
+    if (!models || models.length === 0) {
+      return [{
+        id: 'models',
+        label: 'Models',
+        items: [],
+      }];
+    }
+
+    // Group models by category
+    const grouped = new Map<string, typeof models>();
+    for (const model of models) {
+      const category = model.category ?? 'Models';
+      if (!grouped.has(category)) {
+        grouped.set(category, []);
+      }
+      grouped.get(category)!.push(model);
+    }
+
+    // Convert to NavCategory format
+    const categories: NavCategory[] = [];
+    for (const [categoryName, categoryModels] of grouped) {
+      categories.push({
+        id: categoryName.toLowerCase().replace(/\s+/g, '-'),
+        label: categoryName,
+        items: categoryModels.map((model) => ({
+          id: model.model_name,
+          label: model.name,
+          href: `/models/${model.model_name}`,
+          icon: TableIcon,
+        })),
+      });
+    }
+
+    return categories;
+  }, [models]);
 
   // Generate breadcrumbs from current path
   const breadcrumbItems = showBreadcrumbs
@@ -89,6 +147,7 @@ export function MainLayout({
       {/* Sidebar */}
       <Sidebar
         {...sidebar}
+        categories={sidebar?.categories ?? sidebarCategories}
         userName={userName}
         userEmail={userEmail}
       />
