@@ -31,7 +31,7 @@ export function MainLayout({
   sidebar,
   header,
   showBreadcrumbs = true,
-  basePath = '/admin',
+  basePath = '/',
   contentClassName,
   className,
 }: MainLayoutProps) {
@@ -60,11 +60,11 @@ export function MainLayout({
   };
 
   const handleProfileClick = () => {
-    router.push('/admin/profile');
+    router.push('/profile');
   };
 
   const handleSettingsClick = () => {
-    router.push('/admin/settings');
+    router.push('/settings');
   };
 
   return (

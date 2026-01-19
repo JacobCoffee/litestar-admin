@@ -3,10 +3,6 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
 
-  // Output directory for static export - relative to frontend/
-  // This builds directly to src/litestar_admin/static/
-  distDir: '../src/litestar_admin/static',
-
   // Base path for serving from Litestar static files
   basePath: '/admin',
 

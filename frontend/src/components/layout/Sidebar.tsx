@@ -317,7 +317,7 @@ export function Sidebar({
         {/* Dashboard link */}
         <div className="mb-4">
           <NavItemLink
-            item={{ id: 'dashboard', label: 'Dashboard', href: '/admin', icon: HomeIcon }}
+            item={{ id: 'dashboard', label: 'Dashboard', href: '/', icon: HomeIcon }}
             isCollapsed={isCollapsed}
             pathname={pathname}
           />

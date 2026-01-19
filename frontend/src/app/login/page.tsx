@@ -122,7 +122,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      const returnUrl = searchParams.get('returnUrl') ?? '/admin';
+      const returnUrl = searchParams.get('returnUrl') ?? '/';
       router.replace(returnUrl);
     }
   }, [isAuthenticated, router, searchParams]);

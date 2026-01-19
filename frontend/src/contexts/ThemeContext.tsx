@@ -34,18 +34,26 @@ export interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | null>(null);
-
 /**
  * Storage key for persisting theme preference.
  */
 const THEME_STORAGE_KEY = 'admin_theme';
 
 /**
+ * Default context value for SSR and before mount.
+ */
+const defaultContextValue: ThemeContextValue = {
+  theme: 'dark',
+  resolvedTheme: 'dark',
+  setTheme: () => {},
+  toggleTheme: () => {},
+};
+
+const ThemeContext = createContext<ThemeContextValue>(defaultContextValue);
+
+/**
  * Hook to access theme context.
- * Must be used within a ThemeProvider.
- *
- * @throws Error if used outside of ThemeProvider
+ * Safe to use anywhere - returns default values if outside provider.
  *
  * @example
  * ```tsx
@@ -53,11 +61,7 @@ const THEME_STORAGE_KEY = 'admin_theme';
  * ```
  */
 export function useTheme(): ThemeContextValue {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
+  return useContext(ThemeContext);
 }
 
 /**
@@ -74,7 +78,11 @@ export interface ThemeProviderProps {
  */
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'dark';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } catch {
+    return 'dark';
+  }
 }
 
 /**
@@ -99,52 +107,71 @@ export function ThemeProvider({ children, defaultTheme = 'dark' }: ThemeProvider
 
   // Load theme from storage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-    if (stored && ['dark', 'light', 'system'].includes(stored)) {
-      setThemeState(stored);
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+      if (stored && ['dark', 'light', 'system'].includes(stored)) {
+        setThemeState(stored);
+      }
+      setSystemTheme(getSystemTheme());
+    } catch {
+      // localStorage not available, use default
     }
-    setSystemTheme(getSystemTheme());
     setMounted(true);
   }, []);
 
   // Listen for system theme changes
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (typeof window === 'undefined') return;
 
-    const handleChange = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? 'dark' : 'light');
-    };
+    try {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+      const handleChange = (e: MediaQueryListEvent) => {
+        setSystemTheme(e.matches ? 'dark' : 'light');
+      };
+
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } catch {
+      // matchMedia not available
+    }
   }, []);
 
-  // Apply theme class to document
+  // Compute resolved theme
   const resolvedTheme: ResolvedTheme = useMemo(() => {
     if (theme === 'system') return systemTheme;
     return theme;
   }, [theme, systemTheme]);
 
+  // Apply theme class to document
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || typeof document === 'undefined') return;
 
-    const root = document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(resolvedTheme);
+    try {
+      const root = document.documentElement;
+      root.classList.remove('light', 'dark');
+      root.classList.add(resolvedTheme);
 
-    // Update meta theme-color
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute(
-        'content',
-        resolvedTheme === 'dark' ? '#0d1117' : '#ffffff'
-      );
+      // Update meta theme-color
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute(
+          'content',
+          resolvedTheme === 'dark' ? '#0d1117' : '#ffffff'
+        );
+      }
+    } catch {
+      // DOM manipulation failed
     }
   }, [resolvedTheme, mounted]);
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+    } catch {
+      // localStorage not available
+    }
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -160,15 +187,6 @@ export function ThemeProvider({ children, defaultTheme = 'dark' }: ThemeProvider
     }),
     [theme, resolvedTheme, setTheme, toggleTheme]
   );
-
-  // Prevent flash of wrong theme during hydration
-  if (!mounted) {
-    return (
-      <ThemeContext.Provider value={value}>
-        {children}
-      </ThemeContext.Provider>
-    );
-  }
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

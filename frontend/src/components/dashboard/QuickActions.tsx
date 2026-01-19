@@ -93,31 +93,56 @@ interface QuickActionButtonProps {
 }
 
 function QuickActionButton({ action }: QuickActionButtonProps) {
+  const isPrimary = action.variant === 'primary';
+
   return (
     <Link href={action.href} className="block">
       <Button
         variant={action.variant ?? 'secondary'}
         className={cn(
           'w-full justify-start gap-3 h-auto py-3 px-4',
-          'text-left hover:bg-[var(--color-card-hover)]'
+          'text-left',
+          !isPrimary && 'hover:bg-[var(--color-card-hover)]'
         )}
       >
         {action.icon && (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-card)] border border-[var(--color-border)]">
+          <span
+            className={cn(
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+              isPrimary
+                ? 'bg-white/20'
+                : 'bg-[var(--color-card)] border border-[var(--color-border)]'
+            )}
+          >
             {action.icon}
           </span>
         )}
         <span className="flex-1 min-w-0">
-          <span className="block text-sm font-medium text-[var(--color-foreground)]">
+          <span
+            className={cn(
+              'block text-sm font-medium',
+              isPrimary ? 'text-white' : 'text-[var(--color-foreground)]'
+            )}
+          >
             {action.label}
           </span>
           {action.description && (
-            <span className="block text-xs text-[var(--color-muted)] mt-0.5">
+            <span
+              className={cn(
+                'block text-xs mt-0.5',
+                isPrimary ? 'text-white/80' : 'text-[var(--color-muted)]'
+              )}
+            >
               {action.description}
             </span>
           )}
         </span>
-        <ChevronRightIcon className="h-4 w-4 text-[var(--color-muted)]" />
+        <ChevronRightIcon
+          className={cn(
+            'h-4 w-4',
+            isPrimary ? 'text-white/70' : 'text-[var(--color-muted)]'
+          )}
+        />
       </Button>
     </Link>
   );
@@ -127,7 +152,7 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
 function UserPlusIcon() {
   return (
     <svg
-      className="h-4 w-4 text-[var(--color-primary)]"
+      className="h-4 w-4 text-white"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"

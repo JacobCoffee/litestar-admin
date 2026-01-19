@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { ModelListPage } from '@/components/pages/ModelListPage';
 import { RecordDetailPage } from '@/components/pages/RecordDetailPage';
 import { CreateRecordPage } from '@/components/pages/CreateRecordPage';
@@ -11,13 +11,20 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Spinner } from '@/components/ui/Loading';
 
 /**
- * Models page - handles all model-related routes client-side via query params.
+ * Models page - handles all model-related routes client-side.
  *
- * URL structure:
+ * Supports both path-based and query param routing:
+ *
+ * Path-based (preferred for navigation):
  * - /models - Models index
- * - /models?model=users - Model list page
- * - /models?model=users&action=new - Create new record
- * - /models?model=users&id=123 - Record detail page
+ * - /models/User - User model list
+ * - /models/User/create - Create new User
+ * - /models/User/123 - User record detail
+ *
+ * Query params (fallback):
+ * - /models?model=User - Model list page
+ * - /models?model=User&action=new - Create new record
+ * - /models?model=User&id=123 - Record detail page
  *
  * This approach enables static export while maintaining SPA-style navigation.
  */
@@ -29,12 +36,51 @@ export default function ModelsPage() {
   );
 }
 
+interface PathParams {
+  model: string | null;
+  id: string | null;
+  action: string | null;
+}
+
+/**
+ * Parse route parameters from pathname.
+ * Handles paths like /models/User, /models/User/create, /models/User/123
+ */
+function parsePathParams(pathname: string): PathParams {
+  // Remove /models prefix and split
+  const modelsPath = pathname.replace(/^\/models\/?/, '');
+  if (!modelsPath) return { model: null, id: null, action: null };
+
+  const segments = modelsPath.split('/').filter(Boolean);
+  if (segments.length === 0) return { model: null, id: null, action: null };
+
+  const model = segments[0] ?? null;
+  const secondSegment = segments[1];
+
+  if (!secondSegment) {
+    return { model, id: null, action: null };
+  }
+
+  // Check if second segment is 'create' action or a record ID
+  if (secondSegment === 'create') {
+    return { model, id: null, action: 'new' };
+  }
+
+  // Otherwise it's a record ID
+  return { model, id: secondSegment, action: null };
+}
+
 function ModelsContent() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  const model = searchParams.get('model');
-  const id = searchParams.get('id');
-  const action = searchParams.get('action');
+  // First try to parse from pathname (path-based routing)
+  const pathParams = parsePathParams(pathname);
+
+  // Fall back to query params if not in path
+  const model = pathParams.model ?? searchParams.get('model');
+  const id = pathParams.id ?? searchParams.get('id');
+  const action = pathParams.action ?? searchParams.get('action');
 
   // If no model is specified, show the index page
   if (!model) {

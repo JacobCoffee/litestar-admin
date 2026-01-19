@@ -178,6 +178,7 @@ class AdminPlugin(InitPluginProtocol):
             return
 
         index_html_path = static_path / "index.html"
+        models_html_path = static_path / "models" / "index.html"
 
         # Create static router for actual static files (_next/*, login/, etc.)
         static_router = create_static_files_router(
@@ -188,8 +189,8 @@ class AdminPlugin(InitPluginProtocol):
             after_request=_add_cache_headers,
         )
 
-        # SPA catch-all route - serves index.html for any unmatched admin route
-        # This enables client-side routing for paths like /admin/models/Article
+        # SPA catch-all route - serves models/index.html for model routes
+        # This enables client-side routing for paths like /admin/models/User
         # IMPORTANT: We only handle routes that are NOT static assets
         @get(
             path=[
@@ -199,9 +200,11 @@ class AdminPlugin(InitPluginProtocol):
             include_in_schema=False,
         )
         async def spa_fallback(path: str) -> Response[bytes]:  # noqa: ARG001
-            """Serve index.html for SPA client-side routing."""
-            if index_html_path.exists():
-                content = index_html_path.read_bytes()
+            """Serve models/index.html for SPA client-side routing."""
+            # Serve the models page HTML for all /models/* routes
+            html_path = models_html_path if models_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
                 return Response(
                     content=content,
                     media_type="text/html",

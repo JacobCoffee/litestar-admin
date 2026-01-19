@@ -60,7 +60,7 @@ export interface BreadcrumbProps {
 export function Breadcrumb({
   items,
   showHome = true,
-  homeHref = '/admin',
+  homeHref = '/',
   separator,
   className,
 }: BreadcrumbProps) {
@@ -148,11 +148,11 @@ export function Breadcrumb({
 
 /**
  * Helper function to generate breadcrumb items from a pathname.
- * Converts '/admin/users/123' to [{ label: 'Users', href: '/admin/users' }, { label: '123' }]
+ * Converts '/users/123' to [{ label: 'Users', href: '/users' }, { label: '123' }]
  */
 export function generateBreadcrumbsFromPath(
   pathname: string,
-  basePath: string = '/admin'
+  basePath: string = '/'
 ): BreadcrumbItem[] {
   // Remove base path and split into segments
   const relativePath = pathname.startsWith(basePath)

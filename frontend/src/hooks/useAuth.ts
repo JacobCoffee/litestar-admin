@@ -70,8 +70,8 @@ export function useAuth(): UseAuthResult {
       // Refetch user data after successful login
       await refetchUser();
 
-      // Redirect to returnUrl or default to /admin
-      const returnUrl = searchParams.get('returnUrl') ?? '/admin';
+      // Redirect to returnUrl or default to dashboard
+      const returnUrl = searchParams.get('returnUrl') ?? '/';
       router.push(returnUrl);
     },
   });

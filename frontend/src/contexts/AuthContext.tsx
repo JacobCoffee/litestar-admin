@@ -125,7 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await refetchUser();
 
       // Redirect to returnUrl or default to /admin
-      const returnUrl = searchParams.get('returnUrl') ?? '/admin';
+      const returnUrl = searchParams.get('returnUrl') ?? '/';
       router.push(returnUrl);
     },
   });
