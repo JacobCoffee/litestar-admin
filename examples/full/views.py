@@ -390,9 +390,9 @@ class BlogPostAdmin(ModelView, model=BlogPost):
     category = "Content"
 
     # Column configuration
-    column_list = ["id", "title", "status", "author_id", "featured", "created_at", "published_at"]
+    column_list = ["id", "title", "slug", "status", "author_id", "featured", "created_at", "published_at"]
     column_searchable_list = ["title", "content", "excerpt"]
-    column_sortable_list = ["id", "title", "status", "featured", "created_at", "published_at"]
+    column_sortable_list = ["id", "title", "slug", "status", "featured", "created_at", "published_at"]
     column_default_sort = ("created_at", "desc")
 
     # Form configuration - exclude auto fields
