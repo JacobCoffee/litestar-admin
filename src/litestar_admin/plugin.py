@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar.plugins import InitPluginProtocol
 
@@ -12,13 +12,16 @@ from litestar_admin.registry import ModelRegistry
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any
 
-    from litestar import Litestar
+    from litestar import Litestar, Router
     from litestar.config.app import AppConfig
     from litestar.di import Provide
 
 __all__ = ["AdminPlugin"]
+
+# Cache durations for static assets (in seconds)
+_CACHE_IMMUTABLE_MAX_AGE = 31536000  # 1 year for immutable assets (hashed filenames)
+_CACHE_HTML_MAX_AGE = 0  # No caching for HTML (always revalidate)
 
 
 class AdminPlugin(InitPluginProtocol):
@@ -87,10 +90,10 @@ class AdminPlugin(InitPluginProtocol):
         existing_deps: dict[str, Provide | Callable[..., Any]] = dict(app_config.dependencies or {})
         app_config.dependencies = {**existing_deps, **self._get_dependencies()}
 
-        # Add route handlers (controllers)
+        # Add route handlers (API router with controllers)
         app_config.route_handlers = [
             *list(app_config.route_handlers or []),
-            *self._get_controllers(),
+            self._get_api_router(),
         ]
 
         # Add lifecycle hooks
@@ -117,8 +120,18 @@ class AdminPlugin(InitPluginProtocol):
             "admin_registry": Provide(lambda: self._registry, sync_to_thread=False),
         }
 
-    def _get_controllers(self) -> list[type]:
-        """Get admin controllers to register."""
+    def _get_api_router(self) -> Router:
+        """Get admin API router with all controllers.
+
+        Creates a Router mounted at the admin base_url that contains all
+        API controllers. The controllers define their own paths (e.g., /api/models)
+        which become relative to the router's path.
+
+        Returns:
+            A Router containing all admin API controllers.
+        """
+        from litestar import Router
+
         # Import controllers lazily to avoid circular imports
         from litestar_admin.controllers import (
             AuthController,
@@ -128,25 +141,60 @@ class AdminPlugin(InitPluginProtocol):
             ModelsController,
         )
 
-        return [AuthController, BulkActionsController, DashboardController, ExportController, ModelsController]
+        # Create a router at the admin base URL for all API endpoints
+        # Controllers define paths like /api/models, so final paths become
+        # /admin/api/models (when base_url is /admin)
+        return Router(
+            path=self._config.base_url,
+            route_handlers=[
+                AuthController,
+                BulkActionsController,
+                DashboardController,
+                ExportController,
+                ModelsController,
+            ],
+        )
 
     def _configure_static_files(self, app_config: AppConfig) -> None:
-        """Configure static file serving for the admin panel."""
+        """Configure static file serving for the admin panel frontend.
+
+        Sets up a static files router to serve the Next.js static export at the
+        admin base URL. Configuration includes:
+        - SPA routing via html_mode=True (serves index.html for unmatched routes)
+        - Cache headers for optimal performance (immutable assets get long cache)
+        - Proper base path handling for the frontend
+
+        Note: API routes are registered separately and take precedence over static
+        file serving due to their more specific paths (/admin/api/* vs /admin/*).
+        """
         from litestar.static_files import create_static_files_router
 
         # Determine static files path
         static_path = Path(self._config.static_path) if self._config.static_path else Path(__file__).parent / "static"
 
-        if static_path.exists():
-            static_router = create_static_files_router(
-                path=self._config.static_base_url,
-                directories=[static_path],
-                html_mode=True,  # SPA routing support
-            )
-            app_config.route_handlers = [
-                *list(app_config.route_handlers or []),
-                static_router,
-            ]
+        if not static_path.exists():
+            return
+
+        # Create static router at the admin base URL (e.g., /admin)
+        # html_mode=True enables SPA routing:
+        # - Requests to /admin serve /admin/index.html
+        # - Requests for non-existent paths serve index.html (for client-side routing)
+        # - 404.html is served for actual 404 responses
+        static_router = create_static_files_router(
+            path=self._config.base_url,
+            directories=[static_path],
+            html_mode=True,
+            name="admin_static",
+            # Set cache headers for static assets
+            # Next.js hashed assets (_next/static/*) can be cached indefinitely
+            # HTML files should not be cached to ensure users get latest version
+            after_request=_add_cache_headers,
+        )
+
+        app_config.route_handlers = [
+            *list(app_config.route_handlers or []),
+            static_router,
+        ]
 
     async def _startup(self, app: Litestar) -> None:
         """Run startup tasks for the admin plugin.
@@ -227,3 +275,48 @@ class AdminPlugin(InitPluginProtocol):
                 logger.debug("Registered auto-discovered view for: %s", model.__name__)
             except Exception:
                 logger.exception("Failed to create view for model: %s", model.__name__)
+
+
+def _add_cache_headers(response: Any) -> Any:
+    """Add appropriate cache headers to static file responses.
+
+    Implements a caching strategy optimized for Next.js static exports:
+    - Hashed assets (_next/static/*): Cache for 1 year with immutable flag
+    - HTML files: No caching (must revalidate every request)
+    - Other assets: Short cache with must-revalidate
+
+    Args:
+        response: The Litestar response object.
+
+    Returns:
+        The response with updated cache headers.
+    """
+    from litestar.datastructures import CacheControlHeader
+    from litestar.response import Response
+
+    if not isinstance(response, Response):
+        return response
+
+    # Get the media type to determine caching strategy
+    # The media_type attribute contains the content type (e.g., "text/html")
+    media_type = getattr(response, "media_type", "") or ""
+
+    if "text/html" in media_type:
+        # HTML files: no caching, always revalidate
+        # This ensures users always get the latest version of the SPA
+        response.headers["Cache-Control"] = CacheControlHeader(
+            no_cache=True,
+            no_store=True,
+            must_revalidate=True,
+        ).to_header()
+    else:
+        # Static assets (JS, CSS, images): cache with immutable for hashed assets
+        # Next.js uses content hashing for cache busting, so we can safely
+        # apply long-term caching to all non-HTML assets
+        response.headers["Cache-Control"] = CacheControlHeader(
+            max_age=_CACHE_IMMUTABLE_MAX_AGE,
+            public=True,
+            immutable=True,
+        ).to_header()
+
+    return response

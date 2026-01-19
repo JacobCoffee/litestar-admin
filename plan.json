@@ -662,7 +662,7 @@
           "id": "5.1.1",
           "title": "Configure static export build",
           "description": "Set up Next.js static export pipeline",
-          "status": "pending",
+          "status": "completed",
           "priority": "critical",
           "agent_type": "developer",
           "estimated_hours": 4,
