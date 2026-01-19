@@ -376,6 +376,7 @@ function ExportDropdown({ formats, onExport, disabled, isExporting }: ExportDrop
   const formatLabels: Record<ExportFormat, string> = {
     csv: "Export as CSV",
     json: "Export as JSON",
+    xlsx: "Export as Excel (.xlsx)",
   };
 
   return (
@@ -713,7 +714,7 @@ export function BulkActions({
   onActionComplete,
   className,
   position = "inline",
-  exportFormats = ["csv", "json"],
+  exportFormats = ["csv", "json", "xlsx"],
 }: BulkActionsProps) {
   // Modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -732,6 +733,9 @@ export function BulkActions({
     hasError: boolean;
     errorMessage?: string;
   } | null>(null);
+
+  // Track current export format for file naming
+  const currentExportFormat = useRef<ExportFormat>("csv");
 
   // Convert selectedIds to array for API calls
   const selectedIdsArray = Array.from(selectedIds);
@@ -795,11 +799,12 @@ export function BulkActions({
   // Export mutation
   const exportSelected = useExportSelected(model, {
     onSuccess: (blob) => {
-      // Trigger file download
+      // Trigger file download with correct extension
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${model}-export-${new Date().toISOString().split("T")[0]}.csv`;
+      const extension = currentExportFormat.current;
+      link.download = `${model}-export-${new Date().toISOString().split("T")[0]}.${extension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -868,6 +873,7 @@ export function BulkActions({
 
   const handleExport = useCallback(
     (format: ExportFormat) => {
+      currentExportFormat.current = format;
       exportSelected.mutate({ ids: selectedIdsArray, format });
     },
     [exportSelected, selectedIdsArray],

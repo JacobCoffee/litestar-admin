@@ -294,7 +294,7 @@ export interface ActivityItem {
 /**
  * Supported export formats.
  */
-export type ExportFormat = "csv" | "json";
+export type ExportFormat = "csv" | "json" | "xlsx";
 
 /**
  * Request for bulk export operation.
@@ -857,4 +857,104 @@ export interface RelationshipSearchParams {
   readonly limit?: number;
   /** Page number (1-indexed) */
   readonly page?: number;
+}
+
+// ============================================================================
+// CSV Import Types
+// ============================================================================
+
+/**
+ * Column type information from backend type detection.
+ */
+export interface ImportColumnTypeInfo {
+  /** CSV column header name */
+  readonly csv_column: string;
+  /** Detected data type */
+  readonly detected_type: string;
+  /** Sample values from this column */
+  readonly sample_values: string[];
+  /** Whether null/empty values were detected */
+  readonly nullable: boolean;
+}
+
+/**
+ * Model field information from backend schema.
+ */
+export interface ImportModelFieldInfo {
+  /** Field/column name */
+  readonly name: string;
+  /** JSON schema type */
+  readonly type: string;
+  /** Optional format (date, datetime, email, etc.) */
+  readonly format?: string;
+  /** Whether the field is nullable */
+  readonly nullable: boolean;
+  /** Whether the field is required */
+  readonly required: boolean;
+  /** Whether this is a primary key */
+  readonly primary_key: boolean;
+  /** Maximum length for string fields */
+  readonly max_length?: number;
+}
+
+/**
+ * Response from the CSV import preview endpoint.
+ */
+export interface ImportPreviewResponse {
+  /** CSV column headers */
+  readonly headers: string[];
+  /** First N rows of data as objects */
+  readonly preview_rows: Record<string, unknown>[];
+  /** Detected type information for each column */
+  readonly column_types: ImportColumnTypeInfo[];
+  /** Model field information for mapping */
+  readonly model_schema: ImportModelFieldInfo[];
+  /** Detected delimiter character */
+  readonly delimiter: string;
+  /** Detected file encoding */
+  readonly encoding: string;
+  /** Total number of data rows */
+  readonly total_rows: number;
+}
+
+/**
+ * Row-level validation error from backend.
+ */
+export interface ImportRowError {
+  /** 1-indexed row number in CSV */
+  readonly row_number: number;
+  /** Field name where error occurred */
+  readonly field: string;
+  /** The problematic value */
+  readonly value: string | null;
+  /** Error description */
+  readonly error: string;
+}
+
+/**
+ * Response from the CSV import validate endpoint.
+ */
+export interface ImportValidationResponse {
+  /** List of validation errors */
+  readonly errors: ImportRowError[];
+  /** Number of rows that passed validation */
+  readonly valid_count: number;
+  /** Number of rows that failed validation */
+  readonly invalid_count: number;
+  /** Total number of rows processed */
+  readonly total_rows: number;
+  /** Sample of valid rows for preview */
+  readonly sample_valid_rows: Record<string, unknown>[];
+}
+
+/**
+ * Response from the CSV import execute endpoint.
+ */
+export interface ImportExecuteResponse {
+  /** Whether the import was initiated successfully */
+  readonly success: boolean;
+  /** Status message */
+  readonly message: string;
+  /** Optional job ID for async tracking */
+  readonly job_id?: string | null;
 }

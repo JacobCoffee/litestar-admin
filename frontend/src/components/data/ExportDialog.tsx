@@ -125,6 +125,24 @@ function FormatOption({ format, selected, onSelect }: FormatOptionProps) {
         </svg>
       ),
     },
+    xlsx: {
+      label: "Excel (.xlsx)",
+      description: "Microsoft Excel spreadsheet with formatting and multiple sheet support",
+      icon: (
+        <svg
+          className="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <path d="M8 13l3 3 3-3" />
+          <path d="M8 17l3-3 3 3" />
+        </svg>
+      ),
+    },
   };
 
   const { label, description, icon } = formatInfo[format];
@@ -474,9 +492,10 @@ export function ExportDialog({
           <label className="block text-sm font-medium text-[var(--color-foreground)] mb-2">
             Export Format
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <FormatOption format="csv" selected={format === "csv"} onSelect={setFormat} />
             <FormatOption format="json" selected={format === "json"} onSelect={setFormat} />
+            <FormatOption format="xlsx" selected={format === "xlsx"} onSelect={setFormat} />
           </div>
         </div>
 
