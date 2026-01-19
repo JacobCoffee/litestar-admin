@@ -293,6 +293,7 @@ class ModelsController(Controller):
         model_name: str,
         admin_registry: ModelRegistry,
         db_session: AsyncSession,
+        mode: str = "create",
     ) -> dict[str, Any]:
         """Get the JSON schema for a model.
 
@@ -303,6 +304,7 @@ class ModelsController(Controller):
             model_name: The name of the registered model.
             admin_registry: The model registry.
             db_session: The database session.
+            mode: Form mode - "create" or "edit" (default: "create").
 
         Returns:
             JSON schema dictionary.
@@ -316,7 +318,8 @@ class ModelsController(Controller):
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
         service: AdminService[Any] = AdminService(view_class, db_session)
-        return service.get_model_schema()
+        is_create = mode.lower() == "create"
+        return service.get_model_schema(is_create=is_create)
 
     @get(
         "/{model_name:str}/{record_id:str}",
