@@ -48,6 +48,11 @@ export {
   usePrefetchRecord,
   useInvalidateModel,
 
+  // Relationship picker hooks
+  useRelationshipSearch,
+  useRelationshipOptions,
+  usePrefetchRelationshipSearch,
+
   // Re-exports from api
   api,
   apiClient,

@@ -1,0 +1,604 @@
+"use client";
+
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useId,
+  type KeyboardEvent,
+  type ChangeEvent,
+} from "react";
+import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { Spinner } from "@/components/ui/Loading";
+import type { RelationshipOption, RelationshipSearchResponse } from "@/types";
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface MultiRelationshipPickerProps {
+  /** The source model name */
+  modelName: string;
+  /** The relationship field name */
+  fieldName: string;
+  /** Current selected values (array of primary keys) */
+  value: (string | number)[];
+  /** Callback when values change */
+  onChange: (value: (string | number)[]) => void;
+  /** Placeholder text for the input */
+  placeholder?: string;
+  /** Whether the picker is disabled */
+  disabled?: boolean;
+  /** Minimum characters before search triggers */
+  minChars?: number;
+  /** Debounce delay in milliseconds */
+  debounceMs?: number;
+  /** Maximum number of search results to show */
+  maxResults?: number;
+  /** Maximum number of items that can be selected (0 = unlimited) */
+  maxItems?: number;
+  /** Whether the field has an error */
+  error?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+// ============================================================================
+// Icons
+// ============================================================================
+
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
+  );
+}
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+// ============================================================================
+// Hooks
+// ============================================================================
+
+function useRelationshipSearch(
+  modelName: string,
+  fieldName: string,
+  searchTerm: string,
+  enabled: boolean,
+  limit: number,
+) {
+  return useQuery<RelationshipSearchResponse>({
+    queryKey: ["relationship-search", modelName, fieldName, searchTerm, limit],
+    queryFn: () =>
+      api.searchRelationship(modelName, fieldName, {
+        q: searchTerm,
+        limit,
+      }),
+    enabled: enabled && !!modelName && !!fieldName,
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+}
+
+function useRelationshipOptions(
+  modelName: string,
+  fieldName: string,
+  ids: (string | number)[],
+  enabled: boolean,
+) {
+  return useQuery<RelationshipSearchResponse>({
+    queryKey: ["relationship-options", modelName, fieldName, ids],
+    queryFn: () => api.getRelationshipOptions(modelName, fieldName, ids),
+    enabled: enabled && ids.length > 0 && !!modelName && !!fieldName,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// ============================================================================
+// Chip Component
+// ============================================================================
+
+interface ChipProps {
+  label: string;
+  onRemove: () => void;
+  disabled?: boolean;
+}
+
+function Chip({ label, onRemove, disabled }: ChipProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1",
+        "h-6 px-2 pr-1",
+        "rounded-[var(--radius-sm)]",
+        "bg-[var(--color-primary)]/10",
+        "border border-[var(--color-primary)]/20",
+        "text-xs text-[var(--color-foreground)]",
+        "max-w-[200px]",
+      )}
+    >
+      <span className="truncate">{label}</span>
+      {!disabled && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className={cn(
+            "shrink-0 p-0.5 rounded-[var(--radius-sm)]",
+            "text-[var(--color-muted)]",
+            "hover:text-[var(--color-foreground)]",
+            "hover:bg-[var(--color-primary)]/20",
+            "transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2",
+            "focus-visible:ring-[var(--color-accent)]",
+          )}
+          aria-label={`Remove ${label}`}
+        >
+          <XIcon className="h-3 w-3" />
+        </button>
+      )}
+    </span>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+/**
+ * Multi-select autocomplete component for many-to-many relationship fields.
+ *
+ * Features:
+ * - Chip/tag display for selected items
+ * - Individual item removal
+ * - Debounced search
+ * - Keyboard navigation
+ * - Maximum selection limit
+ * - Dark theme styling
+ *
+ * @example
+ * ```tsx
+ * <MultiRelationshipPicker
+ *   modelName="Post"
+ *   fieldName="tags"
+ *   value={selectedTagIds}
+ *   onChange={(ids) => setSelectedTagIds(ids)}
+ *   placeholder="Add tags..."
+ *   maxItems={10}
+ * />
+ * ```
+ */
+export function MultiRelationshipPicker({
+  modelName,
+  fieldName,
+  value,
+  onChange,
+  placeholder = "Search to add...",
+  disabled = false,
+  minChars = 1,
+  debounceMs = 300,
+  maxResults = 20,
+  maxItems = 0,
+  error = false,
+  className,
+}: MultiRelationshipPickerProps) {
+  const inputId = useId();
+  const listboxId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Local state
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [selectedOptions, setSelectedOptions] = useState<RelationshipOption[]>([]);
+
+  // Debounced search term
+  const debouncedSearch = useDebounce(inputValue, debounceMs);
+  const shouldSearch = debouncedSearch.length >= minChars;
+
+  // Check if max items reached
+  const isMaxReached = maxItems > 0 && value.length >= maxItems;
+
+  // Fetch search results
+  const {
+    data: searchData,
+    isLoading: isSearching,
+    isError: searchError,
+  } = useRelationshipSearch(
+    modelName,
+    fieldName,
+    debouncedSearch,
+    shouldSearch && isOpen && !isMaxReached,
+    maxResults,
+  );
+
+  // Fetch initial values if we have them but no selected options
+  const needsInitialFetch = value.length > 0 && selectedOptions.length === 0;
+  const {
+    data: initialData,
+  } = useRelationshipOptions(modelName, fieldName, value, needsInitialFetch);
+
+  // Set initial selected options when data loads
+  useEffect(() => {
+    if (initialData?.items && initialData.items.length > 0 && selectedOptions.length === 0 && value.length > 0) {
+      const optionsMap = new Map(initialData.items.map((item) => [String(item.id), item]));
+      const orderedOptions = value
+        .map((id) => optionsMap.get(String(id)))
+        .filter((opt): opt is RelationshipOption => opt !== undefined);
+      setSelectedOptions(orderedOptions);
+    }
+  }, [initialData, selectedOptions.length, value]);
+
+  // Sync selected options when value changes externally
+  useEffect(() => {
+    if (value.length === 0 && selectedOptions.length > 0) {
+      setSelectedOptions([]);
+    }
+  }, [value, selectedOptions.length]);
+
+  // Filter out already selected options from search results
+  const selectedIds = new Set(value.map(String));
+  const availableOptions = (searchData?.items ?? []).filter(
+    (option) => !selectedIds.has(String(option.id)),
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setInputValue("");
+        setHighlightedIndex(-1);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  // Reset highlight when options change
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [availableOptions.length]);
+
+  // Handle input change
+  const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    setIsOpen(true);
+    setHighlightedIndex(-1);
+  }, []);
+
+  // Handle option selection
+  const handleSelect = useCallback(
+    (option: RelationshipOption) => {
+      if (isMaxReached) return;
+
+      const newValue = [...value, option.id];
+      const newOptions = [...selectedOptions, option];
+      setSelectedOptions(newOptions);
+      onChange(newValue);
+      setInputValue("");
+      setHighlightedIndex(-1);
+      inputRef.current?.focus();
+    },
+    [value, selectedOptions, onChange, isMaxReached],
+  );
+
+  // Handle item removal
+  const handleRemove = useCallback(
+    (idToRemove: string | number) => {
+      const newValue = value.filter((id) => String(id) !== String(idToRemove));
+      const newOptions = selectedOptions.filter((opt) => String(opt.id) !== String(idToRemove));
+      setSelectedOptions(newOptions);
+      onChange(newValue);
+    },
+    [value, selectedOptions, onChange],
+  );
+
+  // Handle clear all
+  const handleClearAll = useCallback(() => {
+    setSelectedOptions([]);
+    onChange([]);
+    setInputValue("");
+    inputRef.current?.focus();
+  }, [onChange]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      // Handle backspace to remove last item
+      if (e.key === "Backspace" && inputValue === "" && selectedOptions.length > 0) {
+        const lastOption = selectedOptions[selectedOptions.length - 1];
+        if (lastOption) {
+          handleRemove(lastOption.id);
+        }
+        return;
+      }
+
+      if (!isOpen) {
+        if (e.key === "ArrowDown" || e.key === "Enter") {
+          setIsOpen(true);
+          return;
+        }
+        return;
+      }
+
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setHighlightedIndex((prev) => (prev < availableOptions.length - 1 ? prev + 1 : prev));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (highlightedIndex >= 0 && highlightedIndex < availableOptions.length) {
+            const option = availableOptions[highlightedIndex];
+            if (option) {
+              handleSelect(option);
+            }
+          }
+          break;
+        case "Escape":
+          e.preventDefault();
+          setIsOpen(false);
+          setInputValue("");
+          setHighlightedIndex(-1);
+          break;
+        case "Tab":
+          setIsOpen(false);
+          setInputValue("");
+          setHighlightedIndex(-1);
+          break;
+      }
+    },
+    [isOpen, inputValue, highlightedIndex, availableOptions, selectedOptions, handleSelect, handleRemove],
+  );
+
+  // Handle input focus
+  const handleFocus = useCallback(() => {
+    if (!disabled && !isMaxReached) {
+      setIsOpen(true);
+    }
+  }, [disabled, isMaxReached]);
+
+  // Handle container click
+  const handleContainerClick = useCallback(() => {
+    if (!disabled && !isMaxReached) {
+      inputRef.current?.focus();
+    }
+  }, [disabled, isMaxReached]);
+
+  return (
+    <div ref={containerRef} className={cn("relative", className)}>
+      {/* Input container */}
+      <div
+        onClick={handleContainerClick}
+        className={cn(
+          "relative flex flex-wrap items-center gap-1.5",
+          "w-full min-h-[40px] px-2 py-1.5",
+          "rounded-[var(--radius-md)]",
+          "bg-[var(--color-card)] text-[var(--color-foreground)]",
+          "border border-[var(--color-border)]",
+          "transition-colors duration-150",
+          "hover:border-[var(--color-muted)]",
+          "focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]",
+          error && "border-[var(--color-error)] focus-within:border-[var(--color-error)] focus-within:ring-[var(--color-error)]",
+          disabled && "cursor-not-allowed opacity-50 bg-[var(--color-card-hover)]",
+        )}
+      >
+        {/* Selected chips */}
+        {selectedOptions.map((option) => (
+          <Chip
+            key={option.id}
+            label={option.label}
+            onRemove={() => handleRemove(option.id)}
+            disabled={disabled}
+          />
+        ))}
+
+        {/* Input wrapper */}
+        <div className="flex items-center flex-1 min-w-[120px]">
+          <SearchIcon className="h-4 w-4 shrink-0 text-[var(--color-muted)] mr-1.5" />
+          <input
+            ref={inputRef}
+            id={inputId}
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
+            disabled={disabled || isMaxReached}
+            placeholder={isMaxReached ? `Max ${maxItems} items` : placeholder}
+            autoComplete="off"
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-controls={listboxId}
+            aria-activedescendant={highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
+            className={cn(
+              "flex-1 min-w-0 bg-transparent",
+              "text-sm text-[var(--color-foreground)]",
+              "placeholder:text-[var(--color-muted)]",
+              "focus:outline-none",
+              "disabled:cursor-not-allowed",
+            )}
+          />
+
+          {/* Loading indicator */}
+          {isSearching && (
+            <Spinner size="sm" className="shrink-0 ml-1" />
+          )}
+
+          {/* Clear all button */}
+          {selectedOptions.length > 1 && !disabled && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClearAll();
+              }}
+              className={cn(
+                "shrink-0 p-1 ml-1 rounded-[var(--radius-sm)]",
+                "text-[var(--color-muted)]",
+                "hover:text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:ring-2",
+                "focus-visible:ring-[var(--color-accent)]",
+              )}
+              aria-label="Clear all selections"
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Dropdown */}
+      {isOpen && !isMaxReached && (
+        <div
+          id={listboxId}
+          role="listbox"
+          aria-multiselectable="true"
+          className={cn(
+            "absolute z-50 w-full mt-1",
+            "max-h-[240px] overflow-auto",
+            "rounded-[var(--radius-md)]",
+            "border border-[var(--color-border)]",
+            "bg-[var(--color-card)]",
+            "shadow-lg shadow-black/20",
+            "py-1",
+          )}
+        >
+          {/* Loading state */}
+          {isSearching && (
+            <div className="flex items-center justify-center py-4">
+              <Spinner size="sm" />
+              <span className="ml-2 text-sm text-[var(--color-muted)]">Searching...</span>
+            </div>
+          )}
+
+          {/* Error state */}
+          {searchError && !isSearching && (
+            <div className="px-3 py-2 text-sm text-[var(--color-error)]">
+              Failed to load options. Please try again.
+            </div>
+          )}
+
+          {/* No results */}
+          {!isSearching && !searchError && availableOptions.length === 0 && shouldSearch && (
+            <div className="px-3 py-2 text-sm text-[var(--color-muted)]">
+              No results found
+            </div>
+          )}
+
+          {/* Prompt to type more */}
+          {!isSearching && !searchError && !shouldSearch && inputValue.length > 0 && (
+            <div className="px-3 py-2 text-sm text-[var(--color-muted)]">
+              Type at least {minChars} character{minChars > 1 ? "s" : ""} to search
+            </div>
+          )}
+
+          {/* Initial prompt */}
+          {!isSearching && !searchError && !shouldSearch && inputValue.length === 0 && availableOptions.length === 0 && (
+            <div className="px-3 py-2 text-sm text-[var(--color-muted)]">
+              Start typing to search...
+            </div>
+          )}
+
+          {/* Options */}
+          {!isSearching && !searchError && availableOptions.map((option, index) => {
+            const isHighlighted = index === highlightedIndex;
+
+            return (
+              <button
+                key={option.id}
+                id={`${listboxId}-option-${index}`}
+                type="button"
+                role="option"
+                aria-selected={false}
+                onClick={() => handleSelect(option)}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                className={cn(
+                  "w-full px-3 py-2",
+                  "flex items-center gap-2",
+                  "text-sm text-left",
+                  "transition-colors duration-150",
+                  isHighlighted && "bg-[var(--color-card-hover)]",
+                  "focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]",
+                )}
+              >
+                <span className="truncate">{option.label}</span>
+              </button>
+            );
+          })}
+
+          {/* Has more indicator */}
+          {!isSearching && !searchError && searchData?.has_more && (
+            <div className="px-3 py-2 text-xs text-[var(--color-muted)] text-center border-t border-[var(--color-border)]">
+              Type to refine results...
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+MultiRelationshipPicker.displayName = "MultiRelationshipPicker";
+
+export default MultiRelationshipPicker;

@@ -45,6 +45,8 @@ import type {
   PageContent,
   PageInfo,
   PaginatedResponse,
+  RelationshipSearchParams,
+  RelationshipSearchResponse,
   UserCreateRequest,
   UserListParams,
   UserListResponse,
@@ -139,6 +141,18 @@ export const queryKeys = {
     all: ["users"] as const,
     list: (params?: UserListParams) => [...queryKeys.users.all, "list", params] as const,
     detail: (userId: string) => [...queryKeys.users.all, "detail", userId] as const,
+  },
+
+  // Relationships (for FK autocomplete)
+  relationships: {
+    all: ["relationships"] as const,
+    model: (model: string) => [...queryKeys.relationships.all, model] as const,
+    field: (model: string, field: string) =>
+      [...queryKeys.relationships.model(model), field] as const,
+    search: (model: string, field: string, query: string, limit?: number) =>
+      [...queryKeys.relationships.field(model, field), "search", query, limit] as const,
+    options: (model: string, field: string, ids: (string | number)[]) =>
+      [...queryKeys.relationships.field(model, field), "options", ids] as const,
   },
 } as const;
 
@@ -1167,6 +1181,91 @@ export function useDeactivateUser(options?: MutationOptions<ActivateDeactivateRe
     },
     ...options,
   });
+}
+
+// ============================================================================
+// Relationship Picker Hooks
+// ============================================================================
+
+/**
+ * Hook to search related records for a relationship field.
+ * Used for autocomplete in FK/relationship picker components.
+ *
+ * @example
+ * ```tsx
+ * const { data, isLoading } = useRelationshipSearch('Post', 'author_id', 'john', {
+ *   limit: 20,
+ * });
+ * ```
+ */
+export function useRelationshipSearch(
+  model: string,
+  field: string,
+  query: string,
+  params: RelationshipSearchParams = {},
+  options?: QueryOptions<RelationshipSearchResponse>,
+) {
+  const { limit = 20 } = params;
+
+  return useQuery({
+    queryKey: queryKeys.relationships.search(model, field, query, limit),
+    queryFn: () => api.searchRelationship(model, field, { q: query, limit }),
+    enabled: !!model && !!field && query.length > 0,
+    staleTime: 30 * 1000, // Cache results for 30 seconds
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    ...options,
+  });
+}
+
+/**
+ * Hook to get specific related records by their IDs.
+ * Used to resolve existing FK values for display in forms.
+ *
+ * @example
+ * ```tsx
+ * const { data } = useRelationshipOptions('Post', 'author_id', [1, 2, 3]);
+ * ```
+ */
+export function useRelationshipOptions(
+  model: string,
+  field: string,
+  ids: (string | number)[],
+  options?: QueryOptions<RelationshipSearchResponse>,
+) {
+  return useQuery({
+    queryKey: queryKeys.relationships.options(model, field, ids),
+    queryFn: () => api.getRelationshipOptions(model, field, ids),
+    enabled: !!model && !!field && ids.length > 0,
+    staleTime: 5 * 60 * 1000, // Options are more stable
+    gcTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to prefetch relationship options.
+ * Useful for pre-loading autocomplete results on focus.
+ *
+ * @example
+ * ```tsx
+ * const prefetch = usePrefetchRelationshipSearch();
+ *
+ * <RelationshipPicker
+ *   onFocus={() => prefetch('Post', 'author_id', '')}
+ *   ...
+ * />
+ * ```
+ */
+export function usePrefetchRelationshipSearch() {
+  const queryClient = useQueryClient();
+
+  return (model: string, field: string, query: string, limit = 20) => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.relationships.search(model, field, query, limit),
+      queryFn: () => api.searchRelationship(model, field, { q: query, limit }),
+      staleTime: 30 * 1000,
+    });
+  };
 }
 
 // ============================================================================
