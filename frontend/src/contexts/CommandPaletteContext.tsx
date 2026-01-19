@@ -307,17 +307,16 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
     items.push({
       id: "action-search",
       label: "Search Records",
-      description: "Search across all models",
+      description: "Search across all models (coming soon)",
       category: "Quick Actions",
       icon: <SearchIcon className="h-4 w-4" />,
       shortcut: formatShortcutDisplay("/", []),
       onSelect: () => {
-        // Focus the main search input if available
-        const searchInput = document.querySelector<HTMLInputElement>(
-          '[data-search-input="global"]',
-        );
-        if (searchInput) {
-          searchInput.focus();
+        // Global search is not yet implemented
+        // For now, navigate to the first model's list page
+        const firstModel = models[0];
+        if (firstModel) {
+          router.push(`/models/${firstModel.model_name}`);
         }
       },
     });

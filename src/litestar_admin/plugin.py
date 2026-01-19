@@ -123,10 +123,19 @@ class AdminPlugin(InitPluginProtocol):
         """Get plugin dependencies for injection."""
         from litestar.di import Provide
 
-        return {
+        deps: dict[str, Provide] = {
             "admin_config": Provide(lambda: self._config, sync_to_thread=False),
             "admin_registry": Provide(lambda: self._registry, sync_to_thread=False),
         }
+
+        # Add storage backend dependency if configured
+        if self._config.storage is not None:
+            from litestar_admin.contrib.storages import AdminStorageBackend
+
+            storage_backend = AdminStorageBackend(self._config.storage)
+            deps["admin_storage"] = Provide(lambda: storage_backend, sync_to_thread=False)
+
+        return deps
 
     def _get_api_router(self) -> Router:
         """Get admin API router with all controllers.
@@ -223,6 +232,7 @@ class AdminPlugin(InitPluginProtocol):
         pages_html_path = static_path / "pages" / "index.html"
         custom_html_path = static_path / "custom" / "index.html"
         embeds_html_path = static_path / "embeds" / "index.html"
+        users_html_path = static_path / "users" / "index.html"
 
         # Create static router for actual static files (_next/*, login/, etc.)
         static_router = create_static_files_router(
@@ -336,6 +346,26 @@ class AdminPlugin(InitPluginProtocol):
                 )
             return Response(content=b"Not Found", status_code=404)
 
+        @get(
+            path=[
+                f"{self._config.base_url}/users/",
+                f"{self._config.base_url}/users/{{path:path}}",
+            ],
+            name="admin_spa_users_fallback",
+            include_in_schema=False,
+        )
+        async def spa_users_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+            """Serve users/index.html for SPA client-side routing."""
+            html_path = users_html_path if users_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
+
         app_config.route_handlers = [
             *list(app_config.route_handlers or []),
             static_router,
@@ -344,6 +374,7 @@ class AdminPlugin(InitPluginProtocol):
             spa_pages_fallback,
             spa_custom_fallback,
             spa_embeds_fallback,
+            spa_users_fallback,
         ]
 
     async def _startup(self, app: Litestar) -> None:
