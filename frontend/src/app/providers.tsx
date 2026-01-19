@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LayoutProvider } from "@/contexts/LayoutContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
+import { AdminSettingsProvider } from "@/contexts/AdminSettingsContext";
 import { ToastProvider } from "@/components/ui/Toast";
 
 const ACCENT_COLOR_KEY = "admin_accent_color";
@@ -183,9 +184,11 @@ export function Providers({ children }: ProvidersProps) {
           <AuthProvider>
             <LayoutProvider>
               <ToastProvider defaultDuration={5000} maxToasts={5}>
-                <CommandPaletteProvider>
-                  {children}
-                </CommandPaletteProvider>
+                <AdminSettingsProvider>
+                  <CommandPaletteProvider>
+                    {children}
+                  </CommandPaletteProvider>
+                </AdminSettingsProvider>
               </ToastProvider>
             </LayoutProvider>
           </AuthProvider>

@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/Loading";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
 import { useCustomViewItems, useCustomViewSchema, useDeleteCustomViewItem } from "@/hooks/useApi";
+import { useAdminSettings } from "@/contexts/AdminSettingsContext";
 import { cn, toTitleCase, formatDate } from "@/lib/utils";
 import type { ModelSchema, SchemaProperty, ListQueryParams, ColumnDefinition } from "@/types";
 
@@ -556,6 +557,7 @@ function CustomViewListContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToast } = useToast();
+  const { settings } = useAdminSettings();
 
   const [deleteModalState, setDeleteModalState] = useState<{
     isOpen: boolean;
@@ -845,6 +847,8 @@ function CustomViewListContent({
               emptyMessage={`No ${displayName.toLowerCase()} items found`}
               showColumnToggle
               striped
+              showKeyboardHints={settings.showKeyboardHints}
+              enableKeyboardNavigation={settings.enableKeyboardNavigation}
             />
           )}
         </Card>

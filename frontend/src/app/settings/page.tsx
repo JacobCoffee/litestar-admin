@@ -7,6 +7,7 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useTheme, type Theme } from "@/contexts/ThemeContext";
+import { useAdminSettings } from "@/contexts/AdminSettingsContext";
 import { cn } from "@/lib/utils";
 
 const ACCENT_COLOR_KEY = "admin_accent_color";
@@ -140,6 +141,47 @@ const CheckIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const TableIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <line x1="3" y1="9" x2="21" y2="9" />
+    <line x1="3" y1="15" x2="21" y2="15" />
+    <line x1="9" y1="3" x2="9" y2="21" />
+    <line x1="15" y1="3" x2="15" y2="21" />
+  </svg>
+);
+
+const KeyboardIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+    <line x1="6" y1="8" x2="6" y2="8" />
+    <line x1="10" y1="8" x2="10" y2="8" />
+    <line x1="14" y1="8" x2="14" y2="8" />
+    <line x1="18" y1="8" x2="18" y2="8" />
+    <line x1="6" y1="12" x2="6" y2="12" />
+    <line x1="10" y1="12" x2="10" y2="12" />
+    <line x1="14" y1="12" x2="14" y2="12" />
+    <line x1="18" y1="12" x2="18" y2="12" />
+    <line x1="7" y1="16" x2="17" y2="16" />
+  </svg>
+);
+
 function getThemeIcon(theme: Theme, className?: string) {
   const iconClass = className ?? "";
   switch (theme) {
@@ -154,6 +196,7 @@ function getThemeIcon(theme: Theme, className?: string) {
 
 export default function SettingsPage() {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const { settings, updateSetting, resetSettings: resetAdminSettings } = useAdminSettings();
   const [accentColor, setAccentColorState] = useState<string>(DEFAULT_ACCENT_COLOR);
   const [mounted, setMounted] = useState(false);
 
@@ -202,13 +245,15 @@ export default function SettingsPage() {
     setTheme("dark");
     // Setting to default color will update the styles via useMemo
     setAccentColor(DEFAULT_ACCENT_COLOR);
+    // Reset admin settings (table settings, etc.)
+    resetAdminSettings();
     // Also remove from localStorage so the app uses CSS defaults
     try {
       localStorage.removeItem(ACCENT_COLOR_KEY);
     } catch {
       // localStorage not available
     }
-  }, [setTheme, setAccentColor]);
+  }, [setTheme, setAccentColor, resetAdminSettings]);
 
   if (!mounted) {
     return null; // Avoid hydration mismatch
@@ -362,6 +407,104 @@ export default function SettingsPage() {
                   >
                     Accent Link
                   </a>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Table Settings */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <TableIcon className="h-5 w-5 text-[var(--color-accent)]" />
+                <div>
+                  <h2 className="text-base font-semibold text-[var(--color-foreground)]">
+                    Table Settings
+                  </h2>
+                  <p className="text-sm text-[var(--color-muted)]">
+                    Configure data table behavior and accessibility
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <div className="space-y-4">
+                {/* Keyboard Navigation Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <KeyboardIcon className="h-5 w-5 text-[var(--color-muted)]" />
+                    <div>
+                      <h3 className="text-sm font-medium text-[var(--color-foreground)]">
+                        Keyboard Navigation
+                      </h3>
+                      <p className="text-sm text-[var(--color-muted)]">
+                        Navigate tables with arrow keys, Home/End, and Page Up/Down
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={settings.enableKeyboardNavigation}
+                    onClick={() => updateSetting("enableKeyboardNavigation", !settings.enableKeyboardNavigation)}
+                    className={cn(
+                      "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent",
+                      "transition-colors duration-200 ease-in-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
+                      settings.enableKeyboardNavigation
+                        ? "bg-[var(--color-accent)]"
+                        : "bg-[var(--color-border)]",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0",
+                        "transition duration-200 ease-in-out",
+                        settings.enableKeyboardNavigation ? "translate-x-5" : "translate-x-0",
+                      )}
+                    />
+                  </button>
+                </div>
+
+                {/* Keyboard Hints Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-5 w-5 flex items-center justify-center text-[var(--color-muted)]">
+                      <kbd className="text-xs font-mono px-1 py-0.5 bg-[var(--color-card)] border border-[var(--color-border)] rounded">?</kbd>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-[var(--color-foreground)]">
+                        Show Keyboard Hints
+                      </h3>
+                      <p className="text-sm text-[var(--color-muted)]">
+                        Display keyboard shortcut hints at the bottom of tables
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={settings.showKeyboardHints}
+                    onClick={() => updateSetting("showKeyboardHints", !settings.showKeyboardHints)}
+                    disabled={!settings.enableKeyboardNavigation}
+                    className={cn(
+                      "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent",
+                      "transition-colors duration-200 ease-in-out",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
+                      "disabled:opacity-50 disabled:cursor-not-allowed",
+                      settings.showKeyboardHints && settings.enableKeyboardNavigation
+                        ? "bg-[var(--color-accent)]"
+                        : "bg-[var(--color-border)]",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0",
+                        "transition duration-200 ease-in-out",
+                        settings.showKeyboardHints && settings.enableKeyboardNavigation ? "translate-x-5" : "translate-x-0",
+                      )}
+                    />
+                  </button>
                 </div>
               </div>
             </CardBody>

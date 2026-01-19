@@ -26,6 +26,7 @@ import {
   useExportRecords,
   useExportSelected,
 } from "@/hooks/useApi";
+import { useAdminSettings } from "@/contexts/AdminSettingsContext";
 import { cn, toTitleCase, formatDate } from "@/lib/utils";
 import type {
   ModelRecord,
@@ -698,6 +699,7 @@ function ModelListContent({ model }: ModelListPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToast } = useToast();
+  const { settings } = useAdminSettings();
 
   const [deleteModalState, setDeleteModalState] = useState<{
     isOpen: boolean;
@@ -1068,6 +1070,8 @@ function ModelListContent({ model }: ModelListPageProps) {
               showColumnToggle
               striped
               searchTerm={filterState.search}
+              showKeyboardHints={settings.showKeyboardHints}
+              enableKeyboardNavigation={settings.enableKeyboardNavigation}
             />
           )}
         </Card>

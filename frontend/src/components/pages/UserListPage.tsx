@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useUsers, useDeleteUser, useActivateUser, useDeactivateUser } from "@/hooks/useApi";
 import { DataTable, type Column } from "@/components/data/DataTable";
 import { SearchFilter, type FilterState } from "@/components/data/SearchFilter";
+import { useAdminSettings } from "@/contexts/AdminSettingsContext";
 import { Button } from "@/components/ui/Button";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/Modal";
 import { UserStatusBadge, RoleBadge } from "@/components/users/UserStatusBadge";
@@ -348,6 +349,9 @@ const filterColumns = [
 // ============================================================================
 
 export function UserListPage() {
+  // Admin settings
+  const { settings } = useAdminSettings();
+
   // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
@@ -590,6 +594,8 @@ export function UserListPage() {
         isLoading={isLoading}
         emptyMessage="No users found"
         className="rounded-[var(--radius-lg)] border border-[var(--color-border)]"
+        showKeyboardHints={settings.showKeyboardHints}
+        enableKeyboardNavigation={settings.enableKeyboardNavigation}
       />
 
       {/* Pagination */}
