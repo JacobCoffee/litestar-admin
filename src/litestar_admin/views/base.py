@@ -42,6 +42,7 @@ class BaseModelView:
         from litestar_admin import BaseModelView
         from myapp.models import User
 
+
         class UserAdmin(BaseModelView):
             model = User
             column_list = ["id", "email", "name", "created_at"]

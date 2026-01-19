@@ -20,10 +20,8 @@ import type { ApiError, ModelRecord, ModelSchema } from '@/types';
 // Types
 // ============================================================================
 
-interface CreateRecordPageProps {
-  params: {
-    model: string;
-  };
+export interface CreateRecordPageProps {
+  model: string;
 }
 
 interface ServerValidationErrors {
@@ -80,23 +78,14 @@ const ArrowLeftIcon = ({ className }: { className?: string }) => (
 // Helper Functions
 // ============================================================================
 
-/**
- * Formats a model identifier to a display-friendly name.
- * Converts snake_case and kebab-case to Title Case.
- */
 function formatModelName(model: string): string {
   return toTitleCase(model.replace(/[-_]/g, ' '));
 }
 
-/**
- * Extracts default values from a model schema.
- * Returns an object with field names as keys and their defaults as values.
- */
 function extractSchemaDefaults(schema: ModelSchema): Record<string, unknown> {
   const defaults: Record<string, unknown> = {};
 
   for (const [name, property] of Object.entries(schema.properties)) {
-    // Skip read-only fields for create mode
     if (property.readOnly) continue;
 
     if (property.default !== undefined) {
@@ -108,24 +97,18 @@ function extractSchemaDefaults(schema: ModelSchema): Record<string, unknown> {
     } else if (property.type === 'object') {
       defaults[name] = {};
     }
-    // Leave other types undefined to let the form handle them
   }
 
   return defaults;
 }
 
-/**
- * Parses API error response into field-level validation errors.
- */
 function parseValidationErrors(error: ApiError): ServerValidationErrors {
   const errors: ServerValidationErrors = {};
 
-  // Check for validation error response with field-level errors
   const response = error.response;
   if (response?.extra) {
     const extra = response.extra as Record<string, unknown>;
 
-    // Handle Litestar validation format
     const extraErrors = extra['errors'];
     if (Array.isArray(extraErrors)) {
       for (const fieldError of extraErrors) {
@@ -140,7 +123,6 @@ function parseValidationErrors(error: ApiError): ServerValidationErrors {
       }
     }
 
-    // Handle key-value format
     const extraFields = extra['fields'];
     if (typeof extraFields === 'object' && extraFields !== null) {
       const fields = extraFields as Record<string, string>;
@@ -256,37 +238,22 @@ function Alert({ variant, title, message, onDismiss }: AlertProps) {
 }
 
 // ============================================================================
-// Main Page Component
+// Main Component
 // ============================================================================
 
-/**
- * Create Record Page - Provides a form for creating new records.
- *
- * Features:
- * - Schema-driven form generation
- * - Default values from schema
- * - Server-side validation error display
- * - Redirect to detail page on success
- * - Loading and error states
- */
-export default function CreateRecordPage({ params }: CreateRecordPageProps) {
+export function CreateRecordPage({ model }: CreateRecordPageProps) {
   return (
     <ProtectedRoute>
-      <CreateRecordContent model={params.model} />
+      <CreateRecordContent model={model} />
     </ProtectedRoute>
   );
 }
 
-interface CreateRecordContentProps {
-  model: string;
-}
-
-function CreateRecordContent({ model }: CreateRecordContentProps) {
+function CreateRecordContent({ model }: CreateRecordPageProps) {
   const router = useRouter();
   const [serverErrors, setServerErrors] = useState<ServerValidationErrors>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  // Fetch model schema
   const {
     data: schema,
     isLoading: isLoadingSchema,
@@ -294,30 +261,24 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
     refetch: refetchSchema,
   } = useModelSchema(model);
 
-  // Create record mutation
   const createRecord = useCreateRecord<ModelRecord>(model, {
     onSuccess: (newRecord) => {
-      // Extract the ID from the created record
       const recordId = newRecord['id'] ?? newRecord['_id'] ?? newRecord['pk'];
 
       if (recordId !== undefined && recordId !== null) {
-        // Redirect to detail page
         router.push(`/models/${model}/${recordId}`);
       } else {
-        // Fallback to list page if no ID available
         router.push(`/models/${model}`);
       }
     },
     onError: (error) => {
       if (isApiError(error)) {
-        // Parse field-level validation errors
         const fieldErrors = parseValidationErrors(error);
 
         if (Object.keys(fieldErrors).length > 0) {
           setServerErrors(fieldErrors);
           setGeneralError('Please correct the errors below and try again.');
         } else {
-          // Show general error message
           setGeneralError(
             error.detail ?? error.message ?? 'Failed to create record. Please try again.'
           );
@@ -328,16 +289,13 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
     },
   });
 
-  // Format model name for display
   const modelDisplayName = useMemo(() => formatModelName(model), [model]);
 
-  // Extract default values from schema
   const initialValues = useMemo(() => {
     if (!schema) return {};
     return extractSchemaDefaults(schema);
   }, [schema]);
 
-  // Breadcrumb items
   const breadcrumbs: BreadcrumbItem[] = useMemo(() => [
     { label: 'Dashboard', href: '/' },
     { label: 'Models', href: '/models' },
@@ -345,30 +303,23 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
     { label: 'New' },
   ], [model, modelDisplayName]);
 
-  // Handle form submission
   const handleSubmit = useCallback(
     async (values: Record<string, unknown>) => {
-      // Clear previous errors
       setServerErrors({});
       setGeneralError(null);
-
-      // Submit the record
       await createRecord.mutateAsync(values);
     },
     [createRecord]
   );
 
-  // Handle cancel - navigate back to model list
   const handleCancel = useCallback(() => {
     router.push(`/models/${model}`);
   }, [router, model]);
 
-  // Handle error dismissal
   const handleDismissError = useCallback(() => {
     setGeneralError(null);
   }, []);
 
-  // Loading state
   if (isLoadingSchema) {
     return (
       <MainLayout>
@@ -387,7 +338,6 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
     );
   }
 
-  // Error state - schema failed to load
   if (schemaError || !schema) {
     const errorMessage = isApiError(schemaError)
       ? schemaError.detail ?? schemaError.message
@@ -426,7 +376,6 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Page Header */}
         <PageHeader
           title={`Create ${modelDisplayName}`}
           subtitle={`Add a new ${modelDisplayName.toLowerCase()} record`}
@@ -443,7 +392,6 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
           }
         />
 
-        {/* General Error Alert */}
         {generalError && (
           <Alert
             variant="error"
@@ -453,7 +401,6 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
           />
         )}
 
-        {/* Form Card */}
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -492,3 +439,5 @@ function CreateRecordContent({ model }: CreateRecordContentProps) {
     </MainLayout>
   );
 }
+
+export default CreateRecordPage;

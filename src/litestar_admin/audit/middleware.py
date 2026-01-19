@@ -10,14 +10,8 @@ Example:
 
         logger = InMemoryAuditLogger()
         app = Litestar(
-            plugins=[
-                AdminPlugin(
-                    config=AdminConfig(
-                        extra={"audit_logger": logger}
-                    )
-                )
-            ],
-            middleware=[AuditMiddleware(logger)]
+            plugins=[AdminPlugin(config=AdminConfig(extra={"audit_logger": logger}))],
+            middleware=[AuditMiddleware(logger)],
         )
 """
 

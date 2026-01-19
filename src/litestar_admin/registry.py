@@ -23,8 +23,10 @@ class ModelRegistry:
 
         registry = ModelRegistry()
 
+
         class UserAdmin(ModelView, model=User):
             column_list = ["id", "email"]
+
 
         registry.register(UserAdmin)
         view = registry.get_view(User)

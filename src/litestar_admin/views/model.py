@@ -20,6 +20,7 @@ class ModelView(BaseModelView):
         from litestar_admin import ModelView
         from myapp.models import User
 
+
         class UserAdmin(ModelView, model=User):
             column_list = ["id", "email", "name"]
             column_searchable_list = ["email", "name"]

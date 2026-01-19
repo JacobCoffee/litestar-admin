@@ -298,8 +298,7 @@ class InMemoryAuditLogger:
 
         if filters.actor_email is not None:
             results = [
-                e for e in results
-                if e.actor_email is not None and filters.actor_email.lower() in e.actor_email.lower()
+                e for e in results if e.actor_email is not None and filters.actor_email.lower() in e.actor_email.lower()
             ]
 
         if filters.model_name is not None:

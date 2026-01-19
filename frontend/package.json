@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:clean": "rm -rf ../src/litestar_admin/static && next build",
     "start": "next start",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --write src",
     "format:check": "oxfmt --check src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prebuild": "tsc --noEmit"
   },
   "dependencies": {
     "next": "^14.2.21",

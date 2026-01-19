@@ -14,8 +14,10 @@ Example:
             require_role,
         )
 
+
         @get("/admin/users", guards=[require_permission(Permission.USERS_MANAGE)])
         async def list_users(): ...
+
 
         @get("/admin/settings", guards=[require_role(Role.ADMIN)])
         async def get_settings(): ...

@@ -30,11 +30,9 @@ import type { ModelRecord, SchemaProperty } from '@/types';
 // Types
 // ============================================================================
 
-interface RecordDetailPageProps {
-  params: {
-    model: string;
-    id: string;
-  };
+export interface RecordDetailPageProps {
+  model: string;
+  id: string;
 }
 
 interface AuditLogEntry {
@@ -152,9 +150,6 @@ const UserIcon = ({ className }: { className?: string }) => (
 // Utility Functions
 // ============================================================================
 
-/**
- * Formats a model name for display (e.g., "user_profile" -> "User Profile").
- */
 function formatModelName(name: string): string {
   return name
     .replace(/_/g, ' ')
@@ -162,9 +157,6 @@ function formatModelName(name: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-/**
- * Gets a display title for a record based on common field patterns.
- */
 function getRecordTitle(record: ModelRecord, schema: { properties: Record<string, SchemaProperty> }): string {
   const titleFields = ['name', 'title', 'label', 'email', 'username', 'slug'];
 
@@ -174,7 +166,6 @@ function getRecordTitle(record: ModelRecord, schema: { properties: Record<string
     }
   }
 
-  // Fallback to ID or first string field
   if (record['id'] !== undefined) {
     return `Record #${record['id']}`;
   }
@@ -190,9 +181,6 @@ function getRecordTitle(record: ModelRecord, schema: { properties: Record<string
   return 'Record';
 }
 
-/**
- * Formats a value for display based on its type.
- */
 function formatDisplayValue(value: unknown, property?: SchemaProperty): string {
   if (value === null || value === undefined) {
     return '-';
@@ -227,9 +215,6 @@ function formatDisplayValue(value: unknown, property?: SchemaProperty): string {
   return String(value);
 }
 
-/**
- * Extracts related records from record data based on schema.
- */
 function extractRelatedRecords(
   record: ModelRecord,
   schema: { properties: Record<string, SchemaProperty> }
@@ -237,7 +222,6 @@ function extractRelatedRecords(
   const related: RelatedRecordInfo[] = [];
 
   for (const [key, property] of Object.entries(schema.properties)) {
-    // Check for relationship patterns (foreign keys, references)
     if (
       key.endsWith('_id') ||
       property.format === 'relation' ||
@@ -631,23 +615,14 @@ function NotFoundDisplay({ modelName, recordId }: NotFoundDisplayProps) {
 // Main Component
 // ============================================================================
 
-/**
- * Record Detail Page
- *
- * Displays a single record with view/edit modes, delete confirmation,
- * related records, and audit log.
- */
-export default function RecordDetailPage({ params }: RecordDetailPageProps) {
-  const { model, id } = params;
+export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   const router = useRouter();
   const { addToast } = useToast();
 
-  // State
   const [mode, setMode] = useState<FormMode>('view');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
-  // Data fetching
   const {
     data: record,
     isLoading: isLoadingRecord,
@@ -660,7 +635,6 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     isLoading: isLoadingSchema,
   } = useModelSchema(model);
 
-  // Mutations
   const updateMutation = useUpdateRecord<ModelRecord>(model, {
     onSuccess: () => {
       addToast({
@@ -678,7 +652,6 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
         title: 'Update Failed',
         description: error.message || 'Failed to update the record.',
       });
-      // Handle field-level errors if available
       if (error.response?.extra?.['errors']) {
         const fieldErrors: Record<string, string> = {};
         const errors = error.response.extra['errors'] as Array<{ field: string; message: string }>;
@@ -709,7 +682,6 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     },
   });
 
-  // Computed values
   const modelDisplayName = formatModelName(model);
 
   const recordTitle = useMemo(() => {
@@ -722,13 +694,11 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     return extractRelatedRecords(record, schema);
   }, [record, schema]);
 
-  // Mock audit log - in production, fetch from API
   const auditLog = useMemo<AuditLogEntry[]>(() => {
     if (!record) return [];
 
     const entries: AuditLogEntry[] = [];
 
-    // Check for created_at timestamp
     if (record['created_at']) {
       entries.push({
         id: 'created',
@@ -738,7 +708,6 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
       });
     }
 
-    // Check for updated_at timestamp
     if (record['updated_at'] && record['updated_at'] !== record['created_at']) {
       entries.push({
         id: 'updated',
@@ -753,14 +722,12 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     );
   }, [record]);
 
-  // Breadcrumbs
   const breadcrumbs: BreadcrumbItem[] = useMemo(() => [
     { label: 'Models', href: '/models' },
     { label: modelDisplayName, href: `/models/${model}` },
     { label: recordTitle },
   ], [model, modelDisplayName, recordTitle]);
 
-  // Handlers
   const handleEdit = useCallback(() => {
     setMode('edit');
     setServerErrors({});
@@ -790,19 +757,16 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     setShowDeleteModal(false);
   }, []);
 
-  // Loading state
   const isLoading = isLoadingRecord || isLoadingSchema;
 
   if (isLoading) {
     return <RecordDetailSkeleton modelName={modelDisplayName} />;
   }
 
-  // Not found state
   if (recordError || !record || !schema) {
     return <NotFoundDisplay modelName={model} recordId={id} />;
   }
 
-  // Separate fields into groups
   const orderedFields = Object.entries(schema.properties).sort(([aName], [bName]) => {
     const requiredSet = new Set(schema.required);
     const aRequired = requiredSet.has(aName);
@@ -814,7 +778,6 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <PageHeader
         title={recordTitle}
         subtitle={`${modelDisplayName} Details`}
@@ -858,9 +821,7 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
         }
       />
 
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Record Details / Edit Form */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -895,17 +856,12 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Related Records */}
           <RelatedRecordsSection records={relatedRecords} />
-
-          {/* Audit Log */}
           <AuditLogSection entries={auditLog} />
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
         isOpen={showDeleteModal}
         onClose={handleCloseDeleteModal}
@@ -917,3 +873,5 @@ export default function RecordDetailPage({ params }: RecordDetailPageProps) {
     </div>
   );
 }
+
+export default RecordDetailPage;

@@ -7,7 +7,7 @@
 .PHONY: build clean destroy
 .PHONY: frontend frontend-dev frontend-lint frontend-build
 .PHONY: wt worktree wt-ls worktree-list wt-j worktree-jump worktree-prune
-.PHONY: ci ci-install act act-ci act-list
+.PHONY: ci ci-security ci-lint ci-test ci-frontend ci-install act act-ci act-list
 
 # =============================================================================
 # Variables
@@ -216,7 +216,28 @@ worktree-prune: ## Clean up stale git worktrees
 
 ##@ CI Helpers
 
-ci: lint type-check test ## Run all CI checks locally
+ci: ci-security ci-lint ci-test ci-frontend ## Run all CI checks locally
+	@echo "\n\033[32m✓ All CI checks passed!\033[0m"
+
+ci-security: ## Run security scan (zizmor)
+	@echo "\033[36m→ Running workflow security scan...\033[0m"
+	@uvx zizmor .github/workflows/
+
+ci-lint: ## Run lint, format check, and type check
+	@echo "\033[36m→ Running ruff check...\033[0m"
+	@uv run --no-sync ruff check $(SRC_DIR) $(TEST_DIR)
+	@echo "\033[36m→ Running ruff format check...\033[0m"
+	@uv run --no-sync ruff format --check $(SRC_DIR) $(TEST_DIR)
+	@echo "\033[36m→ Running ty type checker...\033[0m"
+	@uv run --no-sync ty check $(SRC_DIR)
+
+ci-test: ## Run test suite
+	@echo "\033[36m→ Running tests...\033[0m"
+	@PYTHONDONTWRITEBYTECODE=1 uv run --no-sync pytest
+
+ci-frontend: ## Run frontend lint
+	@echo "\033[36m→ Running frontend lint (oxlint)...\033[0m"
+	@cd $(FRONTEND_DIR) && bun run lint
 
 ci-install: ## Install for CI (frozen dependencies)
 	@uv sync --all-extras --frozen

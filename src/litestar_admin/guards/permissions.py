@@ -10,12 +10,14 @@ Example:
         from litestar import get
         from litestar_admin.guards import require_permission, Permission
 
+
         @get("/admin/users", guards=[require_permission(Permission.USERS_MANAGE)])
         async def list_users(): ...
 
     Use role-based guards::
 
         from litestar_admin.guards import require_role, Role
+
 
         @get("/admin/settings", guards=[require_role(Role.ADMIN)])
         async def get_settings(): ...
@@ -223,7 +225,9 @@ class PermissionGuard:
 
         Require multiple permissions::
 
-            @post("/data", guards=[PermissionGuard(Permission.MODELS_READ, Permission.MODELS_WRITE)])
+            @post(
+                "/data", guards=[PermissionGuard(Permission.MODELS_READ, Permission.MODELS_WRITE)]
+            )
             async def create_data(): ...
     """
 

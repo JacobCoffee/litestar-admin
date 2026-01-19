@@ -14,9 +14,7 @@ Example:
             requests_per_hour=1000,
             burst_size=10,
         )
-        app = Litestar(
-            middleware=[RateLimitMiddleware]
-        )
+        app = Litestar(middleware=[RateLimitMiddleware])
 """
 
 from __future__ import annotations
@@ -77,6 +75,7 @@ class RateLimitConfig:
 
             def custom_key(connection: ASGIConnection) -> str:
                 return connection.user.id if connection.user else get_client_ip(connection)
+
 
             config = RateLimitConfig(key_func=custom_key)
 
@@ -490,6 +489,7 @@ def get_rate_limit_key(connection: ASGIConnection[Any, Any, Any, Any], config: R
                 if hasattr(conn, "user") and conn.user:
                     return f"user:{conn.user.id}"
                 return f"ip:{get_client_ip(conn)}"
+
 
             config = RateLimitConfig(key_func=user_key)
             key = get_rate_limit_key(request, config)

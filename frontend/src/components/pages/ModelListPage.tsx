@@ -40,10 +40,8 @@ import type {
 // Types
 // ============================================================================
 
-interface ModelListPageProps {
-  params: {
-    model: string;
-  };
+export interface ModelListPageProps {
+  model: string;
 }
 
 // ============================================================================
@@ -167,16 +165,10 @@ const TableIcon = ({ className }: { className?: string }) => (
 // Helper Functions
 // ============================================================================
 
-/**
- * Formats a model identifier to a display-friendly name.
- */
 function formatModelName(model: string): string {
   return toTitleCase(model.replace(/[-_]/g, ' '));
 }
 
-/**
- * Determines the filterable column type from a schema property.
- */
 function getFilterableType(property: SchemaProperty): FilterableColumn['type'] | null {
   if (property.enum) {
     return 'enum';
@@ -197,9 +189,6 @@ function getFilterableType(property: SchemaProperty): FilterableColumn['type'] |
   }
 }
 
-/**
- * Generates DataTable columns from a model schema.
- */
 function generateColumnsFromSchema(
   schema: ModelSchema,
   onView: (record: ModelRecord) => void,
@@ -209,7 +198,6 @@ function generateColumnsFromSchema(
   const columns: Column<ModelRecord>[] = [];
   const properties = Object.entries(schema.properties);
 
-  // Sort: required fields first, then by name
   const requiredSet = new Set(schema.required);
   properties.sort(([aName], [bName]) => {
     const aRequired = requiredSet.has(aName);
@@ -219,18 +207,15 @@ function generateColumnsFromSchema(
     return aName.localeCompare(bName);
   });
 
-  // Limit visible columns to first 6 for readability
   const visibleCount = Math.min(properties.length, 6);
 
   for (let i = 0; i < properties.length; i++) {
     const [name, property] = properties[i] as [string, SchemaProperty];
 
-    // Skip relationship fields (show ID instead)
     if (name.endsWith('_id') && properties.some(([n]) => n === name.replace(/_id$/, ''))) {
       continue;
     }
 
-    // Skip complex types for list display
     if (property.type === 'object' || property.type === 'array') {
       continue;
     }
@@ -243,7 +228,6 @@ function generateColumnsFromSchema(
       render: (value: unknown) => renderCellValue(value, property),
     };
 
-    // Set width for ID columns
     if (name === 'id' || name === '_id' || name === 'pk') {
       column.width = '80px';
     }
@@ -251,7 +235,6 @@ function generateColumnsFromSchema(
     columns.push(column);
   }
 
-  // Add actions column
   columns.push({
     key: '_actions',
     header: 'Actions',
@@ -272,15 +255,11 @@ function generateColumnsFromSchema(
   return columns;
 }
 
-/**
- * Renders a cell value based on its schema property.
- */
 function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
   if (value === null || value === undefined) {
     return <span className="text-[var(--color-muted)]">-</span>;
   }
 
-  // Boolean
   if (typeof value === 'boolean') {
     return (
       <span
@@ -296,12 +275,10 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
     );
   }
 
-  // Date
   if (property.format === 'date' && typeof value === 'string') {
     return formatDate(value);
   }
 
-  // DateTime
   if (property.format === 'date-time' && typeof value === 'string') {
     return formatDate(value, {
       year: 'numeric',
@@ -312,7 +289,6 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
     });
   }
 
-  // Email
   if (property.format === 'email' && typeof value === 'string') {
     return (
       <a
@@ -325,7 +301,6 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
     );
   }
 
-  // URL
   if (property.format === 'uri' && typeof value === 'string') {
     return (
       <a
@@ -340,7 +315,6 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
     );
   }
 
-  // Enum with badge
   if (property.enum && typeof value === 'string') {
     return (
       <span
@@ -354,7 +328,6 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
     );
   }
 
-  // Truncate long strings
   const stringValue = String(value);
   if (stringValue.length > 50) {
     return (
@@ -367,9 +340,6 @@ function renderCellValue(value: unknown, property: SchemaProperty): ReactNode {
   return stringValue;
 }
 
-/**
- * Generates filterable columns from schema for SearchFilter.
- */
 function generateFilterableColumns(schema: ModelSchema): FilterableColumn[] {
   const columns: FilterableColumn[] = [];
 
@@ -377,7 +347,6 @@ function generateFilterableColumns(schema: ModelSchema): FilterableColumn[] {
     const filterType = getFilterableType(property);
     if (!filterType) continue;
 
-    // Skip complex fields
     if (property.type === 'object' || property.type === 'array') continue;
 
     const enumValues = property.enum?.map(String);
@@ -395,9 +364,6 @@ function generateFilterableColumns(schema: ModelSchema): FilterableColumn[] {
   return columns;
 }
 
-/**
- * Triggers a file download from a Blob.
- */
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -409,16 +375,10 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-/**
- * Gets record ID from a model record.
- */
 function getRecordId(record: ModelRecord): string | number {
   return (record['id'] ?? record['_id'] ?? record['pk'] ?? 0) as string | number;
 }
 
-/**
- * Gets a display title for a record.
- */
 function getRecordTitle(record: ModelRecord): string {
   const titleFields = ['name', 'title', 'label', 'email', 'username', 'slug'];
   for (const field of titleFields) {
@@ -746,27 +706,22 @@ function ErrorState({ title, message, onRetry }: ErrorStateProps) {
 }
 
 // ============================================================================
-// Main Page Component
+// Main Component
 // ============================================================================
 
-export default function ModelListPage({ params }: ModelListPageProps) {
+export function ModelListPage({ model }: ModelListPageProps) {
   return (
     <ProtectedRoute>
-      <ModelListContent model={params.model} />
+      <ModelListContent model={model} />
     </ProtectedRoute>
   );
 }
 
-interface ModelListContentProps {
-  model: string;
-}
-
-function ModelListContent({ model }: ModelListContentProps) {
+function ModelListContent({ model }: ModelListPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToast } = useToast();
 
-  // Modal state
   const [deleteModalState, setDeleteModalState] = useState<{
     isOpen: boolean;
     record: ModelRecord | null;
@@ -777,7 +732,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     isBulk: false,
   });
 
-  // Use data table hook for state management
   const {
     page,
     pageSize,
@@ -797,15 +751,12 @@ function ModelListContent({ model }: ModelListContentProps) {
     getRowId: getRecordId,
   });
 
-  // Filter state
   const [filterState, setFilterState] = useState<FilterState>({
     search: searchParams.get('search') || '',
     filters: [],
   });
 
-  // Build query params
   const queryParams = useMemo<ListQueryParams>(() => {
-    // Build filters object if there are any filters
     let filtersObj: Record<string, unknown> | undefined;
     if (filterState.filters.length > 0) {
       filtersObj = {};
@@ -826,7 +777,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     };
   }, [page, pageSize, sortBy, sortOrder, filterState]);
 
-  // Fetch data
   const {
     data: recordsData,
     isLoading: isLoadingRecords,
@@ -840,7 +790,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     error: schemaError,
   } = useModelSchema(model);
 
-  // Mutations
   const deleteRecord = useDeleteRecord(model, {
     onSuccess: () => {
       addToast({
@@ -918,14 +867,12 @@ function ModelListContent({ model }: ModelListContentProps) {
     },
   });
 
-  // Derived state
   const modelDisplayName = useMemo(() => formatModelName(model), [model]);
   const isLoading = isLoadingRecords || isLoadingSchema;
   const hasError = recordsError || schemaError;
   const records = recordsData?.items ?? [];
   const totalItems = recordsData?.total ?? 0;
 
-  // Generate columns and filterable columns from schema
   const { columns, filterableColumns } = useMemo(() => {
     if (!schema) {
       return { columns: [], filterableColumns: [] };
@@ -949,7 +896,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     };
   }, [schema, model, router]);
 
-  // Breadcrumb items
   const breadcrumbs: BreadcrumbItem[] = useMemo(
     () => [
       { label: 'Dashboard', href: '/' },
@@ -959,7 +905,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     [modelDisplayName]
   );
 
-  // Handlers
   const handleCreateNew = useCallback(() => {
     router.push(`/models/${model}/new`);
   }, [router, model]);
@@ -973,7 +918,7 @@ function ModelListContent({ model }: ModelListContentProps) {
 
   const handleFilterChange = useCallback((newFilters: FilterState) => {
     setFilterState(newFilters);
-    setPage(1); // Reset to first page when filters change
+    setPage(1);
   }, [setPage]);
 
   const handleClearFilters = useCallback(() => {
@@ -1011,7 +956,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     exportSelected.mutate({ ids, format: 'csv' });
   }, [selectedIds, exportSelected]);
 
-  // Sync URL with state
   useEffect(() => {
     const params = new URLSearchParams();
     if (page > 1) params.set('page', String(page));
@@ -1027,7 +971,6 @@ function ModelListContent({ model }: ModelListContentProps) {
     window.history.replaceState(null, '', newUrl);
   }, [page, pageSize, sortBy, sortOrder, filterState.search]);
 
-  // Error state
   if (hasError && !isLoading) {
     const errorMessage =
       schemaError?.message ||
@@ -1060,7 +1003,6 @@ function ModelListContent({ model }: ModelListContentProps) {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Page Header */}
         <PageHeader
           title={modelDisplayName}
           subtitle={
@@ -1085,7 +1027,6 @@ function ModelListContent({ model }: ModelListContentProps) {
           }
         />
 
-        {/* Search and Filter */}
         <Card>
           <CardBody className="py-4">
             {isLoadingSchema ? (
@@ -1105,7 +1046,6 @@ function ModelListContent({ model }: ModelListContentProps) {
           </CardBody>
         </Card>
 
-        {/* Bulk Action Toolbar */}
         <BulkActionToolbar
           selectedCount={selectedCount}
           onClearSelection={clearSelection}
@@ -1115,7 +1055,6 @@ function ModelListContent({ model }: ModelListContentProps) {
           isExporting={exportSelected.isPending}
         />
 
-        {/* Data Table */}
         <Card>
           {isLoading ? (
             <CardBody>
@@ -1169,7 +1108,6 @@ function ModelListContent({ model }: ModelListContentProps) {
         </Card>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmModal
         isOpen={deleteModalState.isOpen}
         onClose={handleCloseDeleteModal}
@@ -1190,3 +1128,5 @@ function ModelListContent({ model }: ModelListContentProps) {
     </MainLayout>
   );
 }
+
+export default ModelListPage;

@@ -170,14 +170,10 @@ class ExportController(Controller):
         async def generate_export() -> AsyncGenerator[bytes, None]:
             """Generate export data for selected records."""
             if data.format == "csv":
-                async for chunk in self._stream_csv_by_ids(
-                    db_session, model, columns, pk_column, data.ids
-                ):
+                async for chunk in self._stream_csv_by_ids(db_session, model, columns, pk_column, data.ids):
                     yield chunk
             else:
-                async for chunk in self._stream_json_by_ids(
-                    db_session, model, columns, pk_column, data.ids
-                ):
+                async for chunk in self._stream_json_by_ids(db_session, model, columns, pk_column, data.ids):
                     yield chunk
 
         content_type = "text/csv" if data.format == "csv" else "application/json"

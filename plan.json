@@ -803,20 +803,13 @@
     },
     {
       "id": "6",
-      "name": "Bugs",
-      "description": "Tasks identified as bugs requiring fixes",
-      "status": "pending",
-      "tasks": []
-    },
-    {
-      "id": "7",
       "name": "Examples",
       "description": "Example applications demonstrating features",
       "status": "pending",
       "dependencies": ["5"],
       "tasks": [
         {
-          "id": "7.1.1",
+          "id": "6.1.1",
           "title": "Create example applications",
           "description": "Create 1 minimal example app, example app in other frameworks, example app in raw asgi, and 1 full app example in litestar with all the bells and whistles and extras",
           "status": "pending",

@@ -35,9 +35,7 @@ class TestAdminPlugin:
         class UserAdmin(ModelView, model=user_model):
             pass
 
-        plugin = AdminPlugin(
-            config=AdminConfig(views=[UserAdmin])
-        )
+        plugin = AdminPlugin(config=AdminConfig(views=[UserAdmin]))
 
         # Create app to trigger on_app_init
         app = Litestar(plugins=[plugin])

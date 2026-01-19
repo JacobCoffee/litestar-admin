@@ -135,11 +135,7 @@ class AdminPlugin(InitPluginProtocol):
         from litestar.static_files import create_static_files_router
 
         # Determine static files path
-        static_path = (
-            Path(self._config.static_path)
-            if self._config.static_path
-            else Path(__file__).parent / "static"
-        )
+        static_path = Path(self._config.static_path) if self._config.static_path else Path(__file__).parent / "static"
 
         if static_path.exists():
             static_router = create_static_files_router(
@@ -199,9 +195,7 @@ class AdminPlugin(InitPluginProtocol):
         logger = logging.getLogger("litestar_admin.discovery")
 
         # Get already-registered models to skip
-        registered_models: set[type[Any]] = {
-            view_class.model for view_class in self._registry
-        }
+        registered_models: set[type[Any]] = {view_class.model for view_class in self._registry}
 
         # Find all DeclarativeBase classes in the application
         bases = get_declarative_bases(app)

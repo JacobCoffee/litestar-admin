@@ -628,9 +628,7 @@ class TestRoleBasedAccess:
     ) -> None:
         """Test SUPERADMIN has all permissions."""
         for permission in Permission:
-            assert user_has_permission(superadmin_user, permission) is True, (
-                f"Superadmin should have {permission}"
-            )
+            assert user_has_permission(superadmin_user, permission) is True, f"Superadmin should have {permission}"
 
     def test_elevated_permissions_dont_leak_down(
         self,
@@ -929,9 +927,7 @@ class TestAuditLogging:
         assert len(actor1_entries) == 3
 
         # Combined filter
-        combined = await logger.query(
-            AuditQueryFilters(model_name="User", action=AuditAction.UPDATE, actor_id=1)
-        )
+        combined = await logger.query(AuditQueryFilters(model_name="User", action=AuditAction.UPDATE, actor_id=1))
         assert len(combined) == 1
 
     @pytest.mark.asyncio
@@ -1068,9 +1064,7 @@ class TestEdgeCasesAndAttackVectors:
 
         # Very long email
         long_email = "a" * 10000 + "@example.com"
-        user = await jwt_backend_with_password.authenticate(
-            connection, {"email": long_email, "password": "password"}
-        )
+        user = await jwt_backend_with_password.authenticate(connection, {"email": long_email, "password": "password"})
         assert user is None
 
         # Very long password
@@ -1138,9 +1132,7 @@ class TestEdgeCasesAndAttackVectors:
 
     def test_unknown_role_ignored_safely(self) -> None:
         """Test that unknown roles are ignored without errors."""
-        user = MockAdminUser(
-            id=1, email="test@example.com", roles=["unknown_role", "viewer"], permissions=[]
-        )
+        user = MockAdminUser(id=1, email="test@example.com", roles=["unknown_role", "viewer"], permissions=[])
 
         # Should get viewer permissions, unknown role ignored
         assert user_has_permission(user, Permission.MODELS_READ) is True
@@ -1256,9 +1248,7 @@ class TestSecurityIntegration:
 
         with TestClient(app) as client:
             # Login
-            response = client.post(
-                "/api/auth/login", json={"email": "test@test.com", "password": "pass"}
-            )
+            response = client.post("/api/auth/login", json={"email": "test@test.com", "password": "pass"})
             assert response.status_code == HTTP_200_OK
             assert "access_token" in response.json()
 

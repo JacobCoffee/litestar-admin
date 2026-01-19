@@ -504,7 +504,6 @@ def _convert_pk(pk_str: str, service: AdminService[Any]) -> Any:
     """
     from uuid import UUID
 
-
     pk_column = service._get_primary_key_column()  # noqa: SLF001
     type_name = type(pk_column.type).__name__.upper()
 
