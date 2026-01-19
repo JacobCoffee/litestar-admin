@@ -2,7 +2,13 @@
 
 import { useCallback, useMemo, useId } from "react";
 import { cn } from "@/lib/utils";
-import type { ColumnMapperProps, ColumnMapping, ModelField } from "./types";
+import type {
+  ColumnMapperProps,
+  ColumnMapping,
+  ModelField,
+  ColumnTransform,
+  BackendColumnTypeInfo,
+} from "./types";
 
 // ============================================================================
 // Utility Functions
@@ -180,13 +186,55 @@ function SparkleIcon({ className }: { className?: string }) {
 // Sub-components
 // ============================================================================
 
+/** Available transform options */
+const TRANSFORM_OPTIONS: { value: ColumnTransform; label: string }[] = [
+  { value: "none", label: "None" },
+  { value: "trim", label: "Trim whitespace" },
+  { value: "lowercase", label: "Lowercase" },
+  { value: "uppercase", label: "Uppercase" },
+];
+
 interface MappingRowProps {
   mapping: ColumnMapping;
   modelFields: readonly ModelField[];
   usedFields: Set<string>;
-  onMappingChange: (csvColumn: string, modelField: string | null) => void;
+  onMappingChange: (csvColumn: string, modelField: string | null, transform?: ColumnTransform) => void;
   index: number;
-  showAutoDetection?: boolean;
+  showAutoDetection?: boolean | undefined;
+  columnTypeInfo?: BackendColumnTypeInfo | undefined;
+  showTransforms?: boolean | undefined;
+}
+
+/** Get type compatibility between CSV detected type and model field type */
+function getTypeCompatibility(
+  csvType: string | undefined,
+  modelType: string | undefined,
+): "compatible" | "convertible" | "incompatible" | "unknown" {
+  if (!csvType || !modelType) return "unknown";
+
+  // Normalize types
+  const csv = csvType.toLowerCase();
+  const model = modelType.toLowerCase();
+
+  // Direct matches
+  if (csv === model) return "compatible";
+
+  // String is compatible with most types
+  if (csv === "string") return "convertible";
+
+  // Integer to number is compatible
+  if (csv === "integer" && model === "number") return "compatible";
+
+  // Float/number to integer needs checking
+  if (csv === "float" && model === "integer") return "convertible";
+
+  // Date/datetime conversions
+  if ((csv === "date" || csv === "datetime") && (model === "string")) return "convertible";
+
+  // Boolean conversions
+  if (csv === "boolean" && model === "string") return "convertible";
+
+  return "incompatible";
 }
 
 function MappingRow({
@@ -196,14 +244,21 @@ function MappingRow({
   onMappingChange,
   index,
   showAutoDetection = true,
+  columnTypeInfo,
+  showTransforms = true,
 }: MappingRowProps) {
   const selectId = useId();
+  const transformId = useId();
   const isMapped = mapping.modelField !== null;
   const isAutoDetected = showAutoDetection && mapping.confidence && mapping.confidence >= 0.5;
 
   // Find if the mapped field is required
   const mappedField = modelFields.find((f) => f.name === mapping.modelField);
   const isRequired = mappedField?.required ?? false;
+
+  // Get type compatibility
+  const detectedType = columnTypeInfo?.detected_type || mapping.detectedType;
+  const typeCompatibility = getTypeCompatibility(detectedType, mappedField?.type);
 
   // Available fields for this mapping (not used by other mappings, or current selection)
   const availableFields = modelFields.filter(
@@ -213,78 +268,162 @@ function MappingRow({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 p-3 rounded-[var(--radius-md)]",
+        "flex flex-col gap-2 p-3 rounded-[var(--radius-md)]",
         "bg-[var(--color-card)] border border-[var(--color-border)]",
         "transition-colors duration-150",
         isMapped && "border-[var(--color-success)]/30 bg-[var(--color-success)]/5",
       )}
     >
-      {/* Row number */}
-      <span className="flex-shrink-0 w-6 text-xs text-[var(--color-muted)] text-center">
-        {index + 1}
-      </span>
+      <div className="flex items-center gap-3">
+        {/* Row number */}
+        <span className="flex-shrink-0 w-6 text-xs text-[var(--color-muted)] text-center">
+          {index + 1}
+        </span>
 
-      {/* CSV Column */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-[var(--color-foreground)] truncate">
-            {mapping.csvColumn}
-          </span>
-          {isAutoDetected && (
-            <span
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-[var(--color-accent)]/10 text-[var(--color-accent)]"
-              title={`Auto-detected with ${Math.round((mapping.confidence || 0) * 100)}% confidence`}
-            >
-              <SparkleIcon className="w-3 h-3" />
-              Auto
+        {/* CSV Column */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-[var(--color-foreground)] truncate">
+              {mapping.csvColumn}
+            </span>
+            {isAutoDetected && (
+              <span
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-[var(--color-accent)]/10 text-[var(--color-accent)]"
+                title={`Auto-detected with ${Math.round((mapping.confidence || 0) * 100)}% confidence`}
+              >
+                <SparkleIcon className="w-3 h-3" />
+                Auto
+              </span>
+            )}
+          </div>
+          {/* Detected type badge */}
+          {detectedType && (
+            <span className="text-[10px] text-[var(--color-muted)]">
+              Detected: {detectedType}
+              {columnTypeInfo?.nullable && " (nullable)"}
             </span>
           )}
         </div>
-      </div>
 
-      {/* Arrow */}
-      <ArrowRightIcon className="flex-shrink-0 w-4 h-4 text-[var(--color-muted)]" />
+        {/* Arrow */}
+        <ArrowRightIcon className="flex-shrink-0 w-4 h-4 text-[var(--color-muted)]" />
 
-      {/* Model Field Select */}
-      <div className="flex-1 min-w-0">
-        <select
-          id={selectId}
-          value={mapping.modelField || ""}
-          onChange={(e) =>
-            onMappingChange(mapping.csvColumn, e.target.value || null)
-          }
-          className={cn(
-            "w-full h-9 px-3 pr-8 text-sm rounded-[var(--radius-md)]",
-            "bg-[var(--color-background)] text-[var(--color-foreground)]",
-            "border border-[var(--color-border)]",
-            "appearance-none bg-no-repeat bg-right",
-            "bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center]",
-            '[background-image:url("data:image/svg+xml,%3csvg%20xmlns%3d%27http%3a%2f%2fwww.w3.org%2f2000%2fsvg%27%20fill%3d%27none%27%20viewBox%3d%270%200%2024%2024%27%20stroke%3d%27%238b949e%27%20stroke-width%3d%272%27%3e%3cpath%20d%3d%27M7%2010l5%205%205-5%27%2f%3e%3c%2fsvg%3e")]',
-            "transition-colors duration-150",
-            "hover:border-[var(--color-muted)]",
-            "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]",
-            "focus:outline-none",
+        {/* Model Field Select */}
+        <div className="flex-1 min-w-0">
+          <select
+            id={selectId}
+            value={mapping.modelField || ""}
+            onChange={(e) =>
+              onMappingChange(mapping.csvColumn, e.target.value || null, mapping.transform)
+            }
+            className={cn(
+              "w-full h-9 px-3 pr-8 text-sm rounded-[var(--radius-md)]",
+              "bg-[var(--color-background)] text-[var(--color-foreground)]",
+              "border border-[var(--color-border)]",
+              "appearance-none bg-no-repeat bg-right",
+              "bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center]",
+              '[background-image:url("data:image/svg+xml,%3csvg%20xmlns%3d%27http%3a%2f%2fwww.w3.org%2f2000%2fsvg%27%20fill%3d%27none%27%20viewBox%3d%270%200%2024%2024%27%20stroke%3d%27%238b949e%27%20stroke-width%3d%272%27%3e%3cpath%20d%3d%27M7%2010l5%205%205-5%27%2f%3e%3c%2fsvg%3e")]',
+              "transition-colors duration-150",
+              "hover:border-[var(--color-muted)]",
+              "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]",
+              "focus:outline-none",
+            )}
+            aria-label={`Map CSV column "${mapping.csvColumn}" to model field`}
+          >
+            <option value="">-- Skip this column --</option>
+            {availableFields.map((field) => (
+              <option key={field.name} value={field.name}>
+                {field.label}
+                {field.required ? " *" : ""}
+              </option>
+            ))}
+          </select>
+          {/* Model field type indicator */}
+          {mappedField && (
+            <div className="flex items-center gap-1 mt-1">
+              <span className="text-[10px] text-[var(--color-muted)]">
+                Type: {mappedField.type}
+              </span>
+              {typeCompatibility !== "unknown" && (
+                <span
+                  className={cn(
+                    "text-[10px] px-1 py-0.5 rounded",
+                    typeCompatibility === "compatible" &&
+                      "bg-[var(--color-success)]/10 text-[var(--color-success)]",
+                    typeCompatibility === "convertible" &&
+                      "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
+                    typeCompatibility === "incompatible" &&
+                      "bg-[var(--color-error)]/10 text-[var(--color-error)]",
+                  )}
+                >
+                  {typeCompatibility}
+                </span>
+              )}
+            </div>
           )}
-          aria-label={`Map CSV column "${mapping.csvColumn}" to model field`}
-        >
-          <option value="">-- Skip this column --</option>
-          {availableFields.map((field) => (
-            <option key={field.name} value={field.name}>
-              {field.label}
-              {field.required ? " *" : ""}
-            </option>
-          ))}
-        </select>
+        </div>
+
+        {/* Status indicator */}
+        <div className="flex-shrink-0 w-6">
+          {isMapped ? (
+            <CheckIcon className="w-4 h-4 text-[var(--color-success)]" />
+          ) : isRequired ? (
+            <AlertIcon className="w-4 h-4 text-[var(--color-warning)]" />
+          ) : null}
+        </div>
       </div>
 
-      {/* Status indicator */}
-      <div className="flex-shrink-0 w-6">
-        {isMapped ? (
-          <CheckIcon className="w-4 h-4 text-[var(--color-success)]" />
-        ) : isRequired ? (
-          <AlertIcon className="w-4 h-4 text-[var(--color-warning)]" />
-        ) : null}
-      </div>
+      {/* Transform dropdown (only shown when mapped and transforms enabled) */}
+      {isMapped && showTransforms && (
+        <div className="flex items-center gap-2 ml-9">
+          <label
+            htmlFor={transformId}
+            className="text-xs text-[var(--color-muted)] whitespace-nowrap"
+          >
+            Transform:
+          </label>
+          <select
+            id={transformId}
+            value={mapping.transform || "none"}
+            onChange={(e) =>
+              onMappingChange(
+                mapping.csvColumn,
+                mapping.modelField,
+                e.target.value as ColumnTransform,
+              )
+            }
+            className={cn(
+              "h-7 px-2 pr-6 text-xs rounded-[var(--radius-md)]",
+              "bg-[var(--color-background)] text-[var(--color-foreground)]",
+              "border border-[var(--color-border)]",
+              "appearance-none bg-no-repeat bg-right",
+              "bg-[length:1rem_1rem] bg-[right_0.25rem_center]",
+              '[background-image:url("data:image/svg+xml,%3csvg%20xmlns%3d%27http%3a%2f%2fwww.w3.org%2f2000%2fsvg%27%20fill%3d%27none%27%20viewBox%3d%270%200%2024%2024%27%20stroke%3d%27%238b949e%27%20stroke-width%3d%272%27%3e%3cpath%20d%3d%27M7%2010l5%205%205-5%27%2f%3e%3c%2fsvg%3e")]',
+              "transition-colors duration-150",
+              "hover:border-[var(--color-muted)]",
+              "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]",
+              "focus:outline-none",
+            )}
+            aria-label={`Transform for "${mapping.csvColumn}"`}
+          >
+            {TRANSFORM_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          {/* Sample values preview */}
+          {columnTypeInfo?.sample_values && columnTypeInfo.sample_values.length > 0 && (
+            <span
+              className="text-[10px] text-[var(--color-muted)] truncate max-w-[150px]"
+              title={columnTypeInfo.sample_values.join(", ")}
+            >
+              Sample: {columnTypeInfo.sample_values.slice(0, 2).join(", ")}
+              {columnTypeInfo.sample_values.length > 2 && "..."}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -323,8 +462,20 @@ export function ColumnMapper({
   mappings,
   onMappingsChange,
   showAutoDetection = true,
+  columnTypes,
+  showTransforms = true,
   className,
 }: ColumnMapperProps) {
+  // Build column type lookup map
+  const columnTypeMap = useMemo(() => {
+    const map = new Map<string, BackendColumnTypeInfo>();
+    if (columnTypes) {
+      for (const ct of columnTypes) {
+        map.set(ct.csv_column, ct);
+      }
+    }
+    return map;
+  }, [columnTypes]);
   // Calculate which fields are currently used
   const usedFields = useMemo(() => {
     const used = new Set<string>();
@@ -354,10 +505,15 @@ export function ColumnMapper({
 
   // Handle mapping change
   const handleMappingChange = useCallback(
-    (csvColumn: string, modelField: string | null) => {
+    (csvColumn: string, modelField: string | null, transform?: ColumnTransform) => {
       const newMappings = mappings.map((m) =>
         m.csvColumn === csvColumn
-          ? { ...m, modelField, confidence: modelField ? 1 : 0 }
+          ? {
+              ...m,
+              modelField,
+              confidence: modelField ? 1 : 0,
+              transform: transform || m.transform || "none",
+            }
           : m,
       );
       onMappingsChange(newMappings);
@@ -440,7 +596,7 @@ export function ColumnMapper({
       </div>
 
       {/* Mapping list */}
-      <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
         {mappings.map((mapping, index) => (
           <MappingRow
             key={mapping.csvColumn}
@@ -450,6 +606,8 @@ export function ColumnMapper({
             onMappingChange={handleMappingChange}
             index={index}
             showAutoDetection={showAutoDetection}
+            columnTypeInfo={columnTypeMap.get(mapping.csvColumn)}
+            showTransforms={showTransforms}
           />
         ))}
       </div>

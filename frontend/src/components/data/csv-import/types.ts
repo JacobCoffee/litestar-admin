@@ -3,6 +3,123 @@
  */
 
 // ============================================================================
+// Backend API Types
+// ============================================================================
+
+/**
+ * Transform options for column mapping.
+ */
+export type ColumnTransform = "none" | "lowercase" | "uppercase" | "trim";
+
+/**
+ * Column type information from backend type detection.
+ */
+export interface BackendColumnTypeInfo {
+  /** CSV column header name */
+  readonly csv_column: string;
+  /** Detected data type (string, integer, float, boolean, date, datetime) */
+  readonly detected_type: string;
+  /** Sample values from this column */
+  readonly sample_values: string[];
+  /** Whether null/empty values were detected */
+  readonly nullable: boolean;
+}
+
+/**
+ * Model field information from backend schema.
+ */
+export interface BackendModelFieldInfo {
+  /** Field/column name */
+  readonly name: string;
+  /** JSON schema type */
+  readonly type: string;
+  /** Optional format (date, datetime, email, etc.) */
+  readonly format?: string;
+  /** Whether the field is nullable */
+  readonly nullable: boolean;
+  /** Whether the field is required */
+  readonly required: boolean;
+  /** Whether this is a primary key */
+  readonly primary_key: boolean;
+  /** Maximum length for string fields */
+  readonly max_length?: number;
+}
+
+/**
+ * Response from the preview endpoint.
+ */
+export interface ImportPreviewResponse {
+  /** CSV column headers */
+  readonly headers: string[];
+  /** First N rows of data as objects */
+  readonly preview_rows: Record<string, unknown>[];
+  /** Detected type information for each column */
+  readonly column_types: BackendColumnTypeInfo[];
+  /** Model field information for mapping */
+  readonly model_schema: BackendModelFieldInfo[];
+  /** Detected delimiter character */
+  readonly delimiter: string;
+  /** Detected file encoding */
+  readonly encoding: string;
+  /** Total number of data rows */
+  readonly total_rows: number;
+}
+
+/**
+ * Column mapping to send to backend.
+ */
+export interface BackendColumnMapping {
+  /** CSV column header name */
+  readonly csv_column: string;
+  /** Target model field name */
+  readonly model_field: string;
+  /** Optional transformation to apply */
+  readonly transform?: ColumnTransform;
+}
+
+/**
+ * Row-level validation error from backend.
+ */
+export interface BackendRowError {
+  /** 1-indexed row number in CSV */
+  readonly row_number: number;
+  /** Field name where error occurred */
+  readonly field: string;
+  /** The problematic value */
+  readonly value: string | null;
+  /** Error description */
+  readonly error: string;
+}
+
+/**
+ * Response from the validate endpoint.
+ */
+export interface ImportValidationResponse {
+  /** List of validation errors */
+  readonly errors: BackendRowError[];
+  /** Number of rows that passed validation */
+  readonly valid_count: number;
+  /** Number of rows that failed validation */
+  readonly invalid_count: number;
+  /** Total number of rows processed */
+  readonly total_rows: number;
+  /** Sample of valid rows for preview */
+  readonly sample_valid_rows: Record<string, unknown>[];
+}
+
+/**
+ * Response from the execute endpoint.
+ */
+export interface ImportExecuteResponse {
+  /** Whether the import was initiated successfully */
+  readonly success: boolean;
+  /** Status message */
+  readonly message: string;
+  /** Optional job ID for async tracking */
+  readonly job_id?: string | null;
+}
+
+// ============================================================================
 // CSV Parsing Types
 // ============================================================================
 
@@ -32,9 +149,13 @@ export interface ColumnMapping {
   /** Target model field name */
   readonly modelField: string | null;
   /** Whether this mapping is required */
-  readonly required?: boolean;
+  readonly required?: boolean | undefined;
   /** Auto-detected confidence score (0-1) */
-  readonly confidence?: number;
+  readonly confidence?: number | undefined;
+  /** Transformation to apply to values */
+  readonly transform?: ColumnTransform | undefined;
+  /** Detected type from backend */
+  readonly detectedType?: string | undefined;
 }
 
 // ============================================================================
@@ -296,9 +417,13 @@ export interface ColumnMapperProps {
   /** Callback when mappings change */
   onMappingsChange: (mappings: readonly ColumnMapping[]) => void;
   /** Whether to show auto-detection suggestions */
-  showAutoDetection?: boolean;
+  showAutoDetection?: boolean | undefined;
+  /** Column type information from backend */
+  columnTypes?: readonly BackendColumnTypeInfo[] | undefined;
+  /** Whether to show transform dropdowns */
+  showTransforms?: boolean | undefined;
   /** Additional CSS classes */
-  className?: string;
+  className?: string | undefined;
 }
 
 /**
@@ -313,8 +438,16 @@ export interface ImportPreviewProps {
   modelFields: readonly ModelField[];
   /** Number of rows to preview */
   previewRows?: number | undefined;
-  /** Validation results (optional) */
+  /** Validation results (optional - local validation) */
   validation?: ValidationSummary | undefined;
+  /** Backend validation results */
+  backendValidation?: ImportValidationResponse | undefined;
+  /** Detected delimiter */
+  delimiter?: string | undefined;
+  /** Detected encoding */
+  encoding?: string | undefined;
+  /** Total rows in file */
+  totalRows?: number | undefined;
   /** Additional CSS classes */
   className?: string | undefined;
 }

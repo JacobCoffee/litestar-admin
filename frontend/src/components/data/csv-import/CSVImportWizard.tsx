@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { CSVDropzone } from "./CSVDropzone";
@@ -18,6 +19,9 @@ import type {
   RowValidationResult,
   FieldValidationError,
   ModelField,
+  ImportPreviewResponse,
+  ImportValidationResponse,
+  BackendColumnTypeInfo,
 } from "./types";
 
 // ============================================================================
@@ -117,6 +121,29 @@ async function readFileAsText(file: File): Promise<string> {
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsText(file);
+  });
+}
+
+/**
+ * Auto-detect column mappings using backend type information.
+ * Enhanced version that considers detected types for better matching.
+ */
+function autoDetectMappingsWithTypes(
+  csvColumns: readonly string[],
+  modelFields: readonly ModelField[],
+  columnTypes: readonly BackendColumnTypeInfo[],
+): ColumnMapping[] {
+  // First, get basic mappings from the standard auto-detect
+  const baseMappings = autoDetectMappings(csvColumns, modelFields);
+
+  // Enhance mappings with detected type information
+  return baseMappings.map((mapping) => {
+    const typeInfo = columnTypes.find((ct) => ct.csv_column === mapping.csvColumn);
+    return {
+      ...mapping,
+      detectedType: typeInfo?.detected_type,
+      transform: "none" as const,
+    };
   });
 }
 
@@ -567,7 +594,7 @@ function ImportResultDisplay({ result, onClose }: ImportResultDisplayProps) {
  * ```
  */
 export function CSVImportWizard({
-  model: _model, // Will be used for API calls in production
+  model,
   fields,
   isOpen,
   onClose,
@@ -579,12 +606,17 @@ export function CSVImportWizard({
   // Wizard state
   const [currentStep, setCurrentStep] = useState<WizardStep>("upload");
   const [completedSteps, setCompletedSteps] = useState<Set<WizardStep>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
 
   // Data state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parsedData, setParsedData] = useState<ParsedCSV | null>(null);
   const [mappings, setMappings] = useState<readonly ColumnMapping[]>([]);
   const [validation, setValidation] = useState<ValidationSummary | null>(null);
+
+  // Backend preview data
+  const [backendPreview, setBackendPreview] = useState<ImportPreviewResponse | null>(null);
+  const [backendValidation, setBackendValidation] = useState<ImportValidationResponse | null>(null);
 
   // Import state
   const [importProgress, setImportProgress] = useState<ImportProgress>({
@@ -615,56 +647,139 @@ export function CSVImportWizard({
       setParsedData(null);
       setMappings([]);
       setValidation(null);
+      setBackendPreview(null);
+      setBackendValidation(null);
       setParseError(null);
 
       if (!file) return;
 
+      setIsLoading(true);
+
       try {
-        const text = await readFileAsText(file);
-        const parsed = parseCSV(text);
-
-        if (parsed.totalRows === 0) {
-          setParseError("The CSV file appears to be empty");
-          return;
+        // First, try to get backend preview
+        let previewResponse: ImportPreviewResponse | null = null;
+        try {
+          previewResponse = await api.previewImport(model, file);
+          setBackendPreview(previewResponse);
+        } catch {
+          // Backend preview failed, fall back to local parsing
+          console.warn("Backend preview failed, using local parsing");
         }
 
-        if (parsed.totalRows > maxRows) {
-          setParseError(`File exceeds maximum of ${maxRows.toLocaleString()} rows`);
-          return;
+        // If backend preview succeeded, use that data
+        if (previewResponse) {
+          if (previewResponse.total_rows === 0) {
+            setParseError("The CSV file appears to be empty");
+            setIsLoading(false);
+            return;
+          }
+
+          if (previewResponse.total_rows > maxRows) {
+            setParseError(`File exceeds maximum of ${maxRows.toLocaleString()} rows`);
+            setIsLoading(false);
+            return;
+          }
+
+          // Convert backend preview rows to ParsedCSV format
+          const rows: string[][] = previewResponse.preview_rows.map((row) =>
+            previewResponse.headers.map((h) => String(row[h] ?? "")),
+          );
+
+          const parsed: ParsedCSV = {
+            headers: previewResponse.headers,
+            rows,
+            totalRows: previewResponse.total_rows,
+          };
+          setParsedData(parsed);
+
+          // Auto-detect mappings using backend column types for better matching
+          const detectedMappings = autoDetectMappingsWithTypes(
+            previewResponse.headers,
+            fields,
+            previewResponse.column_types,
+          );
+          setMappings(detectedMappings);
+        } else {
+          // Fall back to local parsing
+          const text = await readFileAsText(file);
+          const parsed = parseCSV(text);
+
+          if (parsed.totalRows === 0) {
+            setParseError("The CSV file appears to be empty");
+            setIsLoading(false);
+            return;
+          }
+
+          if (parsed.totalRows > maxRows) {
+            setParseError(`File exceeds maximum of ${maxRows.toLocaleString()} rows`);
+            setIsLoading(false);
+            return;
+          }
+
+          setParsedData(parsed);
+
+          // Auto-detect mappings
+          const detectedMappings = autoDetectMappings(parsed.headers, fields);
+          setMappings(detectedMappings);
         }
-
-        setParsedData(parsed);
-
-        // Auto-detect mappings
-        const detectedMappings = autoDetectMappings(parsed.headers, fields);
-        setMappings(detectedMappings);
       } catch (error) {
         setParseError(
           error instanceof Error ? error.message : "Failed to parse CSV file",
         );
+      } finally {
+        setIsLoading(false);
       }
     },
-    [fields, maxRows],
+    [fields, maxRows, model],
   );
 
   // Navigation handlers
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     const stepIndex = WIZARD_STEPS.findIndex((s) => s.id === currentStep);
     if (stepIndex < WIZARD_STEPS.length - 1) {
-      setCompletedSteps((prev) => new Set([...prev, currentStep]));
-
       const nextStep = WIZARD_STEPS[stepIndex + 1]?.id;
       if (nextStep) {
-        setCurrentStep(nextStep);
-
         // Run validation when entering the validation step
-        if (nextStep === "validation" && parsedData) {
-          const validationResult = validateData(parsedData, mappings, fields);
-          setValidation(validationResult);
+        if (nextStep === "validation" && parsedData && selectedFile) {
+          setIsLoading(true);
+
+          // Prepare column mappings for backend
+          const backendMappings = mappings
+            .filter((m) => m.modelField !== null)
+            .map((m) => ({
+              csv_column: m.csvColumn,
+              model_field: m.modelField as string,
+              transform: m.transform || "none",
+            }));
+
+          try {
+            // Call backend validation
+            const validationResponse = await api.validateImport(
+              model,
+              selectedFile,
+              backendMappings,
+            );
+            setBackendValidation(validationResponse);
+
+            // Also run local validation as fallback display
+            const localValidation = validateData(parsedData, mappings, fields);
+            setValidation(localValidation);
+          } catch (error) {
+            // If backend fails, fall back to local validation
+            console.warn("Backend validation failed, using local validation:", error);
+            const localValidation = validateData(parsedData, mappings, fields);
+            setValidation(localValidation);
+            setBackendValidation(null);
+          } finally {
+            setIsLoading(false);
+          }
         }
+
+        setCompletedSteps((prev) => new Set([...prev, currentStep]));
+        setCurrentStep(nextStep);
       }
     }
-  }, [currentStep, fields, mappings, parsedData]);
+  }, [currentStep, fields, mappings, model, parsedData, selectedFile]);
 
   const handlePrevious = useCallback(() => {
     const stepIndex = WIZARD_STEPS.findIndex((s) => s.id === currentStep);
@@ -678,73 +793,103 @@ export function CSVImportWizard({
 
   // Import handler
   const handleImport = useCallback(async () => {
-    if (!parsedData || !validation) return;
+    if (!selectedFile) return;
+
+    // Determine valid row count from backend or local validation
+    const validRowCount = backendValidation?.valid_count ?? validation?.validRows ?? 0;
+    const totalRowCount = backendValidation?.total_rows ?? validation?.totalRows ?? parsedData?.totalRows ?? 0;
+
+    if (validRowCount === 0) return;
 
     setCurrentStep("import");
     setImportProgress({
       status: "importing",
       processed: 0,
-      total: validation.validRows,
+      total: validRowCount,
       successful: 0,
       failed: 0,
       message: "Preparing import...",
     });
 
-    // Simulate import (in production, this would call the API)
-    const validRows = validation.results.filter((r) => r.valid);
-    let successful = 0;
-    let failed = 0;
+    // Prepare column mappings for backend
+    const backendMappings = mappings
+      .filter((m) => m.modelField !== null)
+      .map((m) => ({
+        csv_column: m.csvColumn,
+        model_field: m.modelField as string,
+        transform: m.transform || "none",
+      }));
 
-    for (let i = 0; i < validRows.length; i++) {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    try {
+      // Call backend execute endpoint
+      const executeResponse = await api.executeImport(model, selectedFile, backendMappings);
 
-      // In production, create record via API here
-      // For now, simulate 95% success rate
-      if (Math.random() > 0.05) {
-        successful++;
-      } else {
-        failed++;
-      }
-
+      // For now, the execute endpoint is a stub - simulate progress
+      // In the future, this would track actual import progress
       setImportProgress({
         status: "importing",
-        processed: i + 1,
-        total: validRows.length,
-        successful,
-        failed,
-        message: `Importing row ${i + 1} of ${validRows.length}...`,
+        processed: validRowCount,
+        total: validRowCount,
+        successful: validRowCount,
+        failed: 0,
+        message: executeResponse.message,
+      });
+
+      const result: ImportResult = {
+        success: executeResponse.success,
+        totalRows: totalRowCount,
+        importedRows: validRowCount, // Placeholder until 9.7.4 implements actual tracking
+        skippedRows: backendValidation?.invalid_count ?? validation?.errorRows ?? 0,
+        errors: [],
+        message: executeResponse.message,
+      };
+
+      setImportProgress({
+        status: result.success ? "success" : "error",
+        processed: validRowCount,
+        total: validRowCount,
+        successful: result.importedRows,
+        failed: result.skippedRows,
+        message: result.message,
+      });
+
+      setImportResult(result);
+      setCompletedSteps((prev) => new Set([...prev, "import"]));
+
+      if (result.success) {
+        onSuccess?.(result);
+      }
+    } catch (error) {
+      // Handle execute failure
+      const errorMessage = error instanceof Error ? error.message : "Import failed";
+
+      setImportProgress({
+        status: "error",
+        processed: 0,
+        total: validRowCount,
+        successful: 0,
+        failed: validRowCount,
+        message: errorMessage,
+      });
+
+      setImportResult({
+        success: false,
+        totalRows: totalRowCount,
+        importedRows: 0,
+        skippedRows: totalRowCount,
+        errors: [{ rowIndex: 0, message: errorMessage }],
+        message: errorMessage,
       });
     }
-
-    const result: ImportResult = {
-      success: successful > 0,
-      totalRows: parsedData.totalRows,
-      importedRows: successful,
-      skippedRows: failed + validation.errorRows,
-      errors: [],
-      message:
-        successful > 0
-          ? `Successfully imported ${successful} records`
-          : "No records were imported",
-    };
-
-    setImportProgress({
-      status: result.success ? "success" : "error",
-      processed: validRows.length,
-      total: validRows.length,
-      successful,
-      failed,
-      message: result.message,
-    });
-
-    setImportResult(result);
-    setCompletedSteps((prev) => new Set([...prev, "import"]));
-
-    if (result.success) {
-      onSuccess?.(result);
-    }
-  }, [parsedData, validation, onSuccess]);
+  }, [
+    backendValidation,
+    mappings,
+    model,
+    onSuccess,
+    parsedData?.totalRows,
+    selectedFile,
+    validation,
+  ]);
 
   // Reset wizard
   const handleClose = useCallback(() => {
@@ -755,6 +900,9 @@ export function CSVImportWizard({
     setParsedData(null);
     setMappings([]);
     setValidation(null);
+    setBackendPreview(null);
+    setBackendValidation(null);
+    setIsLoading(false);
     setImportProgress({
       status: "idle",
       processed: 0,
@@ -773,17 +921,20 @@ export function CSVImportWizard({
   const canProceed = useMemo(() => {
     switch (currentStep) {
       case "upload":
-        return parsedData !== null && !parseError;
+        return parsedData !== null && !parseError && !isLoading;
       case "mapping":
-        return requiredFieldsMapped;
-      case "validation":
-        return validation !== null && validation.validRows > 0;
+        return requiredFieldsMapped && !isLoading;
+      case "validation": {
+        // Use backend validation if available, otherwise fall back to local
+        const validCount = backendValidation?.valid_count ?? validation?.validRows ?? 0;
+        return validCount > 0 && !isLoading;
+      }
       case "import":
         return importResult !== null;
       default:
         return false;
     }
-  }, [currentStep, parsedData, parseError, requiredFieldsMapped, validation, importResult]);
+  }, [currentStep, parsedData, parseError, requiredFieldsMapped, validation, backendValidation, importResult, isLoading]);
 
   const isImporting = importProgress.status === "importing";
 
@@ -817,15 +968,31 @@ export function CSVImportWizard({
               selectedFile={selectedFile}
               maxFileSize={maxFileSize}
               error={parseError || undefined}
-              disabled={isImporting}
+              disabled={isImporting || isLoading}
             />
-            {parsedData && (
+            {isLoading && (
+              <div className="p-3 rounded-[var(--radius-md)] bg-[var(--color-card)] border border-[var(--color-border)]">
+                <p className="text-sm text-[var(--color-muted)] flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+                  Analyzing CSV file...
+                </p>
+              </div>
+            )}
+            {!isLoading && parsedData && (
               <div className="p-3 rounded-[var(--radius-md)] bg-[var(--color-success)]/10 border border-[var(--color-success)]/20">
                 <p className="text-sm text-[var(--color-success)]">
                   <CheckIcon className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
                   File parsed successfully: {parsedData.headers.length} columns,{" "}
-                  {parsedData.totalRows.toLocaleString()} rows
+                  {(backendPreview?.total_rows ?? parsedData.totalRows).toLocaleString()} rows
                 </p>
+                {backendPreview && (
+                  <p className="text-xs text-[var(--color-muted)] mt-1">
+                    Detected delimiter:{" "}
+                    {backendPreview.delimiter === "," ? "comma" : backendPreview.delimiter === "\t" ? "tab" : backendPreview.delimiter}
+                    {" | "}
+                    Encoding: {backendPreview.encoding}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -838,6 +1005,8 @@ export function CSVImportWizard({
             mappings={mappings}
             onMappingsChange={setMappings}
             showAutoDetection
+            columnTypes={backendPreview?.column_types}
+            showTransforms
           />
         )}
 
@@ -847,6 +1016,10 @@ export function CSVImportWizard({
             mappings={mappings}
             modelFields={fields}
             validation={validation || undefined}
+            backendValidation={backendValidation || undefined}
+            delimiter={backendPreview?.delimiter}
+            encoding={backendPreview?.encoding}
+            totalRows={backendPreview?.total_rows}
             previewRows={DEFAULT_PREVIEW_ROWS}
           />
         )}
@@ -889,18 +1062,20 @@ export function CSVImportWizard({
               loading={isImporting}
               leftIcon={!isImporting ? <UploadIcon className="w-4 h-4" /> : undefined}
             >
-              {validation
-                ? `Import ${validation.validRows.toLocaleString()} Row${validation.validRows !== 1 ? "s" : ""}`
-                : "Import"}
+              {(() => {
+                const validCount = backendValidation?.valid_count ?? validation?.validRows ?? 0;
+                return `Import ${validCount.toLocaleString()} Row${validCount !== 1 ? "s" : ""}`;
+              })()}
             </Button>
           ) : currentStep !== "import" ? (
             <Button
               variant="primary"
               onClick={handleNext}
               disabled={!canProceed}
-              rightIcon={<ArrowRightIcon className="w-4 h-4" />}
+              loading={isLoading}
+              rightIcon={!isLoading ? <ArrowRightIcon className="w-4 h-4" /> : undefined}
             >
-              Next
+              {isLoading ? "Validating..." : "Next"}
             </Button>
           ) : null}
         </ModalFooter>

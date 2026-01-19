@@ -28,6 +28,9 @@ import type {
   ExportFormat,
   FileDeleteResponse,
   FileUploadResponse,
+  ImportExecuteResponse,
+  ImportPreviewResponse,
+  ImportValidationResponse,
   LinkInfo,
   ListQueryParams,
   ListRecordsResponse,
@@ -1285,6 +1288,141 @@ export class AdminApiClient {
       },
     );
   }
+
+  // ==========================================================================
+  // CSV Import Endpoints
+  // ==========================================================================
+
+  /**
+   * Preview a CSV file for import.
+   * Parses the file and returns detected types, schema info, and preview rows.
+   * @param model - The model name to import into
+   * @param file - The CSV file to preview
+   */
+  async previewImport(model: string, file: File): Promise<ImportPreviewResponse> {
+    const formData = new FormData();
+    formData.append("data", file);
+
+    const accessToken = this.tokenStorage.getAccessToken();
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(
+      `${this.config.baseUrl}/api/models/${encodeURIComponent(model)}/import/preview`,
+      {
+        method: "POST",
+        headers,
+        body: formData,
+      },
+    );
+
+    if (!response.ok) {
+      const errorResponse = await parseErrorResponse(response);
+      throw createApiError(
+        errorResponse?.detail ?? response.statusText,
+        response.status,
+        response.statusText,
+        errorResponse ?? undefined,
+      );
+    }
+
+    return response.json() as Promise<ImportPreviewResponse>;
+  }
+
+  /**
+   * Validate CSV data with column mappings.
+   * Returns validation errors and counts.
+   * @param model - The model name to import into
+   * @param file - The CSV file to validate
+   * @param columnMappings - Array of column mappings
+   */
+  async validateImport(
+    model: string,
+    file: File,
+    columnMappings: { csv_column: string; model_field: string; transform?: string }[],
+  ): Promise<ImportValidationResponse> {
+    const formData = new FormData();
+    formData.append("data", file);
+
+    const accessToken = this.tokenStorage.getAccessToken();
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    // Add column_mappings as query parameters (Litestar expects this for JSON body with file upload)
+    const url = new URL(
+      `${this.config.baseUrl}/api/models/${encodeURIComponent(model)}/import/validate`,
+      window.location.origin,
+    );
+    url.searchParams.set("column_mappings", JSON.stringify(columnMappings));
+
+    const response = await fetch(url.toString(), {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorResponse = await parseErrorResponse(response);
+      throw createApiError(
+        errorResponse?.detail ?? response.statusText,
+        response.status,
+        response.statusText,
+        errorResponse ?? undefined,
+      );
+    }
+
+    return response.json() as Promise<ImportValidationResponse>;
+  }
+
+  /**
+   * Execute CSV import with column mappings.
+   * Currently a stub - will be implemented in task 9.7.4.
+   * @param model - The model name to import into
+   * @param file - The CSV file to import
+   * @param columnMappings - Array of column mappings
+   */
+  async executeImport(
+    model: string,
+    file: File,
+    columnMappings: { csv_column: string; model_field: string; transform?: string }[],
+  ): Promise<ImportExecuteResponse> {
+    const formData = new FormData();
+    formData.append("data", file);
+
+    const accessToken = this.tokenStorage.getAccessToken();
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const url = new URL(
+      `${this.config.baseUrl}/api/models/${encodeURIComponent(model)}/import/execute`,
+      window.location.origin,
+    );
+    url.searchParams.set("column_mappings", JSON.stringify(columnMappings));
+
+    const response = await fetch(url.toString(), {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorResponse = await parseErrorResponse(response);
+      throw createApiError(
+        errorResponse?.detail ?? response.statusText,
+        response.status,
+        response.statusText,
+        errorResponse ?? undefined,
+      );
+    }
+
+    return response.json() as Promise<ImportExecuteResponse>;
+  }
 }
 
 // ============================================================================
@@ -1404,6 +1542,19 @@ export const api = {
     apiClient.searchRelationship(model, field, params),
   getRelationshipOptions: (model: string, field: string, ids: (string | number)[]) =>
     apiClient.getRelationshipOptions(model, field, ids),
+
+  // CSV Import
+  previewImport: (model: string, file: File) => apiClient.previewImport(model, file),
+  validateImport: (
+    model: string,
+    file: File,
+    columnMappings: { csv_column: string; model_field: string; transform?: string }[],
+  ) => apiClient.validateImport(model, file, columnMappings),
+  executeImport: (
+    model: string,
+    file: File,
+    columnMappings: { csv_column: string; model_field: string; transform?: string }[],
+  ) => apiClient.executeImport(model, file, columnMappings),
 };
 
 // Re-export types for convenience
