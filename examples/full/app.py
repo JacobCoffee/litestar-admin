@@ -239,12 +239,26 @@ This article is under review...
         for article in articles:
             session.add(article)
 
-        # Associate tags with articles
+        # Flush to get IDs assigned
         await session.flush()
 
-        # Add tags to articles (first two articles get some tags)
-        articles[0].tags.extend([tags[0], tags[1], tags[2]])  # Python, Litestar, Tutorial
-        articles[1].tags.extend([tags[1], tags[3]])  # Litestar, Admin
+        # Associate tags with articles using direct insert into association table
+        # This avoids async lazy loading issues
+        from examples.full.models import ArticleTag
+
+        await session.execute(
+            ArticleTag.insert().values(
+                [
+                    # Article 1 (Getting Started): Python, Litestar, Tutorial
+                    {"article_id": articles[0].id, "tag_id": tags[0].id},
+                    {"article_id": articles[0].id, "tag_id": tags[1].id},
+                    {"article_id": articles[0].id, "tag_id": tags[2].id},
+                    # Article 2 (Advanced Auth): Litestar, Admin
+                    {"article_id": articles[1].id, "tag_id": tags[1].id},
+                    {"article_id": articles[1].id, "tag_id": tags[3].id},
+                ]
+            )
+        )
 
         await session.commit()
         logger.info("Demo data seeded successfully")
