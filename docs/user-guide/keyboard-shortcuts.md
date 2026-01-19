@@ -64,7 +64,38 @@ litestar-admin provides several built-in keyboard shortcuts:
 | `Cmd/Ctrl + Shift + H` | Go to dashboard | Navigation |
 | `Cmd/Ctrl + S` | Save current item | Actions |
 | `Cmd/Ctrl + N` | Create new item | Actions |
+| `?` | Show keyboard shortcuts help | General |
 | `Escape` | Close modal or cancel | General |
+
+## Keyboard Shortcuts Help Modal
+
+Press `?` (Shift + /) anywhere in the admin panel to open the keyboard shortcuts help modal. This displays all available shortcuts organized by category:
+
+- **Command Palette**: Shortcuts for opening and navigating the command palette
+- **Navigation**: Page navigation shortcuts
+- **Actions**: Common action shortcuts (save, create new)
+- **Table Navigation**: Keyboard navigation for data tables
+- **General**: Modal and general shortcuts
+
+You can also access this from the command palette by typing "Keyboard Shortcuts".
+
+## Configuring Keyboard Features
+
+Keyboard navigation features can be configured in **Settings > Table Settings**:
+
+### Keyboard Navigation Toggle
+
+Enable or disable keyboard navigation for data tables. When enabled:
+- Arrow keys navigate between rows
+- Home/End jump to first/last row
+- Page Up/Down change pages
+- Enter/Space activate rows
+
+### Show Keyboard Hints
+
+Display a footer bar at the bottom of tables showing available keyboard shortcuts. This helps users discover keyboard navigation features.
+
+Settings are persisted in localStorage and apply to all tables in the admin panel.
 
 ## Table Keyboard Navigation
 
