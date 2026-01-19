@@ -60,6 +60,17 @@ from litestar_admin.controllers.models import (
     ModelsController,
 )
 from litestar_admin.controllers.oauth import OAuthController
+from litestar_admin.controllers.users import (
+    ActivateDeactivateResponse,
+    UserCreateRequest,
+    UserListRequest,
+    UserListResponse,
+    UserManagementController,
+    UserUpdateRequest,
+)
+from litestar_admin.controllers.users import (
+    UserResponse as UserManagementUserResponse,
+)
 
 __all__ = [
     # Controllers
@@ -75,6 +86,7 @@ __all__ = [
     "ModelsController",
     "OAuthController",
     "PagesController",
+    "UserManagementController",
     # DTOs - Auth
     "LoginRequest",
     "LogoutResponse",
@@ -114,4 +126,11 @@ __all__ = [
     "DeleteResponse",
     "ListRecordsResponse",
     "ModelInfo",
+    # DTOs - User Management
+    "ActivateDeactivateResponse",
+    "UserCreateRequest",
+    "UserListRequest",
+    "UserListResponse",
+    "UserManagementUserResponse",
+    "UserUpdateRequest",
 ]

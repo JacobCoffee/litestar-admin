@@ -154,6 +154,7 @@ class AdminPlugin(InitPluginProtocol):
             ModelsController,
             OAuthController,
             PagesController,
+            UserManagementController,
         )
 
         # Create a router at the admin base URL for all API endpoints
@@ -174,6 +175,7 @@ class AdminPlugin(InitPluginProtocol):
                 ModelsController,
                 OAuthController,
                 PagesController,
+                UserManagementController,
             ],
         )
 

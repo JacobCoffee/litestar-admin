@@ -62,7 +62,11 @@ class Permission(str, Enum):
         MODELS_DELETE: Permission to delete model records.
         MODELS_EXPORT: Permission to export model data.
         DASHBOARD_VIEW: Permission to view the admin dashboard.
-        USERS_MANAGE: Permission to manage admin users.
+        USERS_MANAGE: Permission to manage admin users (legacy).
+        USERS_READ: Permission to read/list admin users.
+        USERS_CREATE: Permission to create admin users.
+        USERS_EDIT: Permission to edit admin users.
+        USERS_DELETE: Permission to delete admin users.
         SETTINGS_MANAGE: Permission to manage admin settings.
         AUDIT_VIEW: Permission to view audit logs.
     """
@@ -73,6 +77,10 @@ class Permission(str, Enum):
     MODELS_EXPORT = "models:export"
     DASHBOARD_VIEW = "dashboard:view"
     USERS_MANAGE = "users:manage"
+    USERS_READ = "users:read"
+    USERS_CREATE = "users:create"
+    USERS_EDIT = "users:edit"
+    USERS_DELETE = "users:delete"
     SETTINGS_MANAGE = "settings:manage"
     AUDIT_VIEW = "audit:view"
 
@@ -115,6 +123,10 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.MODELS_DELETE,
         Permission.MODELS_EXPORT,
         Permission.USERS_MANAGE,
+        Permission.USERS_READ,
+        Permission.USERS_CREATE,
+        Permission.USERS_EDIT,
+        Permission.USERS_DELETE,
         Permission.AUDIT_VIEW,
     },
     Role.SUPERADMIN: {
@@ -124,6 +136,10 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
         Permission.MODELS_EXPORT,
         Permission.DASHBOARD_VIEW,
         Permission.USERS_MANAGE,
+        Permission.USERS_READ,
+        Permission.USERS_CREATE,
+        Permission.USERS_EDIT,
+        Permission.USERS_DELETE,
         Permission.SETTINGS_MANAGE,
         Permission.AUDIT_VIEW,
     },
