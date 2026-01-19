@@ -265,11 +265,14 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 async def create_tables() -> None:
     """Create all database tables."""
     from litestar_admin.audit.models import AuditLogBase
+    from litestar_admin.auth.models import AdminUserBase
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
         # Also create audit log tables
         await conn.run_sync(AuditLogBase.metadata.create_all)
+        # Create admin user tables (for the /admin/users page)
+        await conn.run_sync(AdminUserBase.metadata.create_all)
     logger.info("Database tables created")
 
 

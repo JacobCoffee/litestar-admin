@@ -167,7 +167,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       category: "Navigation",
       icon: <HomeIcon className="h-4 w-4" />,
       shortcut: formatShortcutDisplay("H", ["meta", "shift"]),
-      onSelect: () => router.push("/admin"),
+      onSelect: () => router.push("/"),
     });
 
     items.push({
@@ -216,7 +216,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         category: "Models",
         icon: <TableIcon className="h-4 w-4" />,
         keywords: [modelId, model.name, "model", "table"],
-        onSelect: () => router.push(`/admin/models/${modelId}`),
+        onSelect: () => router.push(`/models/${modelId}`),
       });
 
       if (model.can_create) {
@@ -227,7 +227,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
           category: "Actions",
           icon: <PlusIcon className="h-4 w-4" />,
           keywords: [modelId, model.name, "create", "new", "add"],
-          onSelect: () => router.push(`/admin/models/${modelId}/new`),
+          onSelect: () => router.push(`/models/${modelId}/new`),
         });
       }
     }
@@ -241,7 +241,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         category: "Actions",
         icon: <ZapIcon className="h-4 w-4" />,
         keywords: [action.identity, "action", "run"],
-        onSelect: () => router.push(`/admin/actions/${action.identity}`),
+        onSelect: () => router.push(`/actions/${action.identity}`),
       });
     }
 
@@ -254,7 +254,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         category: "Pages",
         icon: <FileTextIcon className="h-4 w-4" />,
         keywords: [page.identity, "page"],
-        onSelect: () => router.push(`/admin/pages/${page.identity}`),
+        onSelect: () => router.push(`/pages/${page.identity}`),
       });
     }
 
@@ -267,7 +267,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         category: "Embeds",
         icon: <LayoutIcon className="h-4 w-4" />,
         keywords: [embed.identity, "embed"],
-        onSelect: () => router.push(`/admin/embeds/${embed.identity}`),
+        onSelect: () => router.push(`/embeds/${embed.identity}`),
       });
     }
 
@@ -280,7 +280,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         category: "Custom Views",
         icon: <TableIcon className="h-4 w-4" />,
         keywords: [view.identity, "custom", "view"],
-        onSelect: () => router.push(`/admin/custom/${view.identity}`),
+        onSelect: () => router.push(`/custom/${view.identity}`),
       });
     }
 

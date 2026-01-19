@@ -522,7 +522,7 @@ export function UserListPage() {
           <UserActionDropdown
             user={row}
             onEdit={() => {
-              window.location.href = `/admin/users/${row.id}`;
+              window.location.href = `/users/${row.id}`;
             }}
             onDelete={() => handleDelete(row)}
             onActivate={() => handleActivate(row.id)}
