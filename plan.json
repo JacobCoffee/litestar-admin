@@ -4,16 +4,14 @@
     "project": "litestar-admin",
     "version": "0.2.0",
     "created_at": "2026-01-18T00:00:00Z",
-    "updated_at": "2026-01-18T00:00:00Z",
-    "business_plan_path": "./ARCHITECTURE.md"
+    "updated_at": "2026-01-19T07:33:42.178166Z",
+    "business_plan_path": "./.claude/docs/COMPETITIVE_ANALYSIS.md"
   },
   "summary": {
-    "total_phases": 7,
-    "total_tasks": 60,
-    "completed_tasks": 60,
-    "in_progress_tasks": 0,
-    "blocked_tasks": 0,
-    "overall_progress": 100
+    "total_phases": 15,
+    "total_tasks": 156,
+    "completed_tasks": 81,
+    "overall_progress": 51.92307692307693
   },
   "phases": [
     {
@@ -21,14 +19,73 @@
       "name": "Core Foundation",
       "description": "Establish project structure and core plugin mechanics",
       "status": "completed",
-      "progress": {"completed": 6, "total": 6, "percentage": 100},
+      "progress": {
+        "completed": 6,
+        "total": 6,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "0.1.1", "title": "Initialize repository structure", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "0.1.2", "title": "Implement AdminPlugin", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["0.1.1"], "tracking": {}},
-        {"id": "0.1.3", "title": "Implement AdminConfig", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["0.1.1"], "tracking": {}},
-        {"id": "0.1.4", "title": "Implement ModelRegistry", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["0.1.1"], "tracking": {}},
-        {"id": "0.1.5", "title": "Create BaseModelView", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["0.1.4"], "tracking": {}},
-        {"id": "0.1.6", "title": "Unit tests for core components", "status": "completed", "agent_type": "Python Testing Expert", "depends_on": ["0.1.2", "0.1.3", "0.1.4", "0.1.5"], "tracking": {}}
+        {
+          "id": "0.1.1",
+          "title": "Initialize repository structure",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "0.1.2",
+          "title": "Implement AdminPlugin",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "0.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "0.1.3",
+          "title": "Implement AdminConfig",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "0.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "0.1.4",
+          "title": "Implement ModelRegistry",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "0.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "0.1.5",
+          "title": "Create BaseModelView",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "0.1.4"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "0.1.6",
+          "title": "Unit tests for core components",
+          "status": "completed",
+          "agent_type": "Python Testing Expert",
+          "depends_on": [
+            "0.1.2",
+            "0.1.3",
+            "0.1.4",
+            "0.1.5"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -36,15 +93,75 @@
       "name": "Model Views & CRUD",
       "description": "Implement model administration functionality",
       "status": "completed",
-      "progress": {"completed": 7, "total": 7, "percentage": 100},
+      "progress": {
+        "completed": 7,
+        "total": 7,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "1.1.1", "title": "Implement auto-discovery", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "1.1.2", "title": "Create AdminService", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "1.1.3", "title": "Implement ModelsController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["1.1.2"], "tracking": {}},
-        {"id": "1.1.4", "title": "Implement DashboardController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "1.1.5", "title": "Implement ExportController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "1.1.6", "title": "Implement BulkActionsController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "1.1.7", "title": "Integration tests with database", "status": "completed", "agent_type": "Python Testing Expert", "depends_on": ["1.1.3", "1.1.4", "1.1.5", "1.1.6"], "tracking": {}}
+        {
+          "id": "1.1.1",
+          "title": "Implement auto-discovery",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.2",
+          "title": "Create AdminService",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.3",
+          "title": "Implement ModelsController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "1.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.4",
+          "title": "Implement DashboardController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.5",
+          "title": "Implement ExportController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.6",
+          "title": "Implement BulkActionsController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "1.1.7",
+          "title": "Integration tests with database",
+          "status": "completed",
+          "agent_type": "Python Testing Expert",
+          "depends_on": [
+            "1.1.3",
+            "1.1.4",
+            "1.1.5",
+            "1.1.6"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -52,15 +169,77 @@
       "name": "Authentication & Authorization",
       "description": "Implement security layer",
       "status": "completed",
-      "progress": {"completed": 7, "total": 7, "percentage": 100},
+      "progress": {
+        "completed": 7,
+        "total": 7,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "2.1.1", "title": "Define AuthBackend protocol", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "2.1.2", "title": "Implement JWTAuthBackend", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["2.1.1"], "tracking": {}},
-        {"id": "2.1.3", "title": "Implement AuthController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["2.1.2"], "tracking": {}},
-        {"id": "2.1.4", "title": "Implement RBAC guards", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "2.1.5", "title": "Implement AuditLogger", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "2.1.6", "title": "Add rate limiting middleware", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "2.1.7", "title": "Security tests", "status": "completed", "agent_type": "Python Testing Expert", "depends_on": ["2.1.3", "2.1.4", "2.1.5", "2.1.6"], "tracking": {}}
+        {
+          "id": "2.1.1",
+          "title": "Define AuthBackend protocol",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.2",
+          "title": "Implement JWTAuthBackend",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "2.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.3",
+          "title": "Implement AuthController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "2.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.4",
+          "title": "Implement RBAC guards",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.5",
+          "title": "Implement AuditLogger",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.6",
+          "title": "Add rate limiting middleware",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "2.1.7",
+          "title": "Security tests",
+          "status": "completed",
+          "agent_type": "Python Testing Expert",
+          "depends_on": [
+            "2.1.3",
+            "2.1.4",
+            "2.1.5",
+            "2.1.6"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -68,14 +247,70 @@
       "name": "Frontend Foundation",
       "description": "Create the Next.js admin UI foundation",
       "status": "completed",
-      "progress": {"completed": 6, "total": 6, "percentage": 100},
+      "progress": {
+        "completed": 6,
+        "total": 6,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "3.1.1", "title": "Initialize Next.js project", "status": "completed", "agent_type": "ui-engineer", "depends_on": [], "tracking": {}},
-        {"id": "3.1.2", "title": "Create base UI components", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["3.1.1"], "tracking": {}},
-        {"id": "3.1.3", "title": "Implement layout components", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["3.1.2"], "tracking": {}},
-        {"id": "3.1.4", "title": "Create Dashboard page", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["3.1.3"], "tracking": {}},
-        {"id": "3.1.5", "title": "Implement API client", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["3.1.1"], "tracking": {}},
-        {"id": "3.1.6", "title": "Implement authentication UI", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["3.1.5"], "tracking": {}}
+        {
+          "id": "3.1.1",
+          "title": "Initialize Next.js project",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "3.1.2",
+          "title": "Create base UI components",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "3.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "3.1.3",
+          "title": "Implement layout components",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "3.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "3.1.4",
+          "title": "Create Dashboard page",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "3.1.3"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "3.1.5",
+          "title": "Implement API client",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "3.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "3.1.6",
+          "title": "Implement authentication UI",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "3.1.5"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -83,16 +318,89 @@
       "name": "Frontend CRUD Views",
       "description": "Complete model management UI",
       "status": "completed",
-      "progress": {"completed": 8, "total": 8, "percentage": 100},
+      "progress": {
+        "completed": 8,
+        "total": 8,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "4.1.1", "title": "Create DataTable component", "status": "completed", "agent_type": "ui-engineer", "depends_on": [], "tracking": {}},
-        {"id": "4.1.2", "title": "Implement filtering and search", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.1"], "tracking": {}},
-        {"id": "4.1.3", "title": "Create model list page", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.1", "4.1.2"], "tracking": {}},
-        {"id": "4.1.4", "title": "Create record form component", "status": "completed", "agent_type": "ui-engineer", "depends_on": [], "tracking": {}},
-        {"id": "4.1.5", "title": "Create record detail page", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.4"], "tracking": {}},
-        {"id": "4.1.6", "title": "Create record create page", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.4"], "tracking": {}},
-        {"id": "4.1.7", "title": "Implement bulk actions", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.3"], "tracking": {}},
-        {"id": "4.1.8", "title": "Implement export UI", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["4.1.3"], "tracking": {}}
+        {
+          "id": "4.1.1",
+          "title": "Create DataTable component",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.2",
+          "title": "Implement filtering and search",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.3",
+          "title": "Create model list page",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.1",
+            "4.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.4",
+          "title": "Create record form component",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.5",
+          "title": "Create record detail page",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.4"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.6",
+          "title": "Create record create page",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.4"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.7",
+          "title": "Implement bulk actions",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.3"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "4.1.8",
+          "title": "Implement export UI",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "4.1.3"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -100,17 +408,89 @@
       "name": "Integration & Polish",
       "description": "Complete integration and prepare for release",
       "status": "completed",
-      "progress": {"completed": 9, "total": 9, "percentage": 100},
+      "progress": {
+        "completed": 9,
+        "total": 9,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "5.1.1", "title": "Configure static export build", "status": "completed", "agent_type": "ui-engineer", "depends_on": [], "tracking": {}},
-        {"id": "5.1.2", "title": "Integrate static serving", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["5.1.1"], "tracking": {}},
-        {"id": "5.1.3", "title": "Implement sqladmin bridge", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "5.1.4", "title": "Implement litestar-oauth integration", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "5.1.5", "title": "Write API documentation", "status": "completed", "agent_type": "documentation-expert", "depends_on": [], "tracking": {}},
-        {"id": "5.1.6", "title": "Write user documentation", "status": "completed", "agent_type": "documentation-expert", "depends_on": [], "tracking": {}},
-        {"id": "5.1.7", "title": "Performance optimization", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}},
-        {"id": "5.1.8", "title": "Accessibility audit", "status": "completed", "agent_type": "ui-engineer", "depends_on": [], "tracking": {}},
-        {"id": "5.1.9", "title": "Final testing and bug fixes", "status": "completed", "agent_type": "Python Testing Expert", "depends_on": ["5.1.1", "5.1.2"], "tracking": {}}
+        {
+          "id": "5.1.1",
+          "title": "Configure static export build",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.2",
+          "title": "Integrate static serving",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "5.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.3",
+          "title": "Implement sqladmin bridge",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.4",
+          "title": "Implement litestar-oauth integration",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.5",
+          "title": "Write API documentation",
+          "status": "completed",
+          "agent_type": "documentation-expert",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.6",
+          "title": "Write user documentation",
+          "status": "completed",
+          "agent_type": "documentation-expert",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.7",
+          "title": "Performance optimization",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.8",
+          "title": "Accessibility audit",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "5.1.9",
+          "title": "Final testing and bug fixes",
+          "status": "completed",
+          "agent_type": "Python Testing Expert",
+          "depends_on": [
+            "5.1.1",
+            "5.1.2"
+          ],
+          "tracking": {}
+        }
       ]
     },
     {
@@ -118,35 +498,1262 @@
       "name": "Examples",
       "description": "Example applications demonstrating features",
       "status": "completed",
-      "progress": {"completed": 1, "total": 1, "percentage": 100},
+      "progress": {
+        "completed": 1,
+        "total": 1,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "6.1.1", "title": "Create example applications", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": [], "tracking": {}}
+        {
+          "id": "6.1.1",
+          "title": "Create example applications",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        }
       ]
     },
     {
       "id": "7",
       "name": "Custom Views (Non-Model)",
-      "description": "Enable admin views for non-SQLAlchemy data sources: external APIs, custom pages, action forms, and arbitrary data providers",
+      "description": "Enable admin views for non-SQLAlchemy data sources",
       "status": "completed",
-      "progress": {"completed": 16, "total": 16, "percentage": 100},
+      "progress": {
+        "completed": 16,
+        "total": 16,
+        "percentage": 100.0
+      },
       "tasks": [
-        {"id": "7.1.1", "title": "Create BaseAdminView abstract class", "status": "completed", "agent_type": "python-backend-architect", "depends_on": [], "tracking": {}},
-        {"id": "7.1.2", "title": "Create CustomView class", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.1"], "tracking": {}},
-        {"id": "7.1.3", "title": "Create ActionView class", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.1"], "tracking": {}},
-        {"id": "7.1.4", "title": "Create PageView class", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.1"], "tracking": {}},
-        {"id": "7.1.5", "title": "Create LinkView class", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.1"], "tracking": {}},
-        {"id": "7.1.6", "title": "Refactor ViewRegistry to support all view types", "status": "completed", "agent_type": "python-backend-architect", "depends_on": ["7.1.2", "7.1.3", "7.1.4", "7.1.5"], "tracking": {}},
-        {"id": "7.1.7", "title": "Create CustomViewsController", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.6"], "tracking": {}},
-        {"id": "7.1.8", "title": "Implement example data providers", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.2"], "tracking": {}},
-        {"id": "7.1.9", "title": "Frontend: Custom view routing and components", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["7.1.7"], "tracking": {}},
-        {"id": "7.1.10", "title": "Frontend: Custom view forms and actions", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["7.1.9"], "tracking": {}},
-        {"id": "7.1.11", "title": "Update AdminConfig for custom views", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.6"], "tracking": {}},
-        {"id": "7.1.12", "title": "Unit and integration tests for custom views", "status": "completed", "agent_type": "Python Testing Expert", "depends_on": ["7.1.7", "7.1.8", "7.1.13"], "tracking": {}},
-        {"id": "7.1.13", "title": "Create EmbedView class (Admin Shell)", "status": "completed", "agent_type": "python-backend-engineer", "depends_on": ["7.1.1"], "tracking": {}},
-        {"id": "7.1.14", "title": "Frontend: Component registry and embed rendering", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["7.1.13", "7.1.9"], "tracking": {}},
-        {"id": "7.1.15", "title": "Admin shell layout API", "status": "completed", "agent_type": "ui-engineer", "depends_on": ["7.1.14"], "tracking": {}},
-        {"id": "7.1.16", "title": "Documentation for custom views and embeds", "status": "completed", "agent_type": "documentation-expert", "depends_on": ["7.1.12", "7.1.15"], "tracking": {}}
+        {
+          "id": "7.1.1",
+          "title": "Create BaseAdminView abstract class",
+          "status": "completed",
+          "agent_type": "python-backend-architect",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.2",
+          "title": "Create CustomView class",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.3",
+          "title": "Create ActionView class",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.4",
+          "title": "Create PageView class",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.5",
+          "title": "Create LinkView class",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.6",
+          "title": "Refactor ViewRegistry to support all view types",
+          "status": "completed",
+          "agent_type": "python-backend-architect",
+          "depends_on": [
+            "7.1.2",
+            "7.1.3",
+            "7.1.4",
+            "7.1.5"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.7",
+          "title": "Create CustomViewsController",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.6"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.8",
+          "title": "Implement example data providers",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.9",
+          "title": "Frontend: Custom view routing and components",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "7.1.7"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.10",
+          "title": "Frontend: Custom view forms and actions",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "7.1.9"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.11",
+          "title": "Update AdminConfig for custom views",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.6"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.12",
+          "title": "Unit and integration tests for custom views",
+          "status": "completed",
+          "agent_type": "Python Testing Expert",
+          "depends_on": [
+            "7.1.7",
+            "7.1.8",
+            "7.1.13"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.13",
+          "title": "Create EmbedView class",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "7.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.14",
+          "title": "Frontend: Component registry and embed rendering",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "7.1.13",
+            "7.1.9"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.15",
+          "title": "Admin shell layout API",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "7.1.14"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "7.1.16",
+          "title": "Documentation for custom views and embeds",
+          "status": "completed",
+          "agent_type": "documentation-expert",
+          "depends_on": [
+            "7.1.12",
+            "7.1.15"
+          ],
+          "tracking": {}
+        }
       ]
+    },
+    {
+      "id": "8",
+      "name": "Foundation v0.2.0",
+      "description": "Fill critical gaps for production use - Audit UI, User Management, File Upload, Relationships",
+      "status": "completed",
+      "progress": {
+        "completed": 21,
+        "total": 21,
+        "percentage": 100.0
+      },
+      "tasks": [
+        {
+          "id": "8.1.1",
+          "title": "Create AuditLogController with list/filter endpoints",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "8.1.2",
+          "title": "Add date range and actor filtering to audit API",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "8.1.3",
+          "title": "Create Audit Log UI page with DataTable",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "8.2.1",
+          "title": "Create AdminUser model with password hashing",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {
+            "completed_at": "2026-01-19T06:47:01.602945Z"
+          }
+        },
+        {
+          "id": "8.2.2",
+          "title": "Implement UserManagement CRUD endpoints",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.2.1"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T06:52:18.588611Z"
+          }
+        },
+        {
+          "id": "8.2.3",
+          "title": "Create User Management UI with role assignment",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.2.2"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:08:13.701255Z"
+          }
+        },
+        {
+          "id": "8.2.4",
+          "title": "Add password change and reset functionality",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.2.2"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:15:45.469604Z"
+          }
+        },
+        {
+          "id": "8.3.1",
+          "title": "Integrate litestar-storages for file backend",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {
+            "completed_at": "2026-01-19T07:08:13.770591Z"
+          }
+        },
+        {
+          "id": "8.3.2",
+          "title": "Create FileUpload form field with validation",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.3.1"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:26:13.955253Z"
+          }
+        },
+        {
+          "id": "8.3.3",
+          "title": "Create FileUpload UI component with preview",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.3.2"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:33:20.630366Z"
+          }
+        },
+        {
+          "id": "8.3.4",
+          "title": "Add image thumbnail generation",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.3.2"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:33:20.698843Z"
+          }
+        },
+        {
+          "id": "8.4.1",
+          "title": "Create relationship detection from SQLAlchemy models",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {
+            "completed_at": "2026-01-19T07:15:45.539221Z"
+          }
+        },
+        {
+          "id": "8.4.2",
+          "title": "Implement FK autocomplete search endpoint",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.4.1"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:26:14.024981Z"
+          }
+        },
+        {
+          "id": "8.4.3",
+          "title": "Create Select2-style RelationshipPicker component",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.4.2"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:33:20.769723Z"
+          }
+        },
+        {
+          "id": "8.4.4",
+          "title": "Implement M2M multi-select widget",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.4.3"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:33:42.177999Z"
+          }
+        },
+        {
+          "id": "8.5.1",
+          "title": "Create AdminSettings model with JSON storage",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {
+            "completed_at": "2026-01-19T07:15:45.606775Z"
+          }
+        },
+        {
+          "id": "8.5.2",
+          "title": "Implement Settings CRUD API",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.5.1"
+          ],
+          "tracking": {
+            "completed_at": "2026-01-19T07:26:14.096136Z"
+          }
+        },
+        {
+          "id": "8.5.3",
+          "title": "Create Settings configuration UI page",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "8.5.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "8.6.1",
+          "title": "Add DateRangePicker filter component",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "8.6.2",
+          "title": "Integrate date range filtering with backend",
+          "status": "completed",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "8.6.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "8.7.1",
+          "title": "Add bulk action confirmation dialogs",
+          "status": "completed",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Polish v0.3.0",
+      "description": "QOL improvements and competitive parity - Column visibility, search highlighting, keyboard shortcuts",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 18,
+        "percentage": 0.0
+      },
+      "tasks": [
+        {
+          "id": "9.1.1",
+          "title": "Create column visibility toggle component",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.1.2",
+          "title": "Persist column preferences to localStorage",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "9.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.2.1",
+          "title": "Implement search term highlighting in DataTable",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.3.1",
+          "title": "Create keyboard shortcut system (Cmd+K search)",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.3.2",
+          "title": "Add keyboard navigation for tables",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "9.3.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.3.3",
+          "title": "Create keyboard shortcuts help modal",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "9.3.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.4.1",
+          "title": "Create Fieldset component with collapsible sections",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.4.2",
+          "title": "Add fieldset configuration to ModelView",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.4.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.5.1",
+          "title": "Integrate TinyMCE or Tiptap rich text editor",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.5.2",
+          "title": "Create RichTextField form field type",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.5.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.5.3",
+          "title": "Add XSS sanitization for rich text content",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.5.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.6.1",
+          "title": "Add openpyxl dependency for Excel export",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.6.2",
+          "title": "Implement XLSX export endpoint",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.6.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.6.3",
+          "title": "Add Excel export option to UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "9.6.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.7.1",
+          "title": "Create CSV import wizard UI with preview",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "9.7.2",
+          "title": "Implement CSV parsing and validation backend",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.7.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.7.3",
+          "title": "Add column mapping and import preview",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "9.7.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "9.7.4",
+          "title": "Implement batch import with error handling",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "9.7.3"
+          ],
+          "tracking": {}
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Enterprise v0.4.0",
+      "description": "Enterprise-ready features - 2FA, Session Management, RBAC UI, Row-Level Security",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 21,
+        "percentage": 0.0
+      },
+      "tasks": [
+        {
+          "id": "10.1.1",
+          "title": "Implement TOTP secret generation and storage",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.1.2",
+          "title": "Create 2FA setup and verification endpoints",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.1.3",
+          "title": "Create 2FA setup UI with QR code",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.1.4",
+          "title": "Add 2FA verification to login flow",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.1.3"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.2.1",
+          "title": "Create Session model with tracking",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.2.2",
+          "title": "Implement session list and revoke endpoints",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.2.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.2.3",
+          "title": "Create Active Sessions UI page",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.2.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.3.1",
+          "title": "Create Role and Permission models",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.3.2",
+          "title": "Implement Role/Permission CRUD API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.3.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.3.3",
+          "title": "Create Role configuration UI with permission matrix",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.3.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.4.1",
+          "title": "Implement tenant context and row filtering",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.4.2",
+          "title": "Add row-level security to AdminService",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.4.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.4.3",
+          "title": "Create tenant configuration UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.4.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.5.1",
+          "title": "Create APIKey model with hashing",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.5.2",
+          "title": "Implement API key generation and validation",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.5.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.5.3",
+          "title": "Create API Key management UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.5.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.6.1",
+          "title": "Create record changelog tracking",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "10.6.2",
+          "title": "Implement record history API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.6.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.6.3",
+          "title": "Create Record Timeline UI component",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.6.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.7.1",
+          "title": "Implement version snapshots for records",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "10.6.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "10.7.2",
+          "title": "Create version diff and rollback UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "10.7.1"
+          ],
+          "tracking": {}
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Ecosystem v0.5.0",
+      "description": "Litestar ecosystem integrations - workflows, flags, users, huey, debug toolbar",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 15,
+        "percentage": 0.0
+      },
+      "tasks": [
+        {
+          "id": "11.1.1",
+          "title": "Create litestar-workflows dashboard API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "11.1.2",
+          "title": "Create Workflow Dashboard UI with execution logs",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.1.3",
+          "title": "Add workflow trigger from admin actions",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "11.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.2.1",
+          "title": "Create litestar-flags management API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "11.2.2",
+          "title": "Create Feature Flags UI with toggle controls",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.2.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.2.3",
+          "title": "Add flag rollout percentage controls",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.2.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.3.1",
+          "title": "Integrate litestar-users for user management",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "11.3.2",
+          "title": "Create enhanced User Management with groups",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.3.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.4.1",
+          "title": "Create litestar-huey job monitoring API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "11.4.2",
+          "title": "Create Job Dashboard UI with status monitoring",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.4.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.4.3",
+          "title": "Add job retry and cancel functionality",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [
+            "11.4.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.5.1",
+          "title": "Integrate debug toolbar middleware",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "11.5.2",
+          "title": "Create Debug Toolbar UI panel",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.5.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.5.3",
+          "title": "Add SQL query and timing panels",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "11.5.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "11.6.1",
+          "title": "Ecosystem integration documentation",
+          "status": "pending",
+          "agent_type": "documentation-expert",
+          "depends_on": [
+            "11.1.3",
+            "11.2.3",
+            "11.3.2",
+            "11.4.3",
+            "11.5.3"
+          ],
+          "tracking": {}
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Excellence v1.0.0",
+      "description": "Best-in-class admin framework - Inline editing, Global search, Real-time updates",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 21,
+        "percentage": 0.0
+      },
+      "tasks": [
+        {
+          "id": "12.1.1",
+          "title": "Implement PATCH endpoint for inline field updates",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.1.2",
+          "title": "Create InlineEdit component for table cells",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.1.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.1.3",
+          "title": "Add optimistic updates with rollback",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.1.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.2.1",
+          "title": "Implement cross-model full-text search",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.2.2",
+          "title": "Create Global Search UI with facets",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.2.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.2.3",
+          "title": "Add search suggestions and recent searches",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.2.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.3.1",
+          "title": "Create filter DSL and query builder",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.3.2",
+          "title": "Create visual Filter Builder UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.3.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.3.3",
+          "title": "Add saved filters functionality",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.3.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.4.1",
+          "title": "Implement position field and reorder endpoint",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.4.2",
+          "title": "Create drag-drop reordering UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.4.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.5.1",
+          "title": "Implement WebSocket route and subscription",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.5.2",
+          "title": "Create real-time update hooks",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.5.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.5.3",
+          "title": "Add connection status and conflict resolution",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.5.2"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.6.1",
+          "title": "Create plugin registry and marketplace API",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.6.2",
+          "title": "Create Plugin Marketplace UI",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.6.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.7.1",
+          "title": "Implement theme schema and CSS variable generation",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.7.2",
+          "title": "Create Theme Customizer UI with live preview",
+          "status": "pending",
+          "agent_type": "ui-engineer",
+          "depends_on": [
+            "12.7.1"
+          ],
+          "tracking": {}
+        },
+        {
+          "id": "12.8.1",
+          "title": "Performance optimization and caching",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.8.2",
+          "title": "Security hardening (CSRF, CSP, rate limiting)",
+          "status": "pending",
+          "agent_type": "python-backend-engineer",
+          "depends_on": [],
+          "tracking": {}
+        },
+        {
+          "id": "12.9.1",
+          "title": "v1.0.0 documentation and release",
+          "status": "pending",
+          "agent_type": "documentation-expert",
+          "depends_on": [
+            "12.8.1",
+            "12.8.2"
+          ],
+          "tracking": {}
+        }
+      ]
+    },
+    {
+      "id": "bugs",
+      "name": "Bugs",
+      "description": "Tasks identified as bugs requiring fixes",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 0,
+        "percentage": 0
+      },
+      "tasks": []
+    },
+    {
+      "id": "deferred",
+      "name": "Deferred",
+      "description": "Tasks postponed for later consideration",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 0,
+        "percentage": 0
+      },
+      "tasks": []
     }
-  ]
+  ],
+  "decisions": {
+    "pending": [
+      {
+        "id": "D1",
+        "question": "Which rich text editor to use?",
+        "options": [
+          "TinyMCE",
+          "Tiptap",
+          "Quill"
+        ],
+        "recommended": "Tiptap"
+      },
+      {
+        "id": "D2",
+        "question": "File storage backend default?",
+        "options": [
+          "Local filesystem",
+          "S3-compatible",
+          "litestar-storages abstraction"
+        ],
+        "recommended": "litestar-storages abstraction"
+      }
+    ],
+    "resolved": []
+  },
+  "success_metrics": {
+    "targets": [
+      {
+        "metric": "Test coverage",
+        "target": ">80%",
+        "current": null
+      },
+      {
+        "metric": "Lighthouse score",
+        "target": ">90",
+        "current": null
+      },
+      {
+        "metric": "API response time",
+        "target": "<500ms",
+        "current": null
+      },
+      {
+        "metric": "Bundle size (gzipped)",
+        "target": "<500KB",
+        "current": null
+      }
+    ]
+  }
 }
