@@ -144,6 +144,8 @@ exclude = [
     "tests/",
     "examples/",
     "frontend/",
+    "src/litestar_admin/auth/jwt.py",  # Optional PyJWT dependency
+    "src/litestar_admin/contrib/",  # Optional dependency integrations
 ]
 
 # ==============================================================================
@@ -240,11 +242,13 @@ test = [
     "httpx>=0.27.0",
     "polyfactory>=2.15.0",
     "aiosqlite>=0.19.0",
+    "pyjwt>=2.8.0",  # Required for JWT auth tests
 ]
 dev = [
     {include-group = "docs"},
     {include-group = "lint"},
     {include-group = "test"},
+    "pytest-sugar>=1.1.1",
 ]
 
 [tool.uv]
