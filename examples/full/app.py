@@ -7,6 +7,7 @@ of litestar-admin including:
 - Multiple model views with custom configurations
 - Rate limiting
 - Startup seeding with demo data
+- Structured logging with structlog integration
 
 Usage:
     Run directly with litestar CLI:
@@ -22,34 +23,28 @@ Default credentials:
 
 from __future__ import annotations
 
-import logging
-import sys
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
 
 from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 from litestar import Litestar, get
 from litestar.di import Provide
-from litestar.logging import LoggingConfig
+from litestar.plugins.structlog import StructlogPlugin
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from examples.full.auth import get_auth_backend, hash_password
 from examples.full.models import Article, ArticleStatus, Base, Tag, User, UserRole
 from examples.full.views import ArticleAdmin, TagAdmin, UserAdmin
-from litestar_admin import AdminConfig, AdminPlugin
+from litestar_admin import AdminConfig, AdminPlugin, LoggingConfig, get_logger
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
 __all__ = ["app"]
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-logger = logging.getLogger(__name__)
+# Configure structlog via litestar-admin's logging abstraction
+# This automatically uses structlog when available, with fallback to stdlib
+logger = get_logger(__name__)
 
 # Database configuration
 # Use an in-memory SQLite database with aiosqlite for the demo
@@ -295,7 +290,16 @@ async def shutdown_handler(app: Litestar) -> None:
 # Configure auth backend
 auth_backend = get_auth_backend(get_session)
 
-# Configure admin plugin
+# Configure logging with structlog
+# LoggingConfig from litestar_admin provides automatic structlog integration
+admin_logging_config = LoggingConfig(
+    enable_structlog=True,  # Use structlog when available
+    log_level="DEBUG",  # Set to DEBUG for development
+    json_logs=False,  # Use console renderer for development (set True for production)
+    add_timestamp=True,
+)
+
+# Configure admin plugin with structlog integration
 admin_plugin = AdminPlugin(
     config=AdminConfig(
         title="Full Admin Demo",
@@ -308,6 +312,7 @@ admin_plugin = AdminPlugin(
         rate_limit_requests=100,
         rate_limit_window_seconds=60,
         debug=True,
+        logging_config=admin_logging_config,  # Enable structlog integration
     )
 )
 
@@ -319,15 +324,8 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 )
 sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
-# Configure logging
-logging_config = LoggingConfig(
-    root={"level": "INFO", "handlers": ["console"]},
-    loggers={
-        "litestar_admin": {"level": "DEBUG"},
-        "examples.full": {"level": "DEBUG"},
-        "sqlalchemy.engine": {"level": "WARNING"},
-    },
-)
+# Configure Litestar's StructlogPlugin for request logging
+structlog_plugin = StructlogPlugin()
 
 
 @get("/")
@@ -360,13 +358,12 @@ async def health() -> dict[str, str]:
     return {"status": "healthy"}
 
 
-# Create the application
+# Create the application with structlog integration
 app = Litestar(
     route_handlers=[index, health],
-    plugins=[admin_plugin, sqlalchemy_plugin],
+    plugins=[admin_plugin, sqlalchemy_plugin, structlog_plugin],
     on_startup=[startup_handler],
     on_shutdown=[shutdown_handler],
     dependencies={"session_factory": Provide(provide_session_factory, sync_to_thread=False)},
-    logging_config=logging_config,
     debug=True,
 )
