@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev install-uv prek-install upgrade
+.PHONY: help install install-dev dev install-uv prek-install upgrade
 .PHONY: lint fmt fmt-check fmt-fix ruff ruff-check type-check
 .PHONY: security
 .PHONY: test test-cov test-fast test-debug test-failed
 .PHONY: docs docs-serve docs-clean changelog
+.PHONY: example-minimal example-full example-asgi example-starlette example-fastapi
 .PHONY: build clean destroy
 .PHONY: frontend frontend-dev frontend-lint frontend-build
 .PHONY: wt worktree wt-ls worktree-list wt-j worktree-jump worktree-prune
@@ -38,7 +39,13 @@ install-uv: ## Install latest version of uv
 install: ## Install package (production mode)
 	@uv sync --no-dev
 
-dev: ## Install package with all development dependencies
+dev: ## Run the full-featured example for local development
+	@uv sync --all-extras
+	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
+	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
+	@uv run litestar --app examples.full.app:app run --reload
+
+install-dev: ## Install package with all development dependencies
 	@uv sync --all-extras
 
 prek-install: ## Install prek hooks
@@ -125,6 +132,40 @@ docs-clean: ## Clean built documentation
 
 changelog: ## Generate changelog with git-cliff
 	@uvx git-cliff -o $(DOCS_DIR)/changelog.md
+
+# =============================================================================
+# Examples
+# =============================================================================
+
+##@ Examples
+
+example-minimal: ## Run the minimal example
+	@uv sync --all-extras
+	@echo "\033[36m→ Starting minimal example at http://localhost:8000/admin\033[0m"
+	@uv run litestar --app examples.minimal.app:app run --reload
+
+example-full: ## Run the full-featured example (same as 'make dev')
+	@uv sync --all-extras
+	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
+	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
+	@uv run litestar --app examples.full.app:app run --reload
+
+example-asgi: ## Run the raw ASGI example
+	@uv sync --all-extras
+	@echo "\033[36m→ Starting ASGI example at http://localhost:8000/admin\033[0m"
+	@uv run uvicorn examples.asgi_raw.app:app --reload
+
+example-starlette: ## Run the Starlette bridge example
+	@uv sync --all-extras
+	@pip install starlette httpx 2>/dev/null || true
+	@echo "\033[36m→ Starting Starlette example at http://localhost:8000/admin\033[0m"
+	@uv run uvicorn examples.framework_bridge.starlette_mount:app --reload
+
+example-fastapi: ## Run the FastAPI bridge example
+	@uv sync --all-extras
+	@pip install fastapi 2>/dev/null || true
+	@echo "\033[36m→ Starting FastAPI example at http://localhost:8000/admin\033[0m"
+	@uv run uvicorn examples.framework_bridge.fastapi_integration:app --reload
 
 # =============================================================================
 # Frontend

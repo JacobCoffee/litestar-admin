@@ -119,7 +119,7 @@ max-complexity = 12
     "FBT", "G", "N", "PGH", "PIE", "PLR", "PLW", "PT011", "PT012", "PTH",
     "RSE", "RUF012", "S", "S101", "SIM", "SLF001", "TCH", "TRY", "UP006",
 ]
-"examples/**/*" = ["D", "T201", "S101"]
+"examples/**/*" = ["ARG", "B008", "D", "FAST", "FBT", "PLR1714", "RET504", "RUF012", "S101", "S104", "S106", "SIM108", "T201", "TC002"]
 "src/litestar_admin/controllers/**/*" = ["B008"]  # Litestar Parameter defaults
 
 [tool.ruff.lint.pydocstyle]
