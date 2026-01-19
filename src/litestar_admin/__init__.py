@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from litestar_admin.config import AdminConfig
+from litestar_admin.logging import LoggingConfig, configure_logging, get_logger, has_structlog
 from litestar_admin.plugin import AdminPlugin
 from litestar_admin.registry import ModelRegistry
 from litestar_admin.service import AdminService
@@ -14,6 +15,11 @@ __all__ = [
     "AdminPlugin",
     "AdminService",
     "ModelRegistry",
+    # Logging
+    "LoggingConfig",
+    "configure_logging",
+    "get_logger",
+    "has_structlog",
     # Views
     "BaseModelView",
     "ModelView",

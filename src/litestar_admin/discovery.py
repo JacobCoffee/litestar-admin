@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any, cast
+
+from litestar_admin.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -20,7 +21,7 @@ __all__ = [
     "is_advanced_alchemy_model",
 ]
 
-logger = logging.getLogger("litestar_admin.discovery")
+logger = get_logger("litestar_admin.discovery")
 
 
 def get_declarative_bases(app: Litestar) -> list[type]:

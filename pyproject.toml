@@ -49,8 +49,11 @@ sqladmin = [
 redis = [
     "redis>=5.0.0",
 ]
+structlog = [
+    "structlog>=24.1.0",
+]
 all = [
-    "litestar-admin[jwt,oauth,sqladmin,redis]",
+    "litestar-admin[jwt,oauth,sqladmin,redis,structlog]",
 ]
 
 [project.urls]
@@ -243,6 +246,7 @@ test = [
     "polyfactory>=2.15.0",
     "aiosqlite>=0.19.0",
     "pyjwt>=2.8.0",  # Required for JWT auth tests
+    "structlog>=24.1.0",  # Required for structlog logging tests
 ]
 dev = [
     {include-group = "docs"},

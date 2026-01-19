@@ -9,6 +9,7 @@ from typing import Any, Literal
 # type resolution to work correctly when this dataclass is used as a
 # dependency parameter type in Litestar controllers.
 from litestar_admin.auth import AuthBackend  # noqa: TC001
+from litestar_admin.logging import LoggingConfig  # noqa: TC001
 from litestar_admin.views import BaseModelView  # noqa: TC001
 
 __all__ = ["AdminConfig"]
@@ -37,6 +38,7 @@ class AdminConfig:
         session_cookie_httponly: Whether session cookie is HTTP only.
         session_cookie_secure: Whether session cookie requires HTTPS.
         session_cookie_samesite: SameSite policy for session cookie.
+        logging_config: Optional logging configuration for structlog integration.
     """
 
     # Basic settings
@@ -72,6 +74,9 @@ class AdminConfig:
     session_cookie_httponly: bool = True
     session_cookie_secure: bool = True
     session_cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+
+    # Logging configuration
+    logging_config: LoggingConfig | None = None
 
     # Additional settings
     extra: dict[str, Any] = field(default_factory=dict)

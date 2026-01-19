@@ -204,7 +204,13 @@ class AdminPlugin(InitPluginProtocol):
         Args:
             app: The Litestar application instance.
         """
+        from litestar_admin.logging import configure_logging
+
         self._app = app
+
+        # Configure logging if a logging config is provided
+        if self._config.logging_config is not None:
+            configure_logging(self._config.logging_config)
 
         # Auto-discover models if enabled
         if self._config.auto_discover:
@@ -234,15 +240,14 @@ class AdminPlugin(InitPluginProtocol):
         Args:
             app: The Litestar application instance.
         """
-        import logging
-
         from litestar_admin.discovery import (
             create_default_view,
             discover_models,
             get_declarative_bases,
         )
+        from litestar_admin.logging import get_logger
 
-        logger = logging.getLogger("litestar_admin.discovery")
+        logger = get_logger("litestar_admin.discovery")
 
         # Get already-registered models to skip
         registered_models: set[type[Any]] = {view_class.model for view_class in self._registry}
