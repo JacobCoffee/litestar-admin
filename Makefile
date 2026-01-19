@@ -4,7 +4,7 @@
 .PHONY: security
 .PHONY: test test-cov test-fast test-debug test-failed
 .PHONY: docs docs-serve docs-clean changelog
-.PHONY: example-minimal example-full example-asgi example-starlette example-fastapi
+.PHONY: example-minimal example-full example-asgi example-starlette example-fastapi example-oauth
 .PHONY: build clean destroy
 .PHONY: frontend frontend-dev frontend-lint frontend-build
 .PHONY: wt worktree wt-ls worktree-list wt-j worktree-jump worktree-prune
@@ -42,8 +42,8 @@ install: ## Install package (production mode)
 dev: ## Run the full-featured example for local development
 	@uv sync --all-extras
 	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
-	@echo "\033[33m  Login: admin@example.com / admin (or use Demo OAuth)\033[0m"
-	@OAUTH_DEMO_MODE=true uv run litestar --app examples.full.app:app run --reload
+	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
+	@uv run litestar --app examples.full.app:app run --reload
 
 install-dev: ## Install package with all development dependencies
 	@uv sync --all-extras
@@ -147,8 +147,8 @@ example-minimal: ## Run the minimal example
 example-full: ## Run the full-featured example (same as 'make dev')
 	@uv sync --all-extras
 	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
-	@echo "\033[33m  Login: admin@example.com / admin (or use Demo OAuth)\033[0m"
-	@OAUTH_DEMO_MODE=true uv run litestar --app examples.full.app:app run --reload
+	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
+	@uv run litestar --app examples.full.app:app run --reload
 
 example-asgi: ## Run the raw ASGI example
 	@uv sync --all-extras
@@ -166,6 +166,12 @@ example-fastapi: ## Run the FastAPI bridge example
 	@pip install fastapi 2>/dev/null || true
 	@echo "\033[36m→ Starting FastAPI example at http://localhost:8000/admin\033[0m"
 	@uv run uvicorn examples.framework_bridge.fastapi_integration:app --reload
+
+example-oauth: ## Run the full example with demo OAuth mode
+	@uv sync --all-extras
+	@echo "\033[36m→ Starting full admin example with Demo OAuth at http://localhost:8000/admin\033[0m"
+	@echo "\033[33m  Use the Demo OAuth provider button to login\033[0m"
+	@OAUTH_DEMO_MODE=true uv run litestar --app examples.full.app:app run --reload
 
 # =============================================================================
 # Frontend
