@@ -103,12 +103,14 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
         )}
       >
         {action.icon && (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-background)]">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-card)] border border-[var(--color-border)]">
             {action.icon}
           </span>
         )}
         <span className="flex-1 min-w-0">
-          <span className="block text-sm font-medium">{action.label}</span>
+          <span className="block text-sm font-medium text-[var(--color-foreground)]">
+            {action.label}
+          </span>
           {action.description && (
             <span className="block text-xs text-[var(--color-muted)] mt-0.5">
               {action.description}

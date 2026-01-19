@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from litestar import Response, get
 from litestar.plugins import InitPluginProtocol
 
 from litestar_admin.config import AdminConfig
@@ -162,7 +163,7 @@ class AdminPlugin(InitPluginProtocol):
 
         Sets up a static files router to serve the Next.js static export at the
         admin base URL. Configuration includes:
-        - SPA routing via html_mode=True (serves index.html for unmatched routes)
+        - SPA routing with catch-all fallback to index.html
         - Cache headers for optimal performance (immutable assets get long cache)
         - Proper base path handling for the frontend
 
@@ -177,25 +178,42 @@ class AdminPlugin(InitPluginProtocol):
         if not static_path.exists():
             return
 
-        # Create static router at the admin base URL (e.g., /admin)
-        # html_mode=True enables SPA routing:
-        # - Requests to /admin serve /admin/index.html
-        # - Requests for non-existent paths serve index.html (for client-side routing)
-        # - 404.html is served for actual 404 responses
+        index_html_path = static_path / "index.html"
+
+        # Create static router for actual static files (_next/*, login/, etc.)
         static_router = create_static_files_router(
             path=self._config.base_url,
             directories=[static_path],
             html_mode=True,
             name="admin_static",
-            # Set cache headers for static assets
-            # Next.js hashed assets (_next/static/*) can be cached indefinitely
-            # HTML files should not be cached to ensure users get latest version
             after_request=_add_cache_headers,
         )
+
+        # SPA catch-all route - serves index.html for any unmatched admin route
+        # This enables client-side routing for paths like /admin/models/Article
+        @get(
+            path=[
+                f"{self._config.base_url}/models/{{path:path}}",
+                f"{self._config.base_url}/{{path:path}}",
+            ],
+            name="admin_spa_fallback",
+            include_in_schema=False,
+        )
+        async def spa_fallback(path: str) -> Response[bytes]:  # noqa: ARG001
+            """Serve index.html for SPA client-side routing."""
+            if index_html_path.exists():
+                content = index_html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
 
         app_config.route_handlers = [
             *list(app_config.route_handlers or []),
             static_router,
+            spa_fallback,
         ]
 
     async def _startup(self, app: Litestar) -> None:

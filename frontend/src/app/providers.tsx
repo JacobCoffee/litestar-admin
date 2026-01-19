@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LayoutProvider } from '@/contexts/LayoutContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ToastProvider } from '@/components/ui/Toast';
 
 /**
@@ -101,13 +102,15 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <LayoutProvider>
-          <ToastProvider defaultDuration={5000} maxToasts={5}>
-            {children}
-          </ToastProvider>
-        </LayoutProvider>
-      </AuthProvider>
+      <ThemeProvider defaultTheme="dark">
+        <AuthProvider>
+          <LayoutProvider>
+            <ToastProvider defaultDuration={5000} maxToasts={5}>
+              {children}
+            </ToastProvider>
+          </LayoutProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -145,9 +145,7 @@ def _configure_structlog(config: LoggingConfig) -> None:
 
     processors.extend(
         [
-            structlog.stdlib.add_log_level,
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.add_log_level,
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             structlog.processors.UnicodeDecoder(),
@@ -164,19 +162,16 @@ def _configure_structlog(config: LoggingConfig) -> None:
     else:
         processors.append(structlog.dev.ConsoleRenderer(colors=sys.stderr.isatty()))
 
+    # Configure structlog with PrintLogger for direct output
+    # This avoids conflicts with stdlib logging configuration
     structlog.configure(
         processors=processors,
-        wrapper_class=structlog.stdlib.BoundLogger,
+        wrapper_class=structlog.make_filtering_bound_logger(
+            getattr(logging, config.log_level)
+        ),
         context_class=dict,
-        logger_factory=structlog.stdlib.LoggerFactory(),
+        logger_factory=structlog.PrintLoggerFactory(),
         cache_logger_on_first_use=True,
-    )
-
-    # Also configure standard library logging for foreign loggers
-    logging.basicConfig(
-        format="%(message)s",
-        stream=sys.stderr,
-        level=getattr(logging, config.log_level),
     )
 
 
@@ -346,7 +341,8 @@ def get_logger(name: str | None = None) -> StructlogAdapter | StdlibAdapter:
             _configure_structlog(_state.config)
             _state.structlog_configured = True
 
-        return StructlogAdapter(structlog.get_logger(logger_name))
+        # Get a bound logger with the name pre-bound
+        return StructlogAdapter(structlog.get_logger().bind(logger=logger_name))
 
     # Fall back to stdlib
     return StdlibAdapter(logging.getLogger(logger_name))

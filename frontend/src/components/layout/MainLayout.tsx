@@ -1,9 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/LayoutContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { Sidebar, type SidebarProps } from './Sidebar';
 import { Header, type HeaderProps } from './Header';
 import { Breadcrumb, generateBreadcrumbsFromPath } from './Breadcrumb';
@@ -35,7 +36,9 @@ export function MainLayout({
   className,
 }: MainLayoutProps) {
   const { isCollapsed, isMobile } = useSidebar();
+  const { user, logout } = useAuthContext();
   const pathname = usePathname();
+  const router = useRouter();
 
   // Generate breadcrumbs from current path
   const breadcrumbItems = showBreadcrumbs
@@ -46,6 +49,23 @@ export function MainLayout({
     showBreadcrumbs && breadcrumbItems.length > 0 ? (
       <Breadcrumb items={breadcrumbItems} homeHref={basePath} />
     ) : undefined;
+
+  // User info for sidebar and header
+  // AdminUser doesn't have name field, derive from email
+  const userName = user?.email?.split('@')[0] ?? 'User';
+  const userEmail = user?.email ?? '';
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  const handleProfileClick = () => {
+    router.push('/admin/profile');
+  };
+
+  const handleSettingsClick = () => {
+    router.push('/admin/settings');
+  };
 
   return (
     <div className={cn('min-h-screen bg-[var(--color-background)]', className)}>
@@ -67,7 +87,11 @@ export function MainLayout({
       </a>
 
       {/* Sidebar */}
-      <Sidebar {...sidebar} />
+      <Sidebar
+        {...sidebar}
+        userName={userName}
+        userEmail={userEmail}
+      />
 
       {/* Main content wrapper */}
       <div
@@ -78,7 +102,15 @@ export function MainLayout({
         )}
       >
         {/* Header */}
-        <Header {...header} breadcrumb={breadcrumb} />
+        <Header
+          {...header}
+          breadcrumb={breadcrumb}
+          userName={userName}
+          userEmail={userEmail}
+          onLogoutClick={handleLogout}
+          onProfileClick={handleProfileClick}
+          onSettingsClick={handleSettingsClick}
+        />
 
         {/* Main content area */}
         <main

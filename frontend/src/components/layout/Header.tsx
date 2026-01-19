@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/LayoutContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Icons as inline SVGs
 const MenuIcon = ({ className }: { className?: string }) => (
@@ -117,6 +118,36 @@ const LogoutIcon = ({ className }: { className?: string }) => (
     <path
       fillRule="evenodd"
       d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const SunIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.061l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"
+    />
+  </svg>
+);
+
+const MoonIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path
+      fillRule="evenodd"
+      d="M7.455 2.004a.75.75 0 01.26.77 7 7 0 009.958 7.967.75.75 0 011.067.853A8.5 8.5 0 116.647 1.921a.75.75 0 01.808.083z"
       clipRule="evenodd"
     />
   </svg>
@@ -281,6 +312,7 @@ export function Header({
   className,
 }: HeaderProps) {
   const { isMobile, toggle } = useSidebar();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = useCallback(
@@ -346,6 +378,24 @@ export function Header({
 
       {/* Right section */}
       <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className={cn(
+            'rounded-[var(--radius-md)] p-2',
+            'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+          )}
+          aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {resolvedTheme === 'dark' ? (
+            <SunIcon className="h-5 w-5 text-[var(--color-muted)]" />
+          ) : (
+            <MoonIcon className="h-5 w-5 text-[var(--color-muted)]" />
+          )}
+        </button>
+
         {/* Notifications */}
         <button
           type="button"

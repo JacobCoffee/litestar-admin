@@ -120,11 +120,11 @@ test-failed: ## Re-run only failed tests
 ##@ Documentation
 
 docs: docs-clean ## Build documentation
-	@uv sync --group docs
+	@uv sync --all-extras --group docs
 	@uv run sphinx-build -M html $(DOCS_DIR) $(DOCS_DIR)/_build -E -a -j auto
 
 docs-serve: docs-clean ## Serve documentation with live reload
-	@uv sync --group docs
+	@uv sync --all-extras --group docs
 	@uv run sphinx-autobuild $(DOCS_DIR) $(DOCS_DIR)/_build/html -j auto --open-browser --port 0
 
 docs-clean: ## Clean built documentation

@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  /* Cloudflare-inspired dark color palette */
-  /* Color contrast checked for WCAG 2.1 AA compliance */
+  /* Font families */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/* Dark theme (default) - Cloudflare-inspired */
+:root,
+.dark {
+  color-scheme: dark;
+
   --color-background: #0d1117;
   --color-foreground: #f0f6fc;
   --color-card: #161b22;
@@ -16,7 +30,7 @@
   /* Primary - Cloudflare orange */
   --color-primary: #f6821f;
   --color-primary-foreground: #ffffff;
-  --color-primary-hover: #ff9f47;
+  --color-primary-hover: #e5740d;
 
   /* Accent - Blue */
   --color-accent: #58a6ff;
@@ -32,20 +46,39 @@
   --color-sidebar: #010409;
   --color-sidebar-foreground: #c9d1d9;
   --color-sidebar-border: #21262d;
-
-  /* Font families */
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-
-  /* Border radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
 }
 
-html {
-  color-scheme: dark;
+/* Light theme */
+.light {
+  color-scheme: light;
+
+  --color-background: #ffffff;
+  --color-foreground: #1f2328;
+  --color-card: #f6f8fa;
+  --color-card-hover: #eaeef2;
+  --color-border: #d0d7de;
+  --color-muted: #656d76;
+  --color-muted-foreground: #57606a;
+
+  /* Primary - Cloudflare orange (adjusted for light mode) */
+  --color-primary: #d4690e;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #c85d06;
+
+  /* Accent - Blue (adjusted for light mode) */
+  --color-accent: #0969da;
+  --color-accent-foreground: #ffffff;
+
+  /* Status colors (adjusted for light mode contrast) */
+  --color-success: #1a7f37;
+  --color-warning: #9a6700;
+  --color-error: #cf222e;
+  --color-info: #0969da;
+
+  /* Sidebar */
+  --color-sidebar: #f6f8fa;
+  --color-sidebar-foreground: #1f2328;
+  --color-sidebar-border: #d0d7de;
 }
 
 body {

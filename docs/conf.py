@@ -33,18 +33,17 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # HTML output configuration
 html_theme = "shibuya"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_title = "litestar-admin"
 
 # Theme options
 html_theme_options = {
-    "accent_color": "blue",
+    "accent_color": "lime",
     "dark_code": True,
     "github_url": "https://github.com/JacobCoffee/litestar-admin",
     "nav_links": [
-        {"title": "Getting Started", "url": "getting-started"},
-        {"title": "Configuration", "url": "configuration"},
-        {"title": "Model Views", "url": "model-views"},
-        {"title": "API Reference", "url": "api/index"},
+        {"title": "Litestar", "url": "https://litestar.dev/"},
+        {"title": "PyPI", "url": "https://pypi.org/project/litestar-admin/"},
     ],
 }
 
@@ -82,7 +81,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "litestar": ("https://docs.litestar.dev/latest/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
-    "advanced-alchemy": ("https://docs.advanced-alchemy.litestar.dev/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
 }
 
 # MyST configuration
@@ -90,11 +89,21 @@ myst_enable_extensions = [
     "colon_fence",
     "deflist",
     "fieldlist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
     "smartquotes",
     "strikethrough",
+    "substitution",
     "tasklist",
 ]
 myst_heading_anchors = 3
 
+# Copy button settings
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+copybutton_remove_prompts = True
+
 # Suppress warnings for cross-references to classes that might not resolve
-suppress_warnings = ["myst.xref_missing"]
+suppress_warnings = ["myst.xref_missing", "ref.duplicate_object"]
