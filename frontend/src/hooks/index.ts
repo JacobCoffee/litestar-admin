@@ -125,3 +125,14 @@ export type {
   UseKeyboardShortcutsOptions,
   UseKeyboardShortcutsReturn,
 } from "./useKeyboardShortcuts";
+
+// Table keyboard navigation hook
+export {
+  useTableKeyboardNavigation,
+  getTableNavigationHints,
+} from "./useTableKeyboardNavigation";
+export type {
+  TableKeyboardNavigationOptions,
+  TableKeyboardNavigationReturn,
+  TableRowNavigationProps,
+} from "./useTableKeyboardNavigation";

@@ -66,6 +66,138 @@ litestar-admin provides several built-in keyboard shortcuts:
 | `Cmd/Ctrl + N` | Create new item | Actions |
 | `Escape` | Close modal or cancel | General |
 
+## Table Keyboard Navigation
+
+Data tables in litestar-admin support comprehensive keyboard navigation for efficient data browsing without using a mouse.
+
+### Table Navigation Keys
+
+| Key | Action |
+|-----|--------|
+| `Arrow Up` / `Arrow Down` | Navigate between rows |
+| `Home` | Go to first row |
+| `End` | Go to last row |
+| `Page Up` | Go to previous page |
+| `Page Down` | Go to next page |
+| `Cmd/Ctrl + Home` | Go to first row on first page |
+| `Cmd/Ctrl + End` | Go to last row on last page |
+| `Cmd/Ctrl + A` | Select all rows (when selection enabled) |
+| `Enter` / `Space` | Activate row (click) or toggle selection |
+| `Escape` | Clear row focus |
+
+### Visual Focus Indicator
+
+When navigating with the keyboard, the focused row is highlighted with:
+- An accent-colored ring around the row
+- A subtle background tint
+- Screen reader announcements for accessibility
+
+### Enabling Table Navigation
+
+Table keyboard navigation is enabled by default. To customize:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={data}
+  enableKeyboardNavigation={true}  // Enabled by default
+  showKeyboardHints={true}         // Show keyboard hints footer
+/>
+```
+
+### Keyboard Hints Footer
+
+Set `showKeyboardHints={true}` to display a footer bar with keyboard navigation hints:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={data}
+  showKeyboardHints={true}
+/>
+```
+
+This displays a row of keyboard hints showing available shortcuts for table navigation.
+
+### Using the Table Navigation Hook
+
+For custom table implementations, use the `useTableKeyboardNavigation` hook:
+
+```tsx
+import { useTableKeyboardNavigation } from "@/hooks";
+
+function CustomTable({ data }) {
+  const {
+    focusedRowIndex,
+    handleTableKeyDown,
+    getRowProps,
+    tableRef,
+    isTableFocused,
+  } = useTableKeyboardNavigation({
+    rowCount: data.length,
+    selectable: true,
+    onSelectAll: () => handleSelectAll(),
+    onActivateRow: (index) => handleRowClick(data[index]),
+    onToggleRow: (index) => toggleSelection(data[index]),
+    page: currentPage,
+    totalPages: totalPages,
+    onPageChange: setPage,
+  });
+
+  return (
+    <div
+      ref={tableRef}
+      onKeyDown={handleTableKeyDown}
+      tabIndex={0}
+      role="grid"
+    >
+      <table>
+        <tbody>
+          {data.map((row, index) => {
+            const rowProps = getRowProps(index);
+            return (
+              <tr
+                key={row.id}
+                tabIndex={rowProps.tabIndex}
+                data-focused={rowProps["data-focused"]}
+                onKeyDown={rowProps.onKeyDown}
+                onFocus={rowProps.onFocus}
+              >
+                {/* cells */}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+```
+
+### TableKeyboardNavigationOptions
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `rowCount` | `number` | Yes | Total number of rows |
+| `selectable` | `boolean` | No | Enable row selection |
+| `onSelectAll` | `() => void` | No | Select all callback |
+| `onActivateRow` | `(index: number) => void` | No | Row activation callback |
+| `onToggleRow` | `(index: number) => void` | No | Row toggle callback |
+| `page` | `number` | No | Current page (1-indexed) |
+| `totalPages` | `number` | No | Total pages |
+| `onPageChange` | `(page: number) => void` | No | Page change callback |
+| `enabled` | `boolean` | No | Enable navigation |
+
+### Accessibility Features
+
+Table keyboard navigation follows WAI-ARIA best practices:
+
+- Proper `role="grid"` and `role="row"` attributes
+- `aria-rowindex` for screen reader row position
+- `aria-selected` for selection state
+- Focus management with `tabIndex`
+- Screen reader announcements via live regions
+
 ### Platform-Specific Display
 
 Shortcuts are displayed with platform-appropriate symbols:

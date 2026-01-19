@@ -13,6 +13,10 @@ import {
 } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Loading";
+import {
+  useTableKeyboardNavigation,
+  getTableNavigationHints,
+} from "@/hooks/useTableKeyboardNavigation";
 
 // ============================================================================
 // Types
@@ -89,6 +93,10 @@ export interface DataTableProps<T> {
   skeletonRows?: number;
   /** Search term to highlight in cell content */
   searchTerm?: string;
+  /** Show keyboard navigation hints in the footer */
+  showKeyboardHints?: boolean;
+  /** Enable keyboard navigation (arrow keys, Home/End, etc.) */
+  enableKeyboardNavigation?: boolean;
 }
 
 // ============================================================================
@@ -547,8 +555,14 @@ export function DataTable<T>({
   striped = false,
   skeletonRows = 5,
   searchTerm,
+  showKeyboardHints = false,
+  enableKeyboardNavigation = true,
 }: DataTableProps<T>) {
   const tableId = useId();
+
+  // Calculate total pages for keyboard navigation
+  const effectiveTotalItems = totalItems ?? data.length;
+  const totalPages = Math.ceil(effectiveTotalItems / pageSize);
 
   // Track manually hidden columns (via toggle dropdown)
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
@@ -569,6 +583,45 @@ export function DataTable<T>({
   const displayColumns = useMemo(() => {
     return columns.filter((col) => visibleColumns.has(String(col.key)));
   }, [columns, visibleColumns]);
+
+  // Keyboard navigation
+  const {
+    focusedRowIndex,
+    handleTableKeyDown,
+    getRowProps,
+    tableRef,
+    isTableFocused,
+  } = useTableKeyboardNavigation({
+    rowCount: data.length,
+    selectable,
+    enabled: enableKeyboardNavigation && !isLoading && data.length > 0,
+    page,
+    totalPages,
+    onPageChange,
+    onSelectAll: () => {
+      if (onSelectionChange) {
+        const allIds = new Set(data.map(getRowId));
+        onSelectionChange(allIds);
+      }
+    },
+    onActivateRow: (rowIndex) => {
+      if (onRowClick && data[rowIndex]) {
+        onRowClick(data[rowIndex], rowIndex);
+      }
+    },
+    onToggleRow: (rowIndex) => {
+      if (onSelectionChange && data[rowIndex]) {
+        const id = getRowId(data[rowIndex]);
+        const newSelection = new Set(selectedIds);
+        if (newSelection.has(id)) {
+          newSelection.delete(id);
+        } else {
+          newSelection.add(id);
+        }
+        onSelectionChange(newSelection);
+      }
+    },
+  });
 
   // Selection handlers
   const handleSelectAll = useCallback(
@@ -691,18 +744,26 @@ export function DataTable<T>({
     return sortOrder;
   };
 
-  // Effective total items (for pagination)
-  const effectiveTotalItems = totalItems ?? data.length;
+  // Show pagination control
   const showPagination = onPageChange && onPageSizeChange && effectiveTotalItems > 0;
+
+  // Get keyboard navigation hints
+  const keyboardHints = useMemo(() => getTableNavigationHints(), []);
 
   return (
     <div
+      ref={tableRef}
       className={cn(
         "rounded-[var(--radius-lg)]",
         "border border-[var(--color-border)]",
         "overflow-hidden",
+        "focus-within:ring-2 focus-within:ring-[var(--color-accent)]/50",
         className,
       )}
+      onKeyDown={enableKeyboardNavigation ? handleTableKeyDown : undefined}
+      tabIndex={enableKeyboardNavigation ? 0 : undefined}
+      role="grid"
+      aria-label="Data table with keyboard navigation"
     >
       {/* Toolbar */}
       {(showColumnToggle || selectable) && (
@@ -858,18 +919,26 @@ export function DataTable<T>({
             data.map((row, rowIndex) => {
               const rowId = getRowId(row);
               const isSelected = selectedIds.has(rowId);
+              const isFocused = focusedRowIndex === rowIndex && isTableFocused;
+              const rowNavProps = enableKeyboardNavigation ? getRowProps(rowIndex) : null;
 
               return (
                 <TableRow
                   key={rowId}
                   onClick={() => handleRowClick(row, rowIndex)}
                   onKeyDown={(e) => handleRowKeyDown(e, row, rowIndex)}
-                  tabIndex={onRowClick ? 0 : undefined}
-                  role={onRowClick ? "button" : undefined}
+                  tabIndex={rowNavProps ? rowNavProps.tabIndex : (onRowClick ? 0 : undefined)}
+                  role="row"
                   aria-selected={selectable ? isSelected : undefined}
+                  aria-rowindex={rowIndex + 1}
+                  data-focused={isFocused || undefined}
                   className={cn(
                     isSelected && "bg-[var(--color-primary)]/10",
                     onRowClick && "cursor-pointer",
+                    isFocused && [
+                      "ring-2 ring-inset ring-[var(--color-accent)]",
+                      "bg-[var(--color-accent)]/5",
+                    ],
                   )}
                 >
                   {/* Selection checkbox */}
@@ -931,6 +1000,37 @@ export function DataTable<T>({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
         />
+      )}
+
+      {/* Keyboard navigation hints */}
+      {showKeyboardHints && enableKeyboardNavigation && !isLoading && data.length > 0 && (
+        <div
+          className={cn(
+            "flex flex-wrap items-center justify-center gap-x-4 gap-y-1",
+            "px-4 py-2",
+            "border-t border-[var(--color-border)]",
+            "bg-[var(--color-card)]/30",
+            "text-xs text-[var(--color-muted)]",
+          )}
+        >
+          {keyboardHints.map((hint, index) => (
+            <span key={index} className="flex items-center gap-1.5">
+              <kbd
+                className={cn(
+                  "px-1.5 py-0.5",
+                  "rounded-[var(--radius-sm)]",
+                  "bg-[var(--color-card)]",
+                  "border border-[var(--color-border)]",
+                  "font-mono text-[10px]",
+                  "shadow-sm",
+                )}
+              >
+                {hint.keys}
+              </kbd>
+              <span>{hint.description}</span>
+            </span>
+          ))}
+        </div>
       )}
     </div>
   );
