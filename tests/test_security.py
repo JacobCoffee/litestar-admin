@@ -516,7 +516,7 @@ class TestPermissionEnforcement:
     ) -> None:
         """Test that users with required permission can access."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         handler = MagicMock()
 
         guard = PermissionGuard(Permission.MODELS_READ)
@@ -530,7 +530,7 @@ class TestPermissionEnforcement:
     ) -> None:
         """Test that users without permission get 403 Forbidden."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         handler = MagicMock()
 
         guard = PermissionGuard(Permission.MODELS_DELETE)
@@ -540,7 +540,8 @@ class TestPermissionEnforcement:
 
     def test_missing_authentication_returns_401(self) -> None:
         """Test that missing authentication returns 401 Unauthorized."""
-        conn = MagicMock(spec=[])  # No user attribute
+        conn = MagicMock()
+        conn.scope = {}  # No user in scope
         handler = MagicMock()
 
         guard = PermissionGuard(Permission.MODELS_READ)
@@ -554,7 +555,7 @@ class TestPermissionEnforcement:
     ) -> None:
         """Test that all specified permissions must be present (AND logic)."""
         conn = MagicMock()
-        conn.user = editor_user  # Editor has read and write, but not delete
+        conn.scope = {"user": editor_user}  # Editor has read and write, but not delete
         handler = MagicMock()
 
         # Require both read and delete
@@ -569,7 +570,7 @@ class TestPermissionEnforcement:
     ) -> None:
         """Test user with all required permissions passes."""
         conn = MagicMock()
-        conn.user = admin_user  # Admin has read, write, and delete
+        conn.scope = {"user": admin_user}  # Admin has read, write, and delete
         handler = MagicMock()
 
         guard = PermissionGuard(Permission.MODELS_READ, Permission.MODELS_DELETE)
@@ -661,7 +662,7 @@ class TestRoleBasedAccess:
     ) -> None:
         """Test RoleGuard passes when user has required role."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         handler = MagicMock()
 
         guard = RoleGuard(Role.ADMIN)
@@ -675,7 +676,7 @@ class TestRoleBasedAccess:
     ) -> None:
         """Test RoleGuard fails when user lacks required role."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         handler = MagicMock()
 
         guard = RoleGuard(Role.ADMIN)
@@ -689,7 +690,7 @@ class TestRoleBasedAccess:
     ) -> None:
         """Test RoleGuard passes when user has any of the specified roles."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         handler = MagicMock()
 
         # User is admin, guard allows admin or superadmin
@@ -1110,7 +1111,7 @@ class TestEdgeCasesAndAttackVectors:
     def test_permission_guard_with_null_user(self) -> None:
         """Test that null user in connection is handled safely."""
         conn = MagicMock()
-        conn.user = None
+        conn.scope = {"user": None}
         handler = MagicMock()
 
         guard = PermissionGuard(Permission.MODELS_READ)
@@ -1122,7 +1123,7 @@ class TestEdgeCasesAndAttackVectors:
         """Test that user with empty roles list is handled correctly."""
         user = MockAdminUser(id=1, email="test@example.com", roles=[], permissions=[])
         conn = MagicMock()
-        conn.user = user
+        conn.scope = {"user": user}
         handler = MagicMock()
 
         guard = RoleGuard(Role.VIEWER)

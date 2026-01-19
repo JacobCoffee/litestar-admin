@@ -490,3 +490,29 @@ class JWTAuthBackend:
 
         # Fall back to access token location for refresh endpoint
         return self._extract_token(connection)
+
+    async def get_user_from_token(self, token: str) -> AdminUserProtocol | None:
+        """Get the user from a JWT token.
+
+        Decodes the token and loads the user from the database.
+
+        Args:
+            token: The JWT token string.
+
+        Returns:
+            The authenticated user, or None if token is invalid.
+        """
+        payload = self._decode_token(token)
+        if payload is None:
+            return None
+
+        # Check if it's an access token (not refresh)
+        if payload.get("type") != "access":
+            return None
+
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+
+        # Load user from database
+        return await self._user_loader(user_id)

@@ -158,7 +158,7 @@ class DashboardController(Controller):
             model_stats.append(
                 ModelStats(
                     name=view_class.name,
-                    model_name=view_class.model.__name__,
+                    model_name=view_class.identity,  # Use identity for URL routing
                     count=count,
                     icon=view_class.icon,
                     category=view_class.category,

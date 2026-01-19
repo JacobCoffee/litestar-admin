@@ -176,7 +176,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       description: "View all data models",
       category: "Navigation",
       icon: <TableIcon className="h-4 w-4" />,
-      onSelect: () => router.push("/admin/models"),
+      onSelect: () => router.push("/models"),
     });
 
     items.push({
@@ -185,7 +185,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       description: "Manage admin users",
       category: "Navigation",
       icon: <UsersIcon className="h-4 w-4" />,
-      onSelect: () => router.push("/admin/users"),
+      onSelect: () => router.push("/users"),
     });
 
     items.push({
@@ -194,7 +194,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       description: "View activity history",
       category: "Navigation",
       icon: <ClipboardListIcon className="h-4 w-4" />,
-      onSelect: () => router.push("/admin/audit"),
+      onSelect: () => router.push("/audit"),
     });
 
     items.push({
@@ -203,7 +203,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       description: "Admin settings and preferences",
       category: "Navigation",
       icon: <CogIcon className="h-4 w-4" />,
-      onSelect: () => router.push("/admin/settings"),
+      onSelect: () => router.push("/settings"),
     });
 
     // Model-specific commands

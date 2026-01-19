@@ -323,14 +323,14 @@ class TestModelsController:
 
         # Check model info structure
         author_info = next(m for m in data if m["name"] == "Author")
-        assert author_info["model_name"] == "Author"
+        assert author_info["model_name"] == "author"
         assert author_info["can_create"] is True
         assert author_info["can_edit"] is True
         assert author_info["can_delete"] is True
 
     async def test_list_records_empty(self, client: AsyncTestClient) -> None:
         """Test listing records when table is empty."""
-        response = await client.get("/api/models/Author")
+        response = await client.get("/api/models/author")
 
         assert response.status_code == 200
         data = response.json()
@@ -342,7 +342,7 @@ class TestModelsController:
 
     async def test_list_records_with_data(self, seeded_client: AsyncTestClient) -> None:
         """Test listing records with seeded data."""
-        response = await seeded_client.get("/api/models/Author")
+        response = await seeded_client.get("/api/models/author")
 
         assert response.status_code == 200
         data = response.json()
@@ -359,7 +359,7 @@ class TestModelsController:
     async def test_list_records_pagination(self, seeded_client: AsyncTestClient) -> None:
         """Test pagination of records."""
         # First page
-        response = await seeded_client.get("/api/models/Author?limit=2&offset=0")
+        response = await seeded_client.get("/api/models/author?limit=2&offset=0")
         assert response.status_code == 200
         data = response.json()
         assert len(data["items"]) == 2
@@ -368,7 +368,7 @@ class TestModelsController:
         assert data["limit"] == 2
 
         # Second page
-        response = await seeded_client.get("/api/models/Author?limit=2&offset=2")
+        response = await seeded_client.get("/api/models/author?limit=2&offset=2")
         assert response.status_code == 200
         data = response.json()
         assert len(data["items"]) == 1
@@ -378,14 +378,14 @@ class TestModelsController:
     async def test_list_records_sorting(self, seeded_client: AsyncTestClient) -> None:
         """Test sorting of records."""
         # Sort by name ascending
-        response = await seeded_client.get("/api/models/Author?sort_by=name&sort_order=asc")
+        response = await seeded_client.get("/api/models/author?sort_by=name&sort_order=asc")
         assert response.status_code == 200
         data = response.json()
         names = [item["name"] for item in data["items"]]
         assert names == sorted(names)
 
         # Sort by name descending
-        response = await seeded_client.get("/api/models/Author?sort_by=name&sort_order=desc")
+        response = await seeded_client.get("/api/models/author?sort_by=name&sort_order=desc")
         assert response.status_code == 200
         data = response.json()
         names = [item["name"] for item in data["items"]]
@@ -393,7 +393,7 @@ class TestModelsController:
 
     async def test_list_records_search(self, seeded_client: AsyncTestClient) -> None:
         """Test searching records."""
-        response = await seeded_client.get("/api/models/Author?search=john")
+        response = await seeded_client.get("/api/models/author?search=john")
 
         assert response.status_code == 200
         data = response.json()
@@ -417,7 +417,7 @@ class TestModelsController:
             "is_active": True,
         }
 
-        response = await client.post("/api/models/Author", json=author_data)
+        response = await client.post("/api/models/author", json=author_data)
 
         assert response.status_code == 201
         data = response.json()
@@ -429,7 +429,7 @@ class TestModelsController:
         assert "id" in data
 
         # Verify record was created
-        response = await client.get(f"/api/models/Author/{data['id']}")
+        response = await client.get(f"/api/models/author/{data['id']}")
         assert response.status_code == 200
         fetched = response.json()
         assert fetched["name"] == "New Author"
@@ -442,7 +442,7 @@ class TestModelsController:
 
     async def test_get_record(self, seeded_client: AsyncTestClient) -> None:
         """Test retrieving a single record."""
-        response = await seeded_client.get("/api/models/Author/1")
+        response = await seeded_client.get("/api/models/author/1")
 
         assert response.status_code == 200
         data = response.json()
@@ -453,7 +453,7 @@ class TestModelsController:
 
     async def test_get_record_not_found(self, seeded_client: AsyncTestClient) -> None:
         """Test retrieving a non-existent record."""
-        response = await seeded_client.get("/api/models/Author/9999")
+        response = await seeded_client.get("/api/models/author/9999")
 
         assert response.status_code == 404
 
@@ -466,7 +466,7 @@ class TestModelsController:
             "is_active": False,
         }
 
-        response = await seeded_client.put("/api/models/Author/1", json=update_data)
+        response = await seeded_client.put("/api/models/author/1", json=update_data)
 
         assert response.status_code == 200
         data = response.json()
@@ -480,7 +480,7 @@ class TestModelsController:
         """Test partial update of a record via PATCH."""
         update_data = {"name": "Partially Updated"}
 
-        response = await seeded_client.patch("/api/models/Author/1", json=update_data)
+        response = await seeded_client.patch("/api/models/author/1", json=update_data)
 
         assert response.status_code == 200
         data = response.json()
@@ -491,7 +491,7 @@ class TestModelsController:
 
     async def test_update_record_not_found(self, seeded_client: AsyncTestClient) -> None:
         """Test updating a non-existent record."""
-        response = await seeded_client.put("/api/models/Author/9999", json={"name": "Test"})
+        response = await seeded_client.put("/api/models/author/9999", json={"name": "Test"})
 
         assert response.status_code == 404
 
@@ -499,30 +499,30 @@ class TestModelsController:
         """Test deleting a record."""
         # First create a new record to delete
         author_data = {"name": "To Delete", "email": "delete@example.com", "is_active": True}
-        create_response = await seeded_client.post("/api/models/Author", json=author_data)
+        create_response = await seeded_client.post("/api/models/author", json=author_data)
         assert create_response.status_code == 201
         record_id = create_response.json()["id"]
 
         # Delete the record
-        response = await seeded_client.delete(f"/api/models/Author/{record_id}")
+        response = await seeded_client.delete(f"/api/models/author/{record_id}")
 
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
 
         # Verify record was deleted
-        get_response = await seeded_client.get(f"/api/models/Author/{record_id}")
+        get_response = await seeded_client.get(f"/api/models/author/{record_id}")
         assert get_response.status_code == 404
 
     async def test_delete_record_not_found(self, seeded_client: AsyncTestClient) -> None:
         """Test deleting a non-existent record."""
-        response = await seeded_client.delete("/api/models/Author/9999")
+        response = await seeded_client.delete("/api/models/author/9999")
 
         assert response.status_code == 404
 
     async def test_get_schema(self, client: AsyncTestClient) -> None:
         """Test retrieving model JSON schema."""
-        response = await client.get("/api/models/Author/schema")
+        response = await client.get("/api/models/author/schema")
 
         assert response.status_code == 200
         data = response.json()
@@ -538,35 +538,35 @@ class TestModelsController:
         """Test complete CRUD lifecycle."""
         # CREATE
         author_data = {"name": "Lifecycle Test", "email": "lifecycle@example.com", "is_active": True}
-        create_response = await client.post("/api/models/Author", json=author_data)
+        create_response = await client.post("/api/models/author", json=author_data)
         assert create_response.status_code == 201
         created = create_response.json()
         record_id = created["id"]
 
         # READ
-        read_response = await client.get(f"/api/models/Author/{record_id}")
+        read_response = await client.get(f"/api/models/author/{record_id}")
         assert read_response.status_code == 200
         assert read_response.json()["name"] == "Lifecycle Test"
 
         # UPDATE (PATCH)
-        patch_response = await client.patch(f"/api/models/Author/{record_id}", json={"name": "Updated Lifecycle"})
+        patch_response = await client.patch(f"/api/models/author/{record_id}", json={"name": "Updated Lifecycle"})
         assert patch_response.status_code == 200
         assert patch_response.json()["name"] == "Updated Lifecycle"
 
         # UPDATE (PUT)
         put_data = {"name": "Full Update", "email": "fullupdate@example.com", "bio": "New bio", "is_active": False}
-        put_response = await client.put(f"/api/models/Author/{record_id}", json=put_data)
+        put_response = await client.put(f"/api/models/author/{record_id}", json=put_data)
         assert put_response.status_code == 200
         assert put_response.json()["name"] == "Full Update"
         assert put_response.json()["is_active"] is False
 
         # DELETE
-        delete_response = await client.delete(f"/api/models/Author/{record_id}")
+        delete_response = await client.delete(f"/api/models/author/{record_id}")
         assert delete_response.status_code == 200
         assert delete_response.json()["success"] is True
 
         # Verify deletion
-        verify_response = await client.get(f"/api/models/Author/{record_id}")
+        verify_response = await client.get(f"/api/models/author/{record_id}")
         assert verify_response.status_code == 404
 
 
@@ -593,7 +593,7 @@ class TestDashboardController:
         # Check model stats structure
         author_stats = next(m for m in data["models"] if m["name"] == "Author")
         assert author_stats["count"] == 0
-        assert author_stats["model_name"] == "Author"
+        assert author_stats["model_name"] == "author"
 
     async def test_get_stats_with_data(self, seeded_client: AsyncTestClient) -> None:
         """Test dashboard stats with seeded data."""
@@ -657,7 +657,7 @@ class TestExportController:
 
     async def test_export_csv_empty(self, client: AsyncTestClient) -> None:
         """Test CSV export with empty table."""
-        response = await client.get("/api/models/Author/export?format=csv")
+        response = await client.get("/api/models/author/export?format=csv")
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/csv; charset=utf-8"
@@ -674,7 +674,7 @@ class TestExportController:
 
     async def test_export_csv_with_data(self, seeded_client: AsyncTestClient) -> None:
         """Test CSV export with data."""
-        response = await seeded_client.get("/api/models/Author/export?format=csv")
+        response = await seeded_client.get("/api/models/author/export?format=csv")
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/csv; charset=utf-8"
@@ -691,7 +691,7 @@ class TestExportController:
 
     async def test_export_json_empty(self, client: AsyncTestClient) -> None:
         """Test JSON export with empty table."""
-        response = await client.get("/api/models/Author/export?format=json")
+        response = await client.get("/api/models/author/export?format=json")
 
         assert response.status_code == 200
         assert "application/json" in response.headers["content-type"]
@@ -701,7 +701,7 @@ class TestExportController:
 
     async def test_export_json_with_data(self, seeded_client: AsyncTestClient) -> None:
         """Test JSON export with data."""
-        response = await seeded_client.get("/api/models/Author/export?format=json")
+        response = await seeded_client.get("/api/models/author/export?format=json")
 
         assert response.status_code == 200
         assert "application/json" in response.headers["content-type"]
@@ -717,7 +717,7 @@ class TestExportController:
 
     async def test_export_invalid_format(self, client: AsyncTestClient) -> None:
         """Test export with invalid format."""
-        response = await client.get("/api/models/Author/export?format=xml")
+        response = await client.get("/api/models/author/export?format=xml")
 
         assert response.status_code == 400
 
@@ -731,7 +731,7 @@ class TestExportController:
         """Test bulk export of selected records in CSV format."""
         request_data = {"ids": [1, 2], "format": "csv"}
 
-        response = await seeded_client.post("/api/models/Author/bulk/export", json=request_data)
+        response = await seeded_client.post("/api/models/author/bulk/export", json=request_data)
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/csv; charset=utf-8"
@@ -746,7 +746,7 @@ class TestExportController:
         """Test bulk export of selected records in JSON format."""
         request_data = {"ids": [1, 3], "format": "json"}
 
-        response = await seeded_client.post("/api/models/Author/bulk/export", json=request_data)
+        response = await seeded_client.post("/api/models/author/bulk/export", json=request_data)
 
         assert response.status_code == 200
         assert "application/json" in response.headers["content-type"]
@@ -758,7 +758,7 @@ class TestExportController:
         """Test bulk export with empty IDs list."""
         request_data = {"ids": [], "format": "csv"}
 
-        response = await seeded_client.post("/api/models/Author/bulk/export", json=request_data)
+        response = await seeded_client.post("/api/models/author/bulk/export", json=request_data)
 
         assert response.status_code == 400
 
@@ -777,18 +777,18 @@ class TestBulkActionsController:
         # First, create some categories to delete
         for i in range(3):
             await seeded_client.post(
-                "/api/models/Category",
+                "/api/models/category",
                 json={"name": f"ToDelete{i}", "description": f"Delete me {i}"},
             )
 
         # Get the IDs of the newly created categories
-        list_response = await seeded_client.get("/api/models/Category?search=ToDelete")
+        list_response = await seeded_client.get("/api/models/category?search=ToDelete")
         categories = list_response.json()["items"]
         ids_to_delete = [c["id"] for c in categories]
 
         # Perform bulk delete
         response = await seeded_client.post(
-            "/api/models/Category/bulk/delete",
+            "/api/models/category/bulk/delete",
             json={"ids": ids_to_delete, "soft_delete": False},
         )
 
@@ -799,21 +799,21 @@ class TestBulkActionsController:
         assert data["deleted"] == 3
 
         # Verify records were deleted
-        verify_response = await seeded_client.get("/api/models/Category?search=ToDelete")
+        verify_response = await seeded_client.get("/api/models/category?search=ToDelete")
         assert verify_response.json()["total"] == 0
 
     async def test_bulk_delete_partial(self, seeded_client: AsyncTestClient) -> None:
         """Test bulk delete with some non-existent IDs."""
         # Create one category to delete
         create_response = await seeded_client.post(
-            "/api/models/Category",
+            "/api/models/category",
             json={"name": "RealCategory", "description": "Real"},
         )
         real_id = create_response.json()["id"]
 
         # Try to delete including non-existent IDs
         response = await seeded_client.post(
-            "/api/models/Category/bulk/delete",
+            "/api/models/category/bulk/delete",
             json={"ids": [real_id, 9998, 9999], "soft_delete": False},
         )
 
@@ -826,7 +826,7 @@ class TestBulkActionsController:
     async def test_bulk_delete_empty_ids(self, seeded_client: AsyncTestClient) -> None:
         """Test bulk delete with empty IDs list."""
         response = await seeded_client.post(
-            "/api/models/Category/bulk/delete",
+            "/api/models/category/bulk/delete",
             json={"ids": [], "soft_delete": False},
         )
 
@@ -844,13 +844,13 @@ class TestBulkActionsController:
     async def test_custom_bulk_action(self, seeded_client: AsyncTestClient) -> None:
         """Test custom bulk action (publish articles)."""
         # Get unpublished articles
-        list_response = await seeded_client.get("/api/models/Article")
+        list_response = await seeded_client.get("/api/models/article")
         articles = list_response.json()["items"]
         unpublished_ids = [a["id"] for a in articles if not a["published"]]
 
         # Execute custom bulk action
         response = await seeded_client.post(
-            "/api/models/Article/bulk/publish",
+            "/api/models/article/bulk/publish",
             json={"ids": unpublished_ids, "params": {"published": True}},
         )
 
@@ -863,13 +863,13 @@ class TestBulkActionsController:
 
         # Verify articles are now published
         for article_id in unpublished_ids:
-            article_response = await seeded_client.get(f"/api/models/Article/{article_id}")
+            article_response = await seeded_client.get(f"/api/models/article/{article_id}")
             assert article_response.json()["published"] is True
 
     async def test_custom_bulk_action_not_found(self, seeded_client: AsyncTestClient) -> None:
         """Test calling non-existent custom bulk action."""
         response = await seeded_client.post(
-            "/api/models/Article/bulk/nonexistent",
+            "/api/models/article/bulk/nonexistent",
             json={"ids": [1, 2], "params": {}},
         )
 
@@ -878,7 +878,7 @@ class TestBulkActionsController:
     async def test_custom_bulk_action_empty_ids(self, seeded_client: AsyncTestClient) -> None:
         """Test custom bulk action with empty IDs."""
         response = await seeded_client.post(
-            "/api/models/Article/bulk/publish",
+            "/api/models/article/bulk/publish",
             json={"ids": [], "params": {}},
         )
 
@@ -896,7 +896,7 @@ class TestEdgeCasesAndErrorHandling:
 
     async def test_pagination_limit_cap(self, seeded_client: AsyncTestClient) -> None:
         """Test that pagination limit is capped at 100."""
-        response = await seeded_client.get("/api/models/Author?limit=1000")
+        response = await seeded_client.get("/api/models/author?limit=1000")
 
         assert response.status_code == 200
         data = response.json()
@@ -906,7 +906,7 @@ class TestEdgeCasesAndErrorHandling:
 
     async def test_negative_offset_normalized(self, seeded_client: AsyncTestClient) -> None:
         """Test that negative offset is normalized to 0."""
-        response = await seeded_client.get("/api/models/Author?offset=-10")
+        response = await seeded_client.get("/api/models/author?offset=-10")
 
         assert response.status_code == 200
         data = response.json()
@@ -916,7 +916,7 @@ class TestEdgeCasesAndErrorHandling:
 
     async def test_invalid_sort_order_defaults_to_asc(self, seeded_client: AsyncTestClient) -> None:
         """Test that invalid sort order defaults to ascending."""
-        response = await seeded_client.get("/api/models/Author?sort_by=name&sort_order=invalid")
+        response = await seeded_client.get("/api/models/author?sort_by=name&sort_order=invalid")
 
         assert response.status_code == 200
         data = response.json()
@@ -927,11 +927,11 @@ class TestEdgeCasesAndErrorHandling:
     async def test_search_case_insensitive(self, seeded_client: AsyncTestClient) -> None:
         """Test that search is case-insensitive."""
         # Search with uppercase
-        response1 = await seeded_client.get("/api/models/Author?search=JOHN")
+        response1 = await seeded_client.get("/api/models/author?search=JOHN")
         # Search with lowercase
-        response2 = await seeded_client.get("/api/models/Author?search=john")
+        response2 = await seeded_client.get("/api/models/author?search=john")
         # Search with mixed case
-        response3 = await seeded_client.get("/api/models/Author?search=JoHn")
+        response3 = await seeded_client.get("/api/models/author?search=JoHn")
 
         assert response1.status_code == 200
         assert response2.status_code == 200
@@ -943,7 +943,7 @@ class TestEdgeCasesAndErrorHandling:
     async def test_create_with_missing_required_fields(self, client: AsyncTestClient) -> None:
         """Test creating record with missing required fields."""
         # Missing required 'email' field
-        response = await client.post("/api/models/Author", json={"name": "Only Name"})
+        response = await client.post("/api/models/author", json={"name": "Only Name"})
 
         # Should fail due to database constraint
         assert response.status_code == 500
@@ -952,12 +952,12 @@ class TestEdgeCasesAndErrorHandling:
         """Test search with special characters."""
         # Create a record with special characters
         await seeded_client.post(
-            "/api/models/Category",
+            "/api/models/category",
             json={"name": "Test & Special <Category>", "description": "Has 'quotes' and \"double\""},
         )
 
         # Search for it
-        response = await seeded_client.get("/api/models/Category?search=Special")
+        response = await seeded_client.get("/api/models/category?search=Special")
 
         assert response.status_code == 200
         data = response.json()
@@ -970,7 +970,7 @@ class TestEdgeCasesAndErrorHandling:
 
         async def create_author(index: int):
             return await client.post(
-                "/api/models/Author",
+                "/api/models/author",
                 json={
                     "name": f"Concurrent Author {index}",
                     "email": f"concurrent{index}@example.com",
@@ -987,7 +987,7 @@ class TestEdgeCasesAndErrorHandling:
             assert response.status_code == 201
 
         # Verify all were created
-        list_response = await client.get("/api/models/Author?search=Concurrent")
+        list_response = await client.get("/api/models/author?search=Concurrent")
         assert list_response.json()["total"] == 5
 
     async def test_large_content_field(self, client: AsyncTestClient) -> None:
@@ -995,7 +995,7 @@ class TestEdgeCasesAndErrorHandling:
         large_content = "A" * 10000  # 10KB of text
 
         response = await client.post(
-            "/api/models/Category",
+            "/api/models/category",
             json={"name": "Large Content Test", "description": large_content},
         )
 
@@ -1003,5 +1003,5 @@ class TestEdgeCasesAndErrorHandling:
         data = response.json()
 
         # Verify large content was stored
-        get_response = await client.get(f"/api/models/Category/{data['id']}")
+        get_response = await client.get(f"/api/models/category/{data['id']}")
         assert len(get_response.json()["description"]) == 10000

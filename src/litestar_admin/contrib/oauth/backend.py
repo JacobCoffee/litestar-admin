@@ -157,6 +157,8 @@ class OAuthAuthBackend:
         token_expiry: int = 3600,
         refresh_token_expiry: int = 86400,
         password_verifier: Callable[[str, str], Awaitable[bool]] | None = None,
+        password_hasher: Callable[[str], Awaitable[str]] | None = None,
+        password_updater: Callable[[int | str, str], Awaitable[bool]] | None = None,
     ) -> None:
         """Initialize the OAuth authentication backend.
 
@@ -170,6 +172,8 @@ class OAuthAuthBackend:
             token_expiry: Access token expiry time in seconds. Defaults to 3600 (1 hour).
             refresh_token_expiry: Refresh token expiry time in seconds. Defaults to 86400 (24 hours).
             password_verifier: Optional async callable for hybrid auth (password + OAuth).
+            password_hasher: Optional async callable to hash passwords for password change.
+            password_updater: Optional async callable to update user password in database.
         """
         self.config = config
         self.user_loader = user_loader
@@ -180,6 +184,8 @@ class OAuthAuthBackend:
         self.token_expiry = token_expiry
         self.refresh_token_expiry = refresh_token_expiry
         self.password_verifier = password_verifier
+        self.password_hasher = password_hasher
+        self.password_updater = password_updater
 
         # Provider instances cache
         self._providers: dict[str, Any] = {}
@@ -423,6 +429,46 @@ class OAuthAuthBackend:
             "token_type": "bearer",
             "expires_in": str(self.token_expiry),
         }
+
+    async def change_password(
+        self,
+        connection: ASGIConnection,
+        current_password: str,
+        new_password: str,
+    ) -> bool:
+        """Change the current user's password.
+
+        This method is only available when the backend is configured with
+        password_verifier, password_hasher, and password_updater for hybrid auth.
+
+        Args:
+            connection: The current ASGI connection.
+            current_password: The user's current password.
+            new_password: The new password to set.
+
+        Returns:
+            True if password was changed successfully, False otherwise.
+        """
+        # Get current user
+        user = await self.get_current_user(connection)
+        if user is None:
+            return False
+
+        # Check if password operations are configured
+        if not self.password_verifier or not self.password_hasher or not self.password_updater:
+            return False
+
+        # Verify current password
+        password_hash = getattr(user, "password_hash", None) or getattr(user, "hashed_password", None)
+        if password_hash is None:
+            return False
+
+        if not await self.password_verifier(password_hash, current_password):
+            return False
+
+        # Hash new password and update
+        new_hash = await self.password_hasher(new_password)
+        return await self.password_updater(user.id, new_hash)
 
     def get_authorization_url(self, provider_name: str) -> tuple[str, str]:
         """Get the OAuth authorization URL for a provider.

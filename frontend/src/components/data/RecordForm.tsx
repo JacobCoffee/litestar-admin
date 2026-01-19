@@ -23,6 +23,11 @@ import { RelationshipPicker } from "@/components/forms/RelationshipPicker";
 import { MultiRelationshipPicker } from "@/components/forms/MultiRelationshipPicker";
 import type { ModelSchema, SchemaProperty, UploadedFile, FileFieldConfig } from "@/types";
 
+// Prevent tree-shaking of dynamically-used components
+// These are conditionally rendered based on runtime schema data
+const _preserveComponents = { FileUpload, RelationshipPicker, MultiRelationshipPicker };
+void _preserveComponents;
+
 // ============================================================================
 // Types
 // ============================================================================

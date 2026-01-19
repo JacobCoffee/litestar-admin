@@ -160,6 +160,17 @@ class AdminPlugin(InitPluginProtocol):
             UserManagementController,
         )
 
+        # Build middleware list
+        middleware: list[type] = []
+
+        # Add JWT auth middleware if auth backend is configured
+        if self._config.auth_backend is not None:
+            from litestar_admin.middleware.auth import create_jwt_auth_middleware
+
+            auth_middleware = create_jwt_auth_middleware(self._config)
+            if auth_middleware is not None:
+                middleware.append(auth_middleware)
+
         # Create a router at the admin base URL for all API endpoints
         # Controllers define paths like /api/models, so final paths become
         # /admin/api/models (when base_url is /admin)
@@ -183,6 +194,7 @@ class AdminPlugin(InitPluginProtocol):
                 SettingsController,
                 UserManagementController,
             ],
+            middleware=middleware if middleware else None,
         )
 
     def _configure_static_files(self, app_config: AppConfig) -> None:

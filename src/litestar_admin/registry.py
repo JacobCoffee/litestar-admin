@@ -263,7 +263,7 @@ class ViewRegistry:
         return [
             {
                 "name": view_class.name,
-                "model": view_class.model.__name__,
+                "model": view_class.identity,  # Use identity for URL routing
                 "icon": view_class.icon,
                 "category": view_class.category,
                 "can_create": view_class.can_create,

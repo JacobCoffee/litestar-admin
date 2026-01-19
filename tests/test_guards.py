@@ -100,7 +100,7 @@ def user_with_direct_permissions() -> MockAdminUser:
 def mock_connection(viewer_user: MockAdminUser) -> MagicMock:
     """Return a mock ASGI connection with a user."""
     conn = MagicMock()
-    conn.user = viewer_user
+    conn.scope = {"user": viewer_user}
     return conn
 
 
@@ -321,7 +321,7 @@ class TestPermissionGuard:
     ) -> None:
         """Verify guard passes when user has permission."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         guard = PermissionGuard(Permission.MODELS_READ)
         # Should not raise
         guard(conn, mock_handler)
@@ -333,14 +333,15 @@ class TestPermissionGuard:
     ) -> None:
         """Verify guard fails when user lacks permission."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         guard = PermissionGuard(Permission.MODELS_DELETE)
         with pytest.raises(NotAuthorizedException, match="Permission 'models:delete' required"):
             guard(conn, mock_handler)
 
     def test_guard_fails_without_user(self, mock_handler: MagicMock) -> None:
         """Verify guard fails when no user is present."""
-        conn = MagicMock(spec=[])  # No user attribute
+        conn = MagicMock()
+        conn.scope = {}  # No user in scope
         guard = PermissionGuard(Permission.MODELS_READ)
         with pytest.raises(NotAuthorizedException, match="Authentication required"):
             guard(conn, mock_handler)
@@ -352,7 +353,7 @@ class TestPermissionGuard:
     ) -> None:
         """Verify guard requires all specified permissions."""
         conn = MagicMock()
-        conn.user = editor_user
+        conn.scope = {"user": editor_user}
         guard = PermissionGuard(Permission.MODELS_READ, Permission.MODELS_DELETE)
         with pytest.raises(NotAuthorizedException):
             guard(conn, mock_handler)
@@ -364,7 +365,7 @@ class TestPermissionGuard:
     ) -> None:
         """Verify guard passes when user has all permissions."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         guard = PermissionGuard(Permission.MODELS_READ, Permission.MODELS_DELETE)
         # Should not raise
         guard(conn, mock_handler)
@@ -390,7 +391,7 @@ class TestRoleGuard:
     ) -> None:
         """Verify guard passes when user has role."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         guard = RoleGuard(Role.ADMIN)
         # Should not raise
         guard(conn, mock_handler)
@@ -402,14 +403,15 @@ class TestRoleGuard:
     ) -> None:
         """Verify guard fails when user lacks role."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         guard = RoleGuard(Role.ADMIN)
         with pytest.raises(NotAuthorizedException, match="One of roles 'admin' required"):
             guard(conn, mock_handler)
 
     def test_guard_fails_without_user(self, mock_handler: MagicMock) -> None:
         """Verify guard fails when no user is present."""
-        conn = MagicMock(spec=[])  # No user attribute
+        conn = MagicMock()
+        conn.scope = {}  # No user in scope
         guard = RoleGuard(Role.ADMIN)
         with pytest.raises(NotAuthorizedException, match="Authentication required"):
             guard(conn, mock_handler)
@@ -421,7 +423,7 @@ class TestRoleGuard:
     ) -> None:
         """Verify guard passes when user has any of the specified roles."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         guard = RoleGuard(Role.EDITOR, Role.ADMIN)
         # Should not raise
         guard(conn, mock_handler)
@@ -433,7 +435,7 @@ class TestRoleGuard:
     ) -> None:
         """Verify error message includes all required roles."""
         conn = MagicMock()
-        conn.user = viewer_user
+        conn.scope = {"user": viewer_user}
         guard = RoleGuard(Role.ADMIN, Role.SUPERADMIN)
         with pytest.raises(NotAuthorizedException, match="'admin', 'superadmin'"):
             guard(conn, mock_handler)
@@ -501,7 +503,7 @@ class TestGuardIntegration:
     ) -> None:
         """Verify multiple guards can all pass."""
         conn = MagicMock()
-        conn.user = admin_user
+        conn.scope = {"user": admin_user}
         guards = [
             require_permission(Permission.MODELS_READ),
             require_permission(Permission.MODELS_DELETE),

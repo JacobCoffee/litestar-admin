@@ -275,7 +275,9 @@ class PermissionGuard:
             NotAuthorizedException: If the user is not authenticated or
                                    lacks required permissions.
         """
-        user = getattr(connection, "user", None)
+        # Use scope.get to avoid triggering Litestar's user property which raises
+        # ImproperlyConfiguredException when no auth middleware is configured
+        user = connection.scope.get("user")
         if user is None:
             raise NotAuthorizedException("Authentication required")
 
@@ -333,7 +335,9 @@ class RoleGuard:
             NotAuthorizedException: If the user is not authenticated or
                                    lacks any of the required roles.
         """
-        user = getattr(connection, "user", None)
+        # Use scope.get to avoid triggering Litestar's user property which raises
+        # ImproperlyConfiguredException when no auth middleware is configured
+        user = connection.scope.get("user")
         if user is None:
             raise NotAuthorizedException("Authentication required")
 
