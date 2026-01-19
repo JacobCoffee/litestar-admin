@@ -25,13 +25,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sqlalchemy import JSON, DateTime, Index, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = ["AuditLog", "AuditLogBase"]
 
@@ -43,7 +40,6 @@ class AuditLogBase(DeclarativeBase):
     metadata/base from your main application models.
     """
 
-    pass
 
 
 class AuditLog(AuditLogBase):

@@ -154,6 +154,7 @@ class AdminPlugin(InitPluginProtocol):
             ModelsController,
             OAuthController,
             PagesController,
+            RelationshipsController,
             SettingsController,
             UserManagementController,
         )
@@ -176,6 +177,7 @@ class AdminPlugin(InitPluginProtocol):
                 ModelsController,
                 OAuthController,
                 PagesController,
+                RelationshipsController,
                 SettingsController,
                 UserManagementController,
             ],

@@ -13,7 +13,6 @@ from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
 
 from litestar_admin.audit import AuditAction, audit_admin_action, calculate_changes
-from litestar_admin.audit.database import DatabaseAuditLogger
 from litestar_admin.registry import ModelRegistry  # noqa: TC001
 from litestar_admin.service import AdminService
 
