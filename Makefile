@@ -42,8 +42,8 @@ install: ## Install package (production mode)
 dev: ## Run the full-featured example for local development
 	@uv sync --all-extras
 	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
-	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
-	@uv run litestar --app examples.full.app:app run --reload
+	@echo "\033[33m  Login: admin@example.com / admin (or use Demo OAuth)\033[0m"
+	@OAUTH_DEMO_MODE=true uv run litestar --app examples.full.app:app run --reload
 
 install-dev: ## Install package with all development dependencies
 	@uv sync --all-extras
@@ -147,8 +147,8 @@ example-minimal: ## Run the minimal example
 example-full: ## Run the full-featured example (same as 'make dev')
 	@uv sync --all-extras
 	@echo "\033[36m→ Starting full admin example at http://localhost:8000/admin\033[0m"
-	@echo "\033[33m  Login: admin@example.com / admin\033[0m"
-	@uv run litestar --app examples.full.app:app run --reload
+	@echo "\033[33m  Login: admin@example.com / admin (or use Demo OAuth)\033[0m"
+	@OAUTH_DEMO_MODE=true uv run litestar --app examples.full.app:app run --reload
 
 example-asgi: ## Run the raw ASGI example
 	@uv sync --all-extras
