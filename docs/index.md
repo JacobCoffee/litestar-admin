@@ -98,6 +98,13 @@ Learn how to configure themes, branding, authentication, and behavior.
 Customize how your models appear with column lists, filters, and form options.
 :::
 
+:::{grid-item-card} Custom Views & Embeds
+:link: user-guide/custom-views
+:link-type: doc
+
+Create custom views, actions, pages, and embed external dashboards.
+:::
+
 :::{grid-item-card} Authentication
 :link: authentication
 :link-type: doc
@@ -178,6 +185,7 @@ app = Litestar(
 getting-started
 configuration
 model-views
+user-guide/custom-views
 authentication
 guards
 deployment
