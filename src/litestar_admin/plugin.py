@@ -142,12 +142,16 @@ class AdminPlugin(InitPluginProtocol):
 
         # Import controllers lazily to avoid circular imports
         from litestar_admin.controllers import (
+            ActionsController,
             AuthController,
             BulkActionsController,
             ConfigController,
+            CustomViewsController,
             DashboardController,
+            EmbedsController,
             ExportController,
             ModelsController,
+            PagesController,
         )
 
         # Create a router at the admin base URL for all API endpoints
@@ -156,12 +160,16 @@ class AdminPlugin(InitPluginProtocol):
         return Router(
             path=self._config.base_url,
             route_handlers=[
+                ActionsController,
                 AuthController,
                 BulkActionsController,
                 ConfigController,
+                CustomViewsController,
                 DashboardController,
+                EmbedsController,
                 ExportController,
                 ModelsController,
+                PagesController,
             ],
         )
 

@@ -63,6 +63,7 @@ class AdminService(Generic[T]):
 
         from litestar_admin import AdminService
 
+
         async def get_users(session: AsyncSession) -> list[User]:
             service = AdminService(UserAdmin, session)
             records, total = await service.list_records(limit=10)
@@ -715,7 +716,17 @@ class AdminService(Generic[T]):
             schema["format"] = "email"
         elif column_lower in ("url", "website", "homepage", "link"):
             schema["format"] = "uri"
-        elif column_lower in ("content", "description", "body", "text", "bio", "notes", "summary", "details", "message"):
+        elif column_lower in (
+            "content",
+            "description",
+            "body",
+            "text",
+            "bio",
+            "notes",
+            "summary",
+            "details",
+            "message",
+        ):
             schema["format"] = "textarea"
 
         # Add nullable info using JSON schema pattern

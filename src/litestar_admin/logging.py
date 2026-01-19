@@ -166,9 +166,7 @@ def _configure_structlog(config: LoggingConfig) -> None:
     # This avoids conflicts with stdlib logging configuration
     structlog.configure(
         processors=processors,
-        wrapper_class=structlog.make_filtering_bound_logger(
-            getattr(logging, config.log_level)
-        ),
+        wrapper_class=structlog.make_filtering_bound_logger(getattr(logging, config.log_level)),
         context_class=dict,
         logger_factory=structlog.PrintLoggerFactory(),
         cache_logger_on_first_use=True,

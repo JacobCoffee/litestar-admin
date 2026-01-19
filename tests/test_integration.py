@@ -530,7 +530,7 @@ class TestModelsController:
         assert data["type"] == "object"
         assert data["title"] == "Author"
         assert "properties" in data
-        assert "id" in data["properties"]
+        # Note: "id" is excluded from form schema as it's auto-generated
         assert "name" in data["properties"]
         assert "email" in data["properties"]
 

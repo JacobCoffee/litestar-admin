@@ -726,6 +726,7 @@ class RedisCache:
                     # Expensive query
                     return await db.execute(...)
 
+
                 stats = await cache.get_or_set(
                     f"user:{user_id}:stats",
                     lambda: get_user_stats(user_id),

@@ -80,16 +80,19 @@ class BaseAdminView(ABC):
         """
         super().__init_subclass__(**kwargs)
 
-        # Set name from class name if not specified
-        if not cls.name and cls.__name__ not in ("BaseAdminView", "BaseModelView", "ModelView"):
+        # Skip auto-naming for base classes and model views (they have their own logic)
+        skip_auto_name = cls.__name__ in ("BaseAdminView", "BaseModelView", "ModelView") or hasattr(cls, "model")
+
+        # Set name from class name if not specified (non-model views only)
+        if not cls.name and not skip_auto_name:
             cls.name = cls.__name__.replace("View", "").replace("Admin", "")
 
-        # Set identity from name
-        if not cls.identity:
+        # Set identity from name (only if name is set)
+        if cls.name and not cls.identity:
             cls.identity = cls.name.lower().replace(" ", "-")
 
-        # Set plural name
-        if not cls.name_plural:
+        # Set plural name (only if name is set)
+        if cls.name and not cls.name_plural:
             cls.name_plural = f"{cls.name}s"
 
     @classmethod

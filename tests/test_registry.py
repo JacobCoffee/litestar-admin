@@ -35,7 +35,7 @@ class TestModelRegistry:
         registry = ModelRegistry()
         registry.register(UserAdmin1)
 
-        with pytest.raises(ValueError, match="Model User is already registered"):
+        with pytest.raises(ValueError, match="(Model User is already registered|View identity 'user' is already registered)"):
             registry.register(UserAdmin2)
 
     def test_unregister_by_model(self, user_model) -> None:

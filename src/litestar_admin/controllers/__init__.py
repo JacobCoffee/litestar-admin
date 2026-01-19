@@ -10,17 +10,34 @@ from litestar_admin.controllers.auth import (
     TokenResponse,
     UserResponse,
 )
-from litestar_admin.controllers.config import (
-    ConfigController,
-    ConfigResponse,
-    DevCredential,
-)
 from litestar_admin.controllers.bulk import (
     BulkActionRequest,
     BulkActionResponse,
     BulkActionsController,
     BulkDeleteRequest,
     BulkDeleteResponse,
+)
+from litestar_admin.controllers.config import (
+    ConfigController,
+    ConfigResponse,
+    DevCredential,
+)
+from litestar_admin.controllers.custom_views import (
+    ActionExecuteRequest,
+    ActionExecuteResponse,
+    ActionInfoResponse,
+    ActionsController,
+    CustomViewDeleteResponse,
+    CustomViewInfo,
+    CustomViewListResponse,
+    CustomViewSchemaResponse,
+    CustomViewsController,
+    EmbedConfigResponse,
+    EmbedPropsResponse,
+    EmbedsController,
+    PageContentResponse,
+    PageMetadataResponse,
+    PagesController,
 )
 from litestar_admin.controllers.dashboard import (
     ActivityEntry,
@@ -42,12 +59,16 @@ from litestar_admin.controllers.models import (
 
 __all__ = [
     # Controllers
+    "ActionsController",
     "AuthController",
     "BulkActionsController",
     "ConfigController",
+    "CustomViewsController",
     "DashboardController",
+    "EmbedsController",
     "ExportController",
     "ModelsController",
+    "PagesController",
     # DTOs - Auth
     "LoginRequest",
     "LogoutResponse",
@@ -59,6 +80,18 @@ __all__ = [
     "BulkActionResponse",
     "BulkDeleteRequest",
     "BulkDeleteResponse",
+    # DTOs - Custom Views
+    "ActionExecuteRequest",
+    "ActionExecuteResponse",
+    "ActionInfoResponse",
+    "CustomViewDeleteResponse",
+    "CustomViewInfo",
+    "CustomViewListResponse",
+    "CustomViewSchemaResponse",
+    "EmbedConfigResponse",
+    "EmbedPropsResponse",
+    "PageContentResponse",
+    "PageMetadataResponse",
     # DTOs - Dashboard
     "ActivityEntry",
     "DashboardStats",

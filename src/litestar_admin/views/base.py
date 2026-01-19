@@ -91,6 +91,10 @@ class BaseModelView(BaseAdminView):
         if not cls.name and hasattr(cls, "model"):
             cls.name = cls.model.__name__
 
+        # Set identity from name (needed because BaseAdminView skips this for model views)
+        if cls.name and not cls.identity:
+            cls.identity = cls.name.lower().replace(" ", "-")
+
         # Set plural name
         if not cls.name_plural and cls.name:
             cls.name_plural = f"{cls.name}s"

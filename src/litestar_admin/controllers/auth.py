@@ -331,9 +331,7 @@ class AuthController(Controller):
 
         # Check if the backend supports password change
         if not hasattr(admin_config.auth_backend, "change_password"):
-            raise PermissionDeniedException(
-                detail="Password change is not supported by this authentication backend"
-            )
+            raise PermissionDeniedException(detail="Password change is not supported by this authentication backend")
 
         success = await admin_config.auth_backend.change_password(
             request,
@@ -342,8 +340,6 @@ class AuthController(Controller):
         )
 
         if not success:
-            raise PermissionDeniedException(
-                detail="Failed to change password. Please check your current password."
-            )
+            raise PermissionDeniedException(detail="Failed to change password. Please check your current password.")
 
         return ChangePasswordResponse(success=True, message="Password changed successfully")
