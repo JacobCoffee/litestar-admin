@@ -45,13 +45,18 @@ interface PathParams {
 /**
  * Parse route parameters from pathname.
  * Handles paths like /models/User, /models/User/create, /models/User/123
+ * Also handles basePath prefix: /admin/models/User
  */
 function parsePathParams(pathname: string): PathParams {
-  // Remove /models prefix and split
-  const modelsPath = pathname.replace(/^\/models\/?/, '');
-  if (!modelsPath) return { model: null, id: null, action: null };
+  // Remove basePath (/admin) and /models prefix
+  // usePathname() may or may not include basePath in static export
+  const normalizedPath = pathname
+    .replace(/^\/admin/, '') // Remove basePath if present
+    .replace(/^\/models\/?/, ''); // Remove /models prefix
 
-  const segments = modelsPath.split('/').filter(Boolean);
+  if (!normalizedPath) return { model: null, id: null, action: null };
+
+  const segments = normalizedPath.split('/').filter(Boolean);
   if (segments.length === 0) return { model: null, id: null, action: null };
 
   const model = segments[0] ?? null;
