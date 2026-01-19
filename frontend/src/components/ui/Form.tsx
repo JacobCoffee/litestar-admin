@@ -151,13 +151,15 @@ export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ error = false, className, ...props }, ref) => {
+  ({ error = false, className, rows = 6, ...props }, ref) => {
     return (
       <textarea
         ref={ref}
+        rows={rows}
         className={cn(
           baseInputStyles,
-          'min-h-[100px] px-3 py-2 resize-y',
+          'min-h-[150px] max-h-[500px] px-3 py-2 resize-y',
+          'font-mono text-sm leading-relaxed',
           error && errorInputStyles,
           className
         )}

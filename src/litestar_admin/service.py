@@ -40,7 +40,7 @@ _SQLALCHEMY_TYPE_MAP: dict[str, dict[str, Any]] = {
     "BOOLEAN": {"type": "boolean"},
     "STRING": {"type": "string"},
     "VARCHAR": {"type": "string"},
-    "TEXT": {"type": "string"},
+    "TEXT": {"type": "string", "format": "textarea"},
     "CHAR": {"type": "string"},
     "DATE": {"type": "string", "format": "date"},
     "DATETIME": {"type": "string", "format": "date-time"},
@@ -626,6 +626,16 @@ class AdminService(Generic[T]):
         type_info = _SQLALCHEMY_TYPE_MAP.get(type_name, {"type": "string"})
         schema.update(type_info)
 
+        # Handle Enum types - extract enum values for dropdown
+        if type_name == "ENUM" and hasattr(column.type, "enums"):
+            schema["type"] = "string"
+            # Get enum values (handles both native SQL enums and Python enum classes)
+            enum_values = column.type.enums
+            if hasattr(column.type, "enum_class") and column.type.enum_class:
+                # Python Enum class - extract values
+                enum_values = [e.value for e in column.type.enum_class]
+            schema["enum"] = list(enum_values)
+
         # Add maxLength for string types with length
         if type_name in ("STRING", "VARCHAR", "CHAR") and hasattr(column.type, "length") and column.type.length:
             schema["maxLength"] = column.type.length
@@ -636,6 +646,8 @@ class AdminService(Generic[T]):
             schema["format"] = "email"
         elif column_lower in ("url", "website", "homepage", "link"):
             schema["format"] = "uri"
+        elif column_lower in ("content", "description", "body", "text", "bio", "notes", "summary", "details", "message"):
+            schema["format"] = "textarea"
 
         # Add nullable info using JSON schema pattern
         if column.nullable:
