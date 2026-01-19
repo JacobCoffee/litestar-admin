@@ -542,6 +542,10 @@ For content fields that require formatting (like blog posts or descriptions), yo
 
 ### Configuring Rich Text Fields
 
+There are two ways to configure rich text fields:
+
+#### Using form_widgets (Simple)
+
 Use the `form_widgets` attribute to specify which fields should use the rich text editor:
 
 ```python
@@ -556,6 +560,60 @@ class BlogPostAdmin(ModelView, model=BlogPost):
         "content": "richtext",
     }
 ```
+
+#### Using RichTextField (Advanced)
+
+For more control over toolbar, validation, and XSS sanitization, use `RichTextField`:
+
+```python
+from typing import ClassVar
+
+from litestar_admin import ModelView
+from litestar_admin.fields import RichTextField
+from myapp.models import BlogPost
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    rich_text_fields: ClassVar[list[RichTextField]] = [
+        RichTextField(
+            name="content",
+            description="Main article content",
+            required=True,
+            toolbar=["bold", "italic", "link", "heading", "bulletList", "orderedList"],
+            max_length=50000,
+            allowed_tags=["p", "h1", "h2", "h3", "strong", "em", "a", "ul", "ol", "li"],
+        ),
+        RichTextField(
+            name="summary",
+            placeholder="Enter a brief summary...",
+            max_length=500,
+        ),
+    ]
+```
+
+**RichTextField Options**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | `str` | Required | Field name matching the model attribute |
+| `description` | `str` | `""` | Help text shown below the editor |
+| `required` | `bool` | `False` | Whether the field is required |
+| `placeholder` | `str` | `""` | Placeholder text when empty |
+| `toolbar` | `list[str]` | All buttons | Toolbar buttons to display |
+| `max_length` | `int \| None` | `None` | Max character count (plain text) |
+| `allowed_tags` | `list[str]` | Safe defaults | Allowed HTML tags for sanitization |
+| `label` | `str \| None` | Auto-generated | Custom label for the field |
+
+**Available Toolbar Buttons**
+
+- `bold`, `italic`, `underline`, `strike` - Text formatting
+- `code`, `codeBlock` - Code formatting
+- `heading` - H1-H6 headings
+- `bulletList`, `orderedList` - Lists
+- `blockquote` - Block quotes
+- `link`, `image` - Media
+- `horizontalRule` - Horizontal line
+- `undo`, `redo` - History
 
 ### Editor Features
 
@@ -654,6 +712,43 @@ Example HTML output:
 </ul>
 <pre><code class="language-python">print("Hello, World!")</code></pre>
 ```
+
+### XSS Sanitization
+
+Rich text content is automatically sanitized before saving to protect against XSS attacks. The sanitization:
+
+- Removes dangerous tags like `<script>`, `<iframe>`, `<object>`
+- Removes event handlers like `onclick`, `onerror`
+- Blocks dangerous URL schemes like `javascript:`
+- Adds `rel="noopener noreferrer"` to external links
+
+**Requirements:**
+
+XSS sanitization requires the `nh3` library (Rust ammonia bindings). Install it with:
+
+```bash
+pip install litestar-admin[sanitize]
+```
+
+If `nh3` is not installed, content is saved as-is with a warning logged.
+
+**Customizing Allowed Tags:**
+
+Use the `allowed_tags` parameter on `RichTextField` to control which HTML tags are allowed:
+
+```python
+RichTextField(
+    name="content",
+    allowed_tags=["p", "strong", "em", "a"],  # Very restrictive
+)
+```
+
+Default allowed tags include common formatting elements:
+- Block: `p`, `h1`-`h6`, `blockquote`, `pre`, `code`, `hr`, `br`, `div`
+- Lists: `ul`, `ol`, `li`
+- Inline: `a`, `strong`, `b`, `em`, `i`, `u`, `s`, `span`, `mark`
+- Media: `img` (with `src`, `alt` attributes filtered)
+- Tables: `table`, `thead`, `tbody`, `tr`, `th`, `td`
 
 ## Complete Example
 

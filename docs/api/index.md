@@ -10,6 +10,7 @@ authentication
 models
 dashboard
 export
+import
 bulk-actions
 ```
 
@@ -79,8 +80,16 @@ All responses use JSON format. Successful responses return the requested data di
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/models/{model}/export` | Export all records |
+| GET | `/api/models/{model}/export` | Export all records (CSV, JSON, XLSX) |
 | POST | `/api/models/{model}/bulk/export` | Export selected records |
+
+#### Import Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/models/{model}/import/preview` | Preview CSV with auto-detection |
+| POST | `/api/models/{model}/import/validate` | Validate with column mappings |
+| POST | `/api/models/{model}/import/execute` | Execute batch import |
 
 #### Bulk Action Endpoints
 

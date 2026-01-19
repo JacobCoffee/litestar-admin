@@ -1,6 +1,6 @@
 # Export API
 
-The Export API provides endpoints for exporting model data in CSV or JSON format. Supports both full exports and selective exports of specific records.
+The Export API provides endpoints for exporting model data in CSV, JSON, or Excel (XLSX) format. Supports both full exports and selective exports of specific records.
 
 Export endpoints are under `/admin/api/models`.
 
@@ -23,7 +23,7 @@ Export all records from a model in CSV or JSON format.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `format` | string | "csv" | Export format: "csv" or "json" |
+| `format` | string | "csv" | Export format: "csv", "json", or "xlsx" |
 
 **Headers**
 
@@ -120,7 +120,7 @@ Export specific records by their primary key values.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `ids` | array | Yes | List of primary key values to export |
-| `format` | string | No | Export format: "csv" or "json" (default: "csv") |
+| `format` | string | No | Export format: "csv", "json", or "xlsx" (default: "csv") |
 
 **Example Request**
 
@@ -202,6 +202,47 @@ JSON exports are returned as a JSON array of objects:
 - Keys match column names
 - Values preserve their types (numbers, booleans, null)
 - Dates are ISO 8601 strings
+
+### Excel (XLSX) Format
+
+Excel exports create a proper `.xlsx` file with:
+- A single worksheet named after the model
+- Header row with column names
+- Native Excel data types (numbers, dates, booleans)
+- Proper formatting for dates and times
+
+**Requirements:**
+
+Excel export requires the `openpyxl` library. Install it with:
+
+```bash
+pip install litestar-admin[excel]
+```
+
+If `openpyxl` is not installed, XLSX export requests will return a helpful error message.
+
+**Example Request (XLSX)**
+
+```http
+GET /admin/api/models/User/export?format=xlsx HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Success Response (200 OK)**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Content-Disposition: attachment; filename="User_export.xlsx"
+
+[Binary Excel file content]
+```
+
+Special value handling in Excel:
+- Dates and datetimes are native Excel dates
+- UUIDs are converted to strings
+- Lists and dicts are JSON-serialized
+- `null` values are empty cells
 
 ---
 
