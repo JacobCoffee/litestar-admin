@@ -112,30 +112,32 @@ class ThumbnailConfig:
 
 
 # Default allowed file extensions for uploads
-DEFAULT_ALLOWED_EXTENSIONS: frozenset[str] = frozenset({
-    # Images
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "webp",
-    "svg",
-    "ico",
-    # Documents
-    "pdf",
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    "ppt",
-    "pptx",
-    "txt",
-    "csv",
-    # Archives
-    "zip",
-    "tar",
-    "gz",
-})
+DEFAULT_ALLOWED_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        # Images
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+        "svg",
+        "ico",
+        # Documents
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx",
+        "txt",
+        "csv",
+        # Archives
+        "zip",
+        "tar",
+        "gz",
+    }
+)
 
 # Default maximum file size (10 MB)
 DEFAULT_MAX_FILE_SIZE: int = 10 * 1024 * 1024

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useId, type ReactNode, type KeyboardEvent } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getHighlightedSegments } from "@/lib/utils";
 import {
   Table,
   TableHeader,
@@ -87,6 +87,8 @@ export interface DataTableProps<T> {
   striped?: boolean;
   /** Number of skeleton rows to show when loading */
   skeletonRows?: number;
+  /** Search term to highlight in cell content */
+  searchTerm?: string;
 }
 
 // ============================================================================
@@ -193,6 +195,61 @@ function MinusIcon({ className }: { className?: string }) {
     >
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
+  );
+}
+
+// ============================================================================
+// Highlighted Text Component
+// ============================================================================
+
+interface HighlightedCellTextProps {
+  text: string;
+  searchTerm?: string;
+}
+
+/**
+ * Renders cell text with search term highlighting.
+ * Uses memoization to avoid unnecessary re-renders.
+ */
+function HighlightedCellText({ text, searchTerm }: HighlightedCellTextProps) {
+  const segments = useMemo(() => {
+    if (!searchTerm?.trim() || !text) {
+      return null;
+    }
+    const result = getHighlightedSegments(text, searchTerm);
+    // Check if any segment is highlighted
+    if (!result.some((s) => s.highlighted)) {
+      return null;
+    }
+    return result;
+  }, [text, searchTerm]);
+
+  // No highlighting needed
+  if (!segments) {
+    return <>{text}</>;
+  }
+
+  return (
+    <>
+      {segments.map((segment, index) =>
+        segment.highlighted ? (
+          <mark
+            key={index}
+            className={cn(
+              "bg-[var(--color-warning)]/30",
+              "text-[var(--color-foreground)]",
+              "rounded-[var(--radius-sm)]",
+              "px-0.5",
+              "decoration-none",
+            )}
+          >
+            {segment.text}
+          </mark>
+        ) : (
+          <span key={index}>{segment.text}</span>
+        ),
+      )}
+    </>
   );
 }
 
@@ -489,6 +546,7 @@ export function DataTable<T>({
   className,
   striped = false,
   skeletonRows = 5,
+  searchTerm,
 }: DataTableProps<T>) {
   const tableId = useId();
 
@@ -828,9 +886,21 @@ export function DataTable<T>({
                   {displayColumns.map((column) => {
                     const key = String(column.key);
                     const value = getCellValue(row, key);
-                    const content = column.render
-                      ? column.render(value, row, rowIndex)
-                      : String(value ?? "");
+
+                    // Determine cell content with optional highlighting
+                    let content: ReactNode;
+                    if (column.render) {
+                      // Custom render function - use as-is (highlighting handled by consumer if needed)
+                      content = column.render(value, row, rowIndex);
+                    } else {
+                      // Default rendering - apply search highlighting if search is active
+                      const textValue = String(value ?? "");
+                      if (searchTerm?.trim() && textValue) {
+                        content = <HighlightedCellText text={textValue} searchTerm={searchTerm} />;
+                      } else {
+                        content = textValue;
+                      }
+                    }
 
                     return (
                       <TableCell

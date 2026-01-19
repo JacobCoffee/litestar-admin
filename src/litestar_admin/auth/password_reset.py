@@ -33,6 +33,7 @@ Example:
             )
             return True
 
+
         service = PasswordResetService(
             secret_key="your-secret-key",
             email_sender=send_reset_email,
@@ -206,8 +207,7 @@ async def _default_email_sender(email: str, token: str, reset_url: str) -> bool:
         Always returns False (email not sent).
     """
     logger.warning(
-        "Password reset email not sent - no email sender configured. "
-        "Email: %s, Reset URL: %s?token=%s",
+        "Password reset email not sent - no email sender configured. Email: %s, Reset URL: %s?token=%s",
         email,
         reset_url,
         token,
@@ -241,9 +241,7 @@ class PasswordResetService:
     secret_key: str
     token_expiry: int = 3600
     reset_url: str = "/admin/reset-password"
-    email_sender: Callable[[str, str, str], Awaitable[bool]] = field(
-        default_factory=lambda: _default_email_sender
-    )
+    email_sender: Callable[[str, str, str], Awaitable[bool]] = field(default_factory=lambda: _default_email_sender)
     token_storage: TokenStorageProtocol = field(default_factory=InMemoryTokenStorage)
 
     def __post_init__(self) -> None:

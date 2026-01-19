@@ -3,6 +3,7 @@
  * Provides specialized form controls for common use cases.
  */
 
+export { Fieldset, FieldsetGroup, type FieldsetProps, type FieldsetGroupProps } from "./Fieldset";
 export { FileUpload, type FileUploadProps } from "./FileUpload";
 export {
   ImagePreview,

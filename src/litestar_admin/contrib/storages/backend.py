@@ -177,10 +177,7 @@ class AdminStorageBackend:
             try:
                 from litestar_storages import S3Storage
             except ImportError as e:
-                msg = (
-                    "S3 storage requires additional dependencies. "
-                    "Install with: pip install 'litestar-storages[s3]'"
-                )
+                msg = "S3 storage requires additional dependencies. Install with: pip install 'litestar-storages[s3]'"
                 raise ImportError(msg) from e
             self._backend = S3Storage(**kwargs)
 
@@ -188,10 +185,7 @@ class AdminStorageBackend:
             try:
                 from litestar_storages import GCSStorage
             except ImportError as e:
-                msg = (
-                    "GCS storage requires additional dependencies. "
-                    "Install with: pip install 'litestar-storages[gcs]'"
-                )
+                msg = "GCS storage requires additional dependencies. Install with: pip install 'litestar-storages[gcs]'"
                 raise ImportError(msg) from e
             self._backend = GCSStorage(**kwargs)
 
@@ -640,8 +634,6 @@ class AdminStorageBackend:
             return content, thumb_path
 
         # Generate new thumbnail
-        content, stored_path = await self.generate_thumbnail(
-            path, size, format, quality, store=True
-        )
+        content, stored_path = await self.generate_thumbnail(path, size, format, quality, store=True)
 
         return content, stored_path or thumb_path

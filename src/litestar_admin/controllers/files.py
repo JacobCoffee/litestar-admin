@@ -14,7 +14,7 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from litestar import Controller, delete, get, post
 from litestar.datastructures import UploadFile  # noqa: TC002  # Required for runtime signature
@@ -24,14 +24,12 @@ from litestar.params import Body
 from litestar.response import Redirect, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
+from litestar_admin.contrib.storages import AdminStorageBackend
 from litestar_admin.fields.file import (
     FileField,
     ImageField,
     validate_file_field,
 )
-
-if TYPE_CHECKING:
-    from litestar_admin.contrib.storages import AdminStorageBackend
 
 __all__ = [
     "DeleteFileResponse",
@@ -255,9 +253,7 @@ class FilesController(Controller):
                 model_name=model_name,
                 field_name=field_name,
             )
-            thumbnail_url = (
-                admin_storage.get_public_url(thumbnail_path) if thumbnail_path else None
-            )
+            thumbnail_url = admin_storage.get_public_url(thumbnail_path) if thumbnail_path else None
         else:
             storage_path = await admin_storage.upload(
                 file_content=file_content,

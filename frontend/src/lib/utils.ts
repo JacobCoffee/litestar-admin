@@ -71,3 +71,66 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
     timeoutId = setTimeout(() => fn(...args), delay);
   };
 }
+
+/**
+ * Represents a segment of text, either highlighted or not.
+ */
+export interface TextSegment {
+  text: string;
+  highlighted: boolean;
+}
+
+/**
+ * Splits text into segments based on search term matches.
+ * Returns an array of segments with highlighted flag for matching parts.
+ * Matching is case-insensitive.
+ *
+ * @param text - The text to search within
+ * @param searchTerm - The term to highlight
+ * @returns Array of text segments with highlighted flags
+ */
+export function getHighlightedSegments(text: string, searchTerm: string): TextSegment[] {
+  if (!searchTerm || !text) {
+    return [{ text, highlighted: false }];
+  }
+
+  const segments: TextSegment[] = [];
+  const lowerText = text.toLowerCase();
+  const lowerSearch = searchTerm.toLowerCase().trim();
+
+  if (!lowerSearch) {
+    return [{ text, highlighted: false }];
+  }
+
+  let lastIndex = 0;
+  let matchIndex = lowerText.indexOf(lowerSearch);
+
+  while (matchIndex !== -1) {
+    // Add non-matching text before the match
+    if (matchIndex > lastIndex) {
+      segments.push({
+        text: text.slice(lastIndex, matchIndex),
+        highlighted: false,
+      });
+    }
+
+    // Add the matching text
+    segments.push({
+      text: text.slice(matchIndex, matchIndex + lowerSearch.length),
+      highlighted: true,
+    });
+
+    lastIndex = matchIndex + lowerSearch.length;
+    matchIndex = lowerText.indexOf(lowerSearch, lastIndex);
+  }
+
+  // Add remaining non-matching text
+  if (lastIndex < text.length) {
+    segments.push({
+      text: text.slice(lastIndex),
+      highlighted: false,
+    });
+  }
+
+  return segments.length > 0 ? segments : [{ text, highlighted: false }];
+}

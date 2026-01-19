@@ -858,6 +858,7 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
                     isSubmitting={updateMutation.isPending}
                     mode="edit"
                     errors={serverErrors}
+                    modelName={model}
                   />
                 )}
               </CardBody>

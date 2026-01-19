@@ -141,8 +141,7 @@ class PasswordHasher:
                     logger.debug("Password hasher initialized with bcrypt (Argon2 not available)")
                 except ValueError:
                     logger.warning(
-                        "Neither Argon2 nor bcrypt available. "
-                        "Install 'passlib[argon2]' for secure password hashing."
+                        "Neither Argon2 nor bcrypt available. Install 'passlib[argon2]' for secure password hashing."
                     )
                     PasswordHasher._available = False
         except ImportError:
@@ -168,10 +167,7 @@ class PasswordHasher:
             True
         """
         if not PasswordHasher._available or PasswordHasher._context is None:
-            msg = (
-                "No password hashing backend available. "
-                "Install 'litestar-admin[auth]' or 'passlib[argon2]'."
-            )
+            msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
         return PasswordHasher._context.hash(password)  # type: ignore[union-attr]
 
@@ -197,10 +193,7 @@ class PasswordHasher:
             False
         """
         if not PasswordHasher._available or PasswordHasher._context is None:
-            msg = (
-                "No password hashing backend available. "
-                "Install 'litestar-admin[auth]' or 'passlib[argon2]'."
-            )
+            msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
         return PasswordHasher._context.verify(password, password_hash)  # type: ignore[union-attr]
 
@@ -229,10 +222,7 @@ class PasswordHasher:
             ...     pass
         """
         if not PasswordHasher._available or PasswordHasher._context is None:
-            msg = (
-                "No password hashing backend available. "
-                "Install 'litestar-admin[auth]' or 'passlib[argon2]'."
-            )
+            msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
         return PasswordHasher._context.needs_update(password_hash)  # type: ignore[union-attr]
 

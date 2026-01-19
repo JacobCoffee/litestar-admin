@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-async def fake_redis() -> "FakeAsyncRedis":
+async def fake_redis() -> FakeAsyncRedis:
     """Create a fake Redis async client for testing."""
     from fakeredis import FakeAsyncRedis
 
@@ -34,7 +34,7 @@ async def fake_redis() -> "FakeAsyncRedis":
 
 
 @pytest.fixture
-async def rate_limit_store(fake_redis: "FakeAsyncRedis"):
+async def rate_limit_store(fake_redis: FakeAsyncRedis):
     """Create a RedisRateLimitStore with fake Redis client."""
     from examples.full.redis_store import RedisRateLimitStore
 
@@ -42,7 +42,7 @@ async def rate_limit_store(fake_redis: "FakeAsyncRedis"):
 
 
 @pytest.fixture
-async def session_store(fake_redis: "FakeAsyncRedis"):
+async def session_store(fake_redis: FakeAsyncRedis):
     """Create a RedisSessionStore with fake Redis client."""
     from examples.full.redis_store import RedisSessionStore
 
@@ -50,7 +50,7 @@ async def session_store(fake_redis: "FakeAsyncRedis"):
 
 
 @pytest.fixture
-async def cache(fake_redis: "FakeAsyncRedis"):
+async def cache(fake_redis: FakeAsyncRedis):
     """Create a RedisCache with fake Redis client."""
     from examples.full.redis_store import RedisCache
 

@@ -46,3 +46,12 @@ export {
   type UseBulkSelectionOptions,
   type UseBulkSelectionReturn,
 } from "./BulkActions";
+
+export {
+  ColumnVisibility,
+  useColumnVisibility,
+  type ColumnVisibilityProps,
+  type ColumnConfig,
+  type UseColumnVisibilityOptions,
+  type UseColumnVisibilityReturn,
+} from "./ColumnVisibility";

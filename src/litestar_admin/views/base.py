@@ -75,6 +75,49 @@ class BaseModelView(BaseAdminView):
     form_columns: ClassVar[list[str]] = []
     form_excluded_columns: ClassVar[list[str]] = []
     form_extra_fields: ClassVar[dict[str, dict[str, Any]]] = {}
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = []
+    """Form fieldsets for grouping fields in create/edit forms.
+
+    Each fieldset is a dictionary with:
+    - title: Display title for the fieldset
+    - description: Optional description text
+    - fields: List of field names to include in this fieldset
+    - collapsed: Whether the fieldset is collapsed by default (default: False)
+    - collapsible: Whether the fieldset can be collapsed (default: True)
+
+    Example::
+
+        class UserAdmin(ModelView, model=User):
+            form_fieldsets = [
+                {
+                    "title": "Personal Information",
+                    "description": "Basic user information",
+                    "fields": ["name", "email"],
+                },
+                {
+                    "title": "Access Control",
+                    "description": "User permissions and status",
+                    "fields": ["role", "is_active"],
+                    "collapsed": True,
+                },
+            ]
+    """
+    form_widgets: ClassVar[dict[str, str]] = {}
+    """Custom widget types for specific fields.
+
+    Map field names to widget types. Supported widgets:
+    - 'richtext': Tiptap-based rich text editor
+    - 'textarea': Standard textarea
+    - 'code': Code editor with syntax highlighting
+
+    Example::
+
+        class BlogPostAdmin(ModelView, model=BlogPost):
+            form_widgets = {
+                "content": "richtext",
+                "code_snippet": "code",
+            }
+    """
     file_fields: ClassVar[list[FileField]] = []
     """List of file upload fields for this model.
 
@@ -358,6 +401,7 @@ class BaseModelView(BaseAdminView):
             class UserAdmin(ModelView, model=User):
                 pass
 
+
             # Get all relationships
             for rel in UserAdmin.relationship_fields():
                 print(f"{rel.name}: {rel.relationship_type.value}")
@@ -381,6 +425,7 @@ class BaseModelView(BaseAdminView):
 
             class PostAdmin(ModelView, model=Post):
                 pass
+
 
             # Get info about the 'author' relationship
             rel_info = PostAdmin.get_relationship_info("author")

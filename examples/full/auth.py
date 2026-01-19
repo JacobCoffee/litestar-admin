@@ -790,7 +790,7 @@ def get_demo_oauth_backend(session_factory: Callable[[], AsyncSession]) -> OAuth
     demo_provider_config = OAuthProviderConfig(
         name="demo",
         client_id="demo_client_id",
-        client_secret="demo_client_secret",  # noqa: S106
+        client_secret="demo_client_secret",
         provider_type=OAuthProviderType.GENERIC,
         # These URLs are required for GENERIC type but won't be used
         authorize_url=f"{redirect_base_url}/admin/auth/oauth/demo/authorize",
@@ -822,7 +822,7 @@ def get_demo_oauth_backend(session_factory: Callable[[], AsyncSession]) -> OAuth
     # This replaces the generic provider that would make HTTP requests
     demo_provider = DemoOAuthProvider(
         client_id="demo_client_id",
-        client_secret="demo_client_secret",  # noqa: S106
+        client_secret="demo_client_secret",
         redirect_uri=oauth_config.get_callback_url("demo"),
         demo_email=demo_email,
         demo_name=demo_name,

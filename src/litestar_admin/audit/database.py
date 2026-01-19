@@ -10,6 +10,7 @@ Example:
         from litestar_admin.audit import AuditAction, audit_admin_action
         from litestar_admin.audit.database import DatabaseAuditLogger
 
+
         async def log_action(session: AsyncSession, request: Request) -> None:
             logger = DatabaseAuditLogger(session)
             entry = await audit_admin_action(
@@ -54,6 +55,7 @@ class DatabaseAuditLogger:
 
             from litestar import get
             from sqlalchemy.ext.asyncio import AsyncSession
+
 
             @get("/")
             async def handler(db_session: AsyncSession) -> dict:

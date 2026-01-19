@@ -55,3 +55,7 @@ export type {
   SkeletonTableProps,
   SkeletonCardProps,
 } from "./Loading";
+
+// HighlightedText
+export { HighlightedText } from "./HighlightedText";
+export type { HighlightedTextProps } from "./HighlightedText";

@@ -16,6 +16,7 @@ Example:
         from litestar_admin.settings import SettingsService, SettingsCategory
         from sqlalchemy.ext.asyncio import AsyncSession
 
+
         async def configure_admin(session: AsyncSession) -> None:
             service = SettingsService(session)
 

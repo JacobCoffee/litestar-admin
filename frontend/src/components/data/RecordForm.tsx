@@ -18,7 +18,10 @@ import {
   type SelectOption,
 } from "@/components/ui/Form";
 import { Button } from "@/components/ui/Button";
-import type { ModelSchema, SchemaProperty } from "@/types";
+import { FileUpload } from "@/components/forms/FileUpload";
+import { RelationshipPicker } from "@/components/forms/RelationshipPicker";
+import { MultiRelationshipPicker } from "@/components/forms/MultiRelationshipPicker";
+import type { ModelSchema, SchemaProperty, UploadedFile, FileFieldConfig } from "@/types";
 
 // ============================================================================
 // Types
@@ -43,10 +46,12 @@ export interface RecordFormProps<T = Record<string, unknown>> {
   errors?: Record<string, string>;
   /** Additional CSS classes */
   className?: string;
-  /** Related records for relationship fields */
+  /** Related records for relationship fields (legacy fallback) */
   relatedRecords?: Record<string, RelatedRecord[]>;
   /** Custom field renderer for overriding default field rendering */
   renderField?: (field: FieldConfig, defaultRender: () => ReactNode) => ReactNode;
+  /** Model name - required for relationship field autocomplete */
+  modelName?: string;
 }
 
 export interface RelatedRecord {
@@ -274,6 +279,67 @@ function formatDisplayValue(value: unknown, property: SchemaProperty): string {
 }
 
 // ============================================================================
+// Field Type Detection
+// ============================================================================
+
+/**
+ * Determines if a field is a file upload field.
+ */
+function isFileField(property: SchemaProperty): boolean {
+  return (
+    property.type === "file" ||
+    property.format === "file" ||
+    property.format === "image" ||
+    property.fileConfig !== undefined
+  );
+}
+
+/**
+ * Determines if a field is a relationship/FK field.
+ */
+function isRelationshipField(property: SchemaProperty, fieldName: string): boolean {
+  // Check for explicit relationship configuration
+  if (property.relationshipConfig) return true;
+  // Check for format hint
+  if (property.format === "relation" || property.format === "relationship") return true;
+  // Check for common FK naming pattern (field ends with _id and is integer/string)
+  if (fieldName.endsWith("_id") && (property.type === "integer" || property.type === "string")) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Determines if a field is a many-to-many relationship field.
+ */
+function isMultiRelationshipField(property: SchemaProperty): boolean {
+  if (property.relationshipConfig?.multiple) return true;
+  // Array type with relationship items
+  if (property.type === "array" && property.items) {
+    const itemsFormat = property.items.format;
+    return itemsFormat === "relation" || itemsFormat === "relationship";
+  }
+  return false;
+}
+
+/**
+ * Builds FileFieldConfig from schema property.
+ */
+function buildFileConfig(property: SchemaProperty): FileFieldConfig {
+  if (property.fileConfig) {
+    return property.fileConfig;
+  }
+  // Build from property hints
+  const config: FileFieldConfig = {
+    multiple: property.type === "array",
+  };
+  if (property.maximum !== undefined) {
+    return { ...config, maxSize: property.maximum };
+  }
+  return config;
+}
+
+// ============================================================================
 // Field Components
 // ============================================================================
 
@@ -282,9 +348,11 @@ interface FieldRendererProps {
   onChange: (name: string, value: unknown) => void;
   relatedRecords: RelatedRecord[] | undefined;
   mode: FormMode;
+  /** Model name for relationship field API calls */
+  modelName: string | undefined;
 }
 
-function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRendererProps) {
+function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: FieldRendererProps) {
   const { name, property, required, value, error, disabled } = config;
   const inputType = getInputType(property);
   const label = property.title || formatLabel(name);
@@ -316,6 +384,142 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
     if (hasHint) return `${fieldId}-hint`;
     return undefined;
   };
+
+  // Handler for file field changes
+  const handleFileChange = useCallback(
+    (files: UploadedFile[]) => {
+      // Store the file URLs for form submission
+      const fileValue = files.length === 0
+        ? null
+        : files.length === 1
+          ? files[0]?.url ?? null
+          : files.map((f) => f.url).filter(Boolean);
+      onChange(name, fileValue);
+    },
+    [name, onChange],
+  );
+
+  // Handler for single relationship picker changes
+  const handleRelationshipChange = useCallback(
+    (selectedValue: string | number | null) => {
+      onChange(name, selectedValue);
+    },
+    [name, onChange],
+  );
+
+  // Handler for multi relationship picker changes
+  const handleMultiRelationshipChange = useCallback(
+    (selectedValues: (string | number)[]) => {
+      onChange(name, selectedValues);
+    },
+    [name, onChange],
+  );
+
+  // ========== File Field ==========
+  if (isFileField(property) && !isViewMode) {
+    const fileConfig = buildFileConfig(property);
+    // Convert current value to UploadedFile[] format
+    const currentFiles: UploadedFile[] = [];
+    if (value) {
+      if (Array.isArray(value)) {
+        value.forEach((v, idx) => {
+          if (typeof v === "string") {
+            currentFiles.push({
+              id: `existing-${idx}`,
+              name: v.split("/").pop() || "file",
+              type: "",
+              size: 0,
+              url: v,
+              progress: 100,
+              status: "success",
+            });
+          }
+        });
+      } else if (typeof value === "string") {
+        currentFiles.push({
+          id: "existing-0",
+          name: value.split("/").pop() || "file",
+          type: "",
+          size: 0,
+          url: value,
+          progress: 100,
+          status: "success",
+        });
+      }
+    }
+    return (
+      <FormField
+        label={label}
+        htmlFor={fieldId}
+        required={required}
+        {...(error ? { error } : {})}
+        className="col-span-full"
+      >
+        <FileUpload
+          name={name}
+          config={fileConfig}
+          value={currentFiles}
+          onChange={handleFileChange}
+          disabled={disabled}
+          required={required}
+          {...(error ? { error } : {})}
+          {...(hint ? { hint } : {})}
+        />
+      </FormField>
+    );
+  }
+
+  // ========== Multi-Relationship Field (Many-to-Many) ==========
+  if (isRelationshipField(property, name) && isMultiRelationshipField(property) && modelName && !isViewMode) {
+    const currentValue = Array.isArray(value)
+      ? (value as (string | number)[])
+      : [];
+    return (
+      <FormField
+        label={label}
+        htmlFor={fieldId}
+        required={required}
+        {...(error ? { error } : {})}
+        {...(hint ? { hint } : {})}
+        className="col-span-full"
+      >
+        <MultiRelationshipPicker
+          modelName={modelName}
+          fieldName={name}
+          value={currentValue}
+          onChange={handleMultiRelationshipChange}
+          disabled={disabled}
+          error={!!error}
+          placeholder={`Search ${label.toLowerCase()}...`}
+        />
+      </FormField>
+    );
+  }
+
+  // ========== Single Relationship Field (FK) ==========
+  if (isRelationshipField(property, name) && modelName && !isViewMode && !(relatedRecords && relatedRecords.length > 0)) {
+    const currentValue = value as string | number | null ?? null;
+    return (
+      <FormField
+        label={label}
+        htmlFor={fieldId}
+        required={required}
+        {...(error ? { error } : {})}
+        {...(hint ? { hint } : {})}
+        className="col-span-1"
+      >
+        <RelationshipPicker
+          modelName={modelName}
+          fieldName={name}
+          value={currentValue}
+          onChange={handleRelationshipChange}
+          disabled={disabled}
+          error={!!error}
+          placeholder={`Select ${label.toLowerCase()}...`}
+        />
+      </FormField>
+    );
+  }
 
   // View mode: display value only
   if (isViewMode) {
@@ -541,6 +745,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
   className,
   relatedRecords = {},
   renderField,
+  modelName,
 }: RecordFormProps<T>) {
   const [formValues, setFormValues] = useState<Record<string, unknown>>(() =>
     getInitialFormValues(schema, initialValues as Record<string, unknown>),
@@ -635,6 +840,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
               onChange={handleFieldChange}
               relatedRecords={relatedRecords[name]}
               mode={mode}
+              modelName={modelName}
             />
           );
 

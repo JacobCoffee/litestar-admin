@@ -10,15 +10,18 @@ Example:
         from litestar_admin.settings import SettingsService, SettingsCategory
         from sqlalchemy.ext.asyncio import AsyncSession
 
+
         async def configure_settings(session: AsyncSession) -> None:
             service = SettingsService(session)
 
             # Set multiple settings at once
-            await service.bulk_update({
-                "site_name": "My Admin",
-                "items_per_page": 25,
-                "enable_dark_mode": True,
-            })
+            await service.bulk_update(
+                {
+                    "site_name": "My Admin",
+                    "items_per_page": 25,
+                    "enable_dark_mode": True,
+                }
+            )
 
             # Get a setting with a default value
             items = await service.get("items_per_page", default=10)
@@ -60,6 +63,7 @@ class SettingsService:
 
             from litestar import get
             from sqlalchemy.ext.asyncio import AsyncSession
+
 
             @get("/settings/{key}")
             async def get_setting(key: str, db_session: AsyncSession) -> dict:
@@ -245,11 +249,7 @@ class SettingsService:
         """
         category_str = category.value if isinstance(category, SettingsCategory) else category
 
-        stmt = (
-            select(AdminSettings)
-            .where(AdminSettings.category == category_str)
-            .order_by(AdminSettings.key)
-        )
+        stmt = select(AdminSettings).where(AdminSettings.category == category_str).order_by(AdminSettings.key)
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
 
@@ -323,11 +323,13 @@ class SettingsService:
         Example:
             Update multiple settings::
 
-                await service.bulk_update({
-                    "items_per_page": 25,
-                    "enable_dark_mode": True,
-                    "default_sort": "created_at",
-                })
+                await service.bulk_update(
+                    {
+                        "items_per_page": 25,
+                        "enable_dark_mode": True,
+                        "default_sort": "created_at",
+                    }
+                )
         """
         results: list[AdminSettings] = []
 

@@ -9,6 +9,7 @@ Example:
         from litestar_admin.auth.models import AdminUser
         from sqlalchemy.ext.asyncio import AsyncSession
 
+
         async def create_admin(session: AsyncSession) -> AdminUser:
             user = AdminUser.create(
                 email="admin@example.com",
@@ -23,6 +24,7 @@ Example:
     Extending the base model::
 
         from litestar_admin.auth.models import AdminUserBase
+
 
         class CustomAdminUser(AdminUserBase):
             __tablename__ = "custom_admin_users"
@@ -78,7 +80,6 @@ class AdminUserBase(DeclarativeBase):
             async with engine.begin() as conn:
                 await conn.run_sync(AdminUserBase.metadata.create_all)
     """
-
 
 
 class AdminUser(AdminUserBase):
@@ -267,10 +268,7 @@ class AdminUser(AdminUserBase):
         # Convert role strings to Role enums, filtering out invalid ones
         valid_roles = [role for role_str in self.roles if (role := _get_valid_role(role_str)) is not None]
 
-        return any(
-            any(p.value == perm_str for p in ROLE_PERMISSIONS.get(role, set()))
-            for role in valid_roles
-        )
+        return any(any(p.value == perm_str for p in ROLE_PERMISSIONS.get(role, set())) for role in valid_roles)
 
     def has_role(self, role: str | Role) -> bool:
         """Check if the user has a specific role.

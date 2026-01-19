@@ -105,6 +105,20 @@ Customize how your models appear with column lists, filters, and form options.
 Create custom views, actions, pages, and embed external dashboards.
 :::
 
+:::{grid-item-card} File Uploads
+:link: user-guide/file-uploads
+:link-type: doc
+
+Add file upload support with drag-drop, previews, and thumbnails.
+:::
+
+:::{grid-item-card} User Management
+:link: user-guide/user-management
+:link-type: doc
+
+Manage admin users, roles, passwords, and account status.
+:::
+
 :::{grid-item-card} Authentication
 :link: authentication
 :link-type: doc
@@ -186,6 +200,9 @@ getting-started
 configuration
 model-views
 user-guide/custom-views
+user-guide/file-uploads
+user-guide/storage
+user-guide/user-management
 authentication
 guards
 deployment

@@ -53,6 +53,30 @@ export {
   useRelationshipOptions,
   usePrefetchRelationshipSearch,
 
+  // Custom views hooks
+  useCustomViews,
+  useCustomViewItems,
+  useCustomViewItem,
+  useCustomViewSchema,
+
+  // Actions hooks
+  useActions,
+  useAction,
+  useExecuteAction,
+
+  // Pages hooks
+  usePages,
+  usePage,
+  usePageContent,
+
+  // Links hooks
+  useLinks,
+
+  // Embeds hooks
+  useEmbeds,
+  useEmbedConfig,
+  useEmbedProps,
+
   // Re-exports from api
   api,
   apiClient,
@@ -88,3 +112,16 @@ export type {
 // Virtual list hook for large datasets
 export { useVirtualList, estimateVisibleItems } from "./useVirtualList";
 export type { UseVirtualListOptions, VirtualItem, UseVirtualListReturn } from "./useVirtualList";
+
+// Keyboard shortcuts hooks
+export {
+  useKeyboardShortcuts,
+  useShortcut,
+  DEFAULT_SHORTCUTS,
+} from "./useKeyboardShortcuts";
+export type {
+  KeyModifier,
+  KeyboardShortcut,
+  UseKeyboardShortcutsOptions,
+  UseKeyboardShortcutsReturn,
+} from "./useKeyboardShortcuts";

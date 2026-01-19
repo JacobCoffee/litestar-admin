@@ -407,6 +407,7 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
               isSubmitting={createRecord.isPending}
               mode="create"
               errors={serverErrors}
+              modelName={model}
             />
           </CardBody>
         </Card>

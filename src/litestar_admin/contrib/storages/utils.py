@@ -39,16 +39,18 @@ __all__ = [
 
 
 # Image extensions that support thumbnail generation
-IMAGE_EXTENSIONS: frozenset[str] = frozenset({
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "webp",
-    "bmp",
-    "tiff",
-    "tif",
-})
+IMAGE_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+        "bmp",
+        "tiff",
+        "tif",
+    }
+)
 
 
 def get_file_extension(filename: str) -> str:

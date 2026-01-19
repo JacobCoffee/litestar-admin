@@ -631,6 +631,12 @@ class AdminService(Generic[T]):
         This method generates a JSON schema representation of the model's
         columns, useful for form generation in the frontend.
 
+        The schema includes extended metadata for:
+        - File fields: Includes `fileConfig` with upload settings
+        - Relationship fields: Includes `relationshipConfig` with FK details
+        - Form fieldsets: Includes `fieldsets` for grouping fields
+        - Custom widgets: Includes `widget` for special field rendering
+
         Args:
             is_create: Whether this schema is for create mode (default True).
 
@@ -645,6 +651,15 @@ class AdminService(Generic[T]):
         form_columns = self._view_class.get_form_columns(is_create=is_create)
         form_excluded = set(self._view_class.form_excluded_columns)
 
+        # Build file field lookup for efficient access
+        file_field_configs = {ff.name: ff for ff in self._view_class.get_file_fields()}
+
+        # Build relationship info for FK detection
+        relationship_info = self._get_fk_relationship_map()
+
+        # Get custom widget configuration
+        form_widgets = getattr(self._view_class, "form_widgets", {})
+
         for column in mapper.columns:
             column_name = column.name
 
@@ -655,6 +670,37 @@ class AdminService(Generic[T]):
                 continue
 
             column_schema = self._column_to_schema(column)
+
+            # Check if this is a file field - add fileConfig
+            if column_name in file_field_configs:
+                file_field = file_field_configs[column_name]
+                file_config = file_field.to_dict()
+                column_schema["fileConfig"] = {
+                    "maxSize": file_config.get("max_size"),
+                    "allowedExtensions": file_config.get("allowed_extensions"),
+                    "multiple": file_config.get("multiple", False),
+                }
+                # Mark as file type for frontend detection
+                column_schema["format"] = "image" if file_config.get("type") == "image" else "file"
+
+            # Check if this is a FK field - add relationshipConfig
+            elif column_name in relationship_info:
+                rel_info = relationship_info[column_name]
+                column_schema["relationshipConfig"] = {
+                    "relatedModel": rel_info["related_model"],
+                    "displayField": rel_info.get("display_field"),
+                    "foreignKey": column_name,
+                    "multiple": False,  # FK fields are always single-value
+                }
+                column_schema["format"] = "relation"
+
+            # Apply custom widget if specified
+            if column_name in form_widgets:
+                column_schema["widget"] = form_widgets[column_name]
+                # Override format for richtext widget
+                if form_widgets[column_name] == "richtext":
+                    column_schema["format"] = "richtext"
+
             properties[column_name] = column_schema
 
             # Add to required list if not nullable and no default (Python or server)
@@ -671,12 +717,59 @@ class AdminService(Generic[T]):
                 # Remove 'required' from the property schema itself
                 del field_schema["required"]
 
-        return {
+        # Build response schema
+        schema: dict[str, Any] = {
             "type": "object",
             "title": self._view_class.name,
             "properties": properties,
             "required": required,
         }
+
+        # Add fieldsets configuration if defined
+        form_fieldsets = getattr(self._view_class, "form_fieldsets", [])
+        if form_fieldsets:
+            schema["fieldsets"] = form_fieldsets
+
+        return schema
+
+    def _get_fk_relationship_map(self) -> dict[str, dict[str, Any]]:
+        """Build a mapping of FK column names to relationship info.
+
+        This method inspects the model to find foreign key columns and their
+        associated relationship metadata for schema generation.
+
+        Returns:
+            Dictionary mapping FK column names to relationship details.
+        """
+        fk_map: dict[str, dict[str, Any]] = {}
+        mapper = inspect(self.model)
+
+        # Check for explicit relationship configurations from the view
+        for rel_info in self._view_class.relationship_fields():
+            if rel_info.foreign_key_column:
+                fk_map[rel_info.foreign_key_column] = {
+                    "related_model": rel_info.related_model_name,
+                    "display_field": self._view_class.get_display_column_for_related_model(rel_info.name),
+                    "relationship_name": rel_info.name,
+                }
+
+        # Also scan for FK columns that might not have explicit relationship configs
+        for column in mapper.columns:
+            if column.foreign_keys and column.name not in fk_map:
+                # Extract related model name from FK constraint
+                for fk in column.foreign_keys:
+                    # FK target format: "table_name.column_name"
+                    target_table = fk.target_fullname.split(".")[0] if fk.target_fullname else None
+                    if target_table:
+                        # Convert table name to model name (snake_case -> PascalCase)
+                        model_name = "".join(word.capitalize() for word in target_table.split("_"))
+                        fk_map[column.name] = {
+                            "related_model": model_name,
+                            "display_field": None,  # Unknown without relationship info
+                        }
+                    break  # Use first FK if multiple
+
+        return fk_map
 
     def _column_to_schema(self, column: Any) -> dict[str, Any]:
         """Convert a SQLAlchemy column to JSON schema.

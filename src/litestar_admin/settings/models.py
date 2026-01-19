@@ -9,6 +9,7 @@ Example:
         from litestar_admin.settings.models import AdminSettings, SettingsCategory
         from sqlalchemy.ext.asyncio import AsyncSession
 
+
         async def create_setting(session: AsyncSession) -> None:
             setting = AdminSettings(
                 key="site_name",
@@ -62,7 +63,6 @@ class AdminSettingsBase(DeclarativeBase):
     Use this as the base for the AdminSettings model if you need a separate
     metadata/base from your main application models.
     """
-
 
 
 class AdminSettings(AdminSettingsBase):
@@ -143,9 +143,7 @@ class AdminSettings(AdminSettingsBase):
     )
 
     # Indexes for common queries
-    __table_args__ = (
-        Index("ix_admin_settings_category_key", "category", "key"),
-    )
+    __table_args__ = (Index("ix_admin_settings_category_key", "category", "key"),)
 
     def __repr__(self) -> str:
         """Return string representation of the setting."""

@@ -43,51 +43,55 @@ __all__ = [
 ]
 
 # Default allowed extensions for general files
-DEFAULT_FILE_EXTENSIONS: frozenset[str] = frozenset({
-    # Documents
-    "pdf",
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    "ppt",
-    "pptx",
-    "txt",
-    "csv",
-    "rtf",
-    "odt",
-    "ods",
-    "odp",
-    # Archives
-    "zip",
-    "tar",
-    "gz",
-    "7z",
-    "rar",
-    # Text/Code
-    "json",
-    "xml",
-    "yaml",
-    "yml",
-    "md",
-    "html",
-    "css",
-    "js",
-})
+DEFAULT_FILE_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        # Documents
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx",
+        "txt",
+        "csv",
+        "rtf",
+        "odt",
+        "ods",
+        "odp",
+        # Archives
+        "zip",
+        "tar",
+        "gz",
+        "7z",
+        "rar",
+        # Text/Code
+        "json",
+        "xml",
+        "yaml",
+        "yml",
+        "md",
+        "html",
+        "css",
+        "js",
+    }
+)
 
 # Default allowed extensions for images
-DEFAULT_IMAGE_EXTENSIONS: frozenset[str] = frozenset({
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "webp",
-    "svg",
-    "bmp",
-    "ico",
-    "tiff",
-    "tif",
-})
+DEFAULT_IMAGE_EXTENSIONS: frozenset[str] = frozenset(
+    {
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+        "svg",
+        "bmp",
+        "ico",
+        "tiff",
+        "tif",
+    }
+)
 
 # Default maximum file size (10 MB)
 DEFAULT_MAX_FILE_SIZE: int = 10 * 1024 * 1024
@@ -220,9 +224,7 @@ class ImageField(FileField):
 
     generate_thumbnail: bool = True
     thumbnail_size: tuple[int, int] = field(default_factory=lambda: DEFAULT_THUMBNAIL_SIZE)
-    allowed_extensions: list[str] | None = field(
-        default_factory=lambda: list(DEFAULT_IMAGE_EXTENSIONS)
-    )
+    allowed_extensions: list[str] | None = field(default_factory=lambda: list(DEFAULT_IMAGE_EXTENSIONS))
 
     @property
     def allowed_extensions_set(self) -> frozenset[str]:

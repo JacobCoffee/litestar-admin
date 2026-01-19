@@ -9,6 +9,7 @@ Example:
         from litestar_admin.audit.models import AuditLog
         from sqlalchemy.ext.asyncio import AsyncSession
 
+
         async def create_audit_entry(session: AsyncSession) -> None:
             entry = AuditLog(
                 action="create",
@@ -39,7 +40,6 @@ class AuditLogBase(DeclarativeBase):
     Use this as the base for the AuditLog model if you need a separate
     metadata/base from your main application models.
     """
-
 
 
 class AuditLog(AuditLogBase):
@@ -158,6 +158,5 @@ class AuditLog(AuditLogBase):
     def __repr__(self) -> str:
         """Return string representation of the audit log entry."""
         return (
-            f"<AuditLog(id={self.id!r}, action={self.action!r}, "
-            f"model={self.model_name!r}, record={self.record_id!r})>"
+            f"<AuditLog(id={self.id!r}, action={self.action!r}, model={self.model_name!r}, record={self.record_id!r})>"
         )

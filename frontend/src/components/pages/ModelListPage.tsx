@@ -1067,6 +1067,7 @@ function ModelListContent({ model }: ModelListPageProps) {
               emptyMessage={`No ${modelDisplayName.toLowerCase()} records found`}
               showColumnToggle
               striped
+              searchTerm={filterState.search}
             />
           )}
         </Card>

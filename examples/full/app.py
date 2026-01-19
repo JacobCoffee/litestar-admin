@@ -118,8 +118,8 @@ from litestar import Litestar, get
 from litestar.di import Provide
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from examples.full.auth import get_auth_backend, hash_password
-from examples.full.models import Article, ArticleStatus, Base, Tag, User, UserRole
+from examples.full.auth import hash_password
+from examples.full.models import Article, ArticleStatus, Base, BlogPost, BlogPostStatus, Document, Tag, User, UserRole
 from examples.full.views import (
     # Page views
     AboutPage,
@@ -127,11 +127,13 @@ from examples.full.views import (
     AppSettingsAdmin,
     # Model views
     ArticleAdmin,
+    BlogPostAdmin,
     ChangelogPage,
     # Action views
     ClearCacheAction,
     # Link views
     DocsLink,
+    DocumentAdmin,
     GitHubLink,
     # Embed views
     MetricsEmbed,
@@ -141,6 +143,7 @@ from examples.full.views import (
     UserAdmin,
 )
 from litestar_admin import AdminConfig, AdminPlugin, get_logger
+from litestar_admin.contrib.storages import StorageBackendType, StorageConfig, ThumbnailConfig
 
 # =============================================================================
 # Optional: SQLAdmin Bridge for Migration
@@ -434,6 +437,145 @@ This article is under review...
             )
         )
 
+        # Seed demo documents for file upload demonstration
+        documents = [
+            Document(
+                title="Getting Started Guide",
+                description="A comprehensive guide to getting started with Litestar Admin. "
+                "This document covers installation, configuration, and basic usage patterns.",
+                file_path="admin/files/getting-started-guide.pdf",
+                original_filename="getting-started-guide.pdf",
+                file_size=1024 * 256,  # 256 KB
+                mime_type="application/pdf",
+                uploaded_by_id=admin_user.id,
+            ),
+            Document(
+                title="API Reference Documentation",
+                description="Complete API reference for all litestar-admin endpoints.",
+                file_path="admin/files/api-reference.pdf",
+                original_filename="api-reference.pdf",
+                file_size=1024 * 512,  # 512 KB
+                mime_type="application/pdf",
+                uploaded_by_id=admin_user.id,
+            ),
+            Document(
+                title="Architecture Diagram",
+                description="High-level architecture diagram showing component relationships.",
+                file_path="admin/files/architecture-diagram.png",
+                thumbnail_path="admin/files/architecture-diagram_thumb.jpeg",
+                original_filename="architecture-diagram.png",
+                file_size=1024 * 128,  # 128 KB
+                mime_type="image/png",
+                uploaded_by_id=editor_user.id,
+            ),
+            Document(
+                title="Sample Data Export",
+                description="Example CSV export showing data format for bulk operations.",
+                file_path="admin/files/sample-export.csv",
+                original_filename="sample-export.csv",
+                file_size=1024 * 32,  # 32 KB
+                mime_type="text/csv",
+                uploaded_by_id=editor_user.id,
+            ),
+            Document(
+                title="Screenshot - Dashboard",
+                description="Screenshot of the admin dashboard showing key metrics.",
+                file_path="admin/files/dashboard-screenshot.jpg",
+                thumbnail_path="admin/files/dashboard-screenshot_thumb.jpeg",
+                original_filename="dashboard-screenshot.jpg",
+                file_size=1024 * 384,  # 384 KB
+                mime_type="image/jpeg",
+                uploaded_by_id=admin_user.id,
+            ),
+        ]
+
+        for document in documents:
+            session.add(document)
+
+        # Flush to get document IDs
+        await session.flush()
+
+        # Seed demo blog posts for rich text editor demonstration
+        blog_posts = [
+            BlogPost(
+                title="Welcome to Litestar Admin",
+                slug="welcome-to-litestar-admin",
+                content="""<h1>Welcome to Litestar Admin</h1>
+<p>This is a demonstration of the <strong>RichTextEditor</strong> component in litestar-admin.
+The editor supports a variety of formatting options including:</p>
+<ul>
+<li><strong>Bold</strong> and <em>italic</em> text</li>
+<li>Headings (H1, H2, H3)</li>
+<li>Bullet and numbered lists</li>
+<li><a href="https://litestar.dev">Links</a></li>
+<li>Code blocks with syntax highlighting</li>
+<li>Blockquotes</li>
+</ul>
+<blockquote>
+<p>This is a blockquote demonstrating the editor's quote formatting capability.</p>
+</blockquote>
+<p>The editor is built on <strong>Tiptap</strong>, providing a modern WYSIWYG editing experience
+with a clean, dark-themed interface that matches the Cloudflare dashboard aesthetic.</p>""",
+                excerpt="A welcome post demonstrating the rich text editor capabilities in litestar-admin.",
+                author_id=admin_user.id,
+                status=BlogPostStatus.PUBLISHED,
+                featured=True,
+                published_at=datetime.now(tz=timezone.utc),
+            ),
+            BlogPost(
+                title="Building APIs with Litestar",
+                slug="building-apis-with-litestar",
+                content="""<h1>Building APIs with Litestar</h1>
+<p>Litestar is a powerful, flexible, and performant ASGI framework for building APIs.
+Here's a simple example:</p>
+<pre><code class="language-python">from litestar import Litestar, get
+
+@get("/")
+async def hello_world() -> dict[str, str]:
+    return {"message": "Hello, World!"}
+
+app = Litestar([hello_world])
+</code></pre>
+<h2>Key Features</h2>
+<ol>
+<li><strong>Type-safe</strong>: Full support for Python type hints</li>
+<li><strong>Fast</strong>: High performance with async support</li>
+<li><strong>Flexible</strong>: Powerful plugin system</li>
+<li><strong>Well-documented</strong>: Comprehensive documentation</li>
+</ol>
+<p>Learn more at <a href="https://litestar.dev">litestar.dev</a>.</p>""",
+                excerpt="Learn how to build high-performance APIs using the Litestar framework.",
+                author_id=admin_user.id,
+                status=BlogPostStatus.PUBLISHED,
+                featured=False,
+                published_at=datetime.now(tz=timezone.utc),
+            ),
+            BlogPost(
+                title="Draft: Upcoming Features",
+                slug="draft-upcoming-features",
+                content="""<h1>Upcoming Features</h1>
+<p>This post is a <strong>draft</strong> and is not yet published.</p>
+<p>Planned features for future releases:</p>
+<ul>
+<li>Enhanced filtering and search</li>
+<li>Bulk import/export capabilities</li>
+<li>Custom dashboard widgets</li>
+<li>Advanced RBAC permissions</li>
+</ul>
+<p><em>Stay tuned for more updates!</em></p>""",
+                excerpt="A preview of upcoming features in litestar-admin.",
+                author_id=editor_user.id,
+                status=BlogPostStatus.DRAFT,
+                featured=False,
+            ),
+        ]
+
+        for blog_post in blog_posts:
+            session.add(blog_post)
+
+        # Flush to get blog post IDs
+        await session.flush()
+
         # Seed audit log entries for demo
         from datetime import timedelta
 
@@ -510,6 +652,25 @@ This article is under review...
                 model_name="Tag",
                 record_id=str(tags[4].id),
                 ip_address="127.0.0.1",
+            ),
+            # Document uploads
+            AuditLog(
+                timestamp=now - timedelta(minutes=25),
+                action="create",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="Document",
+                record_id=str(documents[0].id),
+                ip_address="127.0.0.1",
+            ),
+            AuditLog(
+                timestamp=now - timedelta(minutes=20),
+                action="create",
+                actor_id=str(editor_user.id),
+                actor_email="editor@example.com",
+                model_name="Document",
+                record_id=str(documents[2].id),
+                ip_address="192.168.1.100",
             ),
             # User update
             AuditLog(
@@ -687,6 +848,70 @@ async def shutdown_handler(app: Litestar) -> None:
 
 
 # =============================================================================
+# File Storage Configuration
+# =============================================================================
+# Configure file storage for document uploads. This demonstrates local
+# filesystem storage with thumbnail generation for images.
+#
+# For production, consider using S3 or GCS:
+#   storage_config = StorageConfig(
+#       backend=StorageBackendType.S3,
+#       upload_path="admin/uploads",
+#       s3_bucket="my-bucket",
+#       s3_region="us-east-1",
+#   )
+# =============================================================================
+
+# Get the upload directory path (relative to where the app is run)
+UPLOAD_BASE_PATH = os.path.join(os.path.dirname(__file__), "uploads")
+
+# Create uploads directory if it doesn't exist
+os.makedirs(UPLOAD_BASE_PATH, exist_ok=True)
+
+storage_config = StorageConfig(
+    backend=StorageBackendType.LOCAL,
+    upload_path="admin/files",
+    local_base_path=UPLOAD_BASE_PATH,
+    public_url_base="/uploads",
+    allowed_extensions=[
+        # Documents
+        "pdf",
+        "doc",
+        "docx",
+        "txt",
+        "rtf",
+        "odt",
+        # Images
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+        "svg",
+        # Archives
+        "zip",
+        "tar",
+        "gz",
+    ],
+    max_file_size=10 * 1024 * 1024,  # 10MB
+    thumbnails=ThumbnailConfig(
+        enabled=True,
+        width=200,
+        height=200,
+        quality=85,
+        format="jpeg",
+    ),
+)
+
+logger.info(
+    "File storage configured",
+    backend="local",
+    upload_path=UPLOAD_BASE_PATH,
+    max_size_mb=storage_config.max_file_size / (1024 * 1024),
+)
+
+
+# =============================================================================
 # Authentication Backend Configuration
 # =============================================================================
 # Choose ONE of the following authentication backends:
@@ -745,11 +970,13 @@ oauth_providers_config: list[dict[str, str]] = [
 
 # Add GitHub OAuth if configured
 if GITHUB_OAUTH_CONFIGURED:
-    oauth_providers_config.append({
-        "name": "github",
-        "display_name": "GitHub",
-        "login_url": "/admin/auth/oauth/github/login",
-    })
+    oauth_providers_config.append(
+        {
+            "name": "github",
+            "display_name": "GitHub",
+            "login_url": "/admin/auth/oauth/github/login",
+        }
+    )
 
 # Configure admin plugin
 # Using categorized view fields for better organization
@@ -762,7 +989,8 @@ admin_plugin = AdminPlugin(
         # OAuth providers shown on login page (alongside password form)
         oauth_providers=oauth_providers_config,
         # Model views for database-backed CRUD
-        model_views=[UserAdmin, ArticleAdmin, TagAdmin],
+        # DocumentAdmin demonstrates file upload capabilities
+        model_views=[UserAdmin, ArticleAdmin, BlogPostAdmin, TagAdmin, DocumentAdmin],
         # Custom views with data providers
         custom_views=[AppSettingsAdmin, SystemInfoAdmin],
         # Action views for one-off operations
@@ -778,6 +1006,8 @@ admin_plugin = AdminPlugin(
         rate_limit_requests=100,
         rate_limit_window_seconds=60,
         debug=True,
+        # File storage configuration for uploads
+        storage=storage_config,
     )
 )
 

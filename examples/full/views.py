@@ -47,14 +47,17 @@ import sys
 from datetime import datetime, timezone
 from typing import Any, ClassVar, Literal
 
-from examples.full.models import Article, ArticleStatus, Tag, User
+from examples.full.models import Article, ArticleStatus, BlogPost, BlogPostStatus, Document, Tag, User
 from litestar_admin import ModelView
 from litestar_admin.contrib.providers import ColumnDefinition, InMemoryView, ListResult
+from litestar_admin.fields import FileField, ImageField
 from litestar_admin.views import ActionResult, ActionView, EmbedView, FormField, LinkView, PageView
 
 __all__ = [
     # ModelViews
     "ArticleAdmin",
+    "BlogPostAdmin",
+    "DocumentAdmin",
     "TagAdmin",
     "UserAdmin",
     # CustomViews
@@ -85,6 +88,7 @@ class UserAdmin(ModelView, model=User):
     - Password hash excluded from forms (security)
     - Virtual 'password' field for user creation
     - Delete disabled for safety (use deactivation instead)
+    - Form fieldsets for grouping fields (Personal Info, Access Control)
     """
 
     # Display configuration
@@ -101,6 +105,23 @@ class UserAdmin(ModelView, model=User):
 
     # Form configuration - exclude sensitive/auto fields
     form_excluded_columns = ["password_hash", "articles", "created_at", "updated_at"]
+
+    # Form fieldsets for grouping fields in create/edit forms
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = [
+        {
+            "title": "Personal Information",
+            "description": "Basic user information and contact details",
+            "fields": ["email", "name", "password"],
+            "collapsible": False,
+        },
+        {
+            "title": "Access Control",
+            "description": "User permissions and account status",
+            "fields": ["role", "is_active"],
+            "collapsed": False,
+            "collapsible": True,
+        },
+    ]
 
     # Permission controls
     can_create = True
@@ -175,6 +196,7 @@ class ArticleAdmin(ModelView, model=Article):
     - Status-based filtering
     - Automatic published_at timestamp on publish
     - Category grouping with Tag admin
+    - Form fieldsets for grouping fields (Content, Publishing)
     """
 
     # Display configuration
@@ -191,6 +213,23 @@ class ArticleAdmin(ModelView, model=Article):
 
     # Form configuration
     form_excluded_columns = ["tags"]  # Many-to-many handled separately
+
+    # Form fieldsets for grouping fields in create/edit forms
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = [
+        {
+            "title": "Content",
+            "description": "Article title and body content",
+            "fields": ["title", "content"],
+            "collapsible": False,
+        },
+        {
+            "title": "Publishing",
+            "description": "Publication status and metadata",
+            "fields": ["status", "author_id", "published_at"],
+            "collapsed": False,
+            "collapsible": True,
+        },
+    ]
 
     # Permission controls
     can_create = True
@@ -331,6 +370,271 @@ class TagAdmin(ModelView, model=Tag):
             logger.debug("Auto-generated slug for tag: %s -> %s", name, slug)
 
         return data
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    """Admin view for BlogPost model demonstrating rich text editing.
+
+    Provides blog post management with the following features:
+    - RichTextEditor for content field (Tiptap WYSIWYG)
+    - Form fieldsets for logical field grouping
+    - Automatic published_at timestamp on publish
+    - Slug auto-generation from title
+    - Featured post flag
+    """
+
+    # Display configuration
+    name = "Blog Post"
+    name_plural = "Blog Posts"
+    icon = "edit-3"
+    category = "Content"
+
+    # Column configuration
+    column_list = ["id", "title", "status", "author_id", "featured", "created_at", "published_at"]
+    column_searchable_list = ["title", "content", "excerpt"]
+    column_sortable_list = ["id", "title", "status", "featured", "created_at", "published_at"]
+    column_default_sort = ("created_at", "desc")
+
+    # Form configuration - exclude auto fields
+    form_excluded_columns = ["created_at", "updated_at"]
+
+    # Custom widget for rich text content field
+    form_widgets: ClassVar[dict[str, str]] = {
+        "content": "richtext",
+    }
+
+    # Form fieldsets for grouping fields in create/edit forms
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = [
+        {
+            "title": "Content",
+            "description": "Main blog post content with rich text editing",
+            "fields": ["title", "slug", "excerpt", "content"],
+            "collapsible": False,
+        },
+        {
+            "title": "Publishing",
+            "description": "Publication status and visibility settings",
+            "fields": ["status", "author_id", "featured", "published_at"],
+            "collapsed": False,
+            "collapsible": True,
+        },
+    ]
+
+    # Permission controls
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+    can_export = True
+
+    # Pagination
+    page_size = 25
+    page_size_options = [10, 25, 50, 100]
+
+    @classmethod
+    async def on_model_change(
+        cls,
+        data: dict[str, Any],
+        record: Any | None,
+        *,
+        is_create: bool,
+    ) -> dict[str, Any]:
+        """Handle blog post creation/update with slug auto-generation and published_at.
+
+        Args:
+            data: The data being saved.
+            record: The existing record (None for create).
+            is_create: Whether this is a create operation.
+
+        Returns:
+            The modified data to save.
+        """
+        import re
+
+        # Auto-generate slug from title if not provided
+        if "title" in data and (is_create or "slug" not in data or not data.get("slug")):
+            title = data["title"]
+            slug = title.lower().strip()
+            slug = re.sub(r"[^\w\s-]", "", slug)
+            slug = re.sub(r"[-\s]+", "-", slug)
+            data["slug"] = slug
+            logger.debug("Auto-generated slug for blog post: %s -> %s", title, slug)
+
+        # Handle published_at timestamp
+        new_status = data.get("status")
+
+        if new_status == BlogPostStatus.PUBLISHED or new_status == BlogPostStatus.PUBLISHED.value:
+            was_published = False
+            if record is not None:
+                was_published = record.status == BlogPostStatus.PUBLISHED
+
+            if not was_published and "published_at" not in data:
+                data["published_at"] = datetime.now(timezone.utc)
+                logger.info("Blog post published, setting published_at timestamp")
+
+        elif record is not None and record.status == BlogPostStatus.PUBLISHED:
+            if new_status and new_status != BlogPostStatus.PUBLISHED and new_status != BlogPostStatus.PUBLISHED.value:
+                data["published_at"] = None
+                logger.info("Blog post unpublished, clearing published_at timestamp")
+
+        return data
+
+    @classmethod
+    async def after_model_change(
+        cls,
+        record: Any,
+        *,
+        is_create: bool,
+    ) -> None:
+        """Hook called after blog post creation/update.
+
+        Args:
+            record: The saved blog post record.
+            is_create: Whether this was a create operation.
+        """
+        action = "created" if is_create else "updated"
+        status_value = record.status.value if hasattr(record.status, "value") else record.status
+        logger.info(
+            "Blog post %s: %s (id=%d, status=%s, featured=%s)",
+            action,
+            record.title,
+            record.id,
+            status_value,
+            record.featured,
+        )
+
+
+class DocumentAdmin(ModelView, model=Document):
+    """Admin view for Document model demonstrating file uploads.
+
+    Provides document management with file upload capabilities:
+    - File upload with extension and size validation
+    - Image thumbnail generation for image files
+    - FK relationship picker for uploaded_by field
+    - File size and mime type tracking
+    """
+
+    # Display configuration
+    name = "Document"
+    name_plural = "Documents"
+    icon = "file"
+    category = "Content"
+
+    # Column configuration
+    column_list = [
+        "id",
+        "title",
+        "original_filename",
+        "file_size",
+        "mime_type",
+        "uploaded_by_id",
+        "created_at",
+    ]
+    column_searchable_list = ["title", "original_filename", "description"]
+    column_sortable_list = ["id", "title", "file_size", "created_at", "updated_at"]
+    column_default_sort = ("created_at", "desc")
+
+    # Form configuration - exclude auto-generated fields
+    form_excluded_columns = ["created_at", "updated_at"]
+
+    # Permission controls
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+    can_export = True
+
+    # Pagination
+    page_size = 25
+    page_size_options = [10, 25, 50, 100]
+
+    # File upload field configurations
+    # These define how file uploads are handled for this model
+    # Using FileField and ImageField dataclass instances for proper schema generation
+    file_fields: ClassVar[list[FileField]] = [
+        FileField(
+            name="file_path",
+            label="Upload File",
+            allowed_extensions=["pdf", "doc", "docx", "txt", "jpg", "jpeg", "png", "gif"],
+            max_size=10 * 1024 * 1024,  # 10MB
+            description="Upload a document or image file",
+            required=False,
+        ),
+        ImageField(
+            name="thumbnail_path",
+            label="Cover Image",
+            allowed_extensions=["jpg", "jpeg", "png", "gif", "webp"],
+            max_size=5 * 1024 * 1024,  # 5MB
+            generate_thumbnail=True,
+            thumbnail_size=(200, 200),
+            description="Optional cover image for the document",
+            required=False,
+        ),
+    ]
+
+    @classmethod
+    async def on_model_change(
+        cls,
+        data: dict[str, Any],
+        record: Any | None,
+        *,
+        is_create: bool,
+    ) -> dict[str, Any]:
+        """Handle document creation/update with file processing.
+
+        This hook processes uploaded files and populates metadata fields.
+
+        Args:
+            data: The data being saved.
+            record: The existing record (None for create).
+            is_create: Whether this is a create operation.
+
+        Returns:
+            The modified data to save.
+        """
+        # If a new file was uploaded, extract metadata
+        # In a real implementation, this would integrate with the storage backend
+        if "file_content" in data:
+            file_content = data.pop("file_content", None)
+            if file_content:
+                data["file_size"] = len(file_content)
+                logger.info(
+                    "Document file uploaded: title=%s, size=%d bytes",
+                    data.get("title", "unknown"),
+                    data["file_size"],
+                )
+
+        # Infer MIME type from original filename if not set
+        if data.get("original_filename") and not data.get("mime_type"):
+            import mimetypes
+
+            mime_type, _ = mimetypes.guess_type(data["original_filename"])
+            if mime_type:
+                data["mime_type"] = mime_type
+
+        return data
+
+    @classmethod
+    async def after_model_change(
+        cls,
+        record: Any,
+        *,
+        is_create: bool,
+    ) -> None:
+        """Hook called after document creation/update.
+
+        Args:
+            record: The saved document record.
+            is_create: Whether this was a create operation.
+        """
+        action = "created" if is_create else "updated"
+        logger.info(
+            "Document %s: %s (id=%d, file=%s)",
+            action,
+            record.title,
+            record.id,
+            record.original_filename or "no file",
+        )
 
 
 # =============================================================================

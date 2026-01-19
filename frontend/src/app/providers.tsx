@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LayoutProvider } from "@/contexts/LayoutContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
 import { ToastProvider } from "@/components/ui/Toast";
 
 const ACCENT_COLOR_KEY = "admin_accent_color";
@@ -155,6 +156,7 @@ export interface ProvidersProps {
  * - TanStack Query for data fetching and caching
  * - Auth context for authentication state
  * - Toast notifications
+ * - Command palette (Cmd/Ctrl + K) for global search and navigation
  *
  * @example
  * ```tsx
@@ -181,7 +183,9 @@ export function Providers({ children }: ProvidersProps) {
           <AuthProvider>
             <LayoutProvider>
               <ToastProvider defaultDuration={5000} maxToasts={5}>
-                {children}
+                <CommandPaletteProvider>
+                  {children}
+                </CommandPaletteProvider>
               </ToastProvider>
             </LayoutProvider>
           </AuthProvider>

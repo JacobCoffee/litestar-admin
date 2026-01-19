@@ -151,6 +151,24 @@ export interface SchemaProperty {
   readonly properties?: Record<string, SchemaProperty>;
   readonly required?: readonly string[];
   readonly readOnly?: boolean;
+  // File field extended properties
+  readonly fileConfig?: FileFieldConfig;
+  // Relationship field extended properties
+  readonly relationshipConfig?: RelationshipFieldConfig;
+}
+
+/**
+ * Configuration for relationship/FK fields in schemas.
+ */
+export interface RelationshipFieldConfig {
+  /** The related model name */
+  readonly relatedModel: string;
+  /** The display field on the related model */
+  readonly displayField?: string;
+  /** Whether this is a many-to-many relationship */
+  readonly multiple?: boolean;
+  /** The foreign key field name */
+  readonly foreignKey?: string;
 }
 
 /**

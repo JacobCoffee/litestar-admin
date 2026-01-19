@@ -4,6 +4,7 @@ import { useCallback, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/LayoutContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useCommandPalette } from "@/contexts";
 
 // Icons as inline SVGs
 const MenuIcon = ({ className }: { className?: string }) => (
@@ -152,9 +153,7 @@ const MoonIcon = ({ className }: { className?: string }) => (
 );
 
 export interface HeaderProps {
-  /** Callback when search is submitted */
-  onSearch?: (query: string) => void;
-  /** Search placeholder text */
+  /** Search placeholder text (shown in command palette trigger) */
   searchPlaceholder?: string;
   /** User avatar URL */
   userAvatar?: string;
@@ -298,8 +297,15 @@ function UserDropdown({
   );
 }
 
+/**
+ * Detect if running on macOS for displaying correct keyboard shortcut.
+ */
+function isMacOS(): boolean {
+  if (typeof window === "undefined") return false;
+  return navigator.platform.toLowerCase().includes("mac");
+}
+
 export function Header({
-  onSearch,
   searchPlaceholder = "Search...",
   userAvatar,
   userName,
@@ -314,19 +320,7 @@ export function Header({
 }: HeaderProps) {
   const { isMobile, toggle } = useSidebar();
   const { resolvedTheme, toggleTheme } = useTheme();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearchSubmit = useCallback(
-    (event: React.FormEvent) => {
-      event.preventDefault();
-      onSearch?.(searchQuery);
-    },
-    [onSearch, searchQuery],
-  );
-
-  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  }, []);
+  const { open: openCommandPalette } = useCommandPalette();
 
   return (
     <header
@@ -356,26 +350,36 @@ export function Header({
       {/* Breadcrumb */}
       {breadcrumb && <div className="hidden md:block">{breadcrumb}</div>}
 
-      {/* Search */}
-      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md">
-        <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder={searchPlaceholder}
-            className={cn(
-              "w-full rounded-[var(--radius-md)] border border-[var(--color-border)]",
-              "bg-[var(--color-card)] py-2 pl-10 pr-4 text-sm",
-              "text-[var(--color-foreground)] placeholder:text-[var(--color-muted)]",
-              "focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]",
-              "transition-colors duration-150",
-            )}
-            aria-label="Search"
-          />
-        </div>
-      </form>
+      {/* Search - opens command palette */}
+      <button
+        type="button"
+        onClick={openCommandPalette}
+        className={cn(
+          "flex flex-1 max-w-md items-center gap-2",
+          "rounded-[var(--radius-md)] border border-[var(--color-border)]",
+          "bg-[var(--color-card)] py-2 pl-3 pr-2 text-sm",
+          "text-[var(--color-muted)]",
+          "hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-card-hover)]",
+          "focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]",
+          "transition-colors duration-150",
+        )}
+        aria-label="Search commands"
+      >
+        <SearchIcon className="h-4 w-4 shrink-0" />
+        <span className="flex-1 text-left">{searchPlaceholder}</span>
+        <kbd
+          className={cn(
+            "hidden sm:flex items-center gap-0.5",
+            "rounded-[var(--radius-sm)] border border-[var(--color-border)]",
+            "bg-[var(--color-background)] px-1.5 py-0.5",
+            "text-xs font-mono text-[var(--color-muted)]",
+          )}
+        >
+          {isMacOS() ? "\u2318" : "Ctrl"}
+          <span className="text-[var(--color-muted)]/60">+</span>
+          K
+        </kbd>
+      </button>
 
       {/* Right section */}
       <div className="ml-auto flex items-center gap-2">
