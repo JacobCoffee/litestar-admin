@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardHeader, CardBody } from '@/components/ui/Card';
@@ -170,25 +170,23 @@ export default function SettingsPage() {
     setMounted(true);
   }, []);
 
-  // Apply accent color to CSS variables
-  useEffect(() => {
-    if (!mounted || typeof document === 'undefined') return;
+  // Generate accent color styles for injection
+  const accentStyles = useMemo(() => {
+    if (!mounted) return null;
 
     const selectedColor = accentColors.find((c) => c.value === accentColor);
-    if (!selectedColor) return;
+    if (!selectedColor) return null;
 
-    const root = document.documentElement;
-
-    // Get the appropriate color value based on theme
     const colorValue = resolvedTheme === 'light' ? selectedColor.lightValue : selectedColor.value;
-
-    // Calculate a slightly darker hover color
     const hoverColor = adjustBrightness(colorValue, -15);
 
-    // Apply to all primary/accent CSS variables for site-wide effect
-    root.style.setProperty('--color-primary', colorValue);
-    root.style.setProperty('--color-primary-hover', hoverColor);
-    root.style.setProperty('--color-accent', colorValue);
+    return `
+      :root, .dark, .light {
+        --color-primary: ${colorValue} !important;
+        --color-primary-hover: ${hoverColor} !important;
+        --color-accent: ${colorValue} !important;
+      }
+    `;
   }, [accentColor, resolvedTheme, mounted]);
 
   const setAccentColor = useCallback((color: string) => {
@@ -202,13 +200,13 @@ export default function SettingsPage() {
 
   const resetToDefaults = useCallback(() => {
     setTheme('dark');
+    // Setting to default color will update the styles via useMemo
     setAccentColor(DEFAULT_ACCENT_COLOR);
-    // Reset CSS variables to defaults (defined in globals.css)
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      root.style.removeProperty('--color-primary');
-      root.style.removeProperty('--color-primary-hover');
-      root.style.removeProperty('--color-accent');
+    // Also remove from localStorage so the app uses CSS defaults
+    try {
+      localStorage.removeItem(ACCENT_COLOR_KEY);
+    } catch {
+      // localStorage not available
     }
   }, [setTheme, setAccentColor]);
 
@@ -218,6 +216,8 @@ export default function SettingsPage() {
 
   return (
     <ProtectedRoute>
+      {/* Inject accent color styles */}
+      {accentStyles && <style dangerouslySetInnerHTML={{ __html: accentStyles }} />}
       <MainLayout>
         <div className="space-y-6">
           <PageHeader

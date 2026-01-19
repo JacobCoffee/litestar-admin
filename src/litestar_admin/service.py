@@ -384,8 +384,19 @@ class AdminService(Generic[T]):
             is_create=True,
         )
 
+        # Coerce values to proper Python types
+        mapper = inspect(self.model)
+        column_map = {c.name: c for c in mapper.columns}
+        coerced_data = {}
+        for key, value in processed_data.items():
+            column = column_map.get(key)
+            if column is not None:
+                coerced_data[key] = self._coerce_value(value, column)
+            else:
+                coerced_data[key] = value
+
         # Create model instance from data
-        record = self.model(**processed_data)
+        record = self.model(**coerced_data)
 
         # Add to session and flush to get generated values (like auto-increment IDs)
         self._session.add(record)
@@ -428,11 +439,18 @@ class AdminService(Generic[T]):
             is_create=False,
         )
 
+        # Get column mapping for value coercion
+        mapper = inspect(self.model)
+        column_map = {c.name: c for c in mapper.columns}
+
         # Apply updates
         if partial:
             # Only update provided fields
             for key, value in processed_data.items():
                 if hasattr(record, key):
+                    column = column_map.get(key)
+                    if column is not None:
+                        value = self._coerce_value(value, column)
                     setattr(record, key, value)
         else:
             # Full update - set all fields, using None for missing ones
@@ -449,6 +467,54 @@ class AdminService(Generic[T]):
 
         return record
 
+    def _coerce_value(self, value: Any, column: Any) -> Any:
+        """Coerce a value to the appropriate Python type for the column.
+
+        Args:
+            value: The value to coerce.
+            column: The SQLAlchemy column.
+
+        Returns:
+            The coerced value.
+        """
+        if value is None or value == "":
+            return None
+
+        type_name = type(column.type).__name__.upper()
+
+        # Handle datetime types
+        if type_name in ("DATETIME", "TIMESTAMP"):
+            if isinstance(value, str):
+                # Parse ISO format datetime string
+                try:
+                    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+                except ValueError:
+                    return None
+            return value
+
+        # Handle date types
+        if type_name == "DATE":
+            if isinstance(value, str):
+                try:
+                    return datetime.fromisoformat(value).date()
+                except ValueError:
+                    return None
+            return value
+
+        # Handle time types
+        if type_name == "TIME":
+            if isinstance(value, str):
+                try:
+                    return datetime.strptime(value, "%H:%M:%S").time()
+                except ValueError:
+                    try:
+                        return datetime.strptime(value, "%H:%M").time()
+                    except ValueError:
+                        return None
+            return value
+
+        return value
+
     def _apply_full_update(self, record: T, data: dict[str, Any]) -> None:
         """Apply a full update to a record.
 
@@ -457,13 +523,16 @@ class AdminService(Generic[T]):
             data: The data to apply.
         """
         mapper = inspect(self.model)
+        column_map = {c.name: c for c in mapper.columns}
+
         for column in mapper.columns:
             column_name = column.name
             # Skip primary key
             if column.primary_key:
                 continue
             if column_name in data:
-                setattr(record, column_name, data[column_name])
+                coerced_value = self._coerce_value(data[column_name], column)
+                setattr(record, column_name, coerced_value)
             elif column.nullable:
                 # For full update, set missing nullable fields to None
                 setattr(record, column_name, None)
