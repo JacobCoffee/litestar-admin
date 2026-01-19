@@ -119,6 +119,27 @@ Add file upload support with drag-drop, previews, and thumbnails.
 Manage admin users, roles, passwords, and account status.
 :::
 
+:::{grid-item-card} Relationships
+:link: user-guide/relationships
+:link-type: doc
+
+Foreign key pickers, M2M widgets, and relationship handling.
+:::
+
+:::{grid-item-card} Audit Log
+:link: user-guide/audit-log
+:link-type: doc
+
+Track admin actions with comprehensive activity logging.
+:::
+
+:::{grid-item-card} Keyboard Shortcuts
+:link: user-guide/keyboard-shortcuts
+:link-type: doc
+
+Command palette (Cmd+K) and navigation shortcuts.
+:::
+
 :::{grid-item-card} Authentication
 :link: authentication
 :link-type: doc
@@ -203,6 +224,9 @@ user-guide/custom-views
 user-guide/file-uploads
 user-guide/storage
 user-guide/user-management
+user-guide/relationships
+user-guide/audit-log
+user-guide/keyboard-shortcuts
 authentication
 guards
 deployment

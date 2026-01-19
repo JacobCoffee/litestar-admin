@@ -180,6 +180,70 @@ class UserAdmin(ModelView, model=User):
     form_excluded_columns = ["id", "created_at", "updated_at", "password_hash"]
 ```
 
+### form_fieldsets
+
+Group form fields into collapsible sections for better organization. Each fieldset is a dictionary with the following options:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `title` | `str` | The section header displayed to users |
+| `description` | `str` | Optional help text shown below the title |
+| `fields` | `list[str]` | List of field names to include in this section |
+| `collapsible` | `bool` | Whether users can collapse/expand this section (default: `True`) |
+| `collapsed` | `bool` | Whether the section starts collapsed (default: `False`) |
+
+```python
+from typing import Any, ClassVar
+
+from litestar_admin import ModelView
+from myapp.models import User
+
+
+class UserAdmin(ModelView, model=User):
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = [
+        {
+            "title": "Personal Information",
+            "description": "Basic user information and contact details",
+            "fields": ["email", "name", "password"],
+            "collapsible": False,  # Always visible
+        },
+        {
+            "title": "Access Control",
+            "description": "User permissions and account status",
+            "fields": ["role", "is_active"],
+            "collapsed": False,
+            "collapsible": True,  # Users can collapse this section
+        },
+    ]
+```
+
+Fieldsets provide visual separation and help users navigate complex forms. The collapsible behavior uses smooth height animations and maintains accessibility with proper ARIA attributes.
+
+### form_widgets
+
+Specify custom widget types for specific fields. This allows using specialized input components like rich text editors instead of plain text areas.
+
+```python
+from typing import ClassVar
+
+from litestar_admin import ModelView
+from myapp.models import BlogPost
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    form_widgets: ClassVar[dict[str, str]] = {
+        "content": "richtext",  # Use rich text editor for content field
+    }
+```
+
+Available widget types:
+
+| Widget | Description |
+|--------|-------------|
+| `richtext` | Tiptap-based WYSIWYG editor with formatting toolbar |
+
+See the [Rich Text Fields](#rich-text-fields) section for more details.
+
 ## Permissions
 
 Control what actions are allowed for each model.
@@ -427,6 +491,168 @@ info = UserAdmin.get_column_info("email")
 #     "nullable": False,
 #     "primary_key": False,
 # }
+```
+
+## Column Visibility
+
+The admin panel allows users to show or hide columns in data tables. This feature helps users focus on the data most relevant to their tasks.
+
+### How It Works
+
+Users can toggle column visibility through a dropdown menu in the table toolbar. The visibility preferences are persisted in the browser's localStorage, so each user's settings are remembered across sessions.
+
+Key features:
+
+- **Per-table persistence**: Each model view stores its own column visibility state
+- **Bulk actions**: "Show All" and "Hide All" buttons for quick configuration
+- **Minimum columns**: At least one column must remain visible
+- **Required columns**: Some columns (like primary keys) may be marked as non-hideable
+
+### Default Visible Columns
+
+By default, all columns in `column_list` are visible. The frontend uses a storage key based on the model identity to persist user preferences:
+
+```
+litestar-admin:columns:{model_identity}
+```
+
+For example, a User model might use `litestar-admin:columns:user`.
+
+### Column Configuration
+
+Columns can be configured with visibility options through the column metadata:
+
+```python
+class UserAdmin(ModelView, model=User):
+    column_list = ["id", "email", "name", "role", "is_active", "created_at"]
+
+    # The frontend will show all columns by default
+    # Users can hide any column except those marked as required
+```
+
+The visibility state includes:
+
+- Which columns are currently visible
+- The count of visible vs. total columns (shown in the dropdown button)
+- Visual indicators for hidden columns
+
+## Rich Text Fields
+
+For content fields that require formatting (like blog posts or descriptions), you can use the rich text editor widget. This provides a WYSIWYG editing experience with a formatting toolbar.
+
+### Configuring Rich Text Fields
+
+Use the `form_widgets` attribute to specify which fields should use the rich text editor:
+
+```python
+from typing import ClassVar
+
+from litestar_admin import ModelView
+from myapp.models import BlogPost
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    form_widgets: ClassVar[dict[str, str]] = {
+        "content": "richtext",
+    }
+```
+
+### Editor Features
+
+The rich text editor is built on [Tiptap](https://tiptap.dev/) and includes:
+
+**Text Formatting**
+- Bold (Ctrl+B)
+- Italic (Ctrl+I)
+- Strikethrough
+- Inline code
+
+**Structure**
+- Headings (H1, H2, H3)
+- Bullet lists
+- Numbered lists
+- Blockquotes
+- Horizontal rules
+
+**Links**
+- Add links with URL editing
+- Remove links
+- Links open in new tabs by default
+
+**Code**
+- Code blocks with syntax highlighting
+- Supports common programming languages via lowlight
+
+**History**
+- Undo (Ctrl+Z)
+- Redo (Ctrl+Shift+Z)
+
+### Example: Blog Post Admin
+
+Here's a complete example using both form fieldsets and rich text editing:
+
+```python
+from typing import Any, ClassVar
+
+from litestar_admin import ModelView
+from myapp.models import BlogPost
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    """Admin view for BlogPost with rich text content editing."""
+
+    name = "Blog Post"
+    name_plural = "Blog Posts"
+    icon = "edit-3"
+    category = "Content"
+
+    column_list = ["id", "title", "status", "author_id", "featured", "created_at"]
+    column_searchable_list = ["title", "content", "excerpt"]
+
+    # Exclude auto-generated fields from forms
+    form_excluded_columns = ["created_at", "updated_at"]
+
+    # Use rich text editor for the content field
+    form_widgets: ClassVar[dict[str, str]] = {
+        "content": "richtext",
+    }
+
+    # Organize form fields into logical sections
+    form_fieldsets: ClassVar[list[dict[str, Any]]] = [
+        {
+            "title": "Content",
+            "description": "Main blog post content with rich text editing",
+            "fields": ["title", "slug", "excerpt", "content"],
+            "collapsible": False,
+        },
+        {
+            "title": "Publishing",
+            "description": "Publication status and visibility settings",
+            "fields": ["status", "author_id", "featured", "published_at"],
+            "collapsed": False,
+            "collapsible": True,
+        },
+    ]
+```
+
+### HTML Output
+
+The rich text editor outputs standard HTML that can be:
+
+- Stored in `TEXT` or `VARCHAR` database columns
+- Rendered directly in templates with proper sanitization
+- Processed by content pipelines
+
+Example HTML output:
+
+```html
+<h2>Welcome to Our Blog</h2>
+<p>This is a <strong>formatted</strong> paragraph with <em>emphasis</em>.</p>
+<ul>
+  <li>First item</li>
+  <li>Second item</li>
+</ul>
+<pre><code class="language-python">print("Hello, World!")</code></pre>
 ```
 
 ## Complete Example
