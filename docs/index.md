@@ -21,8 +21,10 @@ litestar-admin provides a production-ready admin interface for managing SQLAlche
 from litestar import Litestar
 from litestar_admin import AdminPlugin, AdminConfig, ModelView
 
+
 class UserAdmin(ModelView, model=User):
     column_list = ["id", "email", "name"]
+
 
 app = Litestar(
     plugins=[
@@ -36,17 +38,46 @@ app = Litestar(
 )
 ```
 
+## Installation
+
+```bash
+pip install litestar-admin
+```
+
+Or with uv:
+
+```bash
+uv add litestar-admin
+```
+
+For additional features:
+
+```bash
+# JWT authentication
+pip install "litestar-admin[jwt]"
+
+# All optional dependencies
+pip install "litestar-admin[all]"
+```
+
 ## Documentation
 
 ```{toctree}
 :maxdepth: 2
-:caption: Contents
+:caption: User Guide
 
 getting-started
 configuration
-views
+model-views
 authentication
 guards
+deployment
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Reference
+
 api/index
 changelog
 ```

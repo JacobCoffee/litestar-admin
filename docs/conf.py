@@ -17,6 +17,7 @@ release = "0.1.0"
 # General configuration
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
@@ -42,6 +43,7 @@ html_theme_options = {
     "nav_links": [
         {"title": "Getting Started", "url": "getting-started"},
         {"title": "Configuration", "url": "configuration"},
+        {"title": "Model Views", "url": "model-views"},
         {"title": "API Reference", "url": "api/index"},
     ],
 }
@@ -56,6 +58,10 @@ autodoc_default_options = {
 }
 autodoc_typehints = "description"
 autodoc_class_signature = "separated"
+autodoc_inherit_docstrings = True
+
+# Autosummary configuration
+autosummary_generate = True
 
 # Napoleon configuration
 napoleon_google_docstring = True
@@ -76,6 +82,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "litestar": ("https://docs.litestar.dev/latest/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.litestar.dev/latest/", None),
 }
 
 # MyST configuration
@@ -87,3 +94,7 @@ myst_enable_extensions = [
     "strikethrough",
     "tasklist",
 ]
+myst_heading_anchors = 3
+
+# Suppress warnings for cross-references to classes that might not resolve
+suppress_warnings = ["myst.xref_missing"]
