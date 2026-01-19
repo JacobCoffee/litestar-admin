@@ -9,7 +9,7 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input, Checkbox, FormField } from '@/components/ui/Form';
 import { cn } from '@/lib/utils';
-import { isApiError, useApi } from '@/hooks/useApi';
+import { isApiError } from '@/hooks/useApi';
 
 interface DevCredential {
   email: string;
@@ -88,7 +88,6 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isLoggingIn, isAuthenticated, error: authError } = useAuthContext();
-  const api = useApi();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -104,15 +103,19 @@ export default function LoginPage() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await api.get<AdminConfig>('/api/config');
-        setConfig(response);
+        const baseUrl = process.env['NEXT_PUBLIC_ADMIN_API_URL'] ?? '/admin';
+        const response = await fetch(`${baseUrl}/api/config`);
+        if (response.ok) {
+          const data = await response.json();
+          setConfig(data as AdminConfig);
+        }
       } catch (err) {
         // Config fetch failed, assume production mode
         console.warn('Failed to fetch admin config:', err);
       }
     };
     fetchConfig();
-  }, [api]);
+  }, []);
 
   const isDebugMode = config?.debug ?? false;
 
@@ -253,7 +256,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-                  placeholder="you@example.com"
+                  placeholder="you@litestar.dev"
                   autoComplete="email"
                   autoFocus
                   error={!!emailError}
@@ -342,13 +345,13 @@ export default function LoginPage() {
                 <Button
                   key={cred.email}
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => handleQuickLogin(cred)}
                   disabled={isLoggingIn}
                   className={cn(
-                    'text-xs',
-                    'border-[var(--color-warning)]/30',
+                    'text-xs capitalize',
+                    'border border-[var(--color-warning)]/30',
                     'hover:bg-[var(--color-warning)]/10',
                     'hover:border-[var(--color-warning)]/50'
                   )}
