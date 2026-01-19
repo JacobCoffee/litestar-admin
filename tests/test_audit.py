@@ -124,7 +124,8 @@ class TestAuditAction:
 
     def test_all_actions_defined(self) -> None:
         """Verify expected number of actions are defined."""
-        assert len(AuditAction) == 9
+        # 9 original actions + 3 password-related actions = 12
+        assert len(AuditAction) == 12
 
 
 # ==============================================================================

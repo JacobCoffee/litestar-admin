@@ -7,6 +7,7 @@ from litestar_admin.logging import LoggingConfig, configure_logging, get_logger,
 from litestar_admin.plugin import AdminPlugin
 from litestar_admin.registry import ModelRegistry, ViewRegistry
 from litestar_admin.service import AdminService
+from litestar_admin.settings import AdminSettings, AdminSettingsBase, SettingsCategory, SettingsService
 from litestar_admin.views import BaseModelView, ModelView
 
 __all__ = [
@@ -21,6 +22,11 @@ __all__ = [
     "configure_logging",
     "get_logger",
     "has_structlog",
+    # Settings
+    "AdminSettings",
+    "AdminSettingsBase",
+    "SettingsCategory",
+    "SettingsService",
     # Views
     "BaseModelView",
     "ModelView",
