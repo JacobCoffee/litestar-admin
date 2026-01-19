@@ -10,6 +10,7 @@ import {
   getPageIcon,
   getLinkIcon,
   getEmbedIcon,
+  UsersIcon,
 } from "@/lib/icons";
 import { useSidebar } from "@/contexts/LayoutContext";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -178,15 +179,33 @@ export function MainLayout({
       });
     }
 
-    // Return empty Models category if nothing else
-    if (categories.length === 0) {
-      return [
+    // Add System category with Users link (always present)
+    categories.push({
+      id: "system",
+      label: "System",
+      items: [
         {
-          id: "models",
-          label: "Models",
-          items: [],
+          id: "users",
+          label: "Users",
+          href: "/users",
+          icon: UsersIcon,
         },
-      ];
+      ],
+    });
+
+    // Return empty Models category if nothing else (except System)
+    if (categories.length === 1) {
+      const systemCategory = categories[0];
+      if (systemCategory) {
+        return [
+          {
+            id: "models",
+            label: "Models",
+            items: [],
+          },
+          systemCategory,
+        ];
+      }
     }
 
     return categories;

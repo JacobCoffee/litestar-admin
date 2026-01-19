@@ -17,6 +17,7 @@ import { api, apiClient, isApiError } from "@/lib/api";
 import type {
   ActionInfo,
   ActionResult,
+  ActivateDeactivateResponse,
   AdminUser,
   ApiError,
   ActivityItem,
@@ -44,6 +45,11 @@ import type {
   PageContent,
   PageInfo,
   PaginatedResponse,
+  UserCreateRequest,
+  UserListParams,
+  UserListResponse,
+  UserResponse,
+  UserUpdateRequest,
 } from "@/types";
 
 // ============================================================================
@@ -126,6 +132,13 @@ export const queryKeys = {
     list: () => [...queryKeys.embeds.all, "list"] as const,
     config: (identity: string) => [...queryKeys.embeds.all, "config", identity] as const,
     props: (identity: string) => [...queryKeys.embeds.all, "props", identity] as const,
+  },
+
+  // User Management
+  users: {
+    all: ["users"] as const,
+    list: (params?: UserListParams) => [...queryKeys.users.all, "list", params] as const,
+    detail: (userId: string) => [...queryKeys.users.all, "detail", userId] as const,
   },
 } as const;
 
@@ -1040,6 +1053,118 @@ export function useEmbedProps(identity: string, options?: QueryOptions<Record<st
     queryKey: queryKeys.embeds.props(identity),
     queryFn: () => api.getEmbedProps(identity),
     enabled: !!identity,
+    ...options,
+  });
+}
+
+// ============================================================================
+// User Management Hooks
+// ============================================================================
+
+/**
+ * Hook to list admin users with pagination and filtering.
+ */
+export function useUsers(params: UserListParams = {}, options?: QueryOptions<UserListResponse>) {
+  return useQuery({
+    queryKey: queryKeys.users.list(params),
+    queryFn: () => api.listUsers(params),
+    ...options,
+  });
+}
+
+/**
+ * Hook to get a single admin user by ID.
+ */
+export function useUser(userId: string | undefined | null, options?: QueryOptions<UserResponse>) {
+  return useQuery({
+    queryKey: queryKeys.users.detail(userId ?? ""),
+    queryFn: () => api.getUser(userId!),
+    enabled: !!userId,
+    ...options,
+  });
+}
+
+/**
+ * Hook to create a new admin user.
+ */
+export function useCreateUser(options?: MutationOptions<UserResponse, UserCreateRequest>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UserCreateRequest) => api.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to update an existing admin user.
+ */
+export function useUpdateUser(
+  options?: MutationOptions<UserResponse, { userId: string; data: UserUpdateRequest }>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: UserUpdateRequest }) =>
+      api.updateUser(userId, data),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(queryKeys.users.detail(variables.userId), data);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.all,
+        refetchType: "active",
+      });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to delete an admin user.
+ */
+export function useDeleteUser(options?: MutationOptions<void, string>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) => api.deleteUser(userId),
+    onSuccess: (_data, userId) => {
+      queryClient.removeQueries({ queryKey: queryKeys.users.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to activate an admin user.
+ */
+export function useActivateUser(options?: MutationOptions<ActivateDeactivateResponse, string>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) => api.activateUser(userId),
+    onSuccess: (_data, userId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to deactivate an admin user.
+ */
+export function useDeactivateUser(options?: MutationOptions<ActivateDeactivateResponse, string>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) => api.deactivateUser(userId),
+    onSuccess: (_data, userId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+    },
     ...options,
   });
 }

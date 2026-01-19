@@ -651,3 +651,81 @@ export interface EmbedConfig {
  * Union type of all view info types.
  */
 export type AnyViewInfo = ModelInfo | CustomViewInfo | ActionInfo | PageInfo | LinkInfo | EmbedInfo;
+
+// ============================================================================
+// User Management Types
+// ============================================================================
+
+/**
+ * Response containing admin user data (without password_hash).
+ */
+export interface UserResponse {
+  readonly id: string;
+  readonly email: string;
+  readonly name: string | null;
+  readonly roles: readonly string[];
+  readonly permissions: readonly string[];
+  readonly is_active: boolean;
+  readonly is_superuser: boolean;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly last_login: string | null;
+}
+
+/**
+ * Paginated response for user list.
+ */
+export interface UserListResponse {
+  readonly items: readonly UserResponse[];
+  readonly total: number;
+  readonly page: number;
+  readonly page_size: number;
+  readonly total_pages: number;
+}
+
+/**
+ * Query parameters for listing users.
+ */
+export interface UserListParams {
+  readonly page?: number;
+  readonly page_size?: number;
+  readonly email?: string;
+  readonly active?: string;
+  readonly role?: string;
+  readonly sort_by?: string;
+  readonly sort_order?: "asc" | "desc";
+}
+
+/**
+ * Request payload for creating a new user.
+ */
+export interface UserCreateRequest {
+  readonly email: string;
+  readonly password: string;
+  readonly name?: string;
+  readonly roles?: readonly string[];
+  readonly permissions?: readonly string[];
+  readonly is_active?: boolean;
+  readonly is_superuser?: boolean;
+}
+
+/**
+ * Request payload for updating a user.
+ */
+export interface UserUpdateRequest {
+  readonly email?: string;
+  readonly name?: string | null;
+  readonly roles?: readonly string[];
+  readonly permissions?: readonly string[];
+  readonly is_active?: boolean;
+  readonly is_superuser?: boolean;
+}
+
+/**
+ * Response for activate/deactivate operations.
+ */
+export interface ActivateDeactivateResponse {
+  readonly success: boolean;
+  readonly message: string;
+  readonly is_active: boolean;
+}

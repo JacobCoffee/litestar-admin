@@ -7,6 +7,7 @@
 import type {
   ActionInfo,
   ActionResult,
+  ActivateDeactivateResponse,
   AdminUser,
   ApiError,
   ApiErrorResponse,
@@ -37,6 +38,11 @@ import type {
   PageContent,
   PageInfo,
   PaginatedResponse,
+  UserCreateRequest,
+  UserListParams,
+  UserListResponse,
+  UserResponse,
+  UserUpdateRequest,
 } from "@/types";
 
 // ============================================================================
@@ -984,6 +990,87 @@ export class AdminApiClient {
       `/api/views/embeds/${encodeURIComponent(identity)}/props`,
     );
   }
+
+  // ==========================================================================
+  // User Management Endpoints
+  // ==========================================================================
+
+  /**
+   * List admin users with pagination and filtering.
+   */
+  async listUsers(params: UserListParams = {}): Promise<UserListResponse> {
+    return this.request<UserListResponse>("/api/users/", {
+      params: {
+        page: params.page,
+        page_size: params.page_size,
+        email: params.email,
+        active: params.active,
+        role: params.role,
+        sort_by: params.sort_by,
+        sort_order: params.sort_order,
+      },
+    });
+  }
+
+  /**
+   * Get a single admin user by ID.
+   */
+  async getUser(userId: string): Promise<UserResponse> {
+    return this.request<UserResponse>(`/api/users/${encodeURIComponent(userId)}`);
+  }
+
+  /**
+   * Create a new admin user.
+   */
+  async createUser(data: UserCreateRequest): Promise<UserResponse> {
+    return this.request<UserResponse>("/api/users/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Update an existing admin user.
+   */
+  async updateUser(userId: string, data: UserUpdateRequest): Promise<UserResponse> {
+    return this.request<UserResponse>(`/api/users/${encodeURIComponent(userId)}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Delete an admin user.
+   */
+  async deleteUser(userId: string): Promise<void> {
+    return this.request<void>(`/api/users/${encodeURIComponent(userId)}`, {
+      method: "DELETE",
+    });
+  }
+
+  /**
+   * Activate an admin user.
+   */
+  async activateUser(userId: string): Promise<ActivateDeactivateResponse> {
+    return this.request<ActivateDeactivateResponse>(
+      `/api/users/${encodeURIComponent(userId)}/activate`,
+      {
+        method: "POST",
+      },
+    );
+  }
+
+  /**
+   * Deactivate an admin user.
+   */
+  async deactivateUser(userId: string): Promise<ActivateDeactivateResponse> {
+    return this.request<ActivateDeactivateResponse>(
+      `/api/users/${encodeURIComponent(userId)}/deactivate`,
+      {
+        method: "POST",
+      },
+    );
+  }
 }
 
 // ============================================================================
@@ -1079,6 +1166,15 @@ export const api = {
   listEmbeds: () => apiClient.listEmbeds(),
   getEmbedConfig: (identity: string) => apiClient.getEmbedConfig(identity),
   getEmbedProps: (identity: string) => apiClient.getEmbedProps(identity),
+
+  // User Management
+  listUsers: (params?: UserListParams) => apiClient.listUsers(params),
+  getUser: (userId: string) => apiClient.getUser(userId),
+  createUser: (data: UserCreateRequest) => apiClient.createUser(data),
+  updateUser: (userId: string, data: UserUpdateRequest) => apiClient.updateUser(userId, data),
+  deleteUser: (userId: string) => apiClient.deleteUser(userId),
+  activateUser: (userId: string) => apiClient.activateUser(userId),
+  deactivateUser: (userId: string) => apiClient.deactivateUser(userId),
 };
 
 // Re-export types for convenience
