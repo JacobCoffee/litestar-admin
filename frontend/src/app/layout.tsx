@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Litestar Admin',
   description: 'Modern admin panel for Litestar applications',
   icons: {
-    icon: '/admin/favicon.ico',
+    icon: '/admin/favicon.svg',
   },
 };
 
