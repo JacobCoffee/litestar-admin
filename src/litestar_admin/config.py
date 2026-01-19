@@ -53,6 +53,7 @@ class AdminConfig:
         session_cookie_secure: Whether session cookie requires HTTPS.
         session_cookie_samesite: SameSite policy for session cookie.
         logging_config: Optional logging configuration for structlog integration.
+        storage: Optional storage configuration for file uploads.
 
     Example::
 
@@ -140,6 +141,10 @@ class AdminConfig:
 
     # Logging configuration
     logging_config: LoggingConfig | None = None
+
+    # File storage configuration (StorageConfig from litestar_admin.contrib.storages)
+    # Use Any type to avoid import errors when litestar-storages is not installed
+    storage: Any | None = None
 
     # Additional settings
     extra: dict[str, Any] = field(default_factory=dict)

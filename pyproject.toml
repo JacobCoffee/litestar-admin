@@ -55,8 +55,11 @@ structlog = [
 auth = [
     "passlib[argon2]>=1.7.4",
 ]
+storage = [
+    "litestar-storages>=0.1.0",
+]
 all = [
-    "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth]",
+    "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth,storage]",
 ]
 
 [project.urls]
