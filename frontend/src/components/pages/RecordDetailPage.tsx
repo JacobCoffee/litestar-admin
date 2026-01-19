@@ -633,7 +633,7 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   const {
     data: schema,
     isLoading: isLoadingSchema,
-  } = useModelSchema(model);
+  } = useModelSchema(model, 'edit');
 
   const updateMutation = useUpdateRecord<ModelRecord>(model, {
     onSuccess: () => {
