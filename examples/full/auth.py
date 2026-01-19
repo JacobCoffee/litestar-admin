@@ -417,15 +417,20 @@ def create_oauth_user_creator(
             - provider: "github"
             - raw_data: {"login": "johndoe", "id": 12345678, ...}
         """
+        import secrets
+
         from examples.full.models import User, UserRole
 
         async with session_factory() as session:
             # Create a new user with OAuth-provided information
-            # Note: OAuth users don't have a password - they authenticate via OAuth
+            # Generate a random password hash since OAuth users don't use password auth
+            # but the database column requires a value
+            random_password_hash = hash_password(secrets.token_urlsafe(32))
+
             new_user = User(
                 email=user_info.email,
                 name=user_info.name or user_info.email.split("@")[0],
-                password_hash=None,  # OAuth users don't use password auth
+                password_hash=random_password_hash,  # Random hash - OAuth users use OAuth, not password
                 role=UserRole.VIEWER,  # Default role for new OAuth users
                 is_active=True,
             )
