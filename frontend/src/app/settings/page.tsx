@@ -11,6 +11,32 @@ import { cn } from '@/lib/utils';
 
 const ACCENT_COLOR_KEY = 'admin_accent_color';
 
+/**
+ * Adjust the brightness of a hex color.
+ * @param hex - The hex color (e.g., '#f6821f')
+ * @param percent - Positive to lighten, negative to darken
+ */
+function adjustBrightness(hex: string, percent: number): string {
+  // Remove # if present
+  const color = hex.replace('#', '');
+
+  // Parse RGB values
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+
+  // Adjust brightness
+  const adjust = (value: number) => {
+    const adjusted = Math.round(value + (value * percent) / 100);
+    return Math.max(0, Math.min(255, adjusted));
+  };
+
+  // Convert back to hex
+  const toHex = (value: number) => value.toString(16).padStart(2, '0');
+
+  return `#${toHex(adjust(r))}${toHex(adjust(g))}${toHex(adjust(b))}`;
+}
+
 interface AccentColor {
   name: string;
   value: string;
@@ -153,14 +179,16 @@ export default function SettingsPage() {
 
     const root = document.documentElement;
 
-    // Apply dark mode accent
-    root.style.setProperty('--color-accent', selectedColor.value);
+    // Get the appropriate color value based on theme
+    const colorValue = resolvedTheme === 'light' ? selectedColor.lightValue : selectedColor.value;
 
-    // For light mode, we need to handle it differently
-    // The CSS variables are theme-specific, so we update based on resolved theme
-    if (resolvedTheme === 'light') {
-      root.style.setProperty('--color-accent', selectedColor.lightValue);
-    }
+    // Calculate a slightly darker hover color
+    const hoverColor = adjustBrightness(colorValue, -15);
+
+    // Apply to all primary/accent CSS variables for site-wide effect
+    root.style.setProperty('--color-primary', colorValue);
+    root.style.setProperty('--color-primary-hover', hoverColor);
+    root.style.setProperty('--color-accent', colorValue);
   }, [accentColor, resolvedTheme, mounted]);
 
   const setAccentColor = useCallback((color: string) => {
@@ -175,9 +203,12 @@ export default function SettingsPage() {
   const resetToDefaults = useCallback(() => {
     setTheme('dark');
     setAccentColor(DEFAULT_ACCENT_COLOR);
-    // Reset CSS variable to default
+    // Reset CSS variables to defaults (defined in globals.css)
     if (typeof document !== 'undefined') {
-      document.documentElement.style.removeProperty('--color-accent');
+      const root = document.documentElement;
+      root.style.removeProperty('--color-primary');
+      root.style.removeProperty('--color-primary-hover');
+      root.style.removeProperty('--color-accent');
     }
   }, [setTheme, setAccentColor]);
 

@@ -22,6 +22,24 @@ const accentColors = [
 ];
 
 /**
+ * Adjust the brightness of a hex color.
+ */
+function adjustBrightness(hex: string, percent: number): string {
+  const color = hex.replace('#', '');
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+
+  const adjust = (value: number) => {
+    const adjusted = Math.round(value + (value * percent) / 100);
+    return Math.max(0, Math.min(255, adjusted));
+  };
+
+  const toHex = (value: number) => value.toString(16).padStart(2, '0');
+  return `#${toHex(adjust(r))}${toHex(adjust(g))}${toHex(adjust(b))}`;
+}
+
+/**
  * Component that loads and applies saved accent color on mount.
  */
 function AccentColorLoader({ children }: { children: ReactNode }) {
@@ -34,10 +52,13 @@ function AccentColorLoader({ children }: { children: ReactNode }) {
         const color = accentColors.find((c) => c.value === stored);
         if (color) {
           const root = document.documentElement;
-          root.style.setProperty(
-            '--color-accent',
-            resolvedTheme === 'light' ? color.lightValue : color.value
-          );
+          const colorValue = resolvedTheme === 'light' ? color.lightValue : color.value;
+          const hoverColor = adjustBrightness(colorValue, -15);
+
+          // Apply to all primary/accent CSS variables for site-wide effect
+          root.style.setProperty('--color-primary', colorValue);
+          root.style.setProperty('--color-primary-hover', hoverColor);
+          root.style.setProperty('--color-accent', colorValue);
         }
       }
     } catch {
