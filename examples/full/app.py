@@ -491,21 +491,21 @@ async def shutdown_handler(app: Litestar) -> None:
     # Close Redis connections if they exist
     if redis_rate_limit_store:
         try:
-            await redis_rate_limit_store._client.close()
+            await redis_rate_limit_store.close()
             logger.debug("Redis rate limit store closed")
         except Exception as e:
             logger.warning("Error closing Redis rate limit store", error=str(e))
 
     if redis_session_store:
         try:
-            await redis_session_store._client.close()
+            await redis_session_store.close()
             logger.debug("Redis session store closed")
         except Exception as e:
             logger.warning("Error closing Redis session store", error=str(e))
 
     if redis_cache:
         try:
-            await redis_cache._client.close()
+            await redis_cache.close()
             logger.debug("Redis cache closed")
         except Exception as e:
             logger.warning("Error closing Redis cache", error=str(e))
@@ -610,11 +610,7 @@ async def health() -> dict[str, Any]:
     redis_healthy = False
 
     if redis_rate_limit_store:
-        try:
-            await redis_rate_limit_store._client.ping()
-            redis_healthy = True
-        except Exception:
-            redis_healthy = False
+        redis_healthy = await redis_rate_limit_store.ping()
 
     return {
         "status": "healthy",

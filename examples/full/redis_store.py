@@ -310,6 +310,22 @@ class RedisRateLimitStore:
         # No entries, window resets after duration from now
         return int(time.time()) + window_duration
 
+    async def close(self) -> None:
+        """Close the Redis connection."""
+        await self._client.close()
+
+    async def ping(self) -> bool:
+        """Check if Redis is connected.
+
+        Returns:
+            True if connected, False otherwise.
+        """
+        try:
+            await self._client.ping()
+            return True
+        except Exception:
+            return False
+
 
 # ==============================================================================
 # Redis Session Store
@@ -517,6 +533,10 @@ class RedisSessionStore:
             keys = [self._make_key(token) for token in tokens]
             return await self._client.delete(*keys)
         return 0
+
+    async def close(self) -> None:
+        """Close the Redis connection."""
+        await self._client.close()
 
 
 # ==============================================================================
@@ -732,6 +752,10 @@ class RedisCache:
 
         await self.set(key, value, ttl)
         return value
+
+    async def close(self) -> None:
+        """Close the Redis connection."""
+        await self._client.close()
 
 
 # ==============================================================================

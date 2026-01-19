@@ -46,9 +46,11 @@ if TYPE_CHECKING:
 __all__ = [
     "DemoAdminUser",
     "create_oauth_user_creator",
+    "create_password_updater",
     "get_auth_backend",
     "get_oauth_backend",
     "hash_password",
+    "hash_password_async",
     "verify_password",
 ]
 
@@ -296,11 +298,14 @@ def get_auth_backend(session_factory: Callable[[], AsyncSession]) -> JWTAuthBack
     )
 
     user_loader = create_user_loader(session_factory)
+    password_updater = create_password_updater(session_factory)
 
     return JWTAuthBackend(
         config=config,
         user_loader=user_loader,
         password_verifier=verify_password,
+        password_hasher=hash_password_async,
+        password_updater=password_updater,
     )
 
 
