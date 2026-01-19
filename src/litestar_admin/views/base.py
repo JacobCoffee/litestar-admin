@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
 
     from litestar_admin.fields.file import FileField
+    from litestar_admin.fields.rich_text import RichTextField
     from litestar_admin.relationships import RelationshipInfo
 
 __all__ = ["BaseModelView"]
@@ -141,6 +142,35 @@ class BaseModelView(BaseAdminView):
                 ImageField(
                     name="photo",
                     generate_thumbnail=True,
+                ),
+            ]
+    """
+
+    rich_text_fields: ClassVar[list[RichTextField]] = []
+    """List of rich text editor fields for this model.
+
+    Define RichTextField instances for columns that should use the
+    Tiptap-based rich text editor in create/edit forms.
+
+    Example::
+
+        from litestar_admin import ModelView
+        from litestar_admin.fields import RichTextField
+        from myapp.models import BlogPost
+
+
+        class BlogPostAdmin(ModelView, model=BlogPost):
+            rich_text_fields = [
+                RichTextField(
+                    name="content",
+                    description="Main article content",
+                    toolbar=["bold", "italic", "link", "heading", "list"],
+                    max_length=50000,
+                ),
+                RichTextField(
+                    name="summary",
+                    placeholder="Enter a brief summary...",
+                    required=True,
                 ),
             ]
     """
@@ -319,6 +349,60 @@ class BaseModelView(BaseAdminView):
         return [field.to_dict() for field in cls.file_fields]
 
     @classmethod
+    def get_rich_text_fields(cls) -> list[RichTextField]:
+        """Get all rich text fields defined for this model view.
+
+        Returns:
+            List of RichTextField instances.
+        """
+        return cls.rich_text_fields.copy()
+
+    @classmethod
+    def get_rich_text_field(cls, field_name: str) -> RichTextField | None:
+        """Get a rich text field by name.
+
+        Args:
+            field_name: The name of the rich text field.
+
+        Returns:
+            The RichTextField instance, or None if not found.
+        """
+        for field in cls.rich_text_fields:
+            if field.name == field_name:
+                return field
+        return None
+
+    @classmethod
+    def get_rich_text_field_names(cls) -> list[str]:
+        """Get the names of all rich text fields.
+
+        Returns:
+            List of rich text field names.
+        """
+        return [field.name for field in cls.rich_text_fields]
+
+    @classmethod
+    def is_rich_text_field(cls, field_name: str) -> bool:
+        """Check if a field is a rich text editor field.
+
+        Args:
+            field_name: The field name to check.
+
+        Returns:
+            True if the field is a rich text field, False otherwise.
+        """
+        return field_name in cls.get_rich_text_field_names()
+
+    @classmethod
+    def get_rich_text_fields_info(cls) -> list[dict[str, Any]]:
+        """Get rich text field configuration for API responses.
+
+        Returns:
+            List of dictionaries with rich text field configurations.
+        """
+        return [field.to_dict() for field in cls.rich_text_fields]
+
+    @classmethod
     def get_column_info(cls, column_name: str) -> dict[str, Any]:
         """Get metadata for a column, including relationship information.
 
@@ -343,6 +427,7 @@ class BaseModelView(BaseAdminView):
             "searchable": column_name in cls.column_searchable_list,
             "is_relationship": False,
             "is_file_field": False,
+            "is_rich_text_field": False,
         }
 
         # Check if this is a file field
@@ -350,6 +435,13 @@ class BaseModelView(BaseAdminView):
         if file_field is not None:
             info["is_file_field"] = True
             info["file_field_config"] = file_field.to_dict()
+            return info
+
+        # Check if this is a rich text field
+        rich_text_field = cls.get_rich_text_field(column_name)
+        if rich_text_field is not None:
+            info["is_rich_text_field"] = True
+            info["rich_text_field_config"] = rich_text_field.to_dict()
             return info
 
         # Check if this is a relationship field
@@ -550,18 +642,41 @@ class BaseModelView(BaseAdminView):
         record: Any | None,  # noqa: ARG003
         *,
         is_create: bool,  # noqa: ARG003
+        request: ASGIConnection | None = None,  # noqa: ARG003
     ) -> dict[str, Any]:
         """Hook called before creating or updating a record.
 
         Override to modify data before save or perform validation.
+        The request parameter provides access to the current user for
+        setting fields like 'created_by' or 'updated_by'.
 
         Args:
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides access to user context).
 
         Returns:
             The (possibly modified) data to save.
+
+        Example::
+
+            class DocumentAdmin(ModelView, model=Document):
+                @classmethod
+                async def on_model_change(
+                    cls,
+                    data: dict[str, Any],
+                    record: Any | None,
+                    *,
+                    is_create: bool,
+                    request: ASGIConnection | None = None,
+                ) -> dict[str, Any]:
+                    # Set uploaded_by_id from current user
+                    if request and is_create:
+                        user = request.user  # or request.auth for JWT payload
+                        if user and hasattr(user, "id"):
+                            data["uploaded_by_id"] = user.id
+                    return data
         """
         return data
 
