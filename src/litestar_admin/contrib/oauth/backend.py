@@ -156,6 +156,7 @@ class OAuthAuthBackend:
         jwt_algorithm: str = "HS256",
         token_expiry: int = 3600,
         refresh_token_expiry: int = 86400,
+        password_verifier: Callable[[str, str], Awaitable[bool]] | None = None,
     ) -> None:
         """Initialize the OAuth authentication backend.
 
@@ -168,6 +169,7 @@ class OAuthAuthBackend:
             jwt_algorithm: JWT signing algorithm. Defaults to "HS256".
             token_expiry: Access token expiry time in seconds. Defaults to 3600 (1 hour).
             refresh_token_expiry: Refresh token expiry time in seconds. Defaults to 86400 (24 hours).
+            password_verifier: Optional async callable for hybrid auth (password + OAuth).
         """
         self.config = config
         self.user_loader = user_loader
@@ -177,6 +179,7 @@ class OAuthAuthBackend:
         self.jwt_algorithm = jwt_algorithm
         self.token_expiry = token_expiry
         self.refresh_token_expiry = refresh_token_expiry
+        self.password_verifier = password_verifier
 
         # Provider instances cache
         self._providers: dict[str, Any] = {}
@@ -242,18 +245,28 @@ class OAuthAuthBackend:
         connection: ASGIConnection,  # noqa: ARG002
         credentials: dict[str, str],
     ) -> AdminUser | None:
-        """Authenticate a user with OAuth credentials.
+        """Authenticate a user with OAuth or email/password credentials.
 
-        This method is called after the OAuth callback. It expects credentials
-        containing the provider name and authorization code.
+        This method supports two authentication modes:
+        1. OAuth: Expects 'provider', 'code', and optionally 'state'
+        2. Password: Expects 'email' and 'password'
 
         Args:
             connection: The current ASGI connection.
-            credentials: Dictionary containing 'provider', 'code', and optionally 'state'.
+            credentials: Dictionary containing authentication credentials.
 
         Returns:
             The authenticated AdminUser if successful, None otherwise.
         """
+        # Check for password-based authentication (email + password)
+        email = credentials.get("email")
+        password = credentials.get("password")
+
+        if email and password:
+            # Password authentication mode
+            return await self._authenticate_with_password(email, password)
+
+        # OAuth authentication mode
         provider_name = credentials.get("provider")
         code = credentials.get("code")
         state = credentials.get("state")
@@ -530,6 +543,39 @@ class OAuthAuthBackend:
 
         except Exception:
             return None
+
+    async def _authenticate_with_password(self, email: str, password: str) -> AdminUser | None:
+        """Authenticate a user with email and password.
+
+        This enables hybrid authentication where both OAuth and password login
+        are supported. The password is verified against the user's stored hash.
+
+        Args:
+            email: The user's email address.
+            password: The user's password.
+
+        Returns:
+            The authenticated AdminUser if credentials are valid, None otherwise.
+        """
+        # Load user by email
+        user = await self.user_loader_by_email(email)
+        if user is None:
+            return None
+
+        # Check if password verifier is configured
+        if not self.password_verifier:
+            return None
+
+        # Get password hash from user
+        password_hash = getattr(user, "password_hash", None) or getattr(user, "hashed_password", None)
+        if password_hash is None:
+            return None
+
+        # Verify password
+        if not await self.password_verifier(password_hash, password):
+            return None
+
+        return user
 
     def _extract_user_info(self, user_info: Any, provider_name: str) -> OAuthUserInfo:
         """Extract normalized user info from provider response.

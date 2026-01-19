@@ -56,6 +56,7 @@ from litestar_admin.controllers.models import (
     ModelInfo,
     ModelsController,
 )
+from litestar_admin.controllers.oauth import OAuthController
 
 __all__ = [
     # Controllers
@@ -68,6 +69,7 @@ __all__ = [
     "EmbedsController",
     "ExportController",
     "ModelsController",
+    "OAuthController",
     "PagesController",
     # DTOs - Auth
     "LoginRequest",

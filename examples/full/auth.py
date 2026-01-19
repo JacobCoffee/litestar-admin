@@ -799,7 +799,8 @@ def get_demo_oauth_backend(session_factory: Callable[[], AsyncSession]) -> OAuth
         auto_create_user=True,
     )
 
-    # Create the backend
+    # Create the backend with password support for hybrid auth
+    # This allows both OAuth login AND password login on the same page
     backend = OAuthAuthBackend(
         config=oauth_config,
         user_loader=create_user_loader(session_factory),
@@ -809,6 +810,7 @@ def get_demo_oauth_backend(session_factory: Callable[[], AsyncSession]) -> OAuth
         jwt_algorithm="HS256",
         token_expiry=3600,
         refresh_token_expiry=86400,
+        password_verifier=verify_password,  # Enable hybrid auth (password + OAuth)
     )
 
     # Override the provider with our demo provider

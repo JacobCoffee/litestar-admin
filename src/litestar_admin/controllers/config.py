@@ -14,6 +14,7 @@ __all__ = [
     "ConfigController",
     "ConfigResponse",
     "DevCredential",
+    "OAuthProvider",
 ]
 
 
@@ -33,6 +34,21 @@ class DevCredential:
 
 
 @dataclass
+class OAuthProvider:
+    """OAuth provider information for frontend.
+
+    Attributes:
+        name: The provider identifier (e.g., "github", "google").
+        display_name: Human-readable name for the button.
+        login_url: URL to initiate OAuth login.
+    """
+
+    name: str
+    display_name: str
+    login_url: str
+
+
+@dataclass
 class ConfigResponse:
     """Response containing admin panel configuration.
 
@@ -43,12 +59,14 @@ class ConfigResponse:
         debug: Whether debug mode is enabled.
         theme: The current theme (dark/light).
         dev_credentials: Development credentials (only when debug=True).
+        oauth_providers: Available OAuth providers for login.
     """
 
     title: str
     debug: bool
     theme: str
     dev_credentials: list[DevCredential] = field(default_factory=list)
+    oauth_providers: list[OAuthProvider] = field(default_factory=list)
 
 
 class ConfigController(Controller):
@@ -90,6 +108,7 @@ class ConfigController(Controller):
             ConfigResponse containing public configuration values.
         """
         dev_credentials: list[DevCredential] = []
+        oauth_providers: list[OAuthProvider] = []
 
         # Only expose dev credentials when debug mode is enabled
         if admin_config.debug:
@@ -100,9 +119,42 @@ class ConfigController(Controller):
                 DevCredential(email="viewer@example.com", password="viewer", role="viewer"),  # noqa: S106
             ]
 
+        # Check if OAuth providers are configured directly on AdminConfig
+        if admin_config.oauth_providers:
+            for provider_dict in admin_config.oauth_providers:
+                oauth_providers.append(
+                    OAuthProvider(
+                        name=provider_dict.get("name", ""),
+                        display_name=provider_dict.get("display_name", ""),
+                        login_url=provider_dict.get("login_url", ""),
+                    )
+                )
+        # Also check if auth_backend has OAuth providers
+        elif admin_config.auth_backend is not None:
+            if hasattr(admin_config.auth_backend, "available_providers"):
+                provider_names = admin_config.auth_backend.available_providers
+                base_url = admin_config.base_url
+                for name in provider_names:
+                    # Create display name (capitalize, handle special cases)
+                    display_name = {
+                        "github": "GitHub",
+                        "google": "Google",
+                        "discord": "Discord",
+                        "demo": "Demo",
+                    }.get(name, name.title())
+
+                    oauth_providers.append(
+                        OAuthProvider(
+                            name=name,
+                            display_name=display_name,
+                            login_url=f"{base_url}/auth/oauth/{name}/login",
+                        )
+                    )
+
         return ConfigResponse(
             title=admin_config.title,
             debug=admin_config.debug,
             theme=admin_config.theme,
             dev_credentials=dev_credentials,
+            oauth_providers=oauth_providers,
         )

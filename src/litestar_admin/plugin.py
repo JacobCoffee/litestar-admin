@@ -151,6 +151,7 @@ class AdminPlugin(InitPluginProtocol):
             EmbedsController,
             ExportController,
             ModelsController,
+            OAuthController,
             PagesController,
         )
 
@@ -169,6 +170,7 @@ class AdminPlugin(InitPluginProtocol):
                 EmbedsController,
                 ExportController,
                 ModelsController,
+                OAuthController,
                 PagesController,
             ],
         )

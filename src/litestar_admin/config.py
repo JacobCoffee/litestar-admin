@@ -100,6 +100,10 @@ class AdminConfig:
     # Authentication
     auth_backend: AuthBackend | None = None
 
+    # OAuth providers (for displaying OAuth login buttons alongside password login)
+    # Each entry should be a dict with: name, display_name, login_url
+    oauth_providers: list[dict[str, str]] = field(default_factory=list)
+
     # All views (accepts any BaseAdminView subclass)
     views: list[type[BaseAdminView]] = field(default_factory=list)
 

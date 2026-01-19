@@ -260,8 +260,12 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 
 async def create_tables() -> None:
     """Create all database tables."""
+    from litestar_admin.audit.models import AuditLogBase
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Also create audit log tables
+        await conn.run_sync(AuditLogBase.metadata.create_all)
     logger.info("Database tables created")
 
 
@@ -605,32 +609,16 @@ OAUTH_DEMO_MODE = os.environ.get("OAUTH_DEMO_MODE", "").lower() in ("true", "1",
 # Check for GitHub OAuth credentials (Option 2)
 GITHUB_OAUTH_CONFIGURED = bool(os.environ.get("GITHUB_CLIENT_ID") and os.environ.get("GITHUB_CLIENT_SECRET"))
 
-if OAUTH_DEMO_MODE:
-    # Option 3: Demo OAuth Authentication
-    # No external credentials needed - simulates OAuth flow for testing
-    from examples.full.auth import get_demo_oauth_backend
+# Full example always uses demo OAuth backend to showcase both login methods
+# The demo OAuth backend supports BOTH password login AND OAuth login
+from examples.full.auth import get_demo_oauth_backend
 
-    auth_backend = get_demo_oauth_backend(get_session)
-    logger.info(
-        "Using Demo OAuth authentication",
-        demo_email=os.environ.get("DEMO_OAUTH_EMAIL", "demo@example.com"),
-        hint="Login via the 'demo' OAuth provider - accepts any code",
-    )
-elif GITHUB_OAUTH_CONFIGURED:
-    # Option 2: OAuth Authentication (GitHub)
-    # Requires GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars
-    from examples.full.auth import get_oauth_backend
-
-    auth_backend = get_oauth_backend(get_session)
-    logger.info(
-        "Using GitHub OAuth authentication",
-        hint="Login via GitHub - new users auto-created with VIEWER role",
-    )
-else:
-    # Option 1: JWT Authentication (DEFAULT)
-    # Username/password login with JWT tokens
-    auth_backend = get_auth_backend(get_session)
-    # Note: logger.info moved to startup to avoid logging before app is ready
+auth_backend = get_demo_oauth_backend(get_session)
+logger.info(
+    "Using hybrid authentication (password + demo OAuth)",
+    demo_email=os.environ.get("DEMO_OAUTH_EMAIL", "demo@example.com"),
+    hint="Login via password (admin@example.com/admin) or Demo OAuth button",
+)
 
 # Legacy manual configuration (for reference):
 # To explicitly use a specific backend, uncomment one of these and comment out
@@ -640,6 +628,24 @@ else:
 # auth_backend = get_oauth_backend(get_session)  # GitHub OAuth
 # auth_backend = get_demo_oauth_backend(get_session)  # Demo OAuth
 
+# Build OAuth providers list for login page buttons
+# Demo OAuth is always available in the full example
+oauth_providers_config: list[dict[str, str]] = [
+    {
+        "name": "demo",
+        "display_name": "Demo OAuth",
+        "login_url": "/admin/auth/oauth/demo/login",
+    },
+]
+
+# Add GitHub OAuth if configured
+if GITHUB_OAUTH_CONFIGURED:
+    oauth_providers_config.append({
+        "name": "github",
+        "display_name": "GitHub",
+        "login_url": "/admin/auth/oauth/github/login",
+    })
+
 # Configure admin plugin
 # Using categorized view fields for better organization
 admin_plugin = AdminPlugin(
@@ -648,6 +654,8 @@ admin_plugin = AdminPlugin(
         base_url="/admin",
         theme="dark",
         auth_backend=auth_backend,
+        # OAuth providers shown on login page (alongside password form)
+        oauth_providers=oauth_providers_config,
         # Model views for database-backed CRUD
         model_views=[UserAdmin, ArticleAdmin, TagAdmin],
         # Custom views with data providers
