@@ -17,20 +17,17 @@ class ModelRegistry:
     The registry maintains a mapping of model classes and names to their
     corresponding view classes, enabling lookup and management of admin views.
 
-    Example:
-        ```python
+    Example::
+
         from litestar_admin import ModelRegistry, ModelView
 
         registry = ModelRegistry()
 
-
         class UserAdmin(ModelView, model=User):
             column_list = ["id", "email"]
 
-
         registry.register(UserAdmin)
         view = registry.get_view(User)
-        ```
     """
 
     __slots__ = ("_views_by_model", "_views_by_name")

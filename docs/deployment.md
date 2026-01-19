@@ -311,7 +311,7 @@ server {
 
 ### Caddy
 
-```caddyfile
+```text
 admin.example.com {
     reverse_proxy localhost:8000
 

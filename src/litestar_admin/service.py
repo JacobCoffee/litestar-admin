@@ -59,16 +59,14 @@ class AdminService(Generic[T]):
     This service provides a unified interface for performing CRUD operations
     on SQLAlchemy models within the admin panel.
 
-    Example:
-        ```python
-        from litestar_admin import AdminService
+    Example::
 
+        from litestar_admin import AdminService
 
         async def get_users(session: AsyncSession) -> list[User]:
             service = AdminService(UserAdmin, session)
             records, total = await service.list_records(limit=10)
             return records
-        ```
     """
 
     __slots__ = ("_session", "_view_class")

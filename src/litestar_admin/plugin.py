@@ -31,8 +31,8 @@ class AdminPlugin(InitPluginProtocol):
     This plugin provides a complete admin panel interface for managing
     SQLAlchemy models in Litestar applications.
 
-    Example:
-        ```python
+    Example::
+
         from litestar import Litestar
         from litestar_admin import AdminPlugin, AdminConfig
 
@@ -46,7 +46,6 @@ class AdminPlugin(InitPluginProtocol):
                 )
             ]
         )
-        ```
     """
 
     __slots__ = ("_app", "_config", "_registry")
@@ -191,10 +190,10 @@ class AdminPlugin(InitPluginProtocol):
 
         # SPA catch-all route - serves index.html for any unmatched admin route
         # This enables client-side routing for paths like /admin/models/Article
+        # IMPORTANT: We only handle routes that are NOT static assets
         @get(
             path=[
                 f"{self._config.base_url}/models/{{path:path}}",
-                f"{self._config.base_url}/{{path:path}}",
             ],
             name="admin_spa_fallback",
             include_in_schema=False,

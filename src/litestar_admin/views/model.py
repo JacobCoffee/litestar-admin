@@ -15,16 +15,14 @@ class ModelView(BaseModelView):
     This class extends BaseModelView to allow specifying the model class
     as a class parameter, enabling cleaner syntax for defining admin views.
 
-    Example:
-        ```python
+    Example::
+
         from litestar_admin import ModelView
         from myapp.models import User
-
 
         class UserAdmin(ModelView, model=User):
             column_list = ["id", "email", "name"]
             column_searchable_list = ["email", "name"]
-        ```
     """
 
     def __init_subclass__(cls, model: type[Any] | None = None, **kwargs: Any) -> None:

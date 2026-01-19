@@ -16,7 +16,7 @@ class BaseModelView:
     This class provides the foundation for all model views in the admin panel.
     Subclasses configure how models are displayed and edited in the admin interface.
 
-    Class Attributes:
+    Attributes:
         model: The SQLAlchemy model class this view manages.
         name: Display name for the model (defaults to model class name).
         name_plural: Plural display name (defaults to name + 's').
@@ -37,18 +37,16 @@ class BaseModelView:
         page_size: Default number of records per page.
         page_size_options: Available page size options.
 
-    Example:
-        ```python
+    Example::
+
         from litestar_admin import BaseModelView
         from myapp.models import User
-
 
         class UserAdmin(BaseModelView):
             model = User
             column_list = ["id", "email", "name", "created_at"]
             column_searchable_list = ["email", "name"]
             can_delete = False
-        ```
     """
 
     # Model configuration

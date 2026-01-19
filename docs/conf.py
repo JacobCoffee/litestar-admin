@@ -81,7 +81,6 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "litestar": ("https://docs.litestar.dev/latest/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
-    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
 }
 
 # MyST configuration
@@ -105,5 +104,14 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 copybutton_remove_prompts = True
 
-# Suppress warnings for cross-references to classes that might not resolve
-suppress_warnings = ["myst.xref_missing", "ref.duplicate_object"]
+# Suppress warnings for cross-references and docutils parsing issues
+# - myst.xref_missing: cross-references that can't be resolved
+# - ref.duplicate_object: objects documented in multiple places
+# - autodoc.import_object: objects that fail to import during autodoc
+suppress_warnings = [
+    "myst.xref_missing",
+    "ref.duplicate_object",
+]
+
+# Configure nitpicky mode to be lenient
+nitpicky = False
