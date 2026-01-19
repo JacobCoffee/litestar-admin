@@ -1874,9 +1874,7 @@ class TestOAuthConfigDefaults:
         assert config.default_roles == []
         assert config.default_permissions == []
 
-    def test_config_with_default_roles_and_permissions(
-        self, github_provider_config: OAuthProviderConfig
-    ) -> None:
+    def test_config_with_default_roles_and_permissions(self, github_provider_config: OAuthProviderConfig) -> None:
         """Test config with custom default roles and permissions."""
         config = OAuthConfig(
             providers=[github_provider_config],

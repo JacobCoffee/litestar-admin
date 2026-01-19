@@ -8,13 +8,35 @@ showcasing various configuration options including:
 - Category grouping
 - Custom model change hooks
 - CustomView examples with data providers
+- ActionView examples for one-off operations
+- PageView examples for static/dynamic content pages
+- LinkView examples for external navigation
+- EmbedView examples for embedded content
 
 Views:
-    - UserAdmin: User management with restricted delete
-    - ArticleAdmin: Content management with status workflow
-    - TagAdmin: Tag management with slug handling
-    - AppSettingsAdmin: In-memory settings store (CustomView example)
-    - SystemInfoAdmin: System information view (read-only CustomView example)
+    ModelViews:
+        - UserAdmin: User management with restricted delete
+        - ArticleAdmin: Content management with status workflow
+        - TagAdmin: Tag management with slug handling
+
+    CustomViews:
+        - AppSettingsAdmin: In-memory settings store
+        - SystemInfoAdmin: System information view (read-only)
+
+    ActionViews:
+        - ClearCacheAction: Simulated cache clear with confirmation
+        - SendNotificationAction: Send notifications with form fields
+
+    PageViews:
+        - AboutPage: Static markdown about page
+        - ChangelogPage: Dynamic changelog loading
+
+    LinkViews:
+        - DocsLink: Link to documentation
+        - GitHubLink: Link to GitHub repository
+
+    EmbedViews:
+        - MetricsEmbed: Placeholder for metrics dashboard embedding
 """
 
 from __future__ import annotations
@@ -28,8 +50,28 @@ from typing import Any, ClassVar, Literal
 from examples.full.models import Article, ArticleStatus, Tag, User
 from litestar_admin import ModelView
 from litestar_admin.contrib.providers import ColumnDefinition, InMemoryView, ListResult
+from litestar_admin.views import ActionResult, ActionView, EmbedView, FormField, LinkView, PageView
 
-__all__ = ["AppSettingsAdmin", "ArticleAdmin", "SystemInfoAdmin", "TagAdmin", "UserAdmin"]
+__all__ = [
+    # ModelViews
+    "ArticleAdmin",
+    "TagAdmin",
+    "UserAdmin",
+    # CustomViews
+    "AppSettingsAdmin",
+    "SystemInfoAdmin",
+    # ActionViews
+    "ClearCacheAction",
+    "SendNotificationAction",
+    # PageViews
+    "AboutPage",
+    "ChangelogPage",
+    # LinkViews
+    "DocsLink",
+    "GitHubLink",
+    # EmbedViews
+    "MetricsEmbed",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -574,3 +616,476 @@ class SystemInfoAdmin(InMemoryView):
             )
 
         return info
+
+
+# =============================================================================
+# ActionView Examples
+# =============================================================================
+# ActionViews are for one-off operations that don't map to model CRUD.
+
+
+class ClearCacheAction(ActionView):
+    """Simulated cache clear action with confirmation.
+
+    Demonstrates using ActionView for maintenance operations with:
+    - Confirmation dialog before execution
+    - Form fields for configuration options
+    - Dangerous action styling (red button)
+    """
+
+    name = "Clear Cache"
+    icon = "trash-2"
+    category = "Maintenance"
+
+    # Confirmation settings
+    confirmation_message = "Are you sure you want to clear the cache? This action cannot be undone."
+    requires_confirmation = True
+    dangerous = True
+
+    # Form configuration
+    form_fields: ClassVar[list[FormField]] = [
+        FormField(
+            name="cache_type",
+            label="Cache Type",
+            field_type="select",
+            required=True,
+            default="all",
+            help_text="Select which cache to clear",
+            options=[
+                {"value": "all", "label": "All Caches"},
+                {"value": "user", "label": "User Cache Only"},
+                {"value": "session", "label": "Session Cache Only"},
+                {"value": "query", "label": "Query Cache Only"},
+            ],
+        ),
+        FormField(
+            name="force",
+            label="Force clear (ignore active sessions)",
+            field_type="checkbox",
+            required=False,
+            default=False,
+            help_text="Check to force clear even if there are active sessions",
+        ),
+    ]
+
+    async def execute(self, data: dict[str, Any]) -> ActionResult:
+        """Execute the cache clear operation.
+
+        Args:
+            data: Form field values from the user.
+
+        Returns:
+            ActionResult indicating success or failure.
+        """
+        import asyncio
+        import random
+
+        cache_type = data.get("cache_type", "all")
+        force = data.get("force", False)
+
+        # Simulate cache clearing operation
+        await asyncio.sleep(0.5)  # Simulate work
+
+        # Simulate random cache entry counts
+        cleared_entries = random.randint(100, 5000)  # noqa: S311
+
+        logger.info(
+            "Cache cleared: type=%s, force=%s, entries=%d",
+            cache_type,
+            force,
+            cleared_entries,
+        )
+
+        return ActionResult(
+            success=True,
+            message=f"Successfully cleared {cleared_entries} entries from {cache_type} cache.",
+            data={
+                "cache_type": cache_type,
+                "cleared_entries": cleared_entries,
+                "forced": force,
+            },
+            refresh=True,
+        )
+
+
+class SendNotificationAction(ActionView):
+    """Send notification to users action.
+
+    Demonstrates using ActionView for user-facing operations with:
+    - Multiple form field types
+    - Textarea for message content
+    - Select for recipient groups
+    - No dangerous styling (normal button)
+    """
+
+    name = "Send Notification"
+    icon = "bell"
+    category = "Communication"
+
+    # Confirmation settings
+    confirmation_message = "Send this notification to the selected recipients?"
+    requires_confirmation = True
+    dangerous = False
+
+    submit_label = "Send Notification"
+
+    # Form configuration
+    form_fields: ClassVar[list[FormField]] = [
+        FormField(
+            name="recipients",
+            label="Recipients",
+            field_type="select",
+            required=True,
+            default="all",
+            help_text="Select who should receive this notification",
+            options=[
+                {"value": "all", "label": "All Users"},
+                {"value": "admins", "label": "Administrators Only"},
+                {"value": "editors", "label": "Editors Only"},
+                {"value": "active", "label": "Active Users Only"},
+            ],
+        ),
+        FormField(
+            name="subject",
+            label="Subject",
+            field_type="text",
+            required=True,
+            placeholder="Enter notification subject...",
+            help_text="Brief subject line for the notification",
+            validation={"minLength": 5, "maxLength": 100},
+        ),
+        FormField(
+            name="message",
+            label="Message",
+            field_type="textarea",
+            required=True,
+            placeholder="Enter your notification message...",
+            help_text="The full notification message to send",
+            validation={"minLength": 10, "maxLength": 1000},
+        ),
+        FormField(
+            name="priority",
+            label="Priority",
+            field_type="radio",
+            required=True,
+            default="normal",
+            options=[
+                {"value": "low", "label": "Low"},
+                {"value": "normal", "label": "Normal"},
+                {"value": "high", "label": "High"},
+                {"value": "urgent", "label": "Urgent"},
+            ],
+        ),
+        FormField(
+            name="send_email",
+            label="Also send via email",
+            field_type="checkbox",
+            required=False,
+            default=False,
+            help_text="Send an email copy in addition to in-app notification",
+        ),
+    ]
+
+    async def execute(self, data: dict[str, Any]) -> ActionResult:
+        """Execute the notification send operation.
+
+        Args:
+            data: Form field values from the user.
+
+        Returns:
+            ActionResult indicating success or failure.
+        """
+        import asyncio
+        import random
+
+        recipients = data.get("recipients", "all")
+        subject = data.get("subject", "")
+        message = data.get("message", "")
+        priority = data.get("priority", "normal")
+        send_email = data.get("send_email", False)
+
+        # Simulate sending notifications
+        await asyncio.sleep(0.3)
+
+        # Simulate recipient counts based on selection
+        recipient_counts = {
+            "all": random.randint(50, 200),  # noqa: S311
+            "admins": random.randint(2, 10),  # noqa: S311
+            "editors": random.randint(5, 25),  # noqa: S311
+            "active": random.randint(20, 100),  # noqa: S311
+        }
+        sent_count = recipient_counts.get(recipients, 0)
+
+        logger.info(
+            "Notification sent: recipients=%s, subject=%s, message_length=%d, priority=%s, email=%s, count=%d",
+            recipients,
+            subject,
+            len(message),
+            priority,
+            send_email,
+            sent_count,
+        )
+
+        email_note = " (email copies also sent)" if send_email else ""
+
+        return ActionResult(
+            success=True,
+            message=f"Notification sent to {sent_count} {recipients} users{email_note}.",
+            data={
+                "recipients": recipients,
+                "sent_count": sent_count,
+                "priority": priority,
+                "email_sent": send_email,
+            },
+        )
+
+
+# =============================================================================
+# PageView Examples
+# =============================================================================
+# PageViews are for static or dynamic content pages in the admin.
+
+
+class AboutPage(PageView):
+    """Static markdown about page.
+
+    Demonstrates using PageView for static content with:
+    - Markdown content rendering
+    - Full-width layout
+    - No dynamic data loading
+    """
+
+    name = "About"
+    icon = "info"
+    category = "Help"
+
+    content_type = "markdown"
+    layout = "full-width"
+
+    content: ClassVar[str] = """
+# About Litestar Admin Demo
+
+This is a full-featured demonstration of **litestar-admin**, a modern admin panel
+framework for Litestar applications.
+
+## Features Demonstrated
+
+### Model Views
+- **User Management**: Full CRUD with password hashing and role assignment
+- **Article Management**: Content workflow with draft/review/published states
+- **Tag Management**: Simple tag CRUD with slug auto-generation
+
+### Custom Views
+- **App Settings**: In-memory key-value store for runtime configuration
+- **System Info**: Dynamic system information display
+
+### Action Views
+- **Clear Cache**: Maintenance action with confirmation dialog
+- **Send Notification**: User communication with form validation
+
+### Page Views
+- **About Page**: This static markdown page
+- **Changelog**: Dynamic content loading
+
+### Link Views
+- External links to documentation and GitHub
+
+### Embed Views
+- Placeholder for embedded dashboards and metrics
+
+## Authentication
+
+This demo supports multiple authentication modes:
+- **JWT Authentication**: Username/password login (default)
+- **GitHub OAuth**: Login via GitHub account
+- **Demo OAuth**: Simulated OAuth for testing
+
+## Getting Started
+
+1. Run the application:
+   ```bash
+   litestar --app examples.full.app:app run --reload
+   ```
+
+2. Login with default credentials:
+   - Email: `admin@example.com`
+   - Password: `admin`
+
+---
+
+*Built with [Litestar](https://litestar.dev) and [litestar-admin](https://github.com/litestar-org/litestar-admin)*
+"""
+
+
+class ChangelogPage(PageView):
+    """Dynamic changelog page.
+
+    Demonstrates using PageView for dynamic content with:
+    - Dynamic content loading via get_content()
+    - Auto-refresh capability
+    - Default layout
+    """
+
+    name = "Changelog"
+    icon = "clock"
+    category = "Help"
+
+    content_type = "dynamic"
+    layout = "default"
+    refresh_interval = 300  # Refresh every 5 minutes
+
+    async def get_content(self) -> dict[str, Any]:
+        """Get dynamic changelog content.
+
+        In a real application, this might fetch from a database,
+        GitHub releases API, or a changelog file.
+
+        Returns:
+            Dictionary with changelog data for the frontend.
+        """
+        # Simulated changelog entries
+        changelog_entries = [
+            {
+                "version": "0.5.0",
+                "date": "2024-01-15",
+                "type": "feature",
+                "title": "ActionView Support",
+                "description": "Added ActionView for one-off admin operations with form inputs.",
+                "changes": [
+                    "New ActionView base class with form field support",
+                    "Confirmation dialogs for dangerous actions",
+                    "Background execution support for long-running actions",
+                ],
+            },
+            {
+                "version": "0.4.0",
+                "date": "2024-01-10",
+                "type": "feature",
+                "title": "PageView and LinkView",
+                "description": "Added PageView for custom content pages and LinkView for navigation.",
+                "changes": [
+                    "PageView with markdown, HTML, and dynamic content support",
+                    "LinkView for external navigation links",
+                    "Category grouping for sidebar organization",
+                ],
+            },
+            {
+                "version": "0.3.0",
+                "date": "2024-01-05",
+                "type": "enhancement",
+                "title": "CustomView Improvements",
+                "description": "Enhanced CustomView with InMemoryView provider.",
+                "changes": [
+                    "InMemoryView for non-database data sources",
+                    "Dynamic system info display",
+                    "Settings management without database",
+                ],
+            },
+            {
+                "version": "0.2.0",
+                "date": "2023-12-20",
+                "type": "feature",
+                "title": "OAuth Authentication",
+                "description": "Added OAuth authentication support with GitHub provider.",
+                "changes": [
+                    "GitHub OAuth authentication backend",
+                    "Demo OAuth mode for testing",
+                    "Automatic user creation on first login",
+                ],
+            },
+            {
+                "version": "0.1.0",
+                "date": "2023-12-01",
+                "type": "release",
+                "title": "Initial Release",
+                "description": "First release of litestar-admin with core functionality.",
+                "changes": [
+                    "ModelView for SQLAlchemy models",
+                    "JWT authentication",
+                    "Dark theme Cloudflare-inspired UI",
+                    "Rate limiting",
+                ],
+            },
+        ]
+
+        return {
+            "type": "changelog",
+            "title": "Litestar Admin Changelog",
+            "entries": changelog_entries,
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+        }
+
+
+# =============================================================================
+# LinkView Examples
+# =============================================================================
+# LinkViews are for external navigation links in the sidebar.
+
+
+class DocsLink(LinkView):
+    """Link to documentation.
+
+    Demonstrates using LinkView for external documentation links with:
+    - External URL opening in new tab
+    - Category grouping
+    """
+
+    name = "Documentation"
+    icon = "book-open"
+    category = "Resources"
+
+    url = "https://litestar.dev/latest"
+    target = "_blank"
+
+
+class GitHubLink(LinkView):
+    """Link to GitHub repository.
+
+    Demonstrates using LinkView for repository links with:
+    - External URL opening in new tab
+    - Same category as docs for grouping
+    """
+
+    name = "GitHub"
+    icon = "github"
+    category = "Resources"
+
+    url = "https://github.com/litestar-org/litestar-admin"
+    target = "_blank"
+
+
+# =============================================================================
+# EmbedView Examples
+# =============================================================================
+# EmbedViews are for embedding external content or custom components.
+
+
+class MetricsEmbed(EmbedView):
+    """Placeholder metrics dashboard embed.
+
+    Demonstrates using EmbedView for embedded dashboards with:
+    - Iframe embedding of external URL
+    - Custom dimensions
+    - Security sandbox configuration
+
+    Note: This uses a placeholder URL. In production, replace with
+    an actual metrics dashboard URL (Grafana, Metabase, etc.).
+    """
+
+    name = "Metrics Dashboard"
+    icon = "bar-chart-2"
+    category = "Monitoring"
+
+    embed_type = "iframe"
+    # Placeholder URL - in production this would be a real dashboard
+    embed_url = "about:blank"  # Replace with actual dashboard URL
+
+    # Dimensions
+    height = "600px"
+    min_height = "400px"
+    layout = "full"
+
+    # Security settings
+    sandbox = "allow-scripts allow-same-origin"
+    show_toolbar = True
+    refresh_interval = 60  # Auto-refresh every minute

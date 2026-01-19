@@ -818,10 +818,7 @@ class TestEdgeCases:
     @pytest.mark.asyncio
     async def test_rate_limit_concurrent_increments(self, rate_limit_store) -> None:
         """Test concurrent increments are handled correctly."""
-        tasks = [
-            rate_limit_store.increment("concurrent-key", "minute")
-            for _ in range(10)
-        ]
+        tasks = [rate_limit_store.increment("concurrent-key", "minute") for _ in range(10)]
         results = await asyncio.gather(*tasks)
 
         # All results should be unique and sequential

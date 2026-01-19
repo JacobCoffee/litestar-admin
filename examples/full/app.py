@@ -119,7 +119,26 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from examples.full.auth import get_auth_backend, hash_password
 from examples.full.models import Article, ArticleStatus, Base, Tag, User, UserRole
-from examples.full.views import AppSettingsAdmin, ArticleAdmin, SystemInfoAdmin, TagAdmin, UserAdmin
+from examples.full.views import (
+    # Page views
+    AboutPage,
+    # Custom views
+    AppSettingsAdmin,
+    # Model views
+    ArticleAdmin,
+    ChangelogPage,
+    # Action views
+    ClearCacheAction,
+    # Link views
+    DocsLink,
+    GitHubLink,
+    # Embed views
+    MetricsEmbed,
+    SendNotificationAction,
+    SystemInfoAdmin,
+    TagAdmin,
+    UserAdmin,
+)
 from litestar_admin import AdminConfig, AdminPlugin, get_logger
 
 # =============================================================================
@@ -622,13 +641,25 @@ else:
 # auth_backend = get_demo_oauth_backend(get_session)  # Demo OAuth
 
 # Configure admin plugin
+# Using categorized view fields for better organization
 admin_plugin = AdminPlugin(
     config=AdminConfig(
         title="Full Admin Demo",
         base_url="/admin",
         theme="dark",
         auth_backend=auth_backend,
-        views=[UserAdmin, ArticleAdmin, TagAdmin, AppSettingsAdmin, SystemInfoAdmin],
+        # Model views for database-backed CRUD
+        model_views=[UserAdmin, ArticleAdmin, TagAdmin],
+        # Custom views with data providers
+        custom_views=[AppSettingsAdmin, SystemInfoAdmin],
+        # Action views for one-off operations
+        action_views=[ClearCacheAction, SendNotificationAction],
+        # Page views for static/dynamic content
+        page_views=[AboutPage, ChangelogPage],
+        # Link views for external navigation
+        link_views=[DocsLink, GitHubLink],
+        # Embed views for external dashboards/widgets
+        embed_views=[MetricsEmbed],
         auto_discover=False,  # We're explicitly registering views
         rate_limit_enabled=True,
         rate_limit_requests=100,
