@@ -10,6 +10,7 @@ from litestar_admin.views.admin_view import BaseAdminView
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
 
+    from litestar_admin.fields.file import FileField
     from litestar_admin.relationships import RelationshipInfo
 
 __all__ = ["BaseModelView"]
@@ -74,6 +75,32 @@ class BaseModelView(BaseAdminView):
     form_columns: ClassVar[list[str]] = []
     form_excluded_columns: ClassVar[list[str]] = []
     form_extra_fields: ClassVar[dict[str, dict[str, Any]]] = {}
+    file_fields: ClassVar[list[FileField]] = []
+    """List of file upload fields for this model.
+
+    Define FileField or ImageField instances for columns that should
+    accept file uploads in create/edit forms.
+
+    Example::
+
+        from litestar_admin import ModelView
+        from litestar_admin.fields import FileField, ImageField
+        from myapp.models import Product
+
+
+        class ProductAdmin(ModelView, model=Product):
+            file_fields = [
+                FileField(
+                    name="manual",
+                    allowed_extensions=["pdf"],
+                    max_size=20 * 1024 * 1024,
+                ),
+                ImageField(
+                    name="photo",
+                    generate_thumbnail=True,
+                ),
+            ]
+    """
 
     # Permissions
     can_create: ClassVar[bool] = True
@@ -88,6 +115,35 @@ class BaseModelView(BaseAdminView):
 
     # Relationship configuration
     _relationship_detector: ClassVar[RelationshipDetector | None] = None
+    relationship_search_fields: ClassVar[dict[str, list[str]]] = {}
+    """Custom search fields per relationship for autocomplete.
+
+    Map relationship field names to lists of column names to search.
+    If not specified, defaults to searching the display column and primary key.
+
+    Example::
+
+        class PostAdmin(ModelView, model=Post):
+            relationship_search_fields = {
+                "author": ["email", "name", "username"],
+                "category": ["name", "slug"],
+            }
+    """
+
+    relationship_display_fields: ClassVar[dict[str, list[str]]] = {}
+    """Additional fields to include in relationship autocomplete responses.
+
+    Map relationship field names to lists of column names for extra data.
+    This data is included in the 'data' field of RelationshipOption.
+
+    Example::
+
+        class PostAdmin(ModelView, model=Post):
+            relationship_display_fields = {
+                "author": ["email", "avatar_url"],
+                "category": ["description"],
+            }
+    """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Initialize subclass with defaults."""
@@ -166,6 +222,60 @@ class BaseModelView(BaseAdminView):
         return cls.form_extra_fields.copy()
 
     @classmethod
+    def get_file_fields(cls) -> list[FileField]:
+        """Get all file fields defined for this model view.
+
+        Returns:
+            List of FileField or ImageField instances.
+        """
+        return cls.file_fields.copy()
+
+    @classmethod
+    def get_file_field(cls, field_name: str) -> FileField | None:
+        """Get a file field by name.
+
+        Args:
+            field_name: The name of the file field.
+
+        Returns:
+            The FileField or ImageField instance, or None if not found.
+        """
+        for field in cls.file_fields:
+            if field.name == field_name:
+                return field
+        return None
+
+    @classmethod
+    def get_file_field_names(cls) -> list[str]:
+        """Get the names of all file fields.
+
+        Returns:
+            List of file field names.
+        """
+        return [field.name for field in cls.file_fields]
+
+    @classmethod
+    def is_file_field(cls, field_name: str) -> bool:
+        """Check if a field is a file upload field.
+
+        Args:
+            field_name: The field name to check.
+
+        Returns:
+            True if the field is a file field, False otherwise.
+        """
+        return field_name in cls.get_file_field_names()
+
+    @classmethod
+    def get_file_fields_info(cls) -> list[dict[str, Any]]:
+        """Get file field configuration for API responses.
+
+        Returns:
+            List of dictionaries with file field configurations.
+        """
+        return [field.to_dict() for field in cls.file_fields]
+
+    @classmethod
     def get_column_info(cls, column_name: str) -> dict[str, Any]:
         """Get metadata for a column, including relationship information.
 
@@ -189,7 +299,15 @@ class BaseModelView(BaseAdminView):
             "sortable": column_name in cls.column_sortable_list,
             "searchable": column_name in cls.column_searchable_list,
             "is_relationship": False,
+            "is_file_field": False,
         }
+
+        # Check if this is a file field
+        file_field = cls.get_file_field(column_name)
+        if file_field is not None:
+            info["is_file_field"] = True
+            info["file_field_config"] = file_field.to_dict()
+            return info
 
         # Check if this is a relationship field
         rel_info = cls.get_relationship_info(column_name)

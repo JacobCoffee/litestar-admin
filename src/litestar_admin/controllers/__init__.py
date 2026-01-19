@@ -53,6 +53,13 @@ from litestar_admin.controllers.export import (
     BulkExportRequest,
     ExportController,
 )
+from litestar_admin.controllers.files import (
+    DeleteFileResponse,
+    FileInfoResponse,
+    FilesController,
+    UploadFileRequest,
+    UploadFileResponse,
+)
 from litestar_admin.controllers.models import (
     DeleteResponse,
     ListRecordsResponse,
@@ -60,6 +67,12 @@ from litestar_admin.controllers.models import (
     ModelsController,
 )
 from litestar_admin.controllers.oauth import OAuthController
+from litestar_admin.controllers.relationships import (
+    RelationshipOption,
+    RelationshipsController,
+    RelationshipSearchRequest,
+    RelationshipSearchResponse,
+)
 from litestar_admin.controllers.settings import (
     BulkSettingsRequest,
     CreateSettingRequest,
@@ -90,10 +103,12 @@ __all__ = [
     "DashboardController",
     "EmbedsController",
     "ExportController",
+    "FilesController",
     "LinksController",
     "ModelsController",
     "OAuthController",
     "PagesController",
+    "RelationshipsController",
     "SettingsController",
     "UserManagementController",
     # DTOs - Auth
@@ -128,6 +143,11 @@ __all__ = [
     "WidgetData",
     # DTOs - Export
     "BulkExportRequest",
+    # DTOs - Files
+    "DeleteFileResponse",
+    "FileInfoResponse",
+    "UploadFileRequest",
+    "UploadFileResponse",
     # DTOs - Config
     "ConfigResponse",
     "DevCredential",
@@ -135,6 +155,10 @@ __all__ = [
     "DeleteResponse",
     "ListRecordsResponse",
     "ModelInfo",
+    # DTOs - Relationships
+    "RelationshipOption",
+    "RelationshipSearchRequest",
+    "RelationshipSearchResponse",
     # DTOs - User Management
     "ActivateDeactivateResponse",
     "UserCreateRequest",
