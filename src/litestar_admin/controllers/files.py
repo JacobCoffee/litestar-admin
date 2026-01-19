@@ -37,6 +37,7 @@ __all__ = [
     "DeleteFileResponse",
     "FileInfoResponse",
     "FilesController",
+    "ThumbnailResponse",
     "UploadFileRequest",
     "UploadFileResponse",
 ]
@@ -121,6 +122,30 @@ class ValidationErrorResponse:
 
     success: bool
     errors: list[dict[str, str]]
+
+
+@dataclass
+class ThumbnailResponse:
+    """Response with thumbnail information.
+
+    Attributes:
+        success: Whether thumbnail generation was successful.
+        thumbnail_path: The storage path of the thumbnail.
+        thumbnail_url: The public URL to access the thumbnail.
+        width: Actual width of the generated thumbnail.
+        height: Actual height of the generated thumbnail.
+        format: The output format (webp, jpeg, png).
+        size_bytes: Size of the thumbnail in bytes.
+    """
+
+    success: bool
+    thumbnail_path: str | None = None
+    thumbnail_url: str | None = None
+    width: int | None = None
+    height: int | None = None
+    format: str | None = None
+    size_bytes: int | None = None
+    error: str | None = None
 
 
 class FilesController(Controller):
@@ -454,6 +479,231 @@ class FilesController(Controller):
             path=file_path,
             public_url=public_url,
         )
+
+    @staticmethod
+    def _validate_thumbnail_params(
+        file_path: str,
+        size: str,
+        format: str | None,  # noqa: A002
+        quality: int | None,
+    ) -> ThumbnailResponse | tuple[int, int]:
+        """Validate thumbnail request parameters.
+
+        Returns either a ThumbnailResponse with error or parsed size tuple.
+        """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
+
+        # Validate that it's an image
+        if not ThumbnailGenerator.is_supported_image(file_path):
+            return ThumbnailResponse(
+                success=False,
+                error=f"Not a supported image format: {file_path}",
+            )
+
+        # Parse size string
+        parsed_size = ThumbnailGenerator.parse_size_string(size)
+        if parsed_size is None:
+            return ThumbnailResponse(
+                success=False,
+                error=f"Invalid size format: {size}. Expected format: WIDTHxHEIGHT (e.g., 200x200)",
+            )
+
+        # Validate quality if provided
+        if quality is not None and not 1 <= quality <= 100:  # noqa: PLR2004
+            return ThumbnailResponse(
+                success=False,
+                error="Quality must be between 1 and 100",
+            )
+
+        # Validate format if provided
+        if format is not None:
+            allowed_formats = {"jpeg", "jpg", "png", "webp"}
+            if format.lower() not in allowed_formats:
+                return ThumbnailResponse(
+                    success=False,
+                    error=f"Invalid format: {format}. Allowed: {', '.join(sorted(allowed_formats))}",
+                )
+
+        return parsed_size
+
+    @get(
+        "/thumbnail/{file_path:path}",
+        status_code=HTTP_200_OK,
+        summary="Get or generate thumbnail",
+        description="Get an existing thumbnail or generate one on-the-fly for an image.",
+    )
+    async def get_thumbnail(
+        self,
+        file_path: str,
+        admin_storage: AdminStorageBackend,
+        size: str = "200x200",
+        format: str | None = None,  # noqa: A002
+        quality: int | None = None,
+        download: bool = False,  # noqa: FBT001, FBT002
+    ) -> Response[bytes] | ThumbnailResponse:
+        """Get or generate a thumbnail for an image.
+
+        This endpoint returns a thumbnail for the specified image. If a thumbnail
+        at the requested size already exists, it is returned. Otherwise, a new
+        thumbnail is generated and stored for future requests.
+
+        Args:
+            file_path: The storage path of the source image.
+            admin_storage: The storage backend for file operations.
+            size: Thumbnail size in format 'WIDTHxHEIGHT' (e.g., '200x200').
+            format: Output format (webp, jpeg, png). Defaults to configured format.
+            quality: Quality for JPEG/WebP (1-100). Defaults to configured quality.
+            download: If True, force download with Content-Disposition header.
+
+        Returns:
+            The thumbnail image bytes or error response.
+
+        Raises:
+            NotFoundException: If the source file does not exist.
+
+        Example:
+            GET /admin/api/files/thumbnail/uploads/user/avatar/photo.jpg?size=150x150&format=webp
+        """
+        # Check if source file exists
+        if not await admin_storage.exists(file_path):
+            raise NotFoundException(f"File not found: {file_path}")
+
+        # Validate parameters
+        validation_result = self._validate_thumbnail_params(file_path, size, format, quality)
+        if isinstance(validation_result, ThumbnailResponse):
+            return validation_result
+        parsed_size = validation_result
+
+        try:
+            # Get or generate thumbnail
+            thumbnail_content, thumbnail_path = await admin_storage.get_or_generate_thumbnail(
+                path=file_path,
+                size=parsed_size,
+                format=format,
+                quality=quality,
+            )
+
+            # Get content type for the thumbnail
+            content_type = _get_thumbnail_content_type(format or admin_storage.config.thumbnails.format)
+
+            # Build response headers
+            headers = {}
+            if download:
+                filename = thumbnail_path.rsplit("/", 1)[-1] if "/" in thumbnail_path else thumbnail_path
+                headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+            return Response(
+                content=thumbnail_content,
+                media_type=content_type,
+                headers=headers,
+            )
+
+        except FileNotFoundError:
+            raise NotFoundException(f"File not found: {file_path}") from None
+        except ValueError as e:
+            return ThumbnailResponse(
+                success=False,
+                error=str(e),
+            )
+
+    @get(
+        "/thumbnail/info/{file_path:path}",
+        status_code=HTTP_200_OK,
+        summary="Get thumbnail info",
+        description="Get information about a thumbnail without downloading it.",
+    )
+    async def get_thumbnail_info(
+        self,
+        file_path: str,
+        admin_storage: AdminStorageBackend,
+        size: str = "200x200",
+        format: str | None = None,  # noqa: A002
+    ) -> ThumbnailResponse:
+        """Get information about a thumbnail.
+
+        This endpoint checks if a thumbnail exists and returns its metadata
+        without generating or downloading it.
+
+        Args:
+            file_path: The storage path of the source image.
+            admin_storage: The storage backend for file operations.
+            size: Thumbnail size in format 'WIDTHxHEIGHT' (e.g., '200x200').
+            format: Output format (webp, jpeg, png).
+
+        Returns:
+            ThumbnailResponse with thumbnail existence and URL.
+        """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
+
+        # Check if source file exists
+        if not await admin_storage.exists(file_path):
+            return ThumbnailResponse(
+                success=False,
+                error=f"Source file not found: {file_path}",
+            )
+
+        # Validate that it's an image
+        if not ThumbnailGenerator.is_supported_image(file_path):
+            return ThumbnailResponse(
+                success=False,
+                error=f"Not a supported image format: {file_path}",
+            )
+
+        # Parse size string
+        parsed_size = ThumbnailGenerator.parse_size_string(size)
+        if parsed_size is None:
+            return ThumbnailResponse(
+                success=False,
+                error=f"Invalid size format: {size}. Expected format: WIDTHxHEIGHT (e.g., 200x200)",
+            )
+
+        output_format = format or admin_storage.config.thumbnails.format
+
+        generator = ThumbnailGenerator(default_format=output_format)
+        thumb_path = generator.get_thumbnail_path(file_path, parsed_size, output_format)
+
+        # Check if thumbnail exists
+        exists = await admin_storage.exists(thumb_path)
+
+        if exists:
+            thumbnail_url = admin_storage.get_public_url(thumb_path)
+            return ThumbnailResponse(
+                success=True,
+                thumbnail_path=thumb_path,
+                thumbnail_url=thumbnail_url,
+                width=parsed_size[0],
+                height=parsed_size[1],
+                format=output_format,
+            )
+
+        return ThumbnailResponse(
+            success=True,
+            thumbnail_path=None,
+            thumbnail_url=None,
+            width=parsed_size[0],
+            height=parsed_size[1],
+            format=output_format,
+            error="Thumbnail does not exist yet. Use GET /thumbnail/{path} to generate it.",
+        )
+
+
+def _get_thumbnail_content_type(output_format: str) -> str:
+    """Get the MIME content type for a thumbnail format.
+
+    Args:
+        output_format: The thumbnail output format (webp, jpeg, png).
+
+    Returns:
+        The MIME content type string.
+    """
+    format_lower = output_format.lower()
+    if format_lower in ("jpg", "jpeg"):
+        return "image/jpeg"
+    if format_lower == "png":
+        return "image/png"
+    if format_lower == "webp":
+        return "image/webp"
+    return "image/jpeg"
 
 
 def _get_content_type(filename: str) -> str:

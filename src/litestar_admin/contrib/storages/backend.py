@@ -29,17 +29,40 @@ Example:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from litestar_admin.contrib.storages.config import StorageBackendType, StorageConfig
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Sequence
+
+    from litestar_admin.contrib.storages.thumbnails import ThumbnailSize
 
 __all__ = [
     "AdminStorageBackend",
     "StorageBackendProtocol",
+    "UploadResult",
 ]
+
+
+@dataclass
+class UploadResult:
+    """Result of a file upload operation.
+
+    Attributes:
+        storage_path: The path where the main file was stored.
+        public_url: The public URL to access the file.
+        thumbnail_path: Path to the generated thumbnail (if applicable).
+        thumbnail_url: URL to access the thumbnail (if applicable).
+        additional_thumbnails: Dictionary of additional thumbnail paths by size suffix.
+    """
+
+    storage_path: str
+    public_url: str
+    thumbnail_path: str | None = None
+    thumbnail_url: str | None = None
+    additional_thumbnails: dict[str, str] | None = None
 
 
 @runtime_checkable
@@ -326,8 +349,8 @@ class AdminStorageBackend:
             ValueError: If validation fails.
             ImportError: If litestar-storages or PIL is not installed.
         """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
         from litestar_admin.contrib.storages.utils import (
-            generate_thumbnail,
             get_file_extension,
             is_image_extension,
         )
@@ -346,16 +369,21 @@ class AdminStorageBackend:
         extension = get_file_extension(filename)
 
         if self.config.thumbnails.enabled and is_image_extension(extension):
-            # Generate thumbnail
-            thumbnail_content = generate_thumbnail(
-                file_content,
-                width=self.config.thumbnails.width,
-                height=self.config.thumbnails.height,
-                quality=self.config.thumbnails.quality,
-                format_=self.config.thumbnails.format,
+            # Use ThumbnailGenerator for consistent thumbnail generation
+            generator = ThumbnailGenerator(
+                default_quality=self.config.thumbnails.quality,
+                default_format=self.config.thumbnails.format,
             )
 
-            if thumbnail_content:
+            size = (self.config.thumbnails.width, self.config.thumbnails.height)
+            result = await generator.generate_async(
+                file_content,
+                size=size,
+                format=self.config.thumbnails.format,
+                quality=self.config.thumbnails.quality,
+            )
+
+            if result:
                 # Generate thumbnail filename
                 base_name = filename.rsplit(".", 1)[0]
                 thumb_suffix = self.config.thumbnails.suffix
@@ -363,7 +391,7 @@ class AdminStorageBackend:
                 thumb_filename = f"{base_name}{thumb_suffix}.{thumb_format}"
 
                 thumbnail_path = await self.upload(
-                    file_content=thumbnail_content,
+                    file_content=result.data,
                     filename=thumb_filename,
                     model_name=model_name,
                     field_name=f"{field_name}_thumbnail",
@@ -371,3 +399,249 @@ class AdminStorageBackend:
                 )
 
         return main_path, thumbnail_path
+
+    async def upload_with_thumbnails(
+        self,
+        file_content: bytes,
+        filename: str,
+        model_name: str,
+        field_name: str,
+        sizes: Sequence[ThumbnailSize],
+        *,
+        validate: bool = True,
+        format: str | None = None,  # noqa: A002
+        quality: int | None = None,
+    ) -> UploadResult:
+        """Upload an image file with multiple thumbnail sizes.
+
+        Args:
+            file_content: The file content as bytes.
+            filename: The original filename.
+            model_name: The name of the model this file belongs to.
+            field_name: The name of the field this file belongs to.
+            sizes: Sequence of ThumbnailSize configurations.
+            validate: Whether to validate the file before uploading.
+            format: Output format for thumbnails (webp, jpeg, png).
+            quality: Quality for JPEG/WebP thumbnails (1-100).
+
+        Returns:
+            UploadResult with main file path and all thumbnail paths.
+
+        Raises:
+            ValueError: If validation fails.
+            ImportError: If litestar-storages or PIL is not installed.
+
+        Example:
+            >>> from litestar_admin.contrib.storages.thumbnails import ThumbnailSize
+            >>> sizes = [
+            ...     ThumbnailSize(100, 100, "_small"),
+            ...     ThumbnailSize(300, 300, "_medium"),
+            ...     ThumbnailSize(600, 600, "_large"),
+            ... ]
+            >>> result = await storage.upload_with_thumbnails(
+            ...     content, "photo.jpg", "product", "image", sizes
+            ... )
+        """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
+        from litestar_admin.contrib.storages.utils import (
+            get_file_extension,
+            is_image_extension,
+        )
+
+        # Upload the main file
+        main_path = await self.upload(
+            file_content=file_content,
+            filename=filename,
+            model_name=model_name,
+            field_name=field_name,
+            validate=validate,
+        )
+
+        public_url = self.get_public_url(main_path)
+        extension = get_file_extension(filename)
+
+        # Initialize result
+        result = UploadResult(
+            storage_path=main_path,
+            public_url=public_url,
+        )
+
+        # Generate thumbnails if this is an image
+        if not is_image_extension(extension) or not sizes:
+            return result
+
+        # Use configured or provided format/quality
+        output_format = format or self.config.thumbnails.format
+        output_quality = quality if quality is not None else self.config.thumbnails.quality
+
+        generator = ThumbnailGenerator(
+            default_quality=output_quality,
+            default_format=output_format,
+        )
+
+        # Generate all thumbnails
+        thumbnails = await generator.generate_multiple_async(
+            file_content,
+            sizes=sizes,
+            format=output_format,
+            quality=output_quality,
+        )
+
+        # Upload thumbnails and collect paths
+        additional_thumbnails: dict[str, str] = {}
+        first_thumbnail_path: str | None = None
+        first_thumbnail_url: str | None = None
+
+        for suffix, thumb_result in thumbnails.items():
+            # Generate thumbnail filename
+            base_name = filename.rsplit(".", 1)[0]
+            thumb_filename = f"{base_name}{suffix}.{output_format}"
+
+            thumb_path = await self.upload(
+                file_content=thumb_result.data,
+                filename=thumb_filename,
+                model_name=model_name,
+                field_name=f"{field_name}_thumb{suffix}",
+                validate=False,
+            )
+
+            additional_thumbnails[suffix] = thumb_path
+
+            # Track the first thumbnail as the default
+            if first_thumbnail_path is None:
+                first_thumbnail_path = thumb_path
+                first_thumbnail_url = self.get_public_url(thumb_path)
+
+        # Update result with thumbnail info
+        result.thumbnail_path = first_thumbnail_path
+        result.thumbnail_url = first_thumbnail_url
+        result.additional_thumbnails = additional_thumbnails if additional_thumbnails else None
+
+        return result
+
+    async def generate_thumbnail(
+        self,
+        path: str,
+        size: tuple[int, int],
+        format: str | None = None,  # noqa: A002
+        quality: int | None = None,
+        *,
+        store: bool = True,
+    ) -> tuple[bytes, str | None]:
+        """Generate a thumbnail for an existing stored image.
+
+        This method reads an existing image from storage and generates
+        a thumbnail at the specified size.
+
+        Args:
+            path: The storage path of the source image.
+            size: The (width, height) for the thumbnail.
+            format: Output format (webp, jpeg, png).
+            quality: Quality for JPEG/WebP (1-100).
+            store: Whether to store the thumbnail alongside the original.
+
+        Returns:
+            Tuple of (thumbnail_bytes, thumbnail_path). thumbnail_path is None
+            if store=False or if storage fails.
+
+        Raises:
+            FileNotFoundError: If the source file does not exist.
+            ValueError: If the file is not a supported image format.
+        """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
+
+        # Check if file exists
+        if not await self.exists(path):
+            msg = f"File not found: {path}"
+            raise FileNotFoundError(msg)
+
+        # Check if it's an image
+        if not ThumbnailGenerator.is_supported_image(path):
+            msg = f"Not a supported image format: {path}"
+            raise ValueError(msg)
+
+        # Read the image
+        image_data = await self.read(path)
+
+        # Use configured or provided format/quality
+        output_format = format or self.config.thumbnails.format
+        output_quality = quality if quality is not None else self.config.thumbnails.quality
+
+        generator = ThumbnailGenerator(
+            default_quality=output_quality,
+            default_format=output_format,
+        )
+
+        # Generate thumbnail
+        result = await generator.generate_async(
+            image_data,
+            size=size,
+            format=output_format,
+            quality=output_quality,
+        )
+
+        if result is None:
+            msg = "Failed to generate thumbnail"
+            raise ValueError(msg)
+
+        thumbnail_path: str | None = None
+
+        if store:
+            # Generate thumbnail path
+            thumb_path = generator.get_thumbnail_path(path, size, output_format)
+
+            # Store the thumbnail
+            backend = self._get_backend()
+            await backend.write(thumb_path, result.data)
+            thumbnail_path = thumb_path
+
+        return result.data, thumbnail_path
+
+    async def get_or_generate_thumbnail(
+        self,
+        path: str,
+        size: tuple[int, int],
+        format: str | None = None,  # noqa: A002
+        quality: int | None = None,
+    ) -> tuple[bytes, str]:
+        """Get an existing thumbnail or generate one if it doesn't exist.
+
+        This method first checks if a thumbnail already exists at the expected
+        path. If not, it generates and stores one.
+
+        Args:
+            path: The storage path of the source image.
+            size: The (width, height) for the thumbnail.
+            format: Output format (webp, jpeg, png).
+            quality: Quality for JPEG/WebP (1-100).
+
+        Returns:
+            Tuple of (thumbnail_bytes, thumbnail_path).
+
+        Raises:
+            FileNotFoundError: If the source file does not exist.
+            ValueError: If the file is not a supported image format.
+        """
+        from litestar_admin.contrib.storages.thumbnails import ThumbnailGenerator
+
+        output_format = format or self.config.thumbnails.format
+
+        generator = ThumbnailGenerator(
+            default_quality=quality or self.config.thumbnails.quality,
+            default_format=output_format,
+        )
+
+        # Check if thumbnail already exists
+        thumb_path = generator.get_thumbnail_path(path, size, output_format)
+
+        if await self.exists(thumb_path):
+            # Return existing thumbnail
+            content = await self.read(thumb_path)
+            return content, thumb_path
+
+        # Generate new thumbnail
+        content, stored_path = await self.generate_thumbnail(
+            path, size, format, quality, store=True
+        )
+
+        return content, stored_path or thumb_path

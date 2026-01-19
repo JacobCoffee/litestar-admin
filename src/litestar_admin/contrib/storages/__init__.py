@@ -70,6 +70,7 @@ from __future__ import annotations
 from litestar_admin.contrib.storages.backend import (
     AdminStorageBackend,
     StorageBackendProtocol,
+    UploadResult,
 )
 from litestar_admin.contrib.storages.config import (
     DEFAULT_ALLOWED_EXTENSIONS,
@@ -77,6 +78,11 @@ from litestar_admin.contrib.storages.config import (
     StorageBackendType,
     StorageConfig,
     ThumbnailConfig,
+)
+from litestar_admin.contrib.storages.thumbnails import (
+    ThumbnailGenerator,
+    ThumbnailResult,
+    ThumbnailSize,
 )
 from litestar_admin.contrib.storages.utils import (
     generate_thumbnail,
@@ -93,12 +99,17 @@ __all__ = [
     # Backend
     "AdminStorageBackend",
     "StorageBackendProtocol",
+    "UploadResult",
     # Config
     "DEFAULT_ALLOWED_EXTENSIONS",
     "DEFAULT_MAX_FILE_SIZE",
     "StorageBackendType",
     "StorageConfig",
     "ThumbnailConfig",
+    # Thumbnails
+    "ThumbnailGenerator",
+    "ThumbnailResult",
+    "ThumbnailSize",
     # Utils
     "generate_thumbnail",
     "get_content_hash",

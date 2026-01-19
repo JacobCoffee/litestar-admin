@@ -57,6 +57,7 @@ auth = [
 ]
 storage = [
     "litestar-storages>=0.1.0",
+    "pillow>=10.0.0",
 ]
 all = [
     "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth,storage]",

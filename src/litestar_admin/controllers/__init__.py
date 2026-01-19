@@ -57,6 +57,7 @@ from litestar_admin.controllers.files import (
     DeleteFileResponse,
     FileInfoResponse,
     FilesController,
+    ThumbnailResponse,
     UploadFileRequest,
     UploadFileResponse,
 )
@@ -146,6 +147,7 @@ __all__ = [
     # DTOs - Files
     "DeleteFileResponse",
     "FileInfoResponse",
+    "ThumbnailResponse",
     "UploadFileRequest",
     "UploadFileResponse",
     # DTOs - Config
