@@ -6,7 +6,7 @@
     "created": "2026-01-18",
     "updated": "2026-01-19",
     "author": "Jacob Coffee",
-    "status": "in_progress"
+    "status": "completed"
   },
   "summary": {
     "title": "litestar-admin: Modern Admin Panel for Litestar",
@@ -805,14 +805,14 @@
       "id": "6",
       "name": "Examples",
       "description": "Example applications demonstrating features",
-      "status": "pending",
+      "status": "completed",
       "dependencies": ["5"],
       "tasks": [
         {
           "id": "6.1.1",
           "title": "Create example applications",
           "description": "Create 1 minimal example app, example app in other frameworks, example app in raw asgi, and 1 full app example in litestar with all the bells and whistles and extras",
-          "status": "pending",
+          "status": "completed",
           "priority": "high",
           "agent_type": "developer",
           "estimated_hours": 8,
