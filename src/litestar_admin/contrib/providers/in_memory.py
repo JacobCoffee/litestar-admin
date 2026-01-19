@@ -111,8 +111,15 @@ class InMemoryView(CustomView):
 
         # Apply filters
         if filters:
-            for field, value in filters.items():
-                items = [item for item in items if item.get(field) == value]
+            for field, filter_config in filters.items():
+                # Handle both simple values and operator-based filters
+                if isinstance(filter_config, dict) and "operator" in filter_config:
+                    operator = filter_config.get("operator", "equals")
+                    filter_value = filter_config.get("value")
+                    items = self._apply_filter_operator(items, field, operator, filter_value)
+                else:
+                    # Simple equality filter
+                    items = [item for item in items if item.get(field) == filter_config]
 
         # Sort items
         if sort_by:
@@ -241,6 +248,80 @@ class InMemoryView(CustomView):
         await self.on_after_delete(item_id)
 
         return True
+
+    @staticmethod
+    def _apply_filter_operator(
+        items: list[dict[str, Any]],
+        field: str,
+        operator: str,
+        value: Any,
+    ) -> list[dict[str, Any]]:
+        """Apply a filter operator to a list of items.
+
+        Args:
+            items: List of items to filter.
+            field: Field name to filter on.
+            operator: Filter operator (equals, contains, startsWith, endsWith, gt, gte, lt, lte).
+            value: Value to compare against.
+
+        Returns:
+            Filtered list of items.
+        """
+        if value is None:
+            return items
+
+        result = []
+        for item in items:
+            item_value = item.get(field)
+            if item_value is None:
+                continue
+
+            match = False
+            str_item_value = str(item_value).lower()
+            str_value = str(value).lower()
+
+            if operator == "equals":
+                match = str(item_value) == str(value)
+            elif operator == "contains":
+                match = str_value in str_item_value
+            elif operator == "startsWith":
+                match = str_item_value.startswith(str_value)
+            elif operator == "endsWith":
+                match = str_item_value.endswith(str_value)
+            elif operator in ("gt", "greaterThan"):
+                try:
+                    match = float(item_value) > float(value)
+                except (ValueError, TypeError):
+                    match = str_item_value > str_value
+            elif operator in ("gte", "greaterThanOrEqual"):
+                try:
+                    match = float(item_value) >= float(value)
+                except (ValueError, TypeError):
+                    match = str_item_value >= str_value
+            elif operator in ("lt", "lessThan"):
+                try:
+                    match = float(item_value) < float(value)
+                except (ValueError, TypeError):
+                    match = str_item_value < str_value
+            elif operator in ("lte", "lessThanOrEqual"):
+                try:
+                    match = float(item_value) <= float(value)
+                except (ValueError, TypeError):
+                    match = str_item_value <= str_value
+            elif operator == "notEquals":
+                match = str(item_value) != str(value)
+            elif operator == "isEmpty":
+                match = not item_value or item_value == ""
+            elif operator == "isNotEmpty":
+                match = bool(item_value) and item_value != ""
+            else:
+                # Default to equality
+                match = str(item_value) == str(value)
+
+            if match:
+                result.append(item)
+
+        return result
 
     @classmethod
     def clear_data(cls) -> None:

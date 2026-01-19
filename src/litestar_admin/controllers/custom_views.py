@@ -415,11 +415,14 @@ class CustomViewsController(Controller):
         view_identity: str,
         request: Request[Any, Any, Any],
         admin_registry: ViewRegistry,
-        page: int = 1,
-        page_size: int = 25,
+        page: int | None = None,
+        page_size: int | None = None,
+        offset: int | None = None,
+        limit: int | None = None,
         sort_by: str | None = None,
         sort_order: Literal["asc", "desc"] = "asc",
         search: str | None = None,
+        filters: str | None = None,
     ) -> CustomViewListResponse:
         """List items for a specific custom view with pagination and filtering.
 
@@ -427,11 +430,14 @@ class CustomViewsController(Controller):
             view_identity: The identity of the registered custom view.
             request: The current request.
             admin_registry: The view registry.
-            page: Page number (1-indexed).
-            page_size: Number of items per page (max 100).
+            page: Page number (1-indexed). Alternative to offset.
+            page_size: Number of items per page (max 100). Alternative to limit.
+            offset: Number of items to skip. Alternative to page.
+            limit: Maximum items to return. Alternative to page_size.
             sort_by: Field name to sort by.
             sort_order: Sort order ("asc" or "desc").
             search: Search string for searchable columns.
+            filters: JSON-encoded filter conditions.
 
         Returns:
             Paginated response with items and total count.
@@ -440,21 +446,38 @@ class CustomViewsController(Controller):
             NotFoundException: If the view is not registered.
             PermissionDeniedException: If the user cannot access the view.
         """
+        import json
+
         view_class = _get_custom_view(admin_registry, view_identity)
 
         # Check access
         if not await view_class.is_accessible(request):
             raise PermissionDeniedException(f"Access denied to view '{view_identity}'")
 
-        # Validate and cap parameters
-        page = max(1, page)
-        page_size = min(max(1, page_size), 100)
+        # Handle both page/page_size and offset/limit
+        effective_limit = limit or page_size or 25
+        effective_limit = min(max(1, effective_limit), 100)
+
+        if offset is not None:
+            effective_page = (offset // effective_limit) + 1
+        else:
+            effective_page = page or 1
+        effective_page = max(1, effective_page)
+
+        # Parse filters if provided
+        filters_dict: dict[str, Any] | None = None
+        if filters:
+            try:
+                filters_dict = json.loads(filters)
+            except json.JSONDecodeError:
+                filters_dict = None
 
         # Instantiate view and fetch data
         view_instance = view_class()
         result: ListResult = await view_instance.get_list(
-            page=page,
-            page_size=page_size,
+            page=effective_page,
+            page_size=effective_limit,
+            filters=filters_dict,
             sort_by=sort_by,
             sort_order=sort_order,
             search=search,
