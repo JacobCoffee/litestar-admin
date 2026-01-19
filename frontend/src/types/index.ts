@@ -802,12 +802,13 @@ export interface FileFieldConfig {
  */
 export interface FileUploadResponse {
   readonly success: boolean;
-  readonly file_id: string;
-  readonly filename: string;
-  readonly url: string;
+  readonly storage_path: string;
+  readonly original_filename: string;
+  readonly file_size: number;
+  readonly content_type?: string;
+  readonly public_url?: string;
+  readonly thumbnail_path?: string;
   readonly thumbnail_url?: string;
-  readonly size: number;
-  readonly content_type: string;
 }
 
 /**

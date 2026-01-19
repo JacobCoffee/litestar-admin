@@ -1092,19 +1092,25 @@ export class AdminApiClient {
       modelName?: string | undefined;
       fieldName?: string | undefined;
       onProgress?: ((progress: number) => void) | undefined;
+      generateThumbnail?: boolean | undefined;
     },
   ): Promise<FileUploadResponse> {
-    const { modelName = "unknown", fieldName = "file", onProgress } = options ?? {};
+    const { modelName = "unknown", fieldName = "file", onProgress, generateThumbnail } = options ?? {};
 
     const formData = new FormData();
     formData.append("data", file);
 
     const accessToken = this.tokenStorage.getAccessToken();
 
+    // Auto-detect if thumbnail should be generated for image files
+    const isImage = file.type.startsWith("image/");
+    const shouldGenerateThumbnail = generateThumbnail ?? isImage;
+
     // Build URL with query parameters for Litestar
     const queryParams = new URLSearchParams({
       model_name: modelName,
       field_name: fieldName,
+      generate_thumbnail: shouldGenerateThumbnail ? "true" : "false",
     });
 
     return new Promise((resolve, reject) => {
@@ -1167,9 +1173,10 @@ export class AdminApiClient {
       modelName?: string | undefined;
       fieldName?: string | undefined;
       onProgress?: ((progress: number) => void) | undefined;
+      generateThumbnail?: boolean | undefined;
     },
   ): Promise<FileUploadResponse[]> {
-    const { modelName, fieldName, onProgress } = options ?? {};
+    const { modelName, fieldName, onProgress, generateThumbnail } = options ?? {};
     const results: FileUploadResponse[] = [];
     const totalFiles = files.length;
     let completedCount = 0;
@@ -1178,6 +1185,7 @@ export class AdminApiClient {
       const result = await this.uploadFile(file, {
         modelName,
         fieldName,
+        generateThumbnail,
         onProgress: (fileProgress) => {
           if (onProgress) {
             const overallProgress = Math.round(
@@ -1383,9 +1391,9 @@ export const api = {
   deactivateUser: (userId: string) => apiClient.deactivateUser(userId),
 
   // File Upload
-  uploadFile: (file: File, options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined }) =>
+  uploadFile: (file: File, options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined; generateThumbnail?: boolean | undefined }) =>
     apiClient.uploadFile(file, options),
-  uploadFiles: (files: File[], options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined }) =>
+  uploadFiles: (files: File[], options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined; generateThumbnail?: boolean | undefined }) =>
     apiClient.uploadFiles(files, options),
   deleteFile: (fileId: string) => apiClient.deleteFile(fileId),
   getFileUrl: (fileId: string) => apiClient.getFileUrl(fileId),

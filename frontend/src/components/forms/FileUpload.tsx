@@ -257,7 +257,10 @@ interface FileItemProps {
 }
 
 function FileItem({ file, onRemove, onPreview, disabled }: FileItemProps) {
-  const isImage = file.type.startsWith("image/");
+  // Check if file is an image by type, extension, or thumbnail presence
+  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico", ".bmp"];
+  const ext = file.name.toLowerCase().substring(file.name.lastIndexOf("."));
+  const isImage = file.type.startsWith("image/") || imageExtensions.includes(ext) || !!file.thumbnailUrl;
   const statusColors: Record<FileUploadStatus, string> = {
     idle: "text-[var(--color-muted)]",
     uploading: "text-[var(--color-accent)]",
@@ -328,7 +331,9 @@ function FileItem({ file, onRemove, onPreview, disabled }: FileItemProps) {
           )}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-[var(--color-muted)]">{formatFileSize(file.size)}</span>
+          {file.size > 0 && (
+            <span className="text-xs text-[var(--color-muted)]">{formatFileSize(file.size)}</span>
+          )}
           {file.status === "uploading" && (
             <span className={cn("text-xs", statusColors[file.status])}>{file.progress}%</span>
           )}
@@ -502,7 +507,7 @@ export function FileUpload({
                   size: f.size,
                   progress: 100,
                   status: "success",
-                  url: response.url,
+                  url: response.public_url || response.storage_path,
                   ...(response.thumbnail_url ? { thumbnailUrl: response.thumbnail_url } : {}),
                 };
                 return successUpdate;

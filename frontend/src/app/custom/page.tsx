@@ -5,6 +5,7 @@ import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { CustomViewListPage } from "@/components/pages/CustomViewListPage";
 import { CustomViewDetailPage } from "@/components/pages/CustomViewDetailPage";
+import { CustomViewCreatePage } from "@/components/pages/CustomViewCreatePage";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -55,8 +56,13 @@ function CustomViewsContent() {
   const view = pathParams.view ?? searchParams.get("view");
   const id = pathParams.id ?? searchParams.get("id");
 
+  // If creating a new item, show the create page
+  if (view && id === "new") {
+    return <CustomViewCreatePage identity={view} />;
+  }
+
   // If a specific item is selected, show the detail page
-  if (view && id && id !== "new") {
+  if (view && id) {
     return <CustomViewDetailPage identity={view} itemId={id} />;
   }
 

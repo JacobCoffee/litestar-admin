@@ -4,14 +4,14 @@
     "project": "litestar-admin",
     "version": "0.2.0",
     "created_at": "2026-01-18T00:00:00Z",
-    "updated_at": "2026-01-19T07:33:42.178166Z",
+    "updated_at": "2026-01-19T19:09:28.787908Z",
     "business_plan_path": "./.claude/docs/COMPETITIVE_ANALYSIS.md"
   },
   "summary": {
-    "total_phases": 15,
-    "total_tasks": 156,
-    "completed_tasks": 90,
-    "overall_progress": 57.69
+    "total_phases": 16,
+    "total_tasks": 157,
+    "completed_tasks": 91,
+    "overall_progress": 57.961783439490446
   },
   "phases": [
     {
@@ -935,9 +935,9 @@
       "description": "QOL improvements and competitive parity - Column visibility, search highlighting, keyboard shortcuts",
       "status": "in_progress",
       "progress": {
-        "completed": 9,
+        "completed": 10,
         "total": 18,
-        "percentage": 50.0
+        "percentage": 55.55555555555556
       },
       "tasks": [
         {
@@ -985,22 +985,26 @@
         {
           "id": "9.3.2",
           "title": "Add keyboard navigation for tables",
-          "status": "pending",
+          "status": "completed",
           "agent_type": "ui-engineer",
           "depends_on": [
             "9.3.1"
           ],
-          "tracking": {}
+          "tracking": {
+            "completed_at": "2026-01-19T19:08:15.319469Z"
+          }
         },
         {
           "id": "9.3.3",
           "title": "Create keyboard shortcuts help modal",
-          "status": "pending",
+          "status": "in_progress",
           "agent_type": "ui-engineer",
           "depends_on": [
             "9.3.1"
           ],
-          "tracking": {}
+          "tracking": {
+            "started_at": "2026-01-19T19:09:28.787693Z"
+          }
         },
         {
           "id": "9.4.1",
@@ -1711,6 +1715,28 @@
         "percentage": 0
       },
       "tasks": []
+    },
+    {
+      "id": "ideas",
+      "name": "Ideas",
+      "description": "Tasks stored as future ideas or concepts",
+      "status": "pending",
+      "progress": {
+        "completed": 0,
+        "total": 1,
+        "percentage": 0.0
+      },
+      "tasks": [
+        {
+          "id": "ideas.1.1",
+          "title": "docs need a 'styleguide' type thing to show each and every form and feature and wjat they look like",
+          "status": "pending",
+          "agent_type": null,
+          "skill": null,
+          "depends_on": [],
+          "tracking": {}
+        }
+      ]
     },
     {
       "id": "deferred",

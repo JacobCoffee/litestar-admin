@@ -1125,10 +1125,19 @@ async def health() -> dict[str, Any]:
     }
 
 
+# Create static files router for uploads
+from litestar.static_files import create_static_files_router
+
+uploads_router = create_static_files_router(
+    path="/uploads",
+    directories=[UPLOAD_BASE_PATH],
+    name="uploads_static",
+)
+
 # Create the application
 # litestar-admin's get_logger() automatically uses structlog when available
 app = Litestar(
-    route_handlers=[index, health],
+    route_handlers=[index, health, uploads_router],
     plugins=[admin_plugin, sqlalchemy_plugin],
     on_startup=[startup_handler],
     on_shutdown=[shutdown_handler],

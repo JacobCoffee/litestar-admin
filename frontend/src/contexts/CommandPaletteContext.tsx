@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { CommandPalette, type CommandItem } from "@/components/ui/CommandPalette";
+import { KeyboardShortcutsModal } from "@/components/ui/KeyboardShortcutsModal";
 import { useShortcut, type KeyModifier } from "@/hooks/useKeyboardShortcuts";
 import {
   HomeIcon,
@@ -23,6 +24,7 @@ import {
   FileTextIcon,
   LayoutIcon,
   ExternalLinkIcon,
+  KeyboardIcon,
 } from "@/lib/icons";
 import { useModels, useActions, usePages, useEmbeds, useLinks, useCustomViews } from "@/hooks";
 
@@ -113,6 +115,7 @@ function formatShortcutDisplay(key: string, modifiers: KeyModifier[]): string {
 export function CommandPaletteProvider({ children }: CommandPaletteProviderProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [customItems, setCustomItems] = useState<CommandItem[]>([]);
 
   // Fetch data for dynamic command items
@@ -139,6 +142,24 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       allowInInput: false,
     },
     [toggle],
+  );
+
+  // Register the ? shortcut for keyboard shortcuts help
+  const openShortcuts = useCallback(() => setIsShortcutsOpen(true), []);
+  const closeShortcuts = useCallback(() => setIsShortcutsOpen(false), []);
+
+  useShortcut(
+    {
+      id: "show-keyboard-shortcuts",
+      label: "Show Keyboard Shortcuts",
+      key: "/",
+      modifiers: ["shift"],
+      handler: openShortcuts,
+      allowInInput: false,
+      description: "Display all available keyboard shortcuts",
+      category: "General",
+    },
+    [openShortcuts],
   );
 
   // Custom item registration
@@ -321,11 +342,22 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
       },
     });
 
+    // Add keyboard shortcuts command
+    items.push({
+      id: "show-shortcuts",
+      label: "Keyboard Shortcuts",
+      description: "View all available keyboard shortcuts",
+      category: "Quick Actions",
+      icon: <KeyboardIcon className="h-4 w-4" />,
+      shortcut: "?",
+      onSelect: openShortcuts,
+    });
+
     // Add custom items
     items.push(...customItems);
 
     return items;
-  }, [models, actions, pages, embeds, links, customViews, customItems, router]);
+  }, [models, actions, pages, embeds, links, customViews, customItems, router, openShortcuts]);
 
   const contextValue = useMemo<CommandPaletteContextValue>(
     () => ({
@@ -349,6 +381,7 @@ export function CommandPaletteProvider({ children }: CommandPaletteProviderProps
         placeholder="Type a command or search..."
         emptyMessage="No commands found. Try a different search."
       />
+      <KeyboardShortcutsModal isOpen={isShortcutsOpen} onClose={closeShortcuts} />
     </CommandPaletteContext.Provider>
   );
 }

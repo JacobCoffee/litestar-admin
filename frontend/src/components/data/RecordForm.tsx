@@ -137,6 +137,30 @@ function formatLabel(str: string): string {
 }
 
 /**
+ * Extracts the URL from a file field value (UploadedFile object or string).
+ */
+function extractFileUrl(value: unknown): string | null {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && "url" in value) {
+    return (value as { url?: string }).url ?? null;
+  }
+  return null;
+}
+
+/**
+ * Determines if a field is a file upload field.
+ */
+function isFileField(property: SchemaProperty): boolean {
+  return (
+    property.type === "file" ||
+    property.format === "file" ||
+    property.format === "image" ||
+    property.fileConfig !== undefined
+  );
+}
+
+/**
  * Coerces a value to the appropriate type based on schema.
  */
 function coerceValue(value: unknown, property: SchemaProperty): unknown {
@@ -144,6 +168,14 @@ function coerceValue(value: unknown, property: SchemaProperty): unknown {
 
   if (value === "" || value === undefined || value === null) {
     return property.default ?? null;
+  }
+
+  // Handle file fields - extract URL from UploadedFile object
+  if (isFileField(property)) {
+    if (Array.isArray(value)) {
+      return value.map(extractFileUrl).filter(Boolean);
+    }
+    return extractFileUrl(value);
   }
 
   switch (type) {
@@ -190,7 +222,7 @@ function validateForm(values: Record<string, unknown>, schema: ModelSchema): Val
 
   for (const [name, property] of Object.entries(schema.properties)) {
     const value = values[name];
-    const isRequired = schema.required.includes(name);
+    const isRequired = (schema.required ?? []).includes(name);
 
     // Skip read-only fields
     if (property.readOnly) continue;
@@ -288,18 +320,6 @@ function formatDisplayValue(value: unknown, property: SchemaProperty): string {
 // ============================================================================
 
 /**
- * Determines if a field is a file upload field.
- */
-function isFileField(property: SchemaProperty): boolean {
-  return (
-    property.type === "file" ||
-    property.format === "file" ||
-    property.format === "image" ||
-    property.fileConfig !== undefined
-  );
-}
-
-/**
  * Determines if a field is a relationship/FK field.
  */
 function isRelationshipField(property: SchemaProperty, fieldName: string): boolean {
@@ -393,12 +413,13 @@ function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: Fi
   // Handler for file field changes
   const handleFileChange = useCallback(
     (files: UploadedFile[]) => {
-      // Store the file URLs for form submission
+      // Store the full file objects to preserve metadata (size, type, etc.)
+      // The form will extract the URL when submitting
       const fileValue = files.length === 0
         ? null
         : files.length === 1
-          ? files[0]?.url ?? null
-          : files.map((f) => f.url).filter(Boolean);
+          ? files[0] ?? null
+          : files;
       onChange(name, fileValue);
     },
     [name, onChange],
@@ -429,6 +450,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: Fi
       if (Array.isArray(value)) {
         value.forEach((v, idx) => {
           if (typeof v === "string") {
+            // String URL from existing record - size unknown
             currentFiles.push({
               id: `existing-${idx}`,
               name: v.split("/").pop() || "file",
@@ -438,9 +460,13 @@ function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: Fi
               progress: 100,
               status: "success",
             });
+          } else if (typeof v === "object" && v !== null && "id" in v) {
+            // Full UploadedFile object - preserve all metadata
+            currentFiles.push(v as UploadedFile);
           }
         });
       } else if (typeof value === "string") {
+        // String URL from existing record - size unknown
         currentFiles.push({
           id: "existing-0",
           name: value.split("/").pop() || "file",
@@ -450,6 +476,9 @@ function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: Fi
           progress: 100,
           status: "success",
         });
+      } else if (typeof value === "object" && value !== null && "id" in value) {
+        // Full UploadedFile object - preserve all metadata
+        currentFiles.push(value as UploadedFile);
       }
     }
     return (
@@ -768,7 +797,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
   // Get ordered fields (required first, then alphabetical)
   const orderedFields = useMemo(() => {
     const entries = Object.entries(schema.properties);
-    const requiredSet = new Set(schema.required);
+    const requiredSet = new Set(schema.required ?? []);
 
     return entries.sort(([aName], [bName]) => {
       const aRequired = requiredSet.has(aName);
@@ -833,7 +862,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
           const fieldConfig: FieldConfig = {
             name,
             property,
-            required: schema.required.includes(name),
+            required: (schema.required ?? []).includes(name),
             value: formValues[name],
             error: errorValue,
             disabled: isSubmitting,

@@ -163,7 +163,7 @@ export function MainLayout({
       id: "users",
       label: "Users",
       href: "/users",
-      icon: DatabaseIcon,
+      icon: UsersIcon,
     });
 
     // Convert map to array with consistent ordering

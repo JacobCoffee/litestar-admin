@@ -62,6 +62,7 @@ class ColumnDefinition:
     visible: bool = True
     format: str | None = None
     render_template: str | None = None
+    enum: list[str] | None = None
 
     def __post_init__(self) -> None:
         """Set label from name if not provided."""
@@ -586,6 +587,8 @@ class CustomView(BaseAdminView):
             prop: dict[str, Any] = {"type": type_mapping.get(col.type, "string")}
             if col.type in format_mapping:
                 prop["format"] = format_mapping[col.type]
+            if col.enum:
+                prop["enum"] = col.enum
             properties[col.name] = prop
 
         return {

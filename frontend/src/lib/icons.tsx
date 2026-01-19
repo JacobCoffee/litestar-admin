@@ -206,6 +206,23 @@ export function SettingsIcon({ className }: IconProps) {
   return <CogIcon className={className} />;
 }
 
+export function KeyboardIcon({ className }: IconProps) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <rect x="2" y="4" width="20" height="16" rx="2" ry="2" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="6" y1="8" x2="6" y2="8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="10" y1="8" x2="10" y2="8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="14" y1="8" x2="14" y2="8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="18" y1="8" x2="18" y2="8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="6" y1="12" x2="6" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="10" y1="12" x2="10" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="14" y1="12" x2="14" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="18" y1="12" x2="18" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="7" y1="16" x2="17" y2="16" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function AdjustmentsIcon({ className }: IconProps) {
   return (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -772,7 +789,7 @@ export const iconMap: Record<string, IconComponent> = {
 /**
  * Default icon for SQL/ORM models
  */
-export const DEFAULT_MODEL_ICON = TableIcon;
+export const DEFAULT_MODEL_ICON = DatabaseIcon;
 
 /**
  * Default icon for custom views

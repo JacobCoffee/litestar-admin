@@ -534,8 +534,11 @@ class DocumentAdmin(ModelView, model=Document):
     column_sortable_list = ["id", "title", "file_size", "created_at", "updated_at"]
     column_default_sort = ("created_at", "desc")
 
-    # Form configuration - exclude auto-generated fields
-    form_excluded_columns = ["created_at", "updated_at"]
+    # Form configuration - exclude auto-generated and read-only fields
+    form_excluded_columns = ["created_at", "updated_at", "file_size", "mime_type", "original_filename"]
+
+    # uploaded_by_id is excluded from form - it's set automatically to current user
+    form_excluded_columns_on_create = ["uploaded_by_id"]
 
     # Permission controls
     can_create = True
@@ -671,7 +674,13 @@ class AppSettingsAdmin(InMemoryView):
     columns: ClassVar[list[ColumnDefinition]] = [
         ColumnDefinition(name="key", label="Setting Key", type="string", sortable=True, searchable=True),
         ColumnDefinition(name="value", label="Value", type="string", searchable=True),
-        ColumnDefinition(name="type", label="Type", type="string", filterable=True),
+        ColumnDefinition(
+            name="type",
+            label="Type",
+            type="string",
+            filterable=True,
+            enum=["string", "integer", "boolean", "list", "json"],
+        ),
         ColumnDefinition(name="description", label="Description", type="text"),
     ]
 

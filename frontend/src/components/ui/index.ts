@@ -59,3 +59,7 @@ export type {
 // HighlightedText
 export { HighlightedText } from "./HighlightedText";
 export type { HighlightedTextProps } from "./HighlightedText";
+
+// KeyboardShortcutsModal
+export { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
+export type { KeyboardShortcutsModalProps } from "./KeyboardShortcutsModal";

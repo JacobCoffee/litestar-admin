@@ -70,42 +70,45 @@ class StorageBackendProtocol(Protocol):
     """Protocol for storage backend implementations.
 
     This protocol defines the interface that storage backends must implement
-    to be compatible with the admin storage system.
+    to be compatible with the admin storage system. Matches litestar-storages API.
     """
 
-    async def write(self, path: str, content: bytes) -> None:
-        """Write content to a file.
+    async def put(self, key: str, data: bytes) -> Any:
+        """Store content to a file.
 
         Args:
-            path: The path to write to.
-            content: The file content as bytes.
+            key: The storage key/path.
+            data: The file content as bytes.
+
+        Returns:
+            StoredFile information.
         """
         ...
 
-    async def read(self, path: str) -> bytes:
+    async def get_bytes(self, key: str) -> bytes:
         """Read content from a file.
 
         Args:
-            path: The path to read from.
+            key: The storage key/path.
 
         Returns:
             The file content as bytes.
         """
         ...
 
-    async def delete(self, path: str) -> None:
+    async def delete(self, key: str) -> None:
         """Delete a file.
 
         Args:
-            path: The path to delete.
+            key: The storage key/path.
         """
         ...
 
-    async def exists(self, path: str) -> bool:
+    async def exists(self, key: str) -> bool:
         """Check if a file exists.
 
         Args:
-            path: The path to check.
+            key: The storage key/path.
 
         Returns:
             True if the file exists, False otherwise.
@@ -155,8 +158,15 @@ class AdminStorageBackend:
         if self._backend is not None:
             return self._backend
 
+        from pathlib import Path
+
         try:
-            from litestar_storages import FileSystemStorage, MemoryStorage
+            from litestar_storages import (
+                FileSystemConfig,
+                FileSystemStorage,
+                MemoryConfig,
+                MemoryStorage,
+            )
         except ImportError as e:
             msg = (
                 "litestar-storages is required for file storage support. "
@@ -168,26 +178,45 @@ class AdminStorageBackend:
         kwargs = self.config.get_storage_kwargs()
 
         if backend_type == StorageBackendType.LOCAL:
-            self._backend = FileSystemStorage(path=kwargs.get("path", "."))
+            base_path = kwargs.get("path", ".")
+            fs_config = FileSystemConfig(
+                path=Path(base_path) if base_path else Path("."),
+                base_url=self.config.public_url_base,
+                create_dirs=True,
+            )
+            self._backend = FileSystemStorage(fs_config)
 
         elif backend_type == StorageBackendType.MEMORY:
-            self._backend = MemoryStorage()
+            mem_config = MemoryConfig()
+            self._backend = MemoryStorage(mem_config)
 
         elif backend_type == StorageBackendType.S3:
             try:
-                from litestar_storages import S3Storage
+                from litestar_storages import S3Config, S3Storage
             except ImportError as e:
                 msg = "S3 storage requires additional dependencies. Install with: pip install 'litestar-storages[s3]'"
                 raise ImportError(msg) from e
-            self._backend = S3Storage(**kwargs)
+            s3_config = S3Config(
+                bucket=kwargs.get("bucket", ""),
+                region=kwargs.get("region"),
+                access_key_id=kwargs.get("access_key"),
+                secret_access_key=kwargs.get("secret_key"),
+                endpoint_url=kwargs.get("endpoint_url"),
+            )
+            self._backend = S3Storage(s3_config)
 
         elif backend_type == StorageBackendType.GCS:
             try:
-                from litestar_storages import GCSStorage
+                from litestar_storages import GCSConfig, GCSStorage
             except ImportError as e:
                 msg = "GCS storage requires additional dependencies. Install with: pip install 'litestar-storages[gcs]'"
                 raise ImportError(msg) from e
-            self._backend = GCSStorage(**kwargs)
+            gcs_config = GCSConfig(
+                bucket=kwargs.get("bucket", ""),
+                project=kwargs.get("project"),
+                service_file=kwargs.get("credentials_path"),
+            )
+            self._backend = GCSStorage(gcs_config)
 
         else:
             msg = f"Unsupported storage backend type: {backend_type}"
@@ -257,7 +286,7 @@ class AdminStorageBackend:
 
         # Upload to backend
         backend = self._get_backend()
-        await backend.write(storage_path, content)
+        await backend.put(storage_path, content)
 
         return storage_path
 
@@ -275,7 +304,7 @@ class AdminStorageBackend:
             ImportError: If litestar-storages is not installed.
         """
         backend = self._get_backend()
-        return await backend.read(path)
+        return await backend.get_bytes(path)
 
     async def delete(self, path: str) -> None:
         """Delete a file from storage.
@@ -586,7 +615,7 @@ class AdminStorageBackend:
 
             # Store the thumbnail
             backend = self._get_backend()
-            await backend.write(thumb_path, result.data)
+            await backend.put(thumb_path, result.data)
             thumbnail_path = thumb_path
 
         return result.data, thumbnail_path
