@@ -26,6 +26,8 @@ import type {
   EmbedConfig,
   EmbedInfo,
   ExportFormat,
+  FileDeleteResponse,
+  FileUploadResponse,
   LinkInfo,
   ListQueryParams,
   ListRecordsResponse,
@@ -38,6 +40,8 @@ import type {
   PageContent,
   PageInfo,
   PaginatedResponse,
+  RelationshipSearchParams,
+  RelationshipSearchResponse,
   UserCreateRequest,
   UserListParams,
   UserListResponse,
@@ -1071,6 +1075,187 @@ export class AdminApiClient {
       },
     );
   }
+
+  // ==========================================================================
+  // File Upload Endpoints
+  // ==========================================================================
+
+  /**
+   * Upload a file with progress tracking.
+   * @param file - The file to upload
+   * @param onProgress - Callback for upload progress updates (0-100)
+   * @returns Promise resolving to the uploaded file information
+   */
+  async uploadFile(
+    file: File,
+    onProgress?: (progress: number) => void,
+  ): Promise<FileUploadResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const accessToken = this.tokenStorage.getAccessToken();
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable && onProgress) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          onProgress(progress);
+        }
+      });
+
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response = JSON.parse(xhr.responseText) as FileUploadResponse;
+            resolve(response);
+          } catch {
+            reject(createApiError("Invalid response format", xhr.status, xhr.statusText));
+          }
+        } else {
+          let errorMessage = xhr.statusText;
+          try {
+            const errorResponse = JSON.parse(xhr.responseText) as ApiErrorResponse;
+            errorMessage = errorResponse.detail || errorMessage;
+          } catch {
+            // Use default error message
+          }
+          reject(createApiError(errorMessage, xhr.status, xhr.statusText));
+        }
+      });
+
+      xhr.addEventListener("error", () => {
+        reject(createApiError("Network error during upload", 0, "Network Error"));
+      });
+
+      xhr.addEventListener("abort", () => {
+        reject(createApiError("Upload aborted", 0, "Aborted"));
+      });
+
+      xhr.open("POST", `${this.config.baseUrl}/api/files/upload`);
+
+      if (accessToken) {
+        xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+      }
+
+      xhr.send(formData);
+    });
+  }
+
+  /**
+   * Upload multiple files with progress tracking.
+   * @param files - Array of files to upload
+   * @param onProgress - Callback for overall upload progress updates (0-100)
+   * @returns Promise resolving to array of uploaded file information
+   */
+  async uploadFiles(
+    files: File[],
+    onProgress?: (progress: number) => void,
+  ): Promise<FileUploadResponse[]> {
+    const results: FileUploadResponse[] = [];
+    const totalFiles = files.length;
+    let completedCount = 0;
+
+    for (const file of files) {
+      const result = await this.uploadFile(file, (fileProgress) => {
+        if (onProgress) {
+          const overallProgress = Math.round(
+            ((completedCount + fileProgress / 100) / totalFiles) * 100,
+          );
+          onProgress(overallProgress);
+        }
+      });
+      results.push(result);
+      completedCount++;
+    }
+
+    return results;
+  }
+
+  /**
+   * Delete an uploaded file.
+   * @param fileId - The ID of the file to delete
+   */
+  async deleteFile(fileId: string): Promise<FileDeleteResponse> {
+    return this.request<FileDeleteResponse>(
+      `/api/files/${encodeURIComponent(fileId)}`,
+      {
+        method: "DELETE",
+      },
+    );
+  }
+
+  /**
+   * Get the URL for a file by its ID.
+   * @param fileId - The ID of the file
+   * @returns The URL to access the file
+   */
+  getFileUrl(fileId: string): string {
+    return `${this.config.baseUrl}/api/files/${encodeURIComponent(fileId)}`;
+  }
+
+  /**
+   * Get the thumbnail URL for a file by its ID.
+   * @param fileId - The ID of the file
+   * @returns The URL to access the file's thumbnail
+   */
+  getFileThumbnailUrl(fileId: string): string {
+    return `${this.config.baseUrl}/api/files/${encodeURIComponent(fileId)}/thumbnail`;
+  }
+
+  // ==========================================================================
+  // Relationship Picker Endpoints
+  // ==========================================================================
+
+  /**
+   * Search related records for a relationship field.
+   * Used for autocomplete in FK/relationship picker components.
+   * @param model - The source model name
+   * @param field - The relationship field name
+   * @param params - Search parameters
+   */
+  async searchRelationship(
+    model: string,
+    field: string,
+    params: RelationshipSearchParams = {},
+  ): Promise<RelationshipSearchResponse> {
+    return this.request<RelationshipSearchResponse>(
+      `/api/models/${encodeURIComponent(model)}/relationships/${encodeURIComponent(field)}/search`,
+      {
+        params: {
+          q: params.q,
+          limit: params.limit,
+          page: params.page,
+        },
+      },
+    );
+  }
+
+  /**
+   * Get specific related records by their IDs.
+   * Used to resolve existing FK values for display in forms.
+   * @param model - The source model name
+   * @param field - The relationship field name
+   * @param ids - Array of IDs to resolve
+   */
+  async getRelationshipOptions(
+    model: string,
+    field: string,
+    ids: (string | number)[],
+  ): Promise<RelationshipSearchResponse> {
+    if (ids.length === 0) {
+      return { items: [], total: 0, has_more: false };
+    }
+    return this.request<RelationshipSearchResponse>(
+      `/api/models/${encodeURIComponent(model)}/relationships/${encodeURIComponent(field)}/options`,
+      {
+        params: {
+          ids: ids.join(","),
+        },
+      },
+    );
+  }
 }
 
 // ============================================================================
@@ -1175,6 +1360,21 @@ export const api = {
   deleteUser: (userId: string) => apiClient.deleteUser(userId),
   activateUser: (userId: string) => apiClient.activateUser(userId),
   deactivateUser: (userId: string) => apiClient.deactivateUser(userId),
+
+  // File Upload
+  uploadFile: (file: File, onProgress?: (progress: number) => void) =>
+    apiClient.uploadFile(file, onProgress),
+  uploadFiles: (files: File[], onProgress?: (progress: number) => void) =>
+    apiClient.uploadFiles(files, onProgress),
+  deleteFile: (fileId: string) => apiClient.deleteFile(fileId),
+  getFileUrl: (fileId: string) => apiClient.getFileUrl(fileId),
+  getFileThumbnailUrl: (fileId: string) => apiClient.getFileThumbnailUrl(fileId),
+
+  // Relationship Picker
+  searchRelationship: (model: string, field: string, params?: RelationshipSearchParams) =>
+    apiClient.searchRelationship(model, field, params),
+  getRelationshipOptions: (model: string, field: string, ids: (string | number)[]) =>
+    apiClient.getRelationshipOptions(model, field, ids),
 };
 
 // Re-export types for convenience

@@ -729,3 +729,113 @@ export interface ActivateDeactivateResponse {
   readonly message: string;
   readonly is_active: boolean;
 }
+
+// ============================================================================
+// File Upload Types
+// ============================================================================
+
+/**
+ * File upload status for tracking upload progress.
+ */
+export type FileUploadStatus = "idle" | "uploading" | "success" | "error";
+
+/**
+ * Represents a file being uploaded or already uploaded.
+ */
+export interface UploadedFile {
+  /** Unique identifier for the file */
+  readonly id: string;
+  /** Original file name */
+  readonly name: string;
+  /** File MIME type */
+  readonly type: string;
+  /** File size in bytes */
+  readonly size: number;
+  /** URL to access the file (after upload) */
+  readonly url?: string;
+  /** Thumbnail URL for images */
+  readonly thumbnailUrl?: string;
+  /** Upload progress percentage (0-100) */
+  readonly progress: number;
+  /** Current upload status */
+  readonly status: FileUploadStatus;
+  /** Error message if upload failed */
+  readonly error?: string;
+}
+
+/**
+ * Configuration for file field validation.
+ */
+export interface FileFieldConfig {
+  /** Maximum file size in bytes */
+  readonly maxSize?: number;
+  /** Allowed file extensions (e.g., [".jpg", ".png"]) */
+  readonly allowedExtensions?: readonly string[];
+  /** Allowed MIME types (e.g., ["image/jpeg", "image/png"]) */
+  readonly allowedMimeTypes?: readonly string[];
+  /** Whether multiple files can be uploaded */
+  readonly multiple?: boolean;
+  /** Maximum number of files (when multiple is true) */
+  readonly maxFiles?: number;
+}
+
+/**
+ * Response from the file upload API.
+ */
+export interface FileUploadResponse {
+  readonly success: boolean;
+  readonly file_id: string;
+  readonly filename: string;
+  readonly url: string;
+  readonly thumbnail_url?: string;
+  readonly size: number;
+  readonly content_type: string;
+}
+
+/**
+ * Response from the file delete API.
+ */
+export interface FileDeleteResponse {
+  readonly success: boolean;
+  readonly message: string;
+}
+
+// ============================================================================
+// Relationship Picker Types
+// ============================================================================
+
+/**
+ * A single option for a relationship autocomplete field.
+ */
+export interface RelationshipOption {
+  /** The primary key value of the related record */
+  readonly id: string | number;
+  /** The display label for the record */
+  readonly label: string;
+  /** Optional additional display data */
+  readonly data?: Record<string, unknown>;
+}
+
+/**
+ * Response from the relationship search API.
+ */
+export interface RelationshipSearchResponse {
+  /** List of matching options */
+  readonly items: readonly RelationshipOption[];
+  /** Total number of matching records */
+  readonly total: number;
+  /** Whether there are more results available */
+  readonly has_more: boolean;
+}
+
+/**
+ * Parameters for relationship search requests.
+ */
+export interface RelationshipSearchParams {
+  /** Search query string */
+  readonly q?: string;
+  /** Maximum number of results to return */
+  readonly limit?: number;
+  /** Page number (1-indexed) */
+  readonly page?: number;
+}
