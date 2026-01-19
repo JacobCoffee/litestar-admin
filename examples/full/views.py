@@ -7,23 +7,29 @@ showcasing various configuration options including:
 - Permission controls
 - Category grouping
 - Custom model change hooks
+- CustomView examples with data providers
 
 Views:
     - UserAdmin: User management with restricted delete
     - ArticleAdmin: Content management with status workflow
     - TagAdmin: Tag management with slug handling
+    - AppSettingsAdmin: In-memory settings store (CustomView example)
+    - SystemInfoAdmin: System information view (read-only CustomView example)
 """
 
 from __future__ import annotations
 
 import logging
+import platform
+import sys
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, ClassVar, Literal
 
 from examples.full.models import Article, ArticleStatus, Tag, User
 from litestar_admin import ModelView
+from litestar_admin.contrib.providers import ColumnDefinition, InMemoryView, ListResult
 
-__all__ = ["ArticleAdmin", "TagAdmin", "UserAdmin"]
+__all__ = ["AppSettingsAdmin", "ArticleAdmin", "SystemInfoAdmin", "TagAdmin", "UserAdmin"]
 
 logger = logging.getLogger(__name__)
 
@@ -281,3 +287,290 @@ class TagAdmin(ModelView, model=Tag):
             logger.debug("Auto-generated slug for tag: %s -> %s", name, slug)
 
         return data
+
+
+# =============================================================================
+# CustomView Examples
+# =============================================================================
+# The following views demonstrate using CustomView with data providers
+# for non-model data sources.
+
+
+class AppSettingsAdmin(InMemoryView):
+    """In-memory application settings store.
+
+    Demonstrates using InMemoryView for a key-value settings store.
+    Settings are stored in memory and persist for the application lifetime.
+
+    This is useful for:
+    - Runtime configuration that doesn't need database persistence
+    - Feature flags and toggles
+    - Cached settings from external sources
+    """
+
+    # Display configuration
+    name = "App Settings"
+    name_plural = "App Settings"
+    identity = "app-settings"
+    icon = "settings"
+    category = "System"
+
+    # Primary key configuration
+    pk_field = "key"
+    auto_generate_pk = False  # We use the key as the identifier
+
+    # Columns
+    columns: ClassVar[list[ColumnDefinition]] = [
+        ColumnDefinition(name="key", label="Setting Key", type="string", sortable=True, searchable=True),
+        ColumnDefinition(name="value", label="Value", type="string", searchable=True),
+        ColumnDefinition(name="type", label="Type", type="string", filterable=True),
+        ColumnDefinition(name="description", label="Description", type="text"),
+    ]
+
+    # Enable full CRUD
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+    can_export = True
+
+    # Pre-populate with default settings
+    _data: ClassVar[dict[str, dict[str, Any]]] = {
+        "site_name": {
+            "key": "site_name",
+            "value": "Litestar Admin Demo",
+            "type": "string",
+            "description": "The application name displayed in the header",
+        },
+        "maintenance_mode": {
+            "key": "maintenance_mode",
+            "value": "false",
+            "type": "boolean",
+            "description": "Enable maintenance mode to block user access",
+        },
+        "max_upload_size": {
+            "key": "max_upload_size",
+            "value": "10485760",
+            "type": "integer",
+            "description": "Maximum file upload size in bytes (default: 10MB)",
+        },
+        "allowed_origins": {
+            "key": "allowed_origins",
+            "value": "http://localhost:3000,http://localhost:8000",
+            "type": "list",
+            "description": "Comma-separated list of allowed CORS origins",
+        },
+        "feature_dark_mode": {
+            "key": "feature_dark_mode",
+            "value": "true",
+            "type": "boolean",
+            "description": "Enable dark mode toggle in the UI",
+        },
+        "cache_ttl": {
+            "key": "cache_ttl",
+            "value": "3600",
+            "type": "integer",
+            "description": "Default cache TTL in seconds",
+        },
+    }
+
+    async def on_after_update(self, item: dict[str, Any]) -> None:
+        """Log setting changes for audit purposes.
+
+        Args:
+            item: The updated item data.
+        """
+        logger.info("Setting updated: %s = %s", item.get("key"), item.get("value"))
+
+
+class SystemInfoAdmin(InMemoryView):
+    """Read-only system information view.
+
+    Demonstrates using InMemoryView for displaying dynamic system information
+    without database persistence. Data is refreshed on each request.
+
+    This is useful for:
+    - Displaying runtime environment information
+    - Monitoring dashboards
+    - Debug information panels
+    """
+
+    # Display configuration
+    name = "System Info"
+    name_plural = "System Information"
+    identity = "system-info"
+    icon = "cpu"
+    category = "System"
+
+    # Primary key configuration
+    pk_field = "name"
+
+    # Columns
+    columns: ClassVar[list[ColumnDefinition]] = [
+        ColumnDefinition(name="name", label="Property", type="string", sortable=True, searchable=True),
+        ColumnDefinition(name="value", label="Value", type="string"),
+        ColumnDefinition(name="category", label="Category", type="string", filterable=True),
+    ]
+
+    # Read-only view
+    can_create = False
+    can_edit = False
+    can_delete = False
+    can_view_details = True
+    can_export = True
+
+    # Override to provide dynamic data
+    async def get_list(
+        self,
+        page: int = 1,
+        page_size: int = 25,
+        filters: dict[str, Any] | None = None,
+        sort_by: str | None = None,
+        sort_order: Literal["asc", "desc"] = "asc",
+        search: str | None = None,
+    ) -> ListResult:
+        """Get dynamic system information.
+
+        Generates fresh system information on each request rather than
+        using static stored data.
+
+        Args:
+            page: Page number (1-indexed).
+            page_size: Number of items per page.
+            filters: Dictionary of filter field names to values.
+            sort_by: Field name to sort by.
+            sort_order: Sort direction ("asc" or "desc").
+            search: Search query string.
+
+        Returns:
+            ListResult containing system info items.
+        """
+        # Build system info dynamically
+        items = self._get_system_info()
+
+        # Apply search filter
+        if search:
+            search_lower = search.lower()
+            items = [
+                item
+                for item in items
+                if search_lower in item["name"].lower() or search_lower in str(item["value"]).lower()
+            ]
+
+        # Apply filters
+        if filters:
+            for field, value in filters.items():
+                items = [item for item in items if item.get(field) == value]
+
+        # Sort items
+        if sort_by:
+            reverse = sort_order == "desc"
+            items = sorted(
+                items,
+                key=lambda x: (x.get(sort_by) is None, x.get(sort_by, "")),
+                reverse=reverse,
+            )
+
+        # Calculate pagination
+        total = len(items)
+        start = (page - 1) * page_size
+        end = start + page_size
+        paginated_items = items[start:end]
+
+        return ListResult(
+            items=paginated_items,
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
+    async def get_one(self, item_id: str) -> dict[str, Any] | None:
+        """Get a single system info item by name.
+
+        Args:
+            item_id: The property name.
+
+        Returns:
+            The system info item or None.
+        """
+        items = self._get_system_info()
+        for item in items:
+            if item["name"] == item_id:
+                return item
+        return None
+
+    @staticmethod
+    def _get_system_info() -> list[dict[str, Any]]:
+        """Generate current system information.
+
+        Returns:
+            List of system info dictionaries.
+        """
+        import os
+        from pathlib import Path
+
+        try:
+            import psutil
+
+            has_psutil = True
+        except ImportError:
+            has_psutil = False
+
+        info: list[dict[str, Any]] = [
+            # Python info
+            {"name": "python_version", "value": sys.version.split()[0], "category": "Python"},
+            {"name": "python_implementation", "value": platform.python_implementation(), "category": "Python"},
+            {"name": "python_path", "value": sys.executable, "category": "Python"},
+            # Platform info
+            {"name": "platform", "value": platform.platform(), "category": "Platform"},
+            {"name": "system", "value": platform.system(), "category": "Platform"},
+            {"name": "release", "value": platform.release(), "category": "Platform"},
+            {"name": "machine", "value": platform.machine(), "category": "Platform"},
+            {"name": "processor", "value": platform.processor() or "Unknown", "category": "Platform"},
+            # Process info
+            {"name": "pid", "value": str(os.getpid()), "category": "Process"},
+            {"name": "cwd", "value": str(Path.cwd()), "category": "Process"},
+            # Timestamp
+            {"name": "server_time", "value": datetime.now(timezone.utc).isoformat(), "category": "Runtime"},
+        ]
+
+        # Add memory info if psutil is available
+        if has_psutil:
+            memory = psutil.virtual_memory()
+            process = psutil.Process()
+            info.extend(
+                [
+                    {
+                        "name": "memory_total",
+                        "value": f"{memory.total / (1024**3):.2f} GB",
+                        "category": "Memory",
+                    },
+                    {
+                        "name": "memory_available",
+                        "value": f"{memory.available / (1024**3):.2f} GB",
+                        "category": "Memory",
+                    },
+                    {
+                        "name": "memory_percent",
+                        "value": f"{memory.percent}%",
+                        "category": "Memory",
+                    },
+                    {
+                        "name": "process_memory",
+                        "value": f"{process.memory_info().rss / (1024**2):.2f} MB",
+                        "category": "Process",
+                    },
+                    {
+                        "name": "cpu_count",
+                        "value": str(psutil.cpu_count()),
+                        "category": "CPU",
+                    },
+                    {
+                        "name": "cpu_percent",
+                        "value": f"{psutil.cpu_percent(interval=0.1)}%",
+                        "category": "CPU",
+                    },
+                ]
+            )
+
+        return info

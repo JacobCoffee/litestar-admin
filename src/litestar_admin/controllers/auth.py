@@ -16,6 +16,8 @@ from litestar_admin.config import AdminConfig  # noqa: TC001
 
 __all__ = [
     "AuthController",
+    "ChangePasswordRequest",
+    "ChangePasswordResponse",
     "LoginRequest",
     "LogoutResponse",
     "RefreshRequest",
@@ -93,6 +95,32 @@ class LogoutResponse:
 
     success: bool
     message: str = "Logged out successfully"
+
+
+@dataclass
+class ChangePasswordRequest:
+    """Request payload for password change.
+
+    Attributes:
+        current_password: The user's current password.
+        new_password: The new password to set.
+    """
+
+    current_password: str
+    new_password: str
+
+
+@dataclass
+class ChangePasswordResponse:
+    """Response for password change operation.
+
+    Attributes:
+        success: Whether the password change was successful.
+        message: Descriptive message about the result.
+    """
+
+    success: bool
+    message: str = "Password changed successfully"
 
 
 class AuthController(Controller):
@@ -271,3 +299,51 @@ class AuthController(Controller):
             roles=user.roles,
             permissions=user.permissions,
         )
+
+    @post(
+        "/change-password",
+        status_code=HTTP_200_OK,
+        summary="Change password",
+        description="Change the current user's password. Requires authentication.",
+    )
+    async def change_password(
+        self,
+        data: ChangePasswordRequest,
+        admin_config: AdminConfig,
+        request: ASGIConnection,
+    ) -> ChangePasswordResponse:
+        """Change the current user's password.
+
+        Args:
+            data: Request containing current and new password.
+            admin_config: The admin configuration containing the auth backend.
+            request: The current ASGI connection.
+
+        Returns:
+            ChangePasswordResponse indicating success or failure.
+
+        Raises:
+            NotAuthorizedException: If no auth backend is configured.
+            PermissionDeniedException: If password change fails.
+        """
+        if admin_config.auth_backend is None:
+            raise NotAuthorizedException(detail="Authentication is not configured")
+
+        # Check if the backend supports password change
+        if not hasattr(admin_config.auth_backend, "change_password"):
+            raise PermissionDeniedException(
+                detail="Password change is not supported by this authentication backend"
+            )
+
+        success = await admin_config.auth_backend.change_password(
+            request,
+            data.current_password,
+            data.new_password,
+        )
+
+        if not success:
+            raise PermissionDeniedException(
+                detail="Failed to change password. Please check your current password."
+            )
+
+        return ChangePasswordResponse(success=True, message="Password changed successfully")

@@ -80,6 +80,30 @@ OAuth Authentication (GitHub):
 
     5. Run the app - users can now login via GitHub OAuth.
        New users are automatically created on first login with VIEWER role.
+
+Demo OAuth Authentication (No External Credentials):
+    To test the OAuth flow without real GitHub credentials:
+
+    1. Set the OAUTH_DEMO_MODE environment variable:
+       export OAUTH_DEMO_MODE=true
+
+    2. Optionally configure the demo user:
+       export DEMO_OAUTH_EMAIL="test@example.com"
+       export DEMO_OAUTH_NAME="Test User"
+
+    3. Run the app:
+       OAUTH_DEMO_MODE=true litestar --app examples.full.app:app run --reload
+
+    The demo OAuth provider will:
+    - Accept any authorization code
+    - Return a configurable demo user (default: demo@example.com)
+    - Skip all external OAuth API calls
+    - Create a real user in the database on first login
+
+    This is useful for:
+    - Local development without GitHub OAuth setup
+    - CI/CD pipeline testing
+    - Demonstrating the admin panel to stakeholders
 """
 
 from __future__ import annotations
@@ -95,7 +119,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from examples.full.auth import get_auth_backend, hash_password
 from examples.full.models import Article, ArticleStatus, Base, Tag, User, UserRole
-from examples.full.views import ArticleAdmin, TagAdmin, UserAdmin
+from examples.full.views import AppSettingsAdmin, ArticleAdmin, SystemInfoAdmin, TagAdmin, UserAdmin
 from litestar_admin import AdminConfig, AdminPlugin, get_logger
 
 # =============================================================================
@@ -475,6 +499,25 @@ async def startup_handler(app: Litestar) -> None:
     else:
         logger.info("Rate limiting: In-memory (single process only)")
 
+    # Log authentication mode
+    if OAUTH_DEMO_MODE:
+        demo_email = os.environ.get("DEMO_OAUTH_EMAIL", "demo@example.com")
+        logger.info(
+            "Authentication: Demo OAuth mode",
+            demo_user=demo_email,
+            hint="Use the 'demo' provider to login - any code accepted",
+        )
+    elif GITHUB_OAUTH_CONFIGURED:
+        logger.info(
+            "Authentication: GitHub OAuth",
+            hint="Login via GitHub - new users auto-created with VIEWER role",
+        )
+    else:
+        logger.info(
+            "Authentication: JWT (username/password)",
+            credentials="admin@example.com / admin",
+        )
+
     logger.info("Application startup complete")
 
 
@@ -529,24 +572,54 @@ async def shutdown_handler(app: Litestar) -> None:
 # - Login with GitHub OAuth
 # - Requires GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars
 # - New users are auto-created on first login
+#
+# Option 3: Demo OAuth Authentication (no external credentials)
+# - Simulates OAuth flow without external API calls
+# - Enabled via OAUTH_DEMO_MODE=true environment variable
+# - Demo user created in database on first login
+# - Perfect for local development and testing
 # =============================================================================
 
-# Option 1: JWT Authentication (DEFAULT)
-# Uncomment the following line for JWT auth:
-auth_backend = get_auth_backend(get_session)
+# Check for OAuth demo mode first (Option 3)
+OAUTH_DEMO_MODE = os.environ.get("OAUTH_DEMO_MODE", "").lower() in ("true", "1", "yes")
 
-# Option 2: OAuth Authentication (GitHub)
-# To use OAuth instead, comment out the JWT backend above and uncomment below:
+# Check for GitHub OAuth credentials (Option 2)
+GITHUB_OAUTH_CONFIGURED = bool(os.environ.get("GITHUB_CLIENT_ID") and os.environ.get("GITHUB_CLIENT_SECRET"))
+
+if OAUTH_DEMO_MODE:
+    # Option 3: Demo OAuth Authentication
+    # No external credentials needed - simulates OAuth flow for testing
+    from examples.full.auth import get_demo_oauth_backend
+
+    auth_backend = get_demo_oauth_backend(get_session)
+    logger.info(
+        "Using Demo OAuth authentication",
+        demo_email=os.environ.get("DEMO_OAUTH_EMAIL", "demo@example.com"),
+        hint="Login via the 'demo' OAuth provider - accepts any code",
+    )
+elif GITHUB_OAUTH_CONFIGURED:
+    # Option 2: OAuth Authentication (GitHub)
+    # Requires GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars
+    from examples.full.auth import get_oauth_backend
+
+    auth_backend = get_oauth_backend(get_session)
+    logger.info(
+        "Using GitHub OAuth authentication",
+        hint="Login via GitHub - new users auto-created with VIEWER role",
+    )
+else:
+    # Option 1: JWT Authentication (DEFAULT)
+    # Username/password login with JWT tokens
+    auth_backend = get_auth_backend(get_session)
+    # Note: logger.info moved to startup to avoid logging before app is ready
+
+# Legacy manual configuration (for reference):
+# To explicitly use a specific backend, uncomment one of these and comment out
+# the automatic detection above:
 #
-# from examples.full.auth import get_oauth_backend
-# auth_backend = get_oauth_backend(get_session)
-#
-# Note: You must set these environment variables before running:
-#   export GITHUB_CLIENT_ID="your-github-client-id"
-#   export GITHUB_CLIENT_SECRET="your-github-client-secret"
-#
-# Also set the redirect base URL if not running on localhost:8000:
-#   export OAUTH_REDIRECT_BASE_URL="https://your-domain.com"
+# auth_backend = get_auth_backend(get_session)  # JWT
+# auth_backend = get_oauth_backend(get_session)  # GitHub OAuth
+# auth_backend = get_demo_oauth_backend(get_session)  # Demo OAuth
 
 # Configure admin plugin
 admin_plugin = AdminPlugin(
@@ -555,7 +628,7 @@ admin_plugin = AdminPlugin(
         base_url="/admin",
         theme="dark",
         auth_backend=auth_backend,
-        views=[UserAdmin, ArticleAdmin, TagAdmin],
+        views=[UserAdmin, ArticleAdmin, TagAdmin, AppSettingsAdmin, SystemInfoAdmin],
         auto_discover=False,  # We're explicitly registering views
         rate_limit_enabled=True,
         rate_limit_requests=100,
@@ -573,7 +646,6 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
 
-
 @get("/")
 async def index() -> dict[str, Any]:
     """Root endpoint with API information.
@@ -581,15 +653,40 @@ async def index() -> dict[str, Any]:
     Returns:
         API information and links including storage backend status.
     """
+    # Determine authentication mode and credentials info
+    if OAUTH_DEMO_MODE:
+        auth_mode = "demo_oauth"
+        credentials_info = {
+            "demo_oauth": {
+                "provider": "demo",
+                "email": os.environ.get("DEMO_OAUTH_EMAIL", "demo@example.com"),
+                "hint": "Use the 'demo' OAuth provider - any authorization code accepted",
+            },
+        }
+    elif GITHUB_OAUTH_CONFIGURED:
+        auth_mode = "github_oauth"
+        credentials_info = {
+            "github_oauth": {
+                "provider": "github",
+                "hint": "Login via GitHub - new users auto-created with VIEWER role",
+            },
+        }
+    else:
+        auth_mode = "jwt"
+        credentials_info = {
+            "admin": {"email": "admin@example.com", "password": "admin"},
+            "editor": {"email": "editor@example.com", "password": "editor"},
+            "viewer": {"email": "viewer@example.com", "password": "viewer"},
+        }
+
     return {
         "app": "litestar-admin Full Demo",
         "version": "0.1.0",
         "admin_url": "/admin",
         "api_docs": "/schema",
-        "credentials": {
-            "admin": {"email": "admin@example.com", "password": "admin"},
-            "editor": {"email": "editor@example.com", "password": "editor"},
-            "viewer": {"email": "viewer@example.com", "password": "viewer"},
+        "authentication": {
+            "mode": auth_mode,
+            "credentials": credentials_info,
         },
         "storage": {
             "rate_limit": "redis" if redis_rate_limit_store else "in-memory",

@@ -135,6 +135,8 @@ class JWTAuthBackend:
         config: JWTConfig,
         user_loader: Callable[[str | int], Awaitable[AdminUser | None]],
         password_verifier: Callable[[str, str], Awaitable[bool]] | None = None,
+        password_hasher: Callable[[str], Awaitable[str]] | None = None,
+        password_updater: Callable[[str | int, str], Awaitable[bool]] | None = None,
     ) -> None:
         """Initialize the JWT authentication backend.
 
@@ -142,10 +144,14 @@ class JWTAuthBackend:
             config: JWT configuration options.
             user_loader: Async callable that takes a user ID and returns an AdminUser or None.
             password_verifier: Optional async callable that takes (stored_hash, password) and returns bool.
+            password_hasher: Optional async callable that takes a plain password and returns a hash.
+            password_updater: Optional async callable that takes (user_id, new_hash) and updates the password.
         """
         self.config = config
         self.user_loader = user_loader
         self.password_verifier = password_verifier
+        self.password_hasher = password_hasher
+        self.password_updater = password_updater
 
     async def authenticate(
         self,
@@ -304,6 +310,45 @@ class JWTAuthBackend:
             "token_type": "bearer",
             "expires_in": str(self.config.token_expiry),
         }
+
+    async def change_password(
+        self,
+        connection: ASGIConnection,
+        current_password: str,
+        new_password: str,
+    ) -> bool:
+        """Change the current user's password.
+
+        Validates the current password and updates to the new password.
+
+        Args:
+            connection: The current ASGI connection.
+            current_password: The user's current password.
+            new_password: The new password to set.
+
+        Returns:
+            True if password was changed successfully, False otherwise.
+        """
+        # Get current user
+        user = await self.get_current_user(connection)
+        if user is None:
+            return False
+
+        # Check if password operations are configured
+        if not self.password_verifier or not self.password_hasher or not self.password_updater:
+            return False
+
+        # Verify current password
+        password_hash = getattr(user, "password_hash", None) or getattr(user, "hashed_password", None)
+        if password_hash is None:
+            return False
+
+        if not await self.password_verifier(password_hash, current_password):
+            return False
+
+        # Hash new password and update
+        new_hash = await self.password_hasher(new_password)
+        return await self.password_updater(user.id, new_hash)
 
     def _create_token(self, user: AdminUser, kind: str = "access") -> str:
         """Create a JWT token for a user.

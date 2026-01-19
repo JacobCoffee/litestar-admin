@@ -247,6 +247,7 @@ test = [
     "aiosqlite>=0.19.0",
     "pyjwt>=2.8.0",  # Required for JWT auth tests
     "structlog>=24.1.0",  # Required for structlog logging tests
+    "fakeredis[lua]>=2.26.0",  # Required for Redis store tests
 ]
 dev = [
     {include-group = "docs"},

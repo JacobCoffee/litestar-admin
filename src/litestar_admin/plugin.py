@@ -9,7 +9,7 @@ from litestar import Response, get
 from litestar.plugins import InitPluginProtocol
 
 from litestar_admin.config import AdminConfig
-from litestar_admin.registry import ModelRegistry
+from litestar_admin.registry import ViewRegistry
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -57,7 +57,7 @@ class AdminPlugin(InitPluginProtocol):
             config: Admin configuration. If not provided, uses defaults.
         """
         self._config = config or AdminConfig()
-        self._registry = ModelRegistry()
+        self._registry = ViewRegistry()
         self._app: Litestar | None = None
 
     @property
@@ -66,8 +66,16 @@ class AdminPlugin(InitPluginProtocol):
         return self._config
 
     @property
-    def registry(self) -> ModelRegistry:
-        """Return the model registry."""
+    def registry(self) -> ViewRegistry:
+        """Return the view registry.
+
+        The registry manages all registered admin views, including model-based
+        views (ModelView) and non-model views (CustomView, ActionView, PageView,
+        LinkView, EmbedView).
+
+        Returns:
+            The ViewRegistry instance.
+        """
         return self._registry
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
