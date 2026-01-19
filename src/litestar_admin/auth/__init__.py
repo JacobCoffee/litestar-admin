@@ -3,6 +3,7 @@
 This module provides authentication infrastructure for the admin panel including:
 - AdminUser model with secure password hashing
 - Password hashing utilities (Argon2/bcrypt)
+- Password reset functionality with token management
 - Authentication protocols for custom implementations
 - JWT authentication backend
 """
@@ -16,6 +17,10 @@ from litestar_admin.auth.password import (
     hash_password,
     needs_rehash,
     verify_password,
+)
+from litestar_admin.auth.password_reset import (
+    PasswordResetService,
+    PasswordResetToken,
 )
 from litestar_admin.auth.protocols import AdminUserProtocol, AuthBackend
 
@@ -34,4 +39,7 @@ __all__ = [
     "hash_password",
     "needs_rehash",
     "verify_password",
+    # Password reset
+    "PasswordResetService",
+    "PasswordResetToken",
 ]

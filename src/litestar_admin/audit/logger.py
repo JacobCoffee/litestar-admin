@@ -67,6 +67,9 @@ class AuditAction(str, Enum):
         LOGOUT: A user logged out of the admin panel.
         BULK_DELETE: Multiple records were deleted at once.
         BULK_ACTION: A bulk operation was performed on multiple records.
+        PASSWORD_CHANGE: A user's password was changed.
+        PASSWORD_RESET_REQUEST: A password reset was requested.
+        PASSWORD_RESET_COMPLETE: A password reset was completed.
     """
 
     CREATE = "create"
@@ -78,6 +81,9 @@ class AuditAction(str, Enum):
     LOGOUT = "logout"
     BULK_DELETE = "bulk_delete"
     BULK_ACTION = "bulk_action"
+    PASSWORD_CHANGE = "password_change"  # noqa: S105
+    PASSWORD_RESET_REQUEST = "password_reset_request"  # noqa: S105
+    PASSWORD_RESET_COMPLETE = "password_reset_complete"  # noqa: S105
 
 
 @dataclass

@@ -146,6 +146,11 @@ class AdminConfig:
     # Use Any type to avoid import errors when litestar-storages is not installed
     storage: Any | None = None
 
+    # Password policy settings
+    password_min_length: int = 8
+    password_reset_enabled: bool = False
+    password_reset_token_expiry: int = 3600  # seconds (1 hour)
+
     # Additional settings
     extra: dict[str, Any] = field(default_factory=dict)
 

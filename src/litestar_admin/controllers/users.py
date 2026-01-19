@@ -5,7 +5,10 @@ from __future__ import annotations
 import contextlib
 import logging
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
+
+if TYPE_CHECKING:
+    from litestar_admin.auth.password_reset import PasswordResetService
 
 from litestar import Controller, Request, delete, get, post, put
 from litestar.exceptions import HTTPException, NotFoundException
@@ -24,6 +27,11 @@ _audit_logger = logging.getLogger("litestar_admin.audit")
 
 __all__ = [
     "ActivateDeactivateResponse",
+    "AdminChangePasswordRequest",
+    "ForgotPasswordRequest",
+    "PasswordChangeResponse",
+    "ResetPasswordRequest",
+    "SelfChangePasswordRequest",
     "UserCreateRequest",
     "UserListRequest",
     "UserListResponse",
@@ -163,6 +171,71 @@ class ActivateDeactivateResponse:
     is_active: bool
 
 
+@dataclass
+class AdminChangePasswordRequest:
+    """Request for admin changing a user's password (force reset).
+
+    Attributes:
+        new_password: The new password to set for the user.
+    """
+
+    new_password: str
+
+
+@dataclass
+class SelfChangePasswordRequest:
+    """Request for a user changing their own password.
+
+    Attributes:
+        current_password: The user's current password for verification.
+        new_password: The new password to set.
+        confirm_password: Confirmation of the new password.
+    """
+
+    current_password: str
+    new_password: str
+    confirm_password: str
+
+
+@dataclass
+class ForgotPasswordRequest:
+    """Request to initiate a password reset.
+
+    Attributes:
+        email: The email address of the user requesting a reset.
+    """
+
+    email: str
+
+
+@dataclass
+class ResetPasswordRequest:
+    """Request to complete a password reset using a token.
+
+    Attributes:
+        token: The password reset token received via email.
+        new_password: The new password to set.
+        confirm_password: Confirmation of the new password.
+    """
+
+    token: str
+    new_password: str
+    confirm_password: str
+
+
+@dataclass
+class PasswordChangeResponse:
+    """Response for password change operations.
+
+    Attributes:
+        success: Whether the operation was successful.
+        message: Descriptive message about the result.
+    """
+
+    success: bool
+    message: str
+
+
 def _user_to_response(user: AdminUser) -> UserResponse:
     """Convert an AdminUser model to a UserResponse DTO.
 
@@ -207,6 +280,88 @@ def _user_to_dict(user: AdminUser) -> dict[str, Any]:
         "updated_at": user.updated_at.isoformat() if user.updated_at else None,
         "last_login": user.last_login.isoformat() if user.last_login else None,
     }
+
+
+@dataclass
+class _PasswordConfig:
+    """Internal dataclass for password-related configuration.
+
+    Attributes:
+        min_length: Minimum password length.
+        reset_enabled: Whether password reset is enabled.
+        token_expiry: Password reset token expiry in seconds.
+        secret_key: Secret key for token generation.
+    """
+
+    min_length: int = 8
+    reset_enabled: bool = False
+    token_expiry: int = 3600
+    secret_key: str = ""
+
+
+def _get_password_config(request: Request[Any, Any, Any]) -> _PasswordConfig:
+    """Extract password configuration from the request's app state.
+
+    Args:
+        request: The incoming request.
+
+    Returns:
+        Password configuration extracted from AdminConfig.
+    """
+    config = _PasswordConfig()
+    try:
+        from litestar_admin.config import AdminConfig
+
+        admin_config = request.app.state.get("admin_config")
+        if isinstance(admin_config, AdminConfig):
+            config.min_length = admin_config.password_min_length
+            config.reset_enabled = admin_config.password_reset_enabled
+            config.token_expiry = admin_config.password_reset_token_expiry
+
+            # Try to get secret key from JWT config
+            if admin_config.auth_backend:
+                jwt_config = getattr(admin_config.auth_backend, "config", None)
+                if jwt_config:
+                    config.secret_key = getattr(jwt_config, "secret_key", "")
+    except (AttributeError, KeyError):
+        pass
+    return config
+
+
+def _validate_new_password(
+    password: str,
+    confirm_password: str | None,
+    min_length: int,
+    user: AdminUser | None = None,
+) -> None:
+    """Validate a new password against policy requirements.
+
+    Args:
+        password: The new password.
+        confirm_password: Optional confirmation password.
+        min_length: Minimum required length.
+        user: Optional user to check against current password.
+
+    Raises:
+        HTTPException: If validation fails.
+    """
+    if confirm_password is not None and password != confirm_password:
+        raise HTTPException(
+            status_code=400,
+            detail="New password and confirmation do not match",
+        )
+
+    if len(password) < min_length:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Password must be at least {min_length} characters long",
+        )
+
+    if user is not None and user.check_password(password):
+        raise HTTPException(
+            status_code=400,
+            detail="New password cannot be the same as the current password",
+        )
 
 
 class UserManagementController(Controller):
@@ -656,6 +811,304 @@ class UserManagementController(Controller):
             message="User deactivated successfully" if was_active else "User was already inactive",
             is_active=False,
         )
+
+    @post(
+        "/{user_id:str}/change-password",
+        status_code=HTTP_200_OK,
+        guards=[PermissionGuard(Permission.USERS_EDIT)],
+        summary="Admin change user password",
+        description="Admin forces a password change for a user.",
+    )
+    async def admin_change_password(
+        self,
+        request: Request[Any, Any, Any],
+        user_id: str,
+        data: AdminChangePasswordRequest,
+        db_session: AsyncSession,
+    ) -> PasswordChangeResponse:
+        """Admin changes a user's password (force reset).
+
+        Args:
+            request: The incoming request.
+            user_id: The user's unique identifier.
+            data: The password change request data.
+            db_session: The database session.
+
+        Returns:
+            Response indicating success or failure.
+
+        Raises:
+            NotFoundException: If the user is not found.
+            HTTPException: If password validation fails.
+        """
+        pw_config = _get_password_config(request)
+
+        # Find the user first
+        result = await db_session.execute(select(AdminUser).where(AdminUser.id == user_id))
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            raise NotFoundException(f"User '{user_id}' not found")
+
+        # Validate the new password
+        _validate_new_password(data.new_password, None, pw_config.min_length, user)
+
+        # Set the new password
+        user.set_password(data.new_password)
+
+        await db_session.flush()
+
+        # Log audit entry
+        await self._log_audit(
+            db_session=db_session,
+            request=request,
+            action=AuditAction.PASSWORD_CHANGE,
+            record_id=user_id,
+            metadata={"changed_by": "admin", "target_email": user.email},
+        )
+
+        await db_session.commit()
+
+        return PasswordChangeResponse(
+            success=True,
+            message="Password changed successfully",
+        )
+
+    @post(
+        "/me/change-password",
+        status_code=HTTP_200_OK,
+        summary="Change own password",
+        description="Current user changes their own password.",
+    )
+    async def self_change_password(
+        self,
+        request: Request[Any, Any, Any],
+        data: SelfChangePasswordRequest,
+        db_session: AsyncSession,
+    ) -> PasswordChangeResponse:
+        """Current user changes their own password.
+
+        Args:
+            request: The incoming request.
+            data: The password change request data.
+            db_session: The database session.
+
+        Returns:
+            Response indicating success or failure.
+
+        Raises:
+            HTTPException: If not authenticated, password validation fails,
+                          or current password is incorrect.
+        """
+        # Get current user from request
+        current_user = getattr(request, "user", None)
+        if current_user is None:
+            raise HTTPException(status_code=401, detail="Authentication required")
+
+        user_id = str(getattr(current_user, "id", None))
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Authentication required")
+
+        pw_config = _get_password_config(request)
+
+        # Find the user in database to get fresh data
+        result = await db_session.execute(select(AdminUser).where(AdminUser.id == user_id))
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # Verify current password
+        if not user.check_password(data.current_password):
+            raise HTTPException(
+                status_code=400,
+                detail="Current password is incorrect",
+            )
+
+        # Validate the new password
+        _validate_new_password(data.new_password, data.confirm_password, pw_config.min_length, user)
+
+        # Set the new password
+        user.set_password(data.new_password)
+
+        await db_session.flush()
+
+        # Log audit entry
+        await self._log_audit(
+            db_session=db_session,
+            request=request,
+            action=AuditAction.PASSWORD_CHANGE,
+            record_id=user_id,
+            metadata={"changed_by": "self"},
+        )
+
+        await db_session.commit()
+
+        return PasswordChangeResponse(
+            success=True,
+            message="Password changed successfully",
+        )
+
+    @post(
+        "/forgot-password",
+        status_code=HTTP_200_OK,
+        summary="Request password reset",
+        description="Initiates a password reset by sending a reset link to the user's email.",
+    )
+    async def forgot_password(
+        self,
+        request: Request[Any, Any, Any],
+        data: ForgotPasswordRequest,
+        db_session: AsyncSession,
+    ) -> PasswordChangeResponse:
+        """Initiate a password reset request.
+
+        Generates a reset token and sends it via email. Always returns success
+        to prevent email enumeration attacks.
+
+        Args:
+            request: The incoming request.
+            data: The forgot password request data.
+            db_session: The database session.
+
+        Returns:
+            Response indicating the email was sent (even if user not found).
+        """
+        pw_config = _get_password_config(request)
+
+        if not pw_config.reset_enabled:
+            raise HTTPException(status_code=400, detail="Password reset is not enabled")
+
+        if not pw_config.secret_key:
+            raise HTTPException(status_code=500, detail="Password reset is not properly configured")
+
+        # Normalize email
+        email = data.email.lower().strip()
+
+        # Check if user exists (but don't reveal this to the client)
+        result = await db_session.execute(select(AdminUser).where(AdminUser.email == email))
+        user = result.scalar_one_or_none()
+
+        if user is not None and user.is_active:
+            reset_service = self._get_reset_service(request, pw_config)
+            await reset_service.generate_token(email, send_email=True)
+
+            # Log audit entry (with user_id if found)
+            await self._log_audit(
+                db_session=db_session,
+                request=request,
+                action=AuditAction.PASSWORD_RESET_REQUEST,
+                record_id=user.id,
+                metadata={"email": email},
+            )
+
+            await db_session.commit()
+
+        # Always return success to prevent email enumeration
+        return PasswordChangeResponse(
+            success=True,
+            message="If an account with that email exists, a password reset link has been sent.",
+        )
+
+    @post(
+        "/reset-password",
+        status_code=HTTP_200_OK,
+        summary="Complete password reset",
+        description="Completes a password reset using the token received via email.",
+    )
+    async def reset_password(
+        self,
+        request: Request[Any, Any, Any],
+        data: ResetPasswordRequest,
+        db_session: AsyncSession,
+    ) -> PasswordChangeResponse:
+        """Complete a password reset using a token.
+
+        Validates the token and sets the new password if valid.
+
+        Args:
+            request: The incoming request.
+            data: The reset password request data.
+            db_session: The database session.
+
+        Returns:
+            Response indicating success or failure.
+
+        Raises:
+            HTTPException: If token is invalid, expired, or password validation fails.
+        """
+        pw_config = _get_password_config(request)
+
+        if not pw_config.reset_enabled:
+            raise HTTPException(status_code=400, detail="Password reset is not enabled")
+
+        if not pw_config.secret_key:
+            raise HTTPException(status_code=500, detail="Password reset is not properly configured")
+
+        # Validate and consume the token first
+        reset_service = self._get_reset_service(request, pw_config)
+        email = await reset_service.consume_token(data.token)
+        if email is None:
+            raise HTTPException(status_code=400, detail="Invalid or expired password reset token")
+
+        # Find the user
+        result = await db_session.execute(select(AdminUser).where(AdminUser.email == email))
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            raise HTTPException(status_code=400, detail="Invalid or expired password reset token")
+
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail="Account is disabled")
+
+        # Validate the new password
+        _validate_new_password(data.new_password, data.confirm_password, pw_config.min_length, user)
+
+        # Set the new password
+        user.set_password(data.new_password)
+
+        await db_session.flush()
+
+        # Log audit entry
+        await self._log_audit(
+            db_session=db_session,
+            request=request,
+            action=AuditAction.PASSWORD_RESET_COMPLETE,
+            record_id=user.id,
+            metadata={"email": email},
+        )
+
+        await db_session.commit()
+
+        return PasswordChangeResponse(
+            success=True,
+            message="Password has been reset successfully",
+        )
+
+    @staticmethod
+    def _get_reset_service(
+        request: Request[Any, Any, Any],
+        pw_config: _PasswordConfig,
+    ) -> PasswordResetService:
+        """Get or create a password reset service instance.
+
+        Args:
+            request: The incoming request.
+            pw_config: Password configuration.
+
+        Returns:
+            The password reset service.
+        """
+        from litestar_admin.auth.password_reset import PasswordResetService
+
+        reset_service = getattr(request.app.state, "password_reset_service", None)
+        if reset_service is None:
+            reset_service = PasswordResetService(
+                secret_key=pw_config.secret_key,
+                token_expiry=pw_config.token_expiry,
+            )
+            request.app.state.password_reset_service = reset_service
+        return reset_service
 
     @staticmethod
     async def _log_audit(
