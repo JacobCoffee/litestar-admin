@@ -160,6 +160,18 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
       }
     };
 
+    // Build aria-label for sortable columns
+    const getSortAriaLabel = () => {
+      if (!sortable) return undefined;
+      const columnName = typeof children === 'string' ? children : 'column';
+      if (sortDirection === 'asc') {
+        return `${columnName}, sorted ascending, click to sort descending`;
+      } else if (sortDirection === 'desc') {
+        return `${columnName}, sorted descending, click to sort ascending`;
+      }
+      return `${columnName}, click to sort ascending`;
+    };
+
     return (
       <th
         ref={ref}
@@ -170,13 +182,15 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
             'cursor-pointer select-none',
             'hover:text-[var(--color-foreground)]',
             'transition-colors duration-150',
+            'focus-visible:outline-none focus-visible:ring-2',
+            'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
           ],
           className
         )}
         onClick={sortable ? onSort : undefined}
         onKeyDown={handleKeyDown}
         tabIndex={sortable ? 0 : undefined}
-        role={sortable ? 'button' : undefined}
+        role={sortable ? 'columnheader button' : 'columnheader'}
         aria-sort={
           sortDirection === 'asc'
             ? 'ascending'
@@ -184,6 +198,8 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
               ? 'descending'
               : undefined
         }
+        aria-label={getSortAriaLabel()}
+        scope="col"
         {...props}
       >
         <div className="flex items-center gap-1">

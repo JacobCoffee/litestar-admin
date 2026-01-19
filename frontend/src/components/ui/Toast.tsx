@@ -122,23 +122,23 @@ const variantStyles: Record<ToastVariant, string> = {
 
 const variantIcons: Record<ToastVariant, ReactNode> = {
   success: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M20 6L9 17l-5-5" />
     </svg>
   ),
   error: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       <path d="M15 9l-6 6M9 9l6 6" />
     </svg>
   ),
   warning: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
     </svg>
   ),
   info: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       <path d="M12 16v-4M12 8h.01" />
     </svg>
@@ -215,7 +215,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
             'transition-colors duration-150',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
           )}
-          aria-label="Dismiss"
+          aria-label="Dismiss notification"
         >
           <svg
             className="h-4 w-4"
@@ -223,6 +223,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            aria-hidden="true"
           >
             <path d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -279,7 +280,7 @@ export const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
                 'transition-colors duration-150',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
               )}
-              aria-label="Dismiss"
+              aria-label="Dismiss notification"
             >
               <svg
                 className="h-4 w-4"
@@ -287,6 +288,7 @@ export const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
+                aria-hidden="true"
               >
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>

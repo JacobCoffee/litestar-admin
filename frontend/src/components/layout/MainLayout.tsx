@@ -49,6 +49,23 @@ export function MainLayout({
 
   return (
     <div className={cn('min-h-screen bg-[var(--color-background)]', className)}>
+      {/* Skip to main content link - visible only on focus for keyboard users */}
+      <a
+        href="#main-content"
+        className={cn(
+          'sr-only focus:not-sr-only',
+          'fixed top-4 left-4 z-[100]',
+          'px-4 py-2 rounded-[var(--radius-md)]',
+          'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]',
+          'font-medium text-sm',
+          'focus:outline-none focus-visible:ring-2',
+          'focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2',
+          'focus-visible:ring-offset-[var(--color-background)]'
+        )}
+      >
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
       <Sidebar {...sidebar} />
 
@@ -65,8 +82,11 @@ export function MainLayout({
 
         {/* Main content area */}
         <main
+          id="main-content"
+          tabIndex={-1}
           className={cn(
             'flex-1 overflow-y-auto p-4 md:p-6',
+            'focus:outline-none',
             contentClassName
           )}
         >

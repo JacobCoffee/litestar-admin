@@ -686,10 +686,25 @@ export function DataTable<T>({
         </div>
       )}
 
+      {/* Live region for screen reader announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id={`${tableId}-status`}
+      >
+        {isLoading
+          ? 'Loading data...'
+          : data.length === 0
+            ? emptyMessage
+            : `Showing ${data.length} rows. ${selectedIds.size > 0 ? `${selectedIds.size} rows selected.` : ''}`}
+      </div>
+
       {/* Table */}
-      <Table striped={striped} aria-labelledby={`${tableId}-caption`}>
+      <Table striped={striped} aria-labelledby={`${tableId}-caption`} aria-describedby={`${tableId}-status`}>
         <caption id={`${tableId}-caption`} className="sr-only">
-          Data table
+          Data table with {displayColumns.length} columns{selectable ? ', with row selection' : ''}
         </caption>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

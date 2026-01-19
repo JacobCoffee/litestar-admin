@@ -4,6 +4,9 @@ import {
   forwardRef,
   useEffect,
   useCallback,
+  useRef,
+  useId,
+  useState,
   type HTMLAttributes,
   type ReactNode,
   type MouseEvent,
@@ -17,6 +20,24 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
   children?: ReactNode;
+  /** Accessible label for the modal (used if no ModalHeader is present) */
+  'aria-label'?: string;
+}
+
+/**
+ * Get all focusable elements within a container.
+ */
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  const focusableSelectors = [
+    'button:not([disabled])',
+    'a[href]',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(', ');
+
+  return Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[];
 }
 
 export const Modal = forwardRef<HTMLDivElement, ModalProps>(
@@ -28,10 +49,16 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       closeOnEscape = true,
       className,
       children,
+      'aria-label': ariaLabel,
       ...props
     },
     ref
   ) => {
+    const modalId = useId();
+    const titleId = `${modalId}-title`;
+    const modalRef = useRef<HTMLDivElement>(null);
+    const previousActiveElement = useRef<HTMLElement | null>(null);
+
     const handleEscape = useCallback(
       (e: KeyboardEvent) => {
         if (closeOnEscape && e.key === 'Escape') {
@@ -47,17 +74,68 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       }
     };
 
+    // Focus trap handler
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = getFocusableElements(modalRef.current);
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      // Safety check
+      if (!firstElement || !lastElement) return;
+
+      if (e.shiftKey) {
+        // Shift + Tab: moving backwards
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab: moving forwards
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }, []);
+
     useEffect(() => {
       if (isOpen) {
+        // Store the currently focused element to restore later
+        previousActiveElement.current = document.activeElement as HTMLElement;
+
         document.addEventListener('keydown', handleEscape);
+        document.addEventListener('keydown', handleKeyDown);
         document.body.style.overflow = 'hidden';
+
+        // Focus the modal or first focusable element
+        requestAnimationFrame(() => {
+          if (modalRef.current) {
+            const focusableElements = getFocusableElements(modalRef.current);
+            const firstFocusable = focusableElements[0];
+            if (firstFocusable) {
+              firstFocusable.focus();
+            } else {
+              modalRef.current.focus();
+            }
+          }
+        });
       }
 
       return () => {
         document.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('keydown', handleKeyDown);
         document.body.style.overflow = '';
+
+        // Restore focus to the previously focused element
+        if (previousActiveElement.current && typeof previousActiveElement.current.focus === 'function') {
+          previousActiveElement.current.focus();
+        }
       };
-    }, [isOpen, handleEscape]);
+    }, [isOpen, handleEscape, handleKeyDown]);
 
     if (!isOpen) return null;
 
@@ -71,21 +149,34 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
         onClick={handleOverlayClick}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={ariaLabel ? undefined : titleId}
+        aria-label={ariaLabel}
       >
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           aria-hidden="true"
         />
         <div
-          ref={ref}
+          ref={(node) => {
+            // Handle both refs using type assertion for mutable ref
+            (modalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            if (typeof ref === 'function') {
+              ref(node);
+            } else if (ref) {
+              (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            }
+          }}
+          tabIndex={-1}
           className={cn(
             'relative z-10 w-full max-w-lg',
             'bg-[var(--color-card)] rounded-[var(--radius-lg)]',
             'border border-[var(--color-border)]',
             'shadow-2xl shadow-black/40',
             'animate-[scaleIn_150ms_ease-out]',
+            'focus:outline-none',
             className
           )}
+          data-modal-title-id={titleId}
           {...props}
         >
           {children}
@@ -108,9 +199,30 @@ export interface ModalHeaderProps extends HTMLAttributes<HTMLDivElement> {
 
 export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
   ({ onClose, className, children, ...props }, ref) => {
+    const headerRef = useRef<HTMLDivElement>(null);
+    const [titleId, setTitleId] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+      // Get the title ID from parent modal via data attribute
+      if (headerRef.current) {
+        const modal = headerRef.current.closest('[data-modal-title-id]');
+        const id = modal?.getAttribute('data-modal-title-id');
+        if (id) {
+          setTitleId(id);
+        }
+      }
+    }, []);
+
     return (
       <div
-        ref={ref}
+        ref={(node) => {
+          (headerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          if (typeof ref === 'function') {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }
+        }}
         className={cn(
           'flex items-center justify-between',
           'px-6 py-4',
@@ -119,7 +231,10 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
         )}
         {...props}
       >
-        <h2 className="text-lg font-semibold text-[var(--color-foreground)]">
+        <h2
+          id={titleId}
+          className="text-lg font-semibold text-[var(--color-foreground)]"
+        >
           {children}
         </h2>
         {onClose && (

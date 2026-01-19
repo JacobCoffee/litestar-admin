@@ -189,9 +189,12 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
       >
         {children}
         {required && (
-          <span className="ml-1 text-[var(--color-error)]" aria-hidden="true">
-            *
-          </span>
+          <>
+            <span className="ml-1 text-[var(--color-error)]" aria-hidden="true">
+              *
+            </span>
+            <span className="sr-only">(required)</span>
+          </>
         )}
       </label>
     );
@@ -212,6 +215,10 @@ export interface FormFieldProps {
 
 export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
   ({ label, htmlFor, required = false, error, hint, className, children }, ref) => {
+    // Generate IDs for aria-describedby
+    const hintId = htmlFor ? `${htmlFor}-hint` : undefined;
+    const errorId = htmlFor ? `${htmlFor}-error` : undefined;
+
     return (
       <div ref={ref} className={cn('space-y-1.5', className)}>
         {label && (
@@ -221,10 +228,20 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
         )}
         {children}
         {hint && !error && (
-          <p className="text-xs text-[var(--color-muted)]">{hint}</p>
+          <p
+            id={hintId}
+            className="text-xs text-[var(--color-muted)]"
+          >
+            {hint}
+          </p>
         )}
         {error && (
-          <p className="text-xs text-[var(--color-error)]" role="alert">
+          <p
+            id={errorId}
+            className="text-xs text-[var(--color-error)]"
+            role="alert"
+            aria-live="polite"
+          >
             {error}
           </p>
         )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useState, useId, type ReactNode, type KeyboardEvent } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -143,15 +143,23 @@ interface CategorySectionProps {
 
 function CategorySection({ category, isCollapsed, pathname }: CategorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(category.defaultOpen ?? true);
+  const regionId = useId();
 
   const toggleExpanded = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
 
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleExpanded();
+    }
+  }, [toggleExpanded]);
+
   if (isCollapsed) {
     // In collapsed mode, show only icons in a vertical list
     return (
-      <div className="space-y-1">
+      <div className="space-y-1" role="group" aria-label={category.label}>
         {category.items.map((item) => (
           <NavItemLink key={item.id} item={item} isCollapsed pathname={pathname} />
         ))}
@@ -164,13 +172,18 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
       <button
         type="button"
         onClick={toggleExpanded}
+        onKeyDown={handleKeyDown}
         className={cn(
           'flex w-full items-center justify-between px-3 py-2',
           'text-xs font-semibold uppercase tracking-wider',
           'text-[var(--color-muted)] hover:text-[var(--color-sidebar-foreground)]',
-          'transition-colors duration-150'
+          'transition-colors duration-150',
+          'focus-visible:outline-none focus-visible:ring-2',
+          'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
+          'rounded-[var(--radius-md)]'
         )}
         aria-expanded={isExpanded}
+        aria-controls={regionId}
       >
         <span>{category.label}</span>
         <ChevronDownIcon
@@ -181,16 +194,22 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
         />
       </button>
       <div
+        id={regionId}
+        role="region"
+        aria-label={`${category.label} navigation items`}
         className={cn(
           'overflow-hidden transition-all duration-200',
           isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
         )}
+        aria-hidden={!isExpanded}
       >
-        <div className="space-y-1 pb-2">
+        <ul className="space-y-1 pb-2" role="list">
           {category.items.map((item) => (
-            <NavItemLink key={item.id} item={item} isCollapsed={false} pathname={pathname} />
+            <li key={item.id}>
+              <NavItemLink item={item} isCollapsed={false} pathname={pathname} />
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );
@@ -212,6 +231,8 @@ function NavItemLink({ item, isCollapsed, pathname }: NavItemLinkProps) {
       className={cn(
         'group flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2',
         'text-sm font-medium transition-all duration-150',
+        'focus-visible:outline-none focus-visible:ring-2',
+        'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
         isActive
           ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
           : 'text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card-hover)] hover:text-[var(--color-foreground)]',
@@ -235,6 +256,7 @@ function NavItemLink({ item, isCollapsed, pathname }: NavItemLinkProps) {
                 'ml-auto rounded-full px-2 py-0.5 text-xs font-medium',
                 'bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
               )}
+              aria-label={`${item.badge} items`}
             >
               {item.badge}
             </span>
