@@ -90,8 +90,8 @@ class AdminPlugin(InitPluginProtocol):
         Returns:
             The modified application configuration.
         """
-        # Register views from config
-        for view_class in self._config.views:
+        # Register views from config (supports all view types from views and categorized fields)
+        for view_class in self._config.get_all_views():
             self._registry.register(view_class)
 
         # Add dependencies
