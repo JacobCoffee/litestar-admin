@@ -39,7 +39,6 @@ html_title = "litestar-admin"
 # Theme options
 html_theme_options = {
     "accent_color": "lime",
-    "dark_code": True,
     "github_url": "https://github.com/JacobCoffee/litestar-admin",
     "nav_links": [
         {"title": "Litestar", "url": "https://litestar.dev/"},
@@ -107,10 +106,11 @@ copybutton_remove_prompts = True
 # Suppress warnings for cross-references and docutils parsing issues
 # - myst.xref_missing: cross-references that can't be resolved
 # - ref.duplicate_object: objects documented in multiple places
-# - autodoc.import_object: objects that fail to import during autodoc
+# - misc.highlighting_failure: HTTP code blocks that can't be lexed
 suppress_warnings = [
     "myst.xref_missing",
     "ref.duplicate_object",
+    "misc.highlighting_failure",
 ]
 
 # Configure nitpicky mode to be lenient
