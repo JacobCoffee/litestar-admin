@@ -61,6 +61,7 @@ Example:
 
 from __future__ import annotations
 
+from litestar_admin.audit.database import DatabaseAuditLogger
 from litestar_admin.audit.logger import (
     AuditAction,
     AuditEntry,
@@ -76,6 +77,7 @@ from litestar_admin.audit.middleware import (
     AuditMiddleware,
     AuditMiddlewareConfig,
 )
+from litestar_admin.audit.models import AuditLog, AuditLogBase
 
 __all__ = [
     # Core types
@@ -84,7 +86,11 @@ __all__ = [
     "AuditLogger",
     "AuditQueryFilters",
     # Implementations
+    "DatabaseAuditLogger",
     "InMemoryAuditLogger",
+    # Models
+    "AuditLog",
+    "AuditLogBase",
     # Middleware
     "AuditMiddleware",
     "AuditMiddlewareConfig",

@@ -5,13 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from litestar import Controller, delete, get, patch, post, put
+from litestar import Controller, Request, delete, get, patch, post, put
 from litestar.exceptions import NotFoundException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
 # Litestar requires these imports at runtime for dependency injection type resolution
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
 
+from litestar_admin.audit import AuditAction, audit_admin_action, calculate_changes
+from litestar_admin.audit.database import DatabaseAuditLogger
 from litestar_admin.registry import ModelRegistry  # noqa: TC001
 from litestar_admin.service import AdminService
 
@@ -253,6 +255,7 @@ class ModelsController(Controller):
     )
     async def create_record(
         self,
+        request: Request[Any, Any, Any],
         model_name: str,
         data: dict[str, Any],
         admin_registry: ModelRegistry,
@@ -261,6 +264,7 @@ class ModelsController(Controller):
         """Create a new record for a model.
 
         Args:
+            request: The incoming request.
             model_name: The name of the registered model.
             data: The record data to create.
             admin_registry: The model registry.
@@ -280,7 +284,18 @@ class ModelsController(Controller):
         service: AdminService[Any] = AdminService(view_class, db_session)
         record = await service.create_record(data)
 
-        return _serialize_record(record)
+        serialized = _serialize_record(record)
+
+        # Log audit entry
+        await self._log_audit(
+            db_session,
+            request,
+            AuditAction.CREATE,
+            model_name,
+            serialized.get("id"),
+        )
+
+        return serialized
 
     @get(
         "/{model_name:str}/schema",
@@ -372,6 +387,7 @@ class ModelsController(Controller):
     )
     async def update_record_full(
         self,
+        request: Request[Any, Any, Any],
         model_name: str,
         record_id: str,
         data: dict[str, Any],
@@ -381,6 +397,7 @@ class ModelsController(Controller):
         """Fully update a record (replace all fields).
 
         Args:
+            request: The incoming request.
             model_name: The name of the registered model.
             record_id: The primary key value.
             data: The complete record data.
@@ -401,11 +418,28 @@ class ModelsController(Controller):
         service: AdminService[Any] = AdminService(view_class, db_session)
         pk = _convert_pk(record_id, service)
 
+        # Get old data for change tracking
+        old_record = await service.get_record(pk)
+        old_data = _serialize_record(old_record) if old_record else {}
+
         record = await service.update_record(pk, data, partial=False)
         if record is None:
             raise NotFoundException(f"Record '{record_id}' not found in '{model_name}'")
 
-        return _serialize_record(record)
+        serialized = _serialize_record(record)
+
+        # Calculate and log changes
+        changes = calculate_changes(old_data, serialized)
+        await self._log_audit(
+            db_session,
+            request,
+            AuditAction.UPDATE,
+            model_name,
+            record_id,
+            changes=changes if changes else None,
+        )
+
+        return serialized
 
     @patch(
         "/{model_name:str}/{record_id:str}",
@@ -415,6 +449,7 @@ class ModelsController(Controller):
     )
     async def update_record_partial(
         self,
+        request: Request[Any, Any, Any],
         model_name: str,
         record_id: str,
         data: dict[str, Any],
@@ -424,6 +459,7 @@ class ModelsController(Controller):
         """Partially update a record (only provided fields).
 
         Args:
+            request: The incoming request.
             model_name: The name of the registered model.
             record_id: The primary key value.
             data: The fields to update.
@@ -444,11 +480,28 @@ class ModelsController(Controller):
         service: AdminService[Any] = AdminService(view_class, db_session)
         pk = _convert_pk(record_id, service)
 
+        # Get old data for change tracking
+        old_record = await service.get_record(pk)
+        old_data = _serialize_record(old_record) if old_record else {}
+
         record = await service.update_record(pk, data, partial=True)
         if record is None:
             raise NotFoundException(f"Record '{record_id}' not found in '{model_name}'")
 
-        return _serialize_record(record)
+        serialized = _serialize_record(record)
+
+        # Calculate and log changes
+        changes = calculate_changes(old_data, serialized)
+        await self._log_audit(
+            db_session,
+            request,
+            AuditAction.UPDATE,
+            model_name,
+            record_id,
+            changes=changes if changes else None,
+        )
+
+        return serialized
 
     @delete(
         "/{model_name:str}/{record_id:str}",
@@ -458,6 +511,7 @@ class ModelsController(Controller):
     )
     async def delete_record(
         self,
+        request: Request[Any, Any, Any],
         model_name: str,
         record_id: str,
         admin_registry: ModelRegistry,
@@ -468,6 +522,7 @@ class ModelsController(Controller):
         """Delete a record by primary key.
 
         Args:
+            request: The incoming request.
             model_name: The name of the registered model.
             record_id: The primary key value.
             admin_registry: The model registry.
@@ -492,7 +547,67 @@ class ModelsController(Controller):
         if not success:
             raise NotFoundException(f"Record '{record_id}' not found in '{model_name}'")
 
+        # Log audit entry
+        await self._log_audit(
+            db_session,
+            request,
+            AuditAction.DELETE,
+            model_name,
+            record_id,
+            metadata={"soft_delete": soft_delete},
+        )
+
         return DeleteResponse(success=True, message=f"Record '{record_id}' deleted successfully")
+
+    @staticmethod
+    async def _log_audit(
+        db_session: AsyncSession,
+        request: Request[Any, Any, Any],
+        action: AuditAction,
+        model_name: str,
+        record_id: str | int | None,
+        *,
+        changes: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        """Log an audit entry for a CRUD operation.
+
+        Args:
+            db_session: The database session.
+            request: The incoming request for actor/request info.
+            action: The action being performed.
+            model_name: The name of the model being modified.
+            record_id: The ID of the record being modified.
+            changes: Optional dictionary of field changes.
+            metadata: Optional additional metadata.
+        """
+        import logging
+        audit_logger = logging.getLogger("litestar_admin.audit")
+        audit_logger.info(f"Audit log: {action.value} on {model_name} record {record_id}")
+
+        try:
+            entry = await audit_admin_action(
+                connection=request,
+                action=action,
+                model_name=model_name,
+                record_id=record_id,
+                changes=changes,
+                metadata=metadata,
+            )
+            audit_logger.info(f"Created audit entry: {entry.id}")
+
+            logger = DatabaseAuditLogger(db_session)
+            await logger.log(entry)
+            audit_logger.info("Audit entry added to session, committing...")
+
+            await db_session.commit()
+            audit_logger.info("Audit entry committed successfully")
+        except Exception as e:
+            audit_logger.error(f"Audit logging failed: {e}", exc_info=True)
+            try:
+                await db_session.rollback()
+            except Exception:
+                pass
 
 
 def _convert_pk(pk_str: str, service: AdminService[Any]) -> Any:

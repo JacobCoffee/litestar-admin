@@ -237,7 +237,20 @@ function formatDetails(details: Record<string, unknown>): string {
 
   return entries
     .slice(0, 3)
-    .map(([key, value]) => `${key}: ${String(value)}`)
+    .map(([key, value]) => {
+      // Handle nested objects with old/new values (audit log format)
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        const obj = value as Record<string, unknown>;
+        if ("old" in obj && "new" in obj) {
+          const oldVal = obj["old"] ?? "(empty)";
+          const newVal = obj["new"] ?? "(empty)";
+          return `${key}: ${oldVal} → ${newVal}`;
+        }
+        // For other objects, use JSON stringification
+        return `${key}: ${JSON.stringify(value)}`;
+      }
+      return `${key}: ${String(value ?? "(empty)")}`;
+    })
     .join(", ");
 }
 

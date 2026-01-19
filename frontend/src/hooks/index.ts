@@ -33,6 +33,7 @@ export {
   // Dashboard hooks
   useDashboardStats,
   useActivity,
+  useRecordActivity,
 
   // Bulk action hooks
   useBulkDelete,

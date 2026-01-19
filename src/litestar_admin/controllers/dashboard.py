@@ -143,6 +143,10 @@ class DashboardController(Controller):
         total_records = 0
 
         for view_class in admin_registry:
+            # Skip views that don't have a model (custom views, settings, etc.)
+            if not hasattr(view_class, "model") or view_class.model is None:
+                continue
+
             count = 0
 
             # Attempt to get record count if session is available
@@ -167,7 +171,7 @@ class DashboardController(Controller):
         return DashboardStats(
             models=model_stats,
             total_records=total_records,
-            total_models=len(admin_registry),
+            total_models=len(model_stats),
             widgets=widgets,
         )
 
@@ -181,38 +185,52 @@ class DashboardController(Controller):
         self,
         admin_config: AdminConfig,  # noqa: ARG002
         admin_registry: ModelRegistry,  # noqa: ARG002
-        db_session: AsyncSession | None = None,  # noqa: ARG002
+        db_session: AsyncSession | None = None,
         limit: int = 50,
+        model_name: str | None = None,
+        record_id: str | None = None,
     ) -> list[ActivityEntry]:
         """Get recent activity from the audit log.
 
         This endpoint returns recent changes made through the admin panel.
-        Full implementation requires the AuditLogger from Phase 3.
 
         Args:
             admin_config: The admin panel configuration.
             admin_registry: The model registry.
             db_session: Optional database session for fetching audit logs.
             limit: Maximum number of activity entries to return.
+            model_name: Optional filter by model name.
+            record_id: Optional filter by record ID.
 
         Returns:
             List of recent activity entries, or empty list if audit logging
-            is not configured.
+            is not configured or no session is available.
         """
-        # AuditLogger integration will be implemented in Phase 3
-        # For now, return an empty list with the correct structure
-        # The frontend can display a "No recent activity" message
+        if db_session is None:
+            return []
 
-        # Future implementation will look like:
-        # if admin_config.audit_logger:
-        #     return await admin_config.audit_logger.get_recent_activity(
-        #         limit=limit,
-        #         session=db_session,
-        #     )
+        try:
+            from litestar_admin.audit import AuditQueryFilters
+            from litestar_admin.audit.database import DatabaseAuditLogger
 
-        _ = limit  # Mark as used for linting
+            logger = DatabaseAuditLogger(db_session)
+            filters = AuditQueryFilters(limit=limit, model_name=model_name, record_id=record_id)
+            entries = await logger.query(filters)
 
-        return []
+            return [
+                ActivityEntry(
+                    action=entry.action.value,
+                    model=entry.model_name or "System",
+                    record_id=entry.record_id,
+                    timestamp=entry.timestamp,
+                    user=entry.actor_email,
+                    details=entry.changes or {},
+                )
+                for entry in entries
+            ]
+        except Exception:
+            # Table might not exist yet or other database errors
+            return []
 
     @get(
         "/widgets",

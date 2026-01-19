@@ -82,7 +82,8 @@ export const queryKeys = {
   dashboard: {
     all: ["dashboard"] as const,
     stats: () => [...queryKeys.dashboard.all, "stats"] as const,
-    activity: (limit?: number) => [...queryKeys.dashboard.all, "activity", limit] as const,
+    activity: (limit?: number, modelName?: string, recordId?: string) =>
+      [...queryKeys.dashboard.all, "activity", limit, modelName, recordId] as const,
   },
 
   // Custom Views
@@ -508,20 +509,46 @@ export function useDashboardStats(options?: QueryOptions<DashboardStats>) {
 }
 
 /**
- * Hook to get recent activity.
+ * Hook to get recent activity with optional filtering.
  *
  * @example
  * ```tsx
+ * // Get global activity
  * const { data: activity } = useActivity(20);
+ *
+ * // Get activity for a specific record
+ * const { data: recordActivity } = useActivity(10, "User", "123");
  * ```
  */
-export function useActivity(limit = 50, options?: QueryOptions<ActivityItem[]>) {
+export function useActivity(
+  limit = 50,
+  modelName?: string,
+  recordId?: string,
+  options?: QueryOptions<ActivityItem[]>,
+) {
   return useQuery({
-    queryKey: queryKeys.dashboard.activity(limit),
-    queryFn: () => api.getActivity(limit),
+    queryKey: queryKeys.dashboard.activity(limit, modelName, recordId),
+    queryFn: () => api.getActivity(limit, modelName, recordId),
     staleTime: 30 * 1000, // Activity can be stale for 30 seconds
     ...options,
   });
+}
+
+/**
+ * Hook to get activity for a specific record.
+ *
+ * @example
+ * ```tsx
+ * const { data: activity } = useRecordActivity("User", "123");
+ * ```
+ */
+export function useRecordActivity(
+  modelName: string,
+  recordId: string,
+  limit = 20,
+  options?: QueryOptions<ActivityItem[]>,
+) {
+  return useActivity(limit, modelName, recordId, options);
 }
 
 // ============================================================================

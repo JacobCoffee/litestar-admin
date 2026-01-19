@@ -110,6 +110,7 @@ from __future__ import annotations
 
 import os
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
 from advanced_alchemy.extensions.litestar import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin
@@ -432,6 +433,110 @@ This article is under review...
                 ]
             )
         )
+
+        # Seed audit log entries for demo
+        from datetime import timedelta
+
+        from litestar_admin.audit.models import AuditLog
+
+        now = datetime.now(tz=timezone.utc)
+        audit_entries = [
+            # Login events
+            AuditLog(
+                timestamp=now - timedelta(hours=2),
+                action="login",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                ip_address="127.0.0.1",
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            ),
+            AuditLog(
+                timestamp=now - timedelta(hours=1, minutes=45),
+                action="login",
+                actor_id=str(editor_user.id),
+                actor_email="editor@example.com",
+                ip_address="192.168.1.100",
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            ),
+            # User creation
+            AuditLog(
+                timestamp=now - timedelta(hours=1, minutes=30),
+                action="create",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="User",
+                record_id=str(viewer_user.id),
+                ip_address="127.0.0.1",
+            ),
+            # Article creation
+            AuditLog(
+                timestamp=now - timedelta(hours=1, minutes=15),
+                action="create",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="Article",
+                record_id=str(articles[0].id),
+                ip_address="127.0.0.1",
+            ),
+            AuditLog(
+                timestamp=now - timedelta(hours=1),
+                action="create",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="Article",
+                record_id=str(articles[1].id),
+                ip_address="127.0.0.1",
+            ),
+            # Article update with changes
+            AuditLog(
+                timestamp=now - timedelta(minutes=45),
+                action="update",
+                actor_id=str(editor_user.id),
+                actor_email="editor@example.com",
+                model_name="Article",
+                record_id=str(articles[2].id),
+                changes={
+                    "status": {"old": "draft", "new": "review"},
+                    "title": {"old": "Draft Article", "new": "Draft: Upcoming Features"},
+                },
+                ip_address="192.168.1.100",
+            ),
+            # Tag creation
+            AuditLog(
+                timestamp=now - timedelta(minutes=30),
+                action="create",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="Tag",
+                record_id=str(tags[4].id),
+                ip_address="127.0.0.1",
+            ),
+            # User update
+            AuditLog(
+                timestamp=now - timedelta(minutes=15),
+                action="update",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                model_name="User",
+                record_id=str(editor_user.id),
+                changes={
+                    "is_active": {"old": False, "new": True},
+                },
+                ip_address="127.0.0.1",
+            ),
+            # Recent login
+            AuditLog(
+                timestamp=now - timedelta(minutes=5),
+                action="login",
+                actor_id=str(admin_user.id),
+                actor_email="admin@example.com",
+                ip_address="127.0.0.1",
+                user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            ),
+        ]
+
+        for entry in audit_entries:
+            session.add(entry)
 
         await session.commit()
         logger.info("Demo data seeded successfully")

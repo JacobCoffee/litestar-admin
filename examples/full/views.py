@@ -258,7 +258,9 @@ class ArticleAdmin(ModelView, model=Article):
             is_create: Whether this was a create operation.
         """
         action = "created" if is_create else "updated"
-        logger.info("Article %s: %s (id=%d, status=%s)", action, record.title, record.id, record.status.value)
+        # Handle status being either an enum or a string
+        status_value = record.status.value if hasattr(record.status, "value") else record.status
+        logger.info("Article %s: %s (id=%d, status=%s)", action, record.title, record.id, status_value)
 
 
 class TagAdmin(ModelView, model=Tag):

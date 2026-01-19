@@ -155,6 +155,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
+      // Check for OAuth callback token in URL (from OAuth redirect)
+      const urlToken = searchParams.get("token");
+      if (urlToken) {
+        // Store the token and clean the URL
+        apiClient.setToken(urlToken);
+        // Remove token from URL to prevent exposure in browser history
+        const url = new URL(window.location.href);
+        url.searchParams.delete("token");
+        window.history.replaceState({}, "", url.pathname);
+      }
+
       const hasToken = !!localStorage.getItem(ACCESS_TOKEN_KEY);
 
       if (hasToken) {
@@ -170,7 +181,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkAuth();
-  }, [refetchUser]);
+  }, [refetchUser, searchParams]);
 
   // Compute authentication state
   const isAuthenticated = useMemo(() => {

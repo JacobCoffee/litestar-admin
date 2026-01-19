@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
-import { useRecord, useModelSchema, useUpdateRecord, useDeleteRecord } from "@/hooks/useApi";
+import {
+  useRecord,
+  useModelSchema,
+  useUpdateRecord,
+  useDeleteRecord,
+  useRecordActivity,
+} from "@/hooks/useApi";
 import { useToast } from "@/components/ui/Toast";
 import { PageHeader } from "@/components/layout/PageHeader";
 import type { BreadcrumbItem } from "@/components/layout/Breadcrumb";
@@ -605,6 +611,9 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
 
   const { data: schema, isLoading: isLoadingSchema } = useModelSchema(model, "edit");
 
+  // Fetch actual audit log entries for this record
+  const { data: activityData, isLoading: isLoadingActivity } = useRecordActivity(model, id, 20);
+
   const updateMutation = useUpdateRecord<ModelRecord>(model, {
     onSuccess: () => {
       addToast({
@@ -664,33 +673,54 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
     return extractRelatedRecords(record, schema);
   }, [record, schema]);
 
+  // Convert activity items to audit log entries for display
   const auditLog = useMemo<AuditLogEntry[]>(() => {
-    if (!record) return [];
+    if (!activityData || activityData.length === 0) {
+      // Fallback: derive from record timestamps if no audit log data
+      if (!record) return [];
 
-    const entries: AuditLogEntry[] = [];
+      const entries: AuditLogEntry[] = [];
 
-    if (record["created_at"]) {
-      entries.push({
-        id: "created",
-        action: "create",
-        timestamp: String(record["created_at"]),
-        user: record["created_by"] ? String(record["created_by"]) : null,
-      });
+      if (record["created_at"]) {
+        entries.push({
+          id: "created",
+          action: "create",
+          timestamp: String(record["created_at"]),
+          user: record["created_by"] ? String(record["created_by"]) : null,
+        });
+      }
+
+      if (record["updated_at"] && record["updated_at"] !== record["created_at"]) {
+        entries.push({
+          id: "updated",
+          action: "update",
+          timestamp: String(record["updated_at"]),
+          user: record["updated_by"] ? String(record["updated_by"]) : null,
+        });
+      }
+
+      return entries.sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
     }
 
-    if (record["updated_at"] && record["updated_at"] !== record["created_at"]) {
-      entries.push({
-        id: "updated",
-        action: "update",
-        timestamp: String(record["updated_at"]),
-        user: record["updated_by"] ? String(record["updated_by"]) : null,
-      });
-    }
+    // Convert ActivityItem[] to AuditLogEntry[]
+    return activityData.map((item, index) => {
+      const entry: AuditLogEntry = {
+        id: `activity-${index}`,
+        action: item.action,
+        timestamp: item.timestamp,
+        user: item.user ?? null,
+      };
 
-    return entries.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
-  }, [record]);
+      // Only add changes if details exist and have properties
+      if (item.details && Object.keys(item.details).length > 0) {
+        entry.changes = item.details as Record<string, { old: unknown; new: unknown }>;
+      }
+
+      return entry;
+    });
+  }, [activityData, record]);
 
   const breadcrumbs: BreadcrumbItem[] = useMemo(
     () => [
@@ -836,7 +866,7 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
 
           <div className="space-y-6">
             <RelatedRecordsSection records={relatedRecords} />
-            <AuditLogSection entries={auditLog} />
+            <AuditLogSection entries={auditLog} isLoading={isLoadingActivity} />
           </div>
         </div>
 
