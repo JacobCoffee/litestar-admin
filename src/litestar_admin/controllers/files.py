@@ -20,7 +20,7 @@ from litestar import Controller, delete, get, post
 from litestar.datastructures import UploadFile  # noqa: TC002  # Required for runtime signature
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, Parameter
 from litestar.response import Redirect, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
@@ -175,13 +175,13 @@ class FilesController(Controller):
     )
     async def upload_file(
         self,
-        admin_storage: AdminStorageBackend,
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART),
-        model_name: str = Body(),
-        field_name: str = Body(),
-        allowed_extensions: str | None = Body(default=None),
-        max_size: int | None = Body(default=None),
-        generate_thumbnail: bool = Body(default=False),  # noqa: FBT001
+        model_name: str = Parameter(query="model_name"),
+        field_name: str = Parameter(query="field_name"),
+        admin_storage: AdminStorageBackend | None = None,
+        allowed_extensions: str | None = Parameter(query="allowed_extensions", default=None),
+        max_size: int | None = Parameter(query="max_size", default=None),
+        generate_thumbnail: bool = Parameter(query="generate_thumbnail", default=False),
     ) -> UploadFileResponse | Response[ValidationErrorResponse]:
         """Upload a file for a model field.
 
@@ -204,6 +204,21 @@ class FilesController(Controller):
         Raises:
             ValidationException: If the file fails validation.
         """
+        # Check if storage is configured
+        if admin_storage is None:
+            return Response(
+                content=ValidationErrorResponse(
+                    success=False,
+                    errors=[
+                        {
+                            "field": field_name,
+                            "error": "File storage is not configured. Configure storage in AdminConfig.",
+                        }
+                    ],
+                ),
+                status_code=HTTP_200_OK,
+            )
+
         # Build field configuration from request parameters
         extensions_list = None
         if allowed_extensions:

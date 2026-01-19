@@ -10,7 +10,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from litestar.middleware import AbstractMiddleware
-from litestar.types import ASGIApp, Message, Receive, Scope, Send
+from litestar.types import ASGIApp, Receive, Scope, Send
 
 if TYPE_CHECKING:
     from litestar_admin.auth.jwt import JWTAuthBackend

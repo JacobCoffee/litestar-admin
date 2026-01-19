@@ -20,6 +20,8 @@ import { api } from "@/lib/api";
 export interface FileUploadProps {
   /** Unique field name */
   name: string;
+  /** Model name for file organization */
+  modelName?: string | undefined;
   /** Label for the field */
   label?: string;
   /** Configuration for file validation */
@@ -401,6 +403,7 @@ function FileItem({ file, onRemove, onPreview, disabled }: FileItemProps) {
  */
 export function FileUpload({
   name,
+  modelName,
   label,
   config = {},
   value = [],
@@ -477,11 +480,15 @@ export function FileUpload({
         if (!uploadedFile || !originalFile) continue;
 
         try {
-          const response = await api.uploadFile(originalFile, (progress) => {
-            // Update progress
-            onChange?.(
-              updatedFiles.map((f) => (f.id === uploadedFile.id ? { ...f, progress } : f)),
-            );
+          const response = await api.uploadFile(originalFile, {
+            modelName: modelName || "unknown",
+            fieldName: name,
+            onProgress: (progress) => {
+              // Update progress
+              onChange?.(
+                updatedFiles.map((f) => (f.id === uploadedFile.id ? { ...f, progress } : f)),
+              );
+            },
           });
 
           // Update with success

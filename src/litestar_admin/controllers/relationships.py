@@ -351,7 +351,7 @@ def _get_view_and_relationship(
     Args:
         admin_registry: The model registry.
         model_name: The name of the source model.
-        field_name: The relationship field name.
+        field_name: The relationship field name (or FK column name).
 
     Returns:
         Tuple of (view_class, rel_info).
@@ -364,7 +364,9 @@ def _get_view_and_relationship(
     except KeyError as exc:
         raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-    rel_info = view_class.get_relationship_info(field_name)
+    # Use flexible lookup to support both relationship names and FK column names
+    detector = get_relationship_detector()
+    rel_info = detector.get_relationship_info_flexible(view_class.model, field_name)
     if rel_info is None:
         raise NotFoundException(f"Relationship '{field_name}' not found on model '{model_name}'")
 

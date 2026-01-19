@@ -309,6 +309,67 @@ class RelationshipDetector:
                 return rel
         return None
 
+    def get_relationship_info_by_fk(
+        self,
+        model: type[Any],
+        fk_column: str,
+    ) -> RelationshipInfo | None:
+        """Get relationship info by foreign key column name.
+
+        This is useful when the frontend passes the FK column name (e.g., "author_id")
+        instead of the relationship attribute name (e.g., "author").
+
+        Args:
+            model: The model class.
+            fk_column: The foreign key column name.
+
+        Returns:
+            RelationshipInfo if found, None otherwise.
+        """
+        relationships = self.detect_relationships(model)
+        for rel in relationships:
+            if rel.foreign_key_column == fk_column:
+                return rel
+        return None
+
+    def get_relationship_info_flexible(
+        self,
+        model: type[Any],
+        field_name: str,
+    ) -> RelationshipInfo | None:
+        """Get relationship info by relationship name or FK column name.
+
+        This method tries to find a relationship by its attribute name first,
+        then falls back to searching by FK column name. This handles cases where
+        the frontend passes either "author" or "author_id".
+
+        Args:
+            model: The model class.
+            field_name: The relationship attribute name or FK column name.
+
+        Returns:
+            RelationshipInfo if found, None otherwise.
+        """
+        # First try exact relationship name match
+        rel_info = self.get_relationship_info(model, field_name)
+        if rel_info is not None:
+            return rel_info
+
+        # Then try FK column match
+        rel_info = self.get_relationship_info_by_fk(model, field_name)
+        if rel_info is not None:
+            return rel_info
+
+        # Try stripping common FK suffixes to find relationship
+        for suffix in ("_id", "_pk", "_fk"):
+            if field_name.endswith(suffix):
+                base_name = field_name[: -len(suffix)]
+                rel_info = self.get_relationship_info(model, base_name)
+                if rel_info is not None:
+                    return rel_info
+
+        return None
+
     def get_display_column(self, model: type[Any]) -> str:
         """Determine the best column to use for displaying records of a model.
 

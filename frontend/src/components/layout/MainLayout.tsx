@@ -158,9 +158,17 @@ export function MainLayout({
       }
     }
 
+    // Add Users to Administration category (always present)
+    addToCategory("Administration", {
+      id: "users",
+      label: "Users",
+      href: "/users",
+      icon: DatabaseIcon,
+    });
+
     // Convert map to array with consistent ordering
-    // Priority: Models first, then custom views, actions, pages, links, embeds
-    const priorityOrder = ["Models", "Custom Views", "Actions", "Pages", "Links", "Embeds"];
+    // Priority: Models first, then custom views, actions, pages, links, embeds, Administration last
+    const priorityOrder = ["Models", "Custom Views", "Actions", "Pages", "Links", "Embeds", "Administration"];
     const sortedKeys = Array.from(categoryMap.keys()).sort((a, b) => {
       const aIndex = priorityOrder.indexOf(a);
       const bIndex = priorityOrder.indexOf(b);
@@ -178,20 +186,6 @@ export function MainLayout({
         items,
       });
     }
-
-    // Add System category with Users link (always present)
-    categories.push({
-      id: "system",
-      label: "System",
-      items: [
-        {
-          id: "users",
-          label: "Users",
-          href: "/users",
-          icon: UsersIcon,
-        },
-      ],
-    });
 
     // Return empty Models category if nothing else (except System)
     if (categories.length === 1) {

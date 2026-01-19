@@ -1083,17 +1083,29 @@ export class AdminApiClient {
   /**
    * Upload a file with progress tracking.
    * @param file - The file to upload
-   * @param onProgress - Callback for upload progress updates (0-100)
+   * @param options - Upload options including model/field names and progress callback
    * @returns Promise resolving to the uploaded file information
    */
   async uploadFile(
     file: File,
-    onProgress?: (progress: number) => void,
+    options?: {
+      modelName?: string | undefined;
+      fieldName?: string | undefined;
+      onProgress?: ((progress: number) => void) | undefined;
+    },
   ): Promise<FileUploadResponse> {
+    const { modelName = "unknown", fieldName = "file", onProgress } = options ?? {};
+
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("data", file);
 
     const accessToken = this.tokenStorage.getAccessToken();
+
+    // Build URL with query parameters for Litestar
+    const queryParams = new URLSearchParams({
+      model_name: modelName,
+      field_name: fieldName,
+    });
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -1133,7 +1145,7 @@ export class AdminApiClient {
         reject(createApiError("Upload aborted", 0, "Aborted"));
       });
 
-      xhr.open("POST", `${this.config.baseUrl}/api/files/upload`);
+      xhr.open("POST", `${this.config.baseUrl}/api/files/upload?${queryParams.toString()}`);
 
       if (accessToken) {
         xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
@@ -1146,25 +1158,34 @@ export class AdminApiClient {
   /**
    * Upload multiple files with progress tracking.
    * @param files - Array of files to upload
-   * @param onProgress - Callback for overall upload progress updates (0-100)
+   * @param options - Upload options including model/field names and progress callback
    * @returns Promise resolving to array of uploaded file information
    */
   async uploadFiles(
     files: File[],
-    onProgress?: (progress: number) => void,
+    options?: {
+      modelName?: string | undefined;
+      fieldName?: string | undefined;
+      onProgress?: ((progress: number) => void) | undefined;
+    },
   ): Promise<FileUploadResponse[]> {
+    const { modelName, fieldName, onProgress } = options ?? {};
     const results: FileUploadResponse[] = [];
     const totalFiles = files.length;
     let completedCount = 0;
 
     for (const file of files) {
-      const result = await this.uploadFile(file, (fileProgress) => {
-        if (onProgress) {
-          const overallProgress = Math.round(
-            ((completedCount + fileProgress / 100) / totalFiles) * 100,
-          );
-          onProgress(overallProgress);
-        }
+      const result = await this.uploadFile(file, {
+        modelName,
+        fieldName,
+        onProgress: (fileProgress) => {
+          if (onProgress) {
+            const overallProgress = Math.round(
+              ((completedCount + fileProgress / 100) / totalFiles) * 100,
+            );
+            onProgress(overallProgress);
+          }
+        },
       });
       results.push(result);
       completedCount++;
@@ -1362,10 +1383,10 @@ export const api = {
   deactivateUser: (userId: string) => apiClient.deactivateUser(userId),
 
   // File Upload
-  uploadFile: (file: File, onProgress?: (progress: number) => void) =>
-    apiClient.uploadFile(file, onProgress),
-  uploadFiles: (files: File[], onProgress?: (progress: number) => void) =>
-    apiClient.uploadFiles(files, onProgress),
+  uploadFile: (file: File, options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined }) =>
+    apiClient.uploadFile(file, options),
+  uploadFiles: (files: File[], options?: { modelName?: string | undefined; fieldName?: string | undefined; onProgress?: ((progress: number) => void) | undefined }) =>
+    apiClient.uploadFiles(files, options),
   deleteFile: (fileId: string) => apiClient.deleteFile(fileId),
   getFileUrl: (fileId: string) => apiClient.getFileUrl(fileId),
   getFileThumbnailUrl: (fileId: string) => apiClient.getFileThumbnailUrl(fileId),

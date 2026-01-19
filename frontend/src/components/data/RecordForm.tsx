@@ -462,6 +462,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode, modelName }: Fi
       >
         <FileUpload
           name={name}
+          modelName={modelName}
           config={fileConfig}
           value={currentFiles}
           onChange={handleFileChange}

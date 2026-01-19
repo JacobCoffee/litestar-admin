@@ -348,6 +348,32 @@ class OAuthAuthBackend:
 
         return await self.user_loader(user_id)
 
+    async def get_user_from_token(self, token: str) -> AdminUserProtocol | None:
+        """Get the user from a JWT token.
+
+        Decodes the token and loads the user from the database.
+        This method is called by the JWT authentication middleware.
+
+        Args:
+            token: The JWT token string.
+
+        Returns:
+            The authenticated user, or None if token is invalid.
+        """
+        payload = self._decode_token(token)
+        if payload is None:
+            return None
+
+        # Check token type (access token only, not refresh)
+        if payload.get("type") == "refresh":
+            return None
+
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+
+        return await self.user_loader(user_id)
+
     async def login(
         self,
         connection: ASGIConnection,  # noqa: ARG002
