@@ -394,6 +394,9 @@ class AdminService(Generic[T]):
         # Call the after_model_change hook
         await self._view_class.after_model_change(record, is_create=True)
 
+        # Commit the transaction so the record is visible to other requests
+        await self._session.commit()
+
         return record
 
     async def update_record(
@@ -441,6 +444,9 @@ class AdminService(Generic[T]):
         # Call the after_model_change hook
         await self._view_class.after_model_change(record, is_create=False)
 
+        # Commit the transaction
+        await self._session.commit()
+
         return record
 
     def _apply_full_update(self, record: T, data: dict[str, Any]) -> None:
@@ -487,6 +493,9 @@ class AdminService(Generic[T]):
 
         # Call the after_model_delete hook
         await self._view_class.after_model_delete(record)
+
+        # Commit the transaction
+        await self._session.commit()
 
         return True
 
@@ -540,6 +549,9 @@ class AdminService(Generic[T]):
 
             # Flush after each batch
             await self._session.flush()
+
+        # Commit all changes
+        await self._session.commit()
 
         return deleted_count
 
