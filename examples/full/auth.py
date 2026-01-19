@@ -4,16 +4,32 @@ This module provides the authentication configuration including:
 - AdminUser dataclass implementing the AdminUser protocol
 - user_loader async function for loading users by email/id
 - password_verifier async function for credential validation
-- JWTAuthBackend configuration
+- JWTAuthBackend configuration (default)
+- OAuthAuthBackend configuration (optional, for GitHub OAuth)
 
 Example:
-    >>> from examples.full.auth import get_auth_backend
-    >>> backend = get_auth_backend(db_session_factory)
+    JWT Authentication (default):
+        >>> from examples.full.auth import get_auth_backend
+        >>> backend = get_auth_backend(db_session_factory)
+
+    OAuth Authentication (GitHub):
+        >>> from examples.full.auth import get_oauth_backend
+        >>> backend = get_oauth_backend(db_session_factory)
+
+OAuth Setup Requirements:
+    To use GitHub OAuth authentication:
+    1. Create a GitHub OAuth App at https://github.com/settings/developers
+    2. Set the callback URL to: http://localhost:8000/admin/auth/oauth/github/callback
+    3. Set environment variables:
+       - GITHUB_CLIENT_ID: Your GitHub OAuth App client ID
+       - GITHUB_CLIENT_SECRET: Your GitHub OAuth App client secret
+    4. Install OAuth dependencies: pip install 'litestar-admin[oauth]'
 """
 
 from __future__ import annotations
 
 import hashlib
+import os
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -25,7 +41,16 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-__all__ = ["DemoAdminUser", "get_auth_backend", "hash_password", "verify_password"]
+    from litestar_admin.contrib.oauth import OAuthAuthBackend, OAuthUserInfo
+
+__all__ = [
+    "DemoAdminUser",
+    "create_oauth_user_creator",
+    "get_auth_backend",
+    "get_oauth_backend",
+    "hash_password",
+    "verify_password",
+]
 
 
 # Simple secret key for demo purposes - in production use environment variables
@@ -139,6 +164,58 @@ async def verify_password(stored_hash: str, password: str) -> bool:
     return computed_hash == stored_hash
 
 
+async def hash_password_async(password: str) -> str:
+    """Async version of hash_password for JWT backend.
+
+    Args:
+        password: The plaintext password to hash.
+
+    Returns:
+        The hashed password as a hex string.
+    """
+    return hash_password(password)
+
+
+def create_password_updater(session_factory: Callable[[], AsyncSession]) -> Callable[[int | str, str], bool]:
+    """Create a password updater function for the JWT backend.
+
+    The password updater is called when a user changes their password.
+
+    Args:
+        session_factory: A callable that returns an AsyncSession.
+
+    Returns:
+        An async function that updates a user's password hash.
+    """
+
+    async def password_updater(user_id: int | str, new_hash: str) -> bool:
+        """Update a user's password hash.
+
+        Args:
+            user_id: The user's ID.
+            new_hash: The new password hash to set.
+
+        Returns:
+            True if the update succeeded, False otherwise.
+        """
+        from sqlalchemy import update
+
+        from examples.full.models import User
+
+        try:
+            user_id_int = int(user_id)
+        except (TypeError, ValueError):
+            return False
+
+        async with session_factory() as session:
+            stmt = update(User).where(User.id == user_id_int).values(password_hash=new_hash)
+            result = await session.execute(stmt)
+            await session.commit()
+            return result.rowcount > 0
+
+    return password_updater
+
+
 def create_user_loader(session_factory: Callable[[], AsyncSession]) -> Callable[[str | int], DemoAdminUser | None]:
     """Create a user loader function for the JWT backend.
 
@@ -194,6 +271,9 @@ def create_user_loader(session_factory: Callable[[], AsyncSession]) -> Callable[
 def get_auth_backend(session_factory: Callable[[], AsyncSession]) -> JWTAuthBackend:
     """Create and configure the JWT authentication backend.
 
+    This is the default authentication backend for the demo application.
+    It uses username/password authentication with JWT tokens.
+
     Args:
         session_factory: A callable that returns an AsyncSession for database access.
 
@@ -221,4 +301,193 @@ def get_auth_backend(session_factory: Callable[[], AsyncSession]) -> JWTAuthBack
         config=config,
         user_loader=user_loader,
         password_verifier=verify_password,
+    )
+
+
+def create_user_loader_by_email(
+    session_factory: Callable[[], AsyncSession],
+) -> Callable[[str], DemoAdminUser | None]:
+    """Create a user loader function that loads users by email only.
+
+    This loader is specifically for OAuth authentication where we need
+    to find users by their email address from the OAuth provider.
+
+    Args:
+        session_factory: A callable that returns an AsyncSession.
+
+    Returns:
+        An async function that loads a user by email.
+    """
+
+    async def user_loader_by_email(email: str) -> DemoAdminUser | None:
+        """Load a user by email address.
+
+        Args:
+            email: The user's email address.
+
+        Returns:
+            A DemoAdminUser instance if found, None otherwise.
+        """
+        from sqlalchemy import select
+
+        from examples.full.models import User
+
+        async with session_factory() as session:
+            stmt = select(User).where(User.email == email)
+            result = await session.execute(stmt)
+            user = result.scalar_one_or_none()
+
+            if user is None:
+                return None
+
+            if not user.is_active:
+                return None
+
+            return DemoAdminUser.from_db_user(user)
+
+    return user_loader_by_email
+
+
+def create_oauth_user_creator(
+    session_factory: Callable[[], AsyncSession],
+) -> Callable[[OAuthUserInfo], DemoAdminUser]:
+    """Create a function to create new users from OAuth user info.
+
+    This function is called when a user logs in via OAuth for the first time
+    and no existing user with that email exists in the database.
+
+    Args:
+        session_factory: A callable that returns an AsyncSession.
+
+    Returns:
+        An async function that creates a new user from OAuth info.
+    """
+
+    async def create_oauth_user(user_info: OAuthUserInfo) -> DemoAdminUser:
+        """Create a new user from OAuth provider information.
+
+        This function creates a new User record in the database using
+        information provided by the OAuth provider (e.g., GitHub).
+
+        The new user is assigned the VIEWER role by default. You can
+        customize this based on your application's requirements.
+
+        Args:
+            user_info: Normalized user information from the OAuth provider.
+                Contains: id, email, name, picture, provider, raw_data
+
+        Returns:
+            A DemoAdminUser instance for the newly created user.
+
+        Example:
+            OAuth user_info from GitHub might contain:
+            - id: "12345678"
+            - email: "user@example.com"
+            - name: "John Doe"
+            - picture: "https://avatars.githubusercontent.com/u/12345678"
+            - provider: "github"
+            - raw_data: {"login": "johndoe", "id": 12345678, ...}
+        """
+        from examples.full.models import User, UserRole
+
+        async with session_factory() as session:
+            # Create a new user with OAuth-provided information
+            # Note: OAuth users don't have a password - they authenticate via OAuth
+            new_user = User(
+                email=user_info.email,
+                name=user_info.name or user_info.email.split("@")[0],
+                password_hash=None,  # OAuth users don't use password auth
+                role=UserRole.VIEWER,  # Default role for new OAuth users
+                is_active=True,
+            )
+            session.add(new_user)
+            await session.commit()
+            await session.refresh(new_user)
+
+            return DemoAdminUser.from_db_user(new_user)
+
+    return create_oauth_user
+
+
+def get_oauth_backend(session_factory: Callable[[], AsyncSession]) -> OAuthAuthBackend:
+    """Create and configure the OAuth authentication backend for GitHub.
+
+    This backend enables "Login with GitHub" functionality. Users authenticate
+    via GitHub's OAuth flow and are automatically created in the database
+    on first login.
+
+    Requirements:
+        1. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables
+        2. Install OAuth dependencies: pip install 'litestar-admin[oauth]'
+        3. Configure GitHub OAuth App callback URL:
+           http://localhost:8000/admin/auth/oauth/github/callback
+
+    Args:
+        session_factory: A callable that returns an AsyncSession for database access.
+
+    Returns:
+        A configured OAuthAuthBackend instance.
+
+    Raises:
+        ValueError: If GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET are not set.
+
+    Example:
+        >>> import os
+        >>> os.environ["GITHUB_CLIENT_ID"] = "your-client-id"
+        >>> os.environ["GITHUB_CLIENT_SECRET"] = "your-client-secret"
+        >>> backend = get_oauth_backend(get_session)
+    """
+    from litestar_admin.contrib.oauth import (
+        OAuthAuthBackend,
+        OAuthConfig,
+        OAuthProviderConfig,
+        OAuthProviderType,
+    )
+
+    # Get GitHub OAuth credentials from environment variables
+    github_client_id = os.environ.get("GITHUB_CLIENT_ID")
+    github_client_secret = os.environ.get("GITHUB_CLIENT_SECRET")
+
+    if not github_client_id or not github_client_secret:
+        msg = (
+            "GitHub OAuth credentials not configured. "
+            "Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables. "
+            "See module docstring for setup instructions."
+        )
+        raise ValueError(msg)
+
+    # Configure OAuth with GitHub provider
+    oauth_config = OAuthConfig(
+        providers=[
+            OAuthProviderConfig(
+                name="github",
+                client_id=github_client_id,
+                client_secret=github_client_secret,
+                provider_type=OAuthProviderType.GITHUB,
+                # GitHub default scopes include 'user:email' which gives us the email
+                # You can request additional scopes if needed:
+                # scopes=["user:email", "read:user", "read:org"],
+            ),
+        ],
+        # Base URL for OAuth callbacks - must match your GitHub OAuth App settings
+        # For local development: http://localhost:8000
+        # For production: https://your-domain.com
+        redirect_base_url=os.environ.get("OAUTH_REDIRECT_BASE_URL", "http://localhost:8000"),
+        # Automatically create users on first OAuth login
+        auto_create_user=True,
+        # Optional: Restrict to specific email domains
+        # allowed_domains=["example.com", "yourcompany.com"],
+    )
+
+    # Create the OAuth backend with user management functions
+    return OAuthAuthBackend(
+        config=oauth_config,
+        user_loader=create_user_loader(session_factory),
+        user_loader_by_email=create_user_loader_by_email(session_factory),
+        user_creator=create_oauth_user_creator(session_factory),
+        # JWT settings for session tokens (used after OAuth authentication)
+        jwt_secret_key=DEMO_SECRET_KEY,
+        jwt_algorithm="HS256",
+        token_expiry=3600,  # 1 hour
+        refresh_token_expiry=86400,  # 24 hours
     )

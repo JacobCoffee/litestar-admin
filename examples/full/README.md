@@ -15,7 +15,11 @@ This example showcases:
   - Permission controls (can_create, can_edit, can_delete)
   - Category grouping in sidebar
   - Custom on_model_change hooks
-- **Rate Limiting**: Built-in request rate limiting
+- **Rate Limiting**: Built-in request rate limiting (with optional Redis backend)
+- **Redis Integration** (Optional):
+  - Distributed rate limiting across workers
+  - Persistent session storage
+  - General-purpose caching
 - **Automatic Data Seeding**: Demo data created on startup
 
 ## Project Structure
@@ -25,6 +29,7 @@ examples/full/
 ├── models.py      # SQLAlchemy 2.x models (User, Article, Tag)
 ├── auth.py        # JWT authentication setup
 ├── views.py       # ModelView configurations
+├── redis_store.py # Redis storage backends (rate limiting, sessions, cache)
 ├── app.py         # Main Litestar application
 └── README.md      # This file
 ```
@@ -77,6 +82,41 @@ make dev
 # Then in another terminal:
 litestar --app examples.full.app:app run --reload
 ```
+
+### Start with Redis (Optional)
+
+Redis enables distributed rate limiting, persistent sessions, and caching.
+Without Redis, the application uses in-memory storage (suitable for single-worker deployments).
+
+1. Start Redis:
+   ```bash
+   # macOS
+   brew install redis && brew services start redis
+
+   # Linux
+   apt-get install redis-server && systemctl start redis
+
+   # Docker
+   docker run -d -p 6379:6379 redis:alpine
+   ```
+
+2. Install the Redis Python package:
+   ```bash
+   pip install redis[hiredis]
+   # or with uv:
+   uv add redis[hiredis]
+   ```
+
+3. Run with Redis enabled:
+   ```bash
+   REDIS_URL=redis://localhost:6379/0 litestar --app examples.full.app:app run --reload
+   ```
+
+4. Verify Redis is connected by checking the health endpoint:
+   ```bash
+   curl http://localhost:8000/health
+   # Response: {"status": "healthy", "storage": {"database": "connected", "redis": "connected"}}
+   ```
 
 ### Access the Application
 
@@ -188,6 +228,117 @@ class TagAdmin(ModelView, model=Tag):
     category = "Content"
 ```
 
+## Redis Integration
+
+This example includes optional Redis support for distributed rate limiting, persistent sessions, and caching.
+
+### Why Use Redis?
+
+| Feature | In-Memory (Default) | Redis |
+|---------|---------------------|-------|
+| Rate Limiting | Per-process only | Shared across workers |
+| Sessions | Lost on restart | Persist across restarts |
+| Cache | Per-process only | Shared across workers |
+| Multi-worker | Limited | Full support |
+
+### Redis Storage Backends
+
+The `redis_store.py` module provides three Redis-backed storage classes:
+
+#### RedisRateLimitStore
+
+Implements the `RateLimitStore` protocol for distributed rate limiting:
+
+```python
+from examples.full.redis_store import create_redis_rate_limit_store
+
+# Create store (returns None if Redis unavailable)
+store = await create_redis_rate_limit_store("redis://localhost:6379/0")
+
+if store:
+    # Increment request count for a client
+    count = await store.increment("192.168.1.1", "minute")
+
+    # Check remaining requests
+    remaining = await store.get_remaining("192.168.1.1", "minute", limit=100)
+```
+
+#### RedisSessionStore
+
+Provides session/token storage with automatic expiration:
+
+```python
+from examples.full.redis_store import create_redis_session_store
+
+store = await create_redis_session_store("redis://localhost:6379/0")
+
+if store:
+    # Store a session
+    await store.set("token123", {
+        "user_id": "1",
+        "email": "user@example.com",
+        "role": "admin"
+    })
+
+    # Retrieve session
+    session = await store.get("token123")
+
+    # Delete session (logout)
+    await store.delete("token123")
+
+    # Logout from all devices
+    await store.delete_all_user_sessions("1")
+```
+
+#### RedisCache
+
+General-purpose caching with TTL support:
+
+```python
+from examples.full.redis_store import create_redis_cache
+
+cache = await create_redis_cache("redis://localhost:6379/0")
+
+if cache:
+    # Cache a value (default TTL: 5 minutes)
+    await cache.set("user:1:profile", {"name": "John", "email": "john@example.com"})
+
+    # Cache with custom TTL (10 minutes)
+    await cache.set("expensive_query", result, ttl=600)
+
+    # Get or compute pattern
+    stats = await cache.get_or_set(
+        "user:1:stats",
+        lambda: expensive_database_query(),
+        ttl=300
+    )
+```
+
+### Configuration
+
+Redis is configured via the `REDIS_URL` environment variable:
+
+```bash
+# Local Redis (default port, database 0)
+export REDIS_URL="redis://localhost:6379/0"
+
+# Remote Redis with password
+export REDIS_URL="redis://:password@redis.example.com:6379/0"
+
+# Redis with username and password
+export REDIS_URL="redis://username:password@redis.example.com:6379/0"
+```
+
+### Graceful Fallback
+
+All Redis stores are optional. If Redis is not available:
+
+1. The application logs a warning message
+2. In-memory storage is used automatically
+3. The application continues to work normally
+
+This makes local development easy (no Redis required) while supporting production deployments with Redis.
+
 ## Security Notes
 
 This example uses simplified password hashing (SHA-256) for demonstration purposes.
@@ -198,6 +349,7 @@ This example uses simplified password hashing (SHA-256) for demonstration purpos
 - Enable `cookie_secure=True` for HTTPS
 - Use a proper database (PostgreSQL recommended)
 - Configure appropriate CORS settings
+- Use Redis for multi-worker deployments
 
 ## Troubleshooting
 
