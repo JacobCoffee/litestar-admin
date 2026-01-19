@@ -10,6 +10,11 @@ from litestar_admin.controllers.auth import (
     TokenResponse,
     UserResponse,
 )
+from litestar_admin.controllers.config import (
+    ConfigController,
+    ConfigResponse,
+    DevCredential,
+)
 from litestar_admin.controllers.bulk import (
     BulkActionRequest,
     BulkActionResponse,
@@ -39,6 +44,7 @@ __all__ = [
     # Controllers
     "AuthController",
     "BulkActionsController",
+    "ConfigController",
     "DashboardController",
     "ExportController",
     "ModelsController",
@@ -60,6 +66,9 @@ __all__ = [
     "WidgetData",
     # DTOs - Export
     "BulkExportRequest",
+    # DTOs - Config
+    "ConfigResponse",
+    "DevCredential",
     # DTOs - Models
     "DeleteResponse",
     "ListRecordsResponse",

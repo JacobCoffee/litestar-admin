@@ -9,7 +9,20 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input, Checkbox, FormField } from '@/components/ui/Form';
 import { cn } from '@/lib/utils';
-import { isApiError } from '@/hooks/useApi';
+import { isApiError, useApi } from '@/hooks/useApi';
+
+interface DevCredential {
+  email: string;
+  password: string;
+  role: string;
+}
+
+interface AdminConfig {
+  title: string;
+  debug: boolean;
+  theme: string;
+  dev_credentials: DevCredential[];
+}
 
 /**
  * Litestar logo component.
@@ -75,6 +88,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isLoggingIn, isAuthenticated, error: authError } = useAuthContext();
+  const api = useApi();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,6 +98,23 @@ export default function LoginPage() {
     email: false,
     password: false,
   });
+  const [config, setConfig] = useState<AdminConfig | null>(null);
+
+  // Fetch admin config on mount
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await api.get<AdminConfig>('/api/config');
+        setConfig(response);
+      } catch (err) {
+        // Config fetch failed, assume production mode
+        console.warn('Failed to fetch admin config:', err);
+      }
+    };
+    fetchConfig();
+  }, [api]);
+
+  const isDebugMode = config?.debug ?? false;
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -118,9 +149,25 @@ export default function LoginPage() {
 
   const validatePassword = useCallback((value: string): string | null => {
     if (!value) return 'Password is required';
-    if (value.length < 6) return 'Password must be at least 6 characters';
+    // Skip length validation in debug mode to allow simple dev passwords
+    if (!isDebugMode && value.length < 6) return 'Password must be at least 6 characters';
     return null;
-  }, []);
+  }, [isDebugMode]);
+
+  // Quick login handler for dev mode
+  const handleQuickLogin = useCallback(
+    async (credential: DevCredential) => {
+      setEmail(credential.email);
+      setPassword(credential.password);
+      setError(null);
+      try {
+        await login(credential.email, credential.password, false);
+      } catch (err) {
+        console.error('Quick login failed:', err);
+      }
+    },
+    [login]
+  );
 
   const emailError = touched.email ? validateEmail(email) : null;
   const passwordError = touched.password ? validatePassword(password) : null;
@@ -271,6 +318,47 @@ export default function LoginPage() {
             </form>
           </CardBody>
         </Card>
+
+        {/* Dev Mode Quick Login */}
+        {isDebugMode && config?.dev_credentials && config.dev_credentials.length > 0 && (
+          <div
+            className={cn(
+              'mt-6 rounded-[var(--radius-md)] border-2 border-dashed',
+              'border-[var(--color-warning)]/40 bg-[var(--color-warning)]/5',
+              'p-4'
+            )}
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-[var(--color-warning)] text-lg">⚠️</span>
+              <span className="text-sm font-semibold text-[var(--color-warning)]">
+                Development Mode
+              </span>
+            </div>
+            <p className="mb-3 text-xs text-[var(--color-muted)]">
+              Quick login with test accounts:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {config.dev_credentials.map((cred) => (
+                <Button
+                  key={cred.email}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickLogin(cred)}
+                  disabled={isLoggingIn}
+                  className={cn(
+                    'text-xs',
+                    'border-[var(--color-warning)]/30',
+                    'hover:bg-[var(--color-warning)]/10',
+                    'hover:border-[var(--color-warning)]/50'
+                  )}
+                >
+                  {cred.role}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Footer text */}
         <p className="mt-6 text-center text-xs text-[var(--color-muted)]">

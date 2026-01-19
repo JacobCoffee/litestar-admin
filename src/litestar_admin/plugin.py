@@ -136,6 +136,7 @@ class AdminPlugin(InitPluginProtocol):
         from litestar_admin.controllers import (
             AuthController,
             BulkActionsController,
+            ConfigController,
             DashboardController,
             ExportController,
             ModelsController,
@@ -149,6 +150,7 @@ class AdminPlugin(InitPluginProtocol):
             route_handlers=[
                 AuthController,
                 BulkActionsController,
+                ConfigController,
                 DashboardController,
                 ExportController,
                 ModelsController,
