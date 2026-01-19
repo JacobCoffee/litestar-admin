@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -8,17 +8,24 @@ import {
   useMemo,
   useState,
   type ReactNode,
-} from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+} from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { useLogin, useLogout, useCurrentUser, apiClient, isApiError, queryKeys } from '@/hooks/useApi';
-import type { AdminUser } from '@/types';
+import {
+  useLogin,
+  useLogout,
+  useCurrentUser,
+  apiClient,
+  isApiError,
+  queryKeys,
+} from "@/hooks/useApi";
+import type { AdminUser } from "@/types";
 
 /**
  * Token storage key for localStorage.
  */
-const ACCESS_TOKEN_KEY = 'admin_access_token';
+const ACCESS_TOKEN_KEY = "admin_access_token";
 
 /**
  * Auth context value interface.
@@ -68,7 +75,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function useAuthContext(): AuthContextValue {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
+    throw new Error("useAuthContext must be used within an AuthProvider");
   }
   return context;
 }
@@ -103,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Check if we have a token in storage (client-side only)
   const hasStoredToken = useMemo(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return !!localStorage.getItem(ACCESS_TOKEN_KEY);
   }, []);
 
@@ -125,7 +132,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await refetchUser();
 
       // Redirect to returnUrl or default to /admin
-      const returnUrl = searchParams.get('returnUrl') ?? '/';
+      const returnUrl = searchParams.get("returnUrl") ?? "/";
       router.push(returnUrl);
     },
   });
@@ -136,14 +143,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Clear all queries to ensure fresh state
       queryClient.removeQueries({ queryKey: queryKeys.auth.all });
       // Redirect to login page after logout
-      router.push('/login');
+      router.push("/login");
     },
   });
 
   // Check initial authentication state on mount
   useEffect(() => {
     const checkAuth = async () => {
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         setInitialCheckDone(true);
         return;
       }
@@ -173,7 +180,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Compute loading state
   const isLoading = useMemo(() => {
     if (!initialCheckDone) return true;
-    if (typeof window === 'undefined') return true;
+    if (typeof window === "undefined") return true;
 
     const hasToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (hasToken && isUserLoading) return true;
@@ -186,7 +193,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (email: string, password: string, _rememberMe = false) => {
       await loginMutation.mutateAsync({ email, password });
     },
-    [loginMutation]
+    [loginMutation],
   );
 
   // Logout handler
@@ -200,7 +207,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!user) return false;
       return user.permissions.includes(permission);
     },
-    [user]
+    [user],
   );
 
   const hasRole = useCallback(
@@ -208,7 +215,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!user) return false;
       return user.roles.includes(role);
     },
-    [user]
+    [user],
   );
 
   const hasAnyPermission = useCallback(
@@ -216,7 +223,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!user) return false;
       return permissions.some((p) => user.permissions.includes(p));
     },
-    [user]
+    [user],
   );
 
   const hasAllPermissions = useCallback(
@@ -224,7 +231,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!user) return false;
       return permissions.every((p) => user.permissions.includes(p));
     },
-    [user]
+    [user],
   );
 
   const hasAnyRole = useCallback(
@@ -232,7 +239,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!user) return false;
       return roles.some((r) => user.roles.includes(r));
     },
-    [user]
+    [user],
   );
 
   // Compute error state
@@ -278,7 +285,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       hasAnyPermission,
       hasAllPermissions,
       hasAnyRole,
-    ]
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

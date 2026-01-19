@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -9,11 +9,11 @@ import {
   forwardRef,
   type ReactNode,
   type HTMLAttributes,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
+} from "react";
+import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 
-export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+export type ToastVariant = "success" | "error" | "warning" | "info";
 
 export interface Toast {
   id: string;
@@ -25,7 +25,7 @@ export interface Toast {
 
 interface ToastContextValue {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => string;
+  addToast: (toast: Omit<Toast, "id">) => string;
   removeToast: (id: string) => void;
 }
 
@@ -34,7 +34,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 }
@@ -53,7 +53,7 @@ export function ToastProvider({
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback(
-    (toast: Omit<Toast, 'id'>) => {
+    (toast: Omit<Toast, "id">) => {
       const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       const newToast: Toast = {
         ...toast,
@@ -71,7 +71,7 @@ export function ToastProvider({
 
       return id;
     },
-    [defaultDuration, maxToasts]
+    [defaultDuration, maxToasts],
   );
 
   const removeToast = useCallback((id: string) => {
@@ -92,15 +92,15 @@ interface ToastContainerProps {
 }
 
 function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === "undefined") return null;
 
   return createPortal(
     <div
       className={cn(
-        'fixed bottom-4 right-4 z-[100]',
-        'flex flex-col gap-2',
-        'max-w-sm w-full',
-        'pointer-events-none'
+        "fixed bottom-4 right-4 z-[100]",
+        "flex flex-col gap-2",
+        "max-w-sm w-full",
+        "pointer-events-none",
       )}
       aria-live="polite"
       aria-atomic="true"
@@ -109,36 +109,64 @@ function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
         <ToastItem key={toast.id} toast={toast} onRemove={onRemove} />
       ))}
     </div>,
-    document.body
+    document.body,
   );
 }
 
 const variantStyles: Record<ToastVariant, string> = {
-  success: 'border-l-[var(--color-success)] [--toast-icon-color:var(--color-success)]',
-  error: 'border-l-[var(--color-error)] [--toast-icon-color:var(--color-error)]',
-  warning: 'border-l-[var(--color-warning)] [--toast-icon-color:var(--color-warning)]',
-  info: 'border-l-[var(--color-info)] [--toast-icon-color:var(--color-info)]',
+  success: "border-l-[var(--color-success)] [--toast-icon-color:var(--color-success)]",
+  error: "border-l-[var(--color-error)] [--toast-icon-color:var(--color-error)]",
+  warning: "border-l-[var(--color-warning)] [--toast-icon-color:var(--color-warning)]",
+  info: "border-l-[var(--color-info)] [--toast-icon-color:var(--color-info)]",
 };
 
 const variantIcons: Record<ToastVariant, ReactNode> = {
   success: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M20 6L9 17l-5-5" />
     </svg>
   ),
   error: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="10" />
       <path d="M15 9l-6 6M9 9l6 6" />
     </svg>
   ),
   warning: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
     </svg>
   ),
   info: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg
+      className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="10" />
       <path d="M12 16v-4M12 8h.01" />
     </svg>
@@ -178,16 +206,16 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
   return (
     <div
       className={cn(
-        'pointer-events-auto',
-        'bg-[var(--color-card)]',
-        'border border-[var(--color-border)] border-l-4',
-        'rounded-[var(--radius-md)]',
-        'shadow-lg shadow-black/30',
-        'p-4',
+        "pointer-events-auto",
+        "bg-[var(--color-card)]",
+        "border border-[var(--color-border)] border-l-4",
+        "rounded-[var(--radius-md)]",
+        "shadow-lg shadow-black/30",
+        "p-4",
         variantStyles[toast.variant],
         isExiting
-          ? 'animate-[slideOut_150ms_ease-in_forwards]'
-          : 'animate-[slideIn_150ms_ease-out]'
+          ? "animate-[slideOut_150ms_ease-in_forwards]"
+          : "animate-[slideIn_150ms_ease-out]",
       )}
       role="alert"
     >
@@ -196,24 +224,20 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
           {variantIcons[toast.variant]}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[var(--color-foreground)]">
-            {toast.title}
-          </p>
+          <p className="text-sm font-medium text-[var(--color-foreground)]">{toast.title}</p>
           {toast.description && (
-            <p className="mt-1 text-sm text-[var(--color-muted)]">
-              {toast.description}
-            </p>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">{toast.description}</p>
           )}
         </div>
         <button
           type="button"
           onClick={handleClose}
           className={cn(
-            'flex-shrink-0 p-1 rounded-[var(--radius-sm)]',
-            'text-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-            'hover:bg-[var(--color-card-hover)]',
-            'transition-colors duration-150',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+            "flex-shrink-0 p-1 rounded-[var(--radius-sm)]",
+            "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+            "hover:bg-[var(--color-card-hover)]",
+            "transition-colors duration-150",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
           )}
           aria-label="Dismiss notification"
         >
@@ -241,18 +265,18 @@ export interface ToastProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
-  ({ variant = 'info', title, description, onClose, className, ...props }, ref) => {
+  ({ variant = "info", title, description, onClose, className, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
-          'bg-[var(--color-card)]',
-          'border border-[var(--color-border)] border-l-4',
-          'rounded-[var(--radius-md)]',
-          'shadow-lg shadow-black/30',
-          'p-4',
+          "bg-[var(--color-card)]",
+          "border border-[var(--color-border)] border-l-4",
+          "rounded-[var(--radius-md)]",
+          "shadow-lg shadow-black/30",
+          "p-4",
           variantStyles[variant],
-          className
+          className,
         )}
         role="alert"
         {...props}
@@ -262,23 +286,19 @@ export const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
             {variantIcons[variant]}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--color-foreground)]">
-              {title}
-            </p>
-            {description && (
-              <p className="mt-1 text-sm text-[var(--color-muted)]">{description}</p>
-            )}
+            <p className="text-sm font-medium text-[var(--color-foreground)]">{title}</p>
+            {description && <p className="mt-1 text-sm text-[var(--color-muted)]">{description}</p>}
           </div>
           {onClose && (
             <button
               type="button"
               onClick={onClose}
               className={cn(
-                'flex-shrink-0 p-1 rounded-[var(--radius-sm)]',
-                'text-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+                "flex-shrink-0 p-1 rounded-[var(--radius-sm)]",
+                "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
               )}
               aria-label="Dismiss notification"
             >
@@ -297,7 +317,7 @@ export const ToastComponent = forwardRef<HTMLDivElement, ToastProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
-ToastComponent.displayName = 'Toast';
+ToastComponent.displayName = "Toast";

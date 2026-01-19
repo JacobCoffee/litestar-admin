@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { useSidebar } from '@/contexts/LayoutContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useCallback, useRef, useState, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "@/contexts/LayoutContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Icons as inline SVGs
 const MenuIcon = ({ className }: { className?: string }) => (
@@ -131,9 +131,7 @@ const SunIcon = ({ className }: { className?: string }) => (
     fill="currentColor"
     aria-hidden="true"
   >
-    <path
-      d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.061l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"
-    />
+    <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.061l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z" />
   </svg>
 );
 
@@ -215,13 +213,13 @@ function UserDropdown({
         closeDropdown();
       }
     },
-    [closeDropdown]
+    [closeDropdown],
   );
 
   const menuItems = [
-    { label: 'Profile', icon: UserCircleIcon, onClick: onProfileClick },
-    { label: 'Settings', icon: SettingsIcon, onClick: onSettingsClick },
-    { label: 'Logout', icon: LogoutIcon, onClick: onLogoutClick },
+    { label: "Profile", icon: UserCircleIcon, onClick: onProfileClick },
+    { label: "Settings", icon: SettingsIcon, onClick: onSettingsClick },
+    { label: "Logout", icon: LogoutIcon, onClick: onLogoutClick },
   ];
 
   return (
@@ -230,9 +228,9 @@ function UserDropdown({
         type="button"
         onClick={toggleDropdown}
         className={cn(
-          'flex items-center gap-2 rounded-[var(--radius-md)] p-1.5',
-          'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+          "flex items-center gap-2 rounded-[var(--radius-md)] p-1.5",
+          "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
         )}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -242,20 +240,23 @@ function UserDropdown({
         ) : (
           <UserCircleIcon className="h-8 w-8 text-[var(--color-muted)]" />
         )}
-        <span className="hidden text-sm font-medium md:inline">{userName ?? 'User'}</span>
+        <span className="hidden text-sm font-medium md:inline">{userName ?? "User"}</span>
         <ChevronDownIcon
-          className={cn('h-4 w-4 text-[var(--color-muted)] transition-transform', isOpen && 'rotate-180')}
+          className={cn(
+            "h-4 w-4 text-[var(--color-muted)] transition-transform",
+            isOpen && "rotate-180",
+          )}
         />
       </button>
 
       {/* Dropdown menu */}
       <div
         className={cn(
-          'absolute right-0 top-full z-50 mt-2 w-56',
-          'rounded-[var(--radius-lg)] border border-[var(--color-border)]',
-          'bg-[var(--color-card)] shadow-lg',
-          'transition-all duration-150 origin-top-right',
-          isOpen ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+          "absolute right-0 top-full z-50 mt-2 w-56",
+          "rounded-[var(--radius-lg)] border border-[var(--color-border)]",
+          "bg-[var(--color-card)] shadow-lg",
+          "transition-all duration-150 origin-top-right",
+          isOpen ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0",
         )}
         role="menu"
         aria-orientation="vertical"
@@ -281,9 +282,9 @@ function UserDropdown({
                 item.onClick?.();
               }}
               className={cn(
-                'flex w-full items-center gap-3 px-4 py-2',
-                'text-sm text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)] transition-colors duration-150'
+                "flex w-full items-center gap-3 px-4 py-2",
+                "text-sm text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
               )}
               role="menuitem"
             >
@@ -299,7 +300,7 @@ function UserDropdown({
 
 export function Header({
   onSearch,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder = "Search...",
   userAvatar,
   userName,
   userEmail,
@@ -313,14 +314,14 @@ export function Header({
 }: HeaderProps) {
   const { isMobile, toggle } = useSidebar();
   const { resolvedTheme, toggleTheme } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
       onSearch?.(searchQuery);
     },
-    [onSearch, searchQuery]
+    [onSearch, searchQuery],
   );
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -330,10 +331,10 @@ export function Header({
   return (
     <header
       className={cn(
-        'sticky top-0 z-20 flex h-16 items-center gap-4',
-        'border-b border-[var(--color-border)] bg-[var(--color-background)]',
-        'px-4 md:px-6',
-        className
+        "sticky top-0 z-20 flex h-16 items-center gap-4",
+        "border-b border-[var(--color-border)] bg-[var(--color-background)]",
+        "px-4 md:px-6",
+        className,
       )}
     >
       {/* Mobile menu toggle */}
@@ -342,9 +343,9 @@ export function Header({
           type="button"
           onClick={toggle}
           className={cn(
-            'rounded-[var(--radius-md)] p-2',
-            'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+            "rounded-[var(--radius-md)] p-2",
+            "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
           )}
           aria-label="Toggle menu"
         >
@@ -365,11 +366,11 @@ export function Header({
             onChange={handleSearchChange}
             placeholder={searchPlaceholder}
             className={cn(
-              'w-full rounded-[var(--radius-md)] border border-[var(--color-border)]',
-              'bg-[var(--color-card)] py-2 pl-10 pr-4 text-sm',
-              'text-[var(--color-foreground)] placeholder:text-[var(--color-muted)]',
-              'focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]',
-              'transition-colors duration-150'
+              "w-full rounded-[var(--radius-md)] border border-[var(--color-border)]",
+              "bg-[var(--color-card)] py-2 pl-10 pr-4 text-sm",
+              "text-[var(--color-foreground)] placeholder:text-[var(--color-muted)]",
+              "focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]",
+              "transition-colors duration-150",
             )}
             aria-label="Search"
           />
@@ -383,13 +384,13 @@ export function Header({
           type="button"
           onClick={toggleTheme}
           className={cn(
-            'rounded-[var(--radius-md)] p-2',
-            'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+            "rounded-[var(--radius-md)] p-2",
+            "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
           )}
-          aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
-          {resolvedTheme === 'dark' ? (
+          {resolvedTheme === "dark" ? (
             <SunIcon className="h-5 w-5 text-[var(--color-muted)]" />
           ) : (
             <MoonIcon className="h-5 w-5 text-[var(--color-muted)]" />
@@ -401,21 +402,21 @@ export function Header({
           type="button"
           onClick={onNotificationsClick}
           className={cn(
-            'relative rounded-[var(--radius-md)] p-2',
-            'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+            "relative rounded-[var(--radius-md)] p-2",
+            "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
           )}
-          aria-label={`Notifications${notificationCount ? ` (${notificationCount} unread)` : ''}`}
+          aria-label={`Notifications${notificationCount ? ` (${notificationCount} unread)` : ""}`}
         >
           <BellIcon className="h-5 w-5 text-[var(--color-muted)]" />
           {notificationCount !== undefined && notificationCount > 0 && (
             <span
               className={cn(
-                'absolute -right-0.5 -top-0.5 flex h-5 min-w-[1.25rem] items-center justify-center',
-                'rounded-full bg-[var(--color-error)] px-1.5 text-xs font-medium text-white'
+                "absolute -right-0.5 -top-0.5 flex h-5 min-w-[1.25rem] items-center justify-center",
+                "rounded-full bg-[var(--color-error)] px-1.5 text-xs font-medium text-white",
               )}
             >
-              {notificationCount > 99 ? '99+' : notificationCount}
+              {notificationCount > 99 ? "99+" : notificationCount}
             </span>
           )}
         </button>

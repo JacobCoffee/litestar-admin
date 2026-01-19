@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input, FormField } from '@/components/ui/Form';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useAuthContext } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/Toast';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { useState, useCallback } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input, FormField } from "@/components/ui/Form";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useToast } from "@/components/ui/Toast";
+import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 // Icons
 const UserIcon = ({ className }: { className?: string }) => (
@@ -89,9 +89,9 @@ export default function ProfilePage() {
   const { user } = useAuthContext();
   const { addToast } = useToast();
 
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
 
@@ -99,61 +99,67 @@ export default function ProfilePage() {
     const errors: Record<string, string> = {};
 
     if (!currentPassword) {
-      errors['currentPassword'] = 'Current password is required';
+      errors["currentPassword"] = "Current password is required";
     }
 
     if (!newPassword) {
-      errors['newPassword'] = 'New password is required';
+      errors["newPassword"] = "New password is required";
     } else if (newPassword.length < 8) {
-      errors['newPassword'] = 'Password must be at least 8 characters';
+      errors["newPassword"] = "Password must be at least 8 characters";
     }
 
     if (!confirmPassword) {
-      errors['confirmPassword'] = 'Please confirm your new password';
+      errors["confirmPassword"] = "Please confirm your new password";
     } else if (newPassword !== confirmPassword) {
-      errors['confirmPassword'] = 'Passwords do not match';
+      errors["confirmPassword"] = "Passwords do not match";
     }
 
     setPasswordErrors(errors);
     return Object.keys(errors).length === 0;
   }, [currentPassword, newPassword, confirmPassword]);
 
-  const handleChangePassword = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleChangePassword = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (!validatePasswords()) {
-      return;
-    }
+      if (!validatePasswords()) {
+        return;
+      }
 
-    setIsChangingPassword(true);
+      setIsChangingPassword(true);
 
-    try {
-      await api.changePassword(currentPassword, newPassword);
+      try {
+        await api.changePassword(currentPassword, newPassword);
 
-      addToast({
-        variant: 'success',
-        title: 'Password Changed',
-        description: 'Your password has been updated successfully.',
-      });
+        addToast({
+          variant: "success",
+          title: "Password Changed",
+          description: "Your password has been updated successfully.",
+        });
 
-      // Clear form
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setPasswordErrors({});
-    } catch (error) {
-      addToast({
-        variant: 'error',
-        title: 'Password Change Failed',
-        description: error instanceof Error ? error.message : 'Failed to change password. Please check your current password.',
-      });
-    } finally {
-      setIsChangingPassword(false);
-    }
-  }, [currentPassword, newPassword, validatePasswords, addToast]);
+        // Clear form
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setPasswordErrors({});
+      } catch (error) {
+        addToast({
+          variant: "error",
+          title: "Password Change Failed",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to change password. Please check your current password.",
+        });
+      } finally {
+        setIsChangingPassword(false);
+      }
+    },
+    [currentPassword, newPassword, validatePasswords, addToast],
+  );
 
   // Derive display name from email
-  const displayName = user?.email?.split('@')[0] ?? 'User';
+  const displayName = user?.email?.split("@")[0] ?? "User";
   const initials = displayName.substring(0, 2).toUpperCase();
 
   return (
@@ -163,10 +169,7 @@ export default function ProfilePage() {
           <PageHeader
             title="Profile"
             subtitle="Manage your account settings"
-            breadcrumbs={[
-              { label: 'Dashboard', href: '/' },
-              { label: 'Profile' },
-            ]}
+            breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Profile" }]}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -187,8 +190,8 @@ export default function ProfilePage() {
                     {/* Avatar */}
                     <div
                       className={cn(
-                        'flex h-20 w-20 shrink-0 items-center justify-center rounded-full',
-                        'bg-[var(--color-primary)] text-white text-2xl font-bold'
+                        "flex h-20 w-20 shrink-0 items-center justify-center rounded-full",
+                        "bg-[var(--color-primary)] text-white text-2xl font-bold",
                       )}
                     >
                       {initials}
@@ -243,7 +246,9 @@ export default function ProfilePage() {
                       label="Current Password"
                       htmlFor="current-password"
                       required
-                      {...(passwordErrors['currentPassword'] ? { error: passwordErrors['currentPassword'] } : {})}
+                      {...(passwordErrors["currentPassword"]
+                        ? { error: passwordErrors["currentPassword"] }
+                        : {})}
                     >
                       <Input
                         id="current-password"
@@ -251,7 +256,7 @@ export default function ProfilePage() {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="Enter current password"
-                        error={!!passwordErrors['currentPassword']}
+                        error={!!passwordErrors["currentPassword"]}
                         autoComplete="current-password"
                       />
                     </FormField>
@@ -260,7 +265,9 @@ export default function ProfilePage() {
                       label="New Password"
                       htmlFor="new-password"
                       required
-                      {...(passwordErrors['newPassword'] ? { error: passwordErrors['newPassword'] } : {})}
+                      {...(passwordErrors["newPassword"]
+                        ? { error: passwordErrors["newPassword"] }
+                        : {})}
                       hint="Must be at least 8 characters"
                     >
                       <Input
@@ -269,7 +276,7 @@ export default function ProfilePage() {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Enter new password"
-                        error={!!passwordErrors['newPassword']}
+                        error={!!passwordErrors["newPassword"]}
                         autoComplete="new-password"
                       />
                     </FormField>
@@ -278,7 +285,9 @@ export default function ProfilePage() {
                       label="Confirm New Password"
                       htmlFor="confirm-password"
                       required
-                      {...(passwordErrors['confirmPassword'] ? { error: passwordErrors['confirmPassword'] } : {})}
+                      {...(passwordErrors["confirmPassword"]
+                        ? { error: passwordErrors["confirmPassword"] }
+                        : {})}
                     >
                       <Input
                         id="confirm-password"
@@ -286,7 +295,7 @@ export default function ProfilePage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm new password"
-                        error={!!passwordErrors['confirmPassword']}
+                        error={!!passwordErrors["confirmPassword"]}
                         autoComplete="new-password"
                       />
                     </FormField>
@@ -325,9 +334,9 @@ export default function ProfilePage() {
                         <span
                           key={role}
                           className={cn(
-                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full',
-                            'text-sm font-medium',
-                            'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                            "text-sm font-medium",
+                            "bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
                           )}
                         >
                           <CheckIcon className="h-3.5 w-3.5" />
@@ -352,21 +361,16 @@ export default function ProfilePage() {
                   {user?.permissions && user.permissions.length > 0 ? (
                     <div className="space-y-2">
                       {user.permissions.map((permission) => (
-                        <div
-                          key={permission}
-                          className="flex items-center gap-2 text-sm"
-                        >
+                        <div key={permission} className="flex items-center gap-2 text-sm">
                           <CheckIcon className="h-4 w-4 text-green-500" />
                           <span className="text-[var(--color-foreground)]">
-                            {permission.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                            {permission.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                           </span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-[var(--color-muted)]">
-                      No specific permissions
-                    </p>
+                    <p className="text-sm text-[var(--color-muted)]">No specific permissions</p>
                   )}
                 </CardBody>
               </Card>

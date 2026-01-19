@@ -1,15 +1,10 @@
-'use client';
+"use client";
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import {
-  StatsRow,
-  ActivityFeed,
-  QuickActions,
-  ModelOverview,
-} from '@/components/dashboard';
-import { useDashboardStats, useActivity, useModels } from '@/hooks/useApi';
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { StatsRow, ActivityFeed, QuickActions, ModelOverview } from "@/components/dashboard";
+import { useDashboardStats, useActivity, useModels } from "@/hooks/useApi";
 
 /**
  * Dashboard page - the main landing page for the admin panel.
@@ -25,20 +20,11 @@ export default function DashboardPage() {
 
 function DashboardContent() {
   // Fetch dashboard data
-  const {
-    data: stats,
-    isLoading: isLoadingStats,
-  } = useDashboardStats();
+  const { data: stats, isLoading: isLoadingStats } = useDashboardStats();
 
-  const {
-    data: activities,
-    isLoading: isLoadingActivity,
-  } = useActivity(10);
+  const { data: activities, isLoading: isLoadingActivity } = useActivity(10);
 
-  const {
-    data: models,
-    isLoading: isLoadingModels,
-  } = useModels();
+  const { data: models, isLoading: isLoadingModels } = useModels();
 
   return (
     <MainLayout>
@@ -62,11 +48,7 @@ function DashboardContent() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Activity feed - 2 cols */}
           <div className="lg:col-span-2">
-            <ActivityFeed
-              activities={activities}
-              isLoading={isLoadingActivity}
-              maxItems={10}
-            />
+            <ActivityFeed activities={activities} isLoading={isLoadingActivity} maxItems={10} />
           </div>
 
           {/* Quick actions - 1 col */}
@@ -91,8 +73,8 @@ function DashboardContent() {
  * This is used as a fallback when stats are not yet loaded.
  */
 function convertModelsToStats(
-  models?: readonly import('@/types').ModelInfo[]
-): import('@/types').ModelStats[] {
+  models?: readonly import("@/types").ModelInfo[],
+): import("@/types").ModelStats[] {
   if (!models) return [];
 
   return models.map((model) => ({

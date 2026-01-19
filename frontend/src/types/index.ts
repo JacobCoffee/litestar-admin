@@ -119,18 +119,18 @@ export interface ColumnDefinition {
  * Supported column types.
  */
 export type ColumnType =
-  | 'string'
-  | 'number'
-  | 'integer'
-  | 'boolean'
-  | 'date'
-  | 'datetime'
-  | 'email'
-  | 'url'
-  | 'json'
-  | 'array'
-  | 'object'
-  | 'relation';
+  | "string"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "date"
+  | "datetime"
+  | "email"
+  | "url"
+  | "json"
+  | "array"
+  | "object"
+  | "relation";
 
 /**
  * JSON Schema property definition for form generation.
@@ -158,7 +158,7 @@ export interface SchemaProperty {
  */
 export interface ModelSchema {
   readonly $schema?: string;
-  readonly type: 'object';
+  readonly type: "object";
   readonly title: string;
   readonly description?: string;
   readonly properties: Record<string, SchemaProperty>;
@@ -184,7 +184,7 @@ export interface PaginationParams {
  */
 export interface SortParams {
   readonly sortBy?: string;
-  readonly sortOrder?: 'asc' | 'desc';
+  readonly sortOrder?: "asc" | "desc";
 }
 
 /**
@@ -241,7 +241,7 @@ export interface ModelStats {
  */
 export interface WidgetData {
   readonly id: string;
-  readonly type: 'metric' | 'chart' | 'list' | 'custom';
+  readonly type: "metric" | "chart" | "list" | "custom";
   readonly title: string;
   readonly data: Record<string, unknown>;
   readonly config: Record<string, unknown>;
@@ -261,7 +261,7 @@ export interface DashboardStats {
  * A single activity log entry.
  */
 export interface ActivityItem {
-  readonly action: 'create' | 'update' | 'delete' | string;
+  readonly action: "create" | "update" | "delete" | string;
   readonly model: string;
   readonly record_id: string | number | null;
   readonly timestamp: string;
@@ -276,7 +276,7 @@ export interface ActivityItem {
 /**
  * Supported export formats.
  */
-export type ExportFormat = 'csv' | 'json';
+export type ExportFormat = "csv" | "json";
 
 /**
  * Request for bulk export operation.
@@ -410,6 +410,7 @@ export interface NavItem {
   readonly href: string;
   readonly icon?: React.ComponentType<{ className?: string }>;
   readonly badge?: string | number;
+  readonly target?: "_blank" | "_self";
 }
 
 /**
@@ -421,3 +422,219 @@ export interface NavCategory {
   readonly items: readonly NavItem[];
   readonly defaultOpen?: boolean;
 }
+
+// ============================================================================
+// Custom View Types
+// ============================================================================
+
+/**
+ * Base view type for all non-model views.
+ */
+export type ViewType = "model" | "custom" | "action" | "page" | "link" | "embed";
+
+/**
+ * Information about a custom data view.
+ * CustomViews display non-model data sources with CRUD operations.
+ */
+export interface CustomViewInfo {
+  readonly name: string;
+  readonly identity: string;
+  readonly icon: string;
+  readonly category: string | null;
+  readonly view_type: "custom";
+  readonly columns: readonly ColumnDefinition[];
+  readonly can_create: boolean;
+  readonly can_edit: boolean;
+  readonly can_delete: boolean;
+}
+
+/**
+ * Response from listing custom view items.
+ */
+export interface CustomViewListResponse<T = Record<string, unknown>> {
+  readonly items: readonly T[];
+  readonly total: number;
+  readonly offset: number;
+  readonly limit: number;
+}
+
+// ============================================================================
+// Action View Types
+// ============================================================================
+
+/**
+ * Information about an admin action.
+ * Actions execute operations with optional form inputs.
+ */
+export interface ActionInfo {
+  readonly name: string;
+  readonly identity: string;
+  readonly icon: string;
+  readonly category: string | null;
+  readonly view_type: "action";
+  readonly form_fields: readonly FormField[];
+  readonly confirmation_message: string | null;
+  readonly requires_confirmation: boolean;
+  readonly dangerous: boolean;
+}
+
+/**
+ * Form field definition for action forms.
+ */
+export interface FormField {
+  readonly name: string;
+  readonly label: string;
+  readonly field_type: FormFieldType;
+  readonly required: boolean;
+  readonly default: unknown;
+  readonly placeholder: string;
+  readonly help_text: string;
+  readonly options: readonly FormFieldOption[];
+}
+
+/**
+ * Supported form field types.
+ */
+export type FormFieldType =
+  | "string"
+  | "text"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "date"
+  | "datetime"
+  | "email"
+  | "url"
+  | "password"
+  | "select"
+  | "multiselect"
+  | "file"
+  | "json";
+
+/**
+ * Option for select/multiselect form fields.
+ */
+export interface FormFieldOption {
+  readonly value: string;
+  readonly label: string;
+}
+
+/**
+ * Result of executing an action.
+ */
+export interface ActionResult {
+  readonly success: boolean;
+  readonly message: string;
+  readonly redirect: string | null;
+  readonly data: Record<string, unknown>;
+  readonly refresh: boolean;
+}
+
+// ============================================================================
+// Page View Types
+// ============================================================================
+
+/**
+ * Information about a content page.
+ * Pages display static or dynamic content.
+ */
+export interface PageInfo {
+  readonly name: string;
+  readonly identity: string;
+  readonly icon: string;
+  readonly category: string | null;
+  readonly view_type: "page";
+  readonly content_type: PageContentType;
+  readonly content: string | null;
+  readonly layout: PageLayout;
+  readonly refresh_interval: number | null;
+}
+
+/**
+ * Supported page content types.
+ */
+export type PageContentType = "markdown" | "html" | "text" | "dynamic" | "template";
+
+/**
+ * Page layout options.
+ */
+export type PageLayout = "default" | "full-width" | "sidebar";
+
+/**
+ * Content returned for a dynamic page.
+ */
+export interface PageContent {
+  readonly content: string;
+  readonly content_type: PageContentType;
+  readonly title: string | null;
+  readonly metadata: Record<string, unknown>;
+}
+
+// ============================================================================
+// Link View Types
+// ============================================================================
+
+/**
+ * Information about an external navigation link.
+ * Links navigate to external URLs.
+ */
+export interface LinkInfo {
+  readonly name: string;
+  readonly identity: string;
+  readonly icon: string;
+  readonly category: string | null;
+  readonly view_type: "link";
+  readonly url: string;
+  readonly target: "_blank" | "_self";
+}
+
+// ============================================================================
+// Embed View Types
+// ============================================================================
+
+/**
+ * Information about an embedded view.
+ * Embeds display iframes or custom components.
+ */
+export interface EmbedInfo {
+  readonly name: string;
+  readonly identity: string;
+  readonly icon: string;
+  readonly category: string | null;
+  readonly view_type: "embed";
+  readonly embed_type: EmbedType;
+  readonly embed_url: string | null;
+  readonly component_name: string | null;
+  readonly layout: EmbedLayout;
+}
+
+/**
+ * Supported embed types.
+ */
+export type EmbedType = "iframe" | "component";
+
+/**
+ * Embed layout options.
+ */
+export type EmbedLayout = "full" | "sidebar" | "card";
+
+/**
+ * Configuration for an embed.
+ */
+export interface EmbedConfig {
+  readonly url: string | null;
+  readonly component_name: string | null;
+  readonly sandbox: string | null;
+  readonly allow: string | null;
+  readonly width: string;
+  readonly height: string;
+}
+
+// ============================================================================
+// All Views Union Type
+// ============================================================================
+
+/**
+ * Union type of all view info types.
+ */
+export type AnyViewInfo = ModelInfo | CustomViewInfo | ActionInfo | PageInfo | LinkInfo | EmbedInfo;

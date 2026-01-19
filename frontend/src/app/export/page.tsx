@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardBody } from '@/components/ui/Card';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Card, CardBody } from "@/components/ui/Card";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const DownloadIcon = ({ className }: { className?: string }) => (
   <svg
@@ -29,10 +29,7 @@ export default function ExportPage() {
           <PageHeader
             title="Export Data"
             subtitle="Export your data in various formats"
-            breadcrumbs={[
-              { label: 'Dashboard', href: '/' },
-              { label: 'Export' },
-            ]}
+            breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Export" }]}
           />
 
           <Card>
@@ -44,8 +41,8 @@ export default function ExportPage() {
                 Coming Soon
               </h2>
               <p className="text-sm text-[var(--color-muted)] max-w-md mx-auto">
-                Bulk data export will be available in a future update.
-                Individual model exports are available from the model list page.
+                Bulk data export will be available in a future update. Individual model exports are
+                available from the model list page.
               </p>
             </CardBody>
           </Card>

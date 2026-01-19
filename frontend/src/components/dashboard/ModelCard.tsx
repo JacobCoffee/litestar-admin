@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Card, CardBody } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Loading';
-import { cn, formatNumber, formatDate } from '@/lib/utils';
-import type { ModelStats } from '@/types';
+import Link from "next/link";
+import { Card, CardBody } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Loading";
+import { cn, formatNumber, formatDate } from "@/lib/utils";
+import type { ModelStats } from "@/types";
 
 export interface ModelCardProps {
   /** Model statistics */
@@ -26,10 +26,10 @@ export function ModelCard({ model, lastUpdated, className }: ModelCardProps) {
     <Link href={href} className="block group">
       <Card
         className={cn(
-          'h-full transition-all duration-200',
-          'hover:border-[var(--color-accent)] hover:shadow-md',
-          'group-focus-visible:ring-2 group-focus-visible:ring-[var(--color-accent)]',
-          className
+          "h-full transition-all duration-200",
+          "hover:border-[var(--color-accent)] hover:shadow-md",
+          "group-focus-visible:ring-2 group-focus-visible:ring-[var(--color-accent)]",
+          className,
         )}
       >
         <CardBody className="flex flex-col gap-4">
@@ -43,9 +43,7 @@ export function ModelCard({ model, lastUpdated, className }: ModelCardProps) {
                 {model.name}
               </h3>
               {model.category && (
-                <p className="text-xs text-[var(--color-muted)] truncate">
-                  {model.category}
-                </p>
+                <p className="text-xs text-[var(--color-muted)] truncate">{model.category}</p>
               )}
             </div>
             <ChevronRightIcon className="h-4 w-4 text-[var(--color-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
@@ -58,13 +56,11 @@ export function ModelCard({ model, lastUpdated, className }: ModelCardProps) {
                 {formatNumber(model.count)}
               </p>
               <p className="text-xs text-[var(--color-muted)]">
-                {model.count === 1 ? 'record' : 'records'}
+                {model.count === 1 ? "record" : "records"}
               </p>
             </div>
             {lastUpdated && (
-              <p className="text-xs text-[var(--color-muted)]">
-                Updated {formatDate(lastUpdated)}
-              </p>
+              <p className="text-xs text-[var(--color-muted)]">Updated {formatDate(lastUpdated)}</p>
             )}
           </div>
         </CardBody>
@@ -120,9 +116,9 @@ function ModelIcon({ icon, className }: ModelIconProps) {
     database: DatabaseIcon,
   };
 
-  const IconComponent = icon ? iconMap[icon.toLowerCase()] ?? DatabaseIcon : DatabaseIcon;
+  const IconComponent = icon ? (iconMap[icon.toLowerCase()] ?? DatabaseIcon) : DatabaseIcon;
 
-  return <IconComponent className={cn('h-5 w-5 text-[var(--color-primary)]', className)} />;
+  return <IconComponent className={cn("h-5 w-5 text-[var(--color-primary)]", className)} />;
 }
 
 // Icon components
@@ -255,12 +251,7 @@ function ChevronRightIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 5l7 7-7 7"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
     </svg>
   );
 }

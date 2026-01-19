@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from "react";
 
-import { useAuthContext } from '@/contexts/AuthContext';
-import { Card, CardBody } from '@/components/ui/Card';
-import { cn } from '@/lib/utils';
+import { useAuthContext } from "@/contexts/AuthContext";
+import { Card, CardBody } from "@/components/ui/Card";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for AuthGuard component.
@@ -54,19 +54,17 @@ function DefaultAccessDenied() {
         <div className="flex flex-col items-center gap-4 py-6 text-center">
           <div
             className={cn(
-              'flex h-16 w-16 items-center justify-center rounded-full',
-              'bg-[var(--color-error)]/10'
+              "flex h-16 w-16 items-center justify-center rounded-full",
+              "bg-[var(--color-error)]/10",
             )}
           >
             <LockIcon className="h-8 w-8 text-[var(--color-error)]" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">
-              Access Denied
-            </h3>
+            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">Access Denied</h3>
             <p className="text-sm text-[var(--color-muted)]">
-              You do not have permission to view this content.
-              Please contact your administrator if you believe this is an error.
+              You do not have permission to view this content. Please contact your administrator if
+              you believe this is an error.
             </p>
           </div>
         </div>
@@ -121,8 +119,7 @@ export function AuthGuard({
   fallback,
   hideOnDenied = false,
 }: AuthGuardProps) {
-  const { user, hasAllPermissions, hasAnyPermission, hasAnyRole } =
-    useAuthContext();
+  const { user, hasAllPermissions, hasAnyPermission, hasAnyRole } = useAuthContext();
 
   const isAuthorized = useMemo(() => {
     // If no requirements specified, allow access
@@ -222,5 +219,13 @@ export function useIsAuthorized(options: {
     }
 
     return hasRequiredPermissions && hasRequiredRoles;
-  }, [user, permissions, roles, requireAllPermissions, hasAllPermissions, hasAnyPermission, hasAnyRole]);
+  }, [
+    user,
+    permissions,
+    roles,
+    requireAllPermissions,
+    hasAllPermissions,
+    hasAnyPermission,
+    hasAnyRole,
+  ]);
 }

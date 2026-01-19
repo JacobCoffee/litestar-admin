@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import type { BreadcrumbItem } from '@/components/layout/Breadcrumb';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { RecordForm } from '@/components/data/RecordForm';
-import { Card, CardBody, CardHeader } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Spinner } from '@/components/ui/Loading';
-import { useModelSchema, useCreateRecord, isApiError } from '@/hooks/useApi';
-import { cn, toTitleCase } from '@/lib/utils';
-import type { ApiError, ModelRecord, ModelSchema } from '@/types';
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import type { BreadcrumbItem } from "@/components/layout/Breadcrumb";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { RecordForm } from "@/components/data/RecordForm";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Loading";
+import { useModelSchema, useCreateRecord, isApiError } from "@/hooks/useApi";
+import { cn, toTitleCase } from "@/lib/utils";
+import type { ApiError, ModelRecord, ModelSchema } from "@/types";
 
 // ============================================================================
 // Types
@@ -33,12 +33,7 @@ interface ServerValidationErrors {
 // ============================================================================
 
 const PlusIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    aria-hidden="true"
-  >
+  <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
     <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
   </svg>
 );
@@ -60,12 +55,7 @@ const AlertCircleIcon = ({ className }: { className?: string }) => (
 );
 
 const ArrowLeftIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    aria-hidden="true"
-  >
+  <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
     <path
       fillRule="evenodd"
       d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
@@ -79,7 +69,7 @@ const ArrowLeftIcon = ({ className }: { className?: string }) => (
 // ============================================================================
 
 function formatModelName(model: string): string {
-  return toTitleCase(model.replace(/[-_]/g, ' '));
+  return toTitleCase(model.replace(/[-_]/g, " "));
 }
 
 function extractSchemaDefaults(schema: ModelSchema): Record<string, unknown> {
@@ -90,11 +80,11 @@ function extractSchemaDefaults(schema: ModelSchema): Record<string, unknown> {
 
     if (property.default !== undefined) {
       defaults[name] = property.default;
-    } else if (property.type === 'boolean') {
+    } else if (property.type === "boolean") {
       defaults[name] = false;
-    } else if (property.type === 'array') {
+    } else if (property.type === "array") {
       defaults[name] = [];
-    } else if (property.type === 'object') {
+    } else if (property.type === "object") {
       defaults[name] = {};
     }
   }
@@ -109,13 +99,18 @@ function parseValidationErrors(error: ApiError): ServerValidationErrors {
   if (response?.extra) {
     const extra = response.extra as Record<string, unknown>;
 
-    const extraErrors = extra['errors'];
+    const extraErrors = extra["errors"];
     if (Array.isArray(extraErrors)) {
       for (const fieldError of extraErrors) {
-        if (typeof fieldError === 'object' && fieldError !== null) {
-          const err = fieldError as { field?: string; loc?: string[]; message?: string; msg?: string };
+        if (typeof fieldError === "object" && fieldError !== null) {
+          const err = fieldError as {
+            field?: string;
+            loc?: string[];
+            message?: string;
+            msg?: string;
+          };
           const fieldName = err.field ?? err.loc?.[err.loc.length - 1];
-          const message = err.message ?? err.msg ?? 'Invalid value';
+          const message = err.message ?? err.msg ?? "Invalid value";
           if (fieldName) {
             errors[fieldName] = message;
           }
@@ -123,8 +118,8 @@ function parseValidationErrors(error: ApiError): ServerValidationErrors {
       }
     }
 
-    const extraFields = extra['fields'];
-    if (typeof extraFields === 'object' && extraFields !== null) {
+    const extraFields = extra["fields"];
+    if (typeof extraFields === "object" && extraFields !== null) {
       const fields = extraFields as Record<string, string>;
       Object.assign(errors, fields);
     }
@@ -140,10 +135,7 @@ function parseValidationErrors(error: ApiError): ServerValidationErrors {
 function LoadingState() {
   return (
     <div
-      className={cn(
-        'flex flex-col items-center justify-center py-16',
-        'text-[var(--color-muted)]'
-      )}
+      className={cn("flex flex-col items-center justify-center py-16", "text-[var(--color-muted)]")}
     >
       <Spinner size="lg" />
       <p className="mt-4 text-sm">Loading schema...</p>
@@ -163,25 +155,12 @@ interface ErrorStateProps {
 
 function ErrorState({ title, message, onRetry }: ErrorStateProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center py-16',
-        'text-center'
-      )}
-    >
+    <div className={cn("flex flex-col items-center justify-center py-16", "text-center")}>
       <AlertCircleIcon className="h-12 w-12 text-[var(--color-error)]" />
-      <h3 className="mt-4 text-lg font-medium text-[var(--color-foreground)]">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm text-[var(--color-muted)] max-w-md">
-        {message}
-      </p>
+      <h3 className="mt-4 text-lg font-medium text-[var(--color-foreground)]">{title}</h3>
+      <p className="mt-2 text-sm text-[var(--color-muted)] max-w-md">{message}</p>
       {onRetry && (
-        <Button
-          variant="secondary"
-          onClick={onRetry}
-          className="mt-6"
-        >
+        <Button variant="secondary" onClick={onRetry} className="mt-6">
           Try Again
         </Button>
       )}
@@ -194,7 +173,7 @@ function ErrorState({ title, message, onRetry }: ErrorStateProps) {
 // ============================================================================
 
 interface AlertProps {
-  variant: 'error' | 'success';
+  variant: "error" | "success";
   title?: string;
   message: string;
   onDismiss?: () => void;
@@ -202,24 +181,23 @@ interface AlertProps {
 
 function Alert({ variant, title, message, onDismiss }: AlertProps) {
   const variantStyles = {
-    error: 'bg-[var(--color-error)]/10 border-[var(--color-error)]/20 text-[var(--color-error)]',
-    success: 'bg-[var(--color-success)]/10 border-[var(--color-success)]/20 text-[var(--color-success)]',
+    error: "bg-[var(--color-error)]/10 border-[var(--color-error)]/20 text-[var(--color-error)]",
+    success:
+      "bg-[var(--color-success)]/10 border-[var(--color-success)]/20 text-[var(--color-success)]",
   };
 
   return (
     <div
       className={cn(
-        'flex items-start gap-3 rounded-[var(--radius-md)] p-4 border',
-        variantStyles[variant]
+        "flex items-start gap-3 rounded-[var(--radius-md)] p-4 border",
+        variantStyles[variant],
       )}
       role="alert"
     >
       <AlertCircleIcon className="h-5 w-5 flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        {title && (
-          <p className="font-medium">{title}</p>
-        )}
-        <p className={cn('text-sm', title && 'mt-1')}>{message}</p>
+        {title && <p className="font-medium">{title}</p>}
+        <p className={cn("text-sm", title && "mt-1")}>{message}</p>
       </div>
       {onDismiss && (
         <button
@@ -259,11 +237,11 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
     isLoading: isLoadingSchema,
     error: schemaError,
     refetch: refetchSchema,
-  } = useModelSchema(model, 'create');
+  } = useModelSchema(model, "create");
 
   const createRecord = useCreateRecord<ModelRecord>(model, {
     onSuccess: (newRecord) => {
-      const recordId = newRecord['id'] ?? newRecord['_id'] ?? newRecord['pk'];
+      const recordId = newRecord["id"] ?? newRecord["_id"] ?? newRecord["pk"];
 
       if (recordId !== undefined && recordId !== null) {
         router.push(`/models/${model}/${recordId}`);
@@ -277,14 +255,14 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
 
         if (Object.keys(fieldErrors).length > 0) {
           setServerErrors(fieldErrors);
-          setGeneralError('Please correct the errors below and try again.');
+          setGeneralError("Please correct the errors below and try again.");
         } else {
           setGeneralError(
-            error.detail ?? error.message ?? 'Failed to create record. Please try again.'
+            error.detail ?? error.message ?? "Failed to create record. Please try again.",
           );
         }
       } else {
-        setGeneralError('An unexpected error occurred. Please try again.');
+        setGeneralError("An unexpected error occurred. Please try again.");
       }
     },
   });
@@ -296,12 +274,15 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
     return extractSchemaDefaults(schema);
   }, [schema]);
 
-  const breadcrumbs: BreadcrumbItem[] = useMemo(() => [
-    { label: 'Dashboard', href: '/' },
-    { label: 'Models', href: '/models' },
-    { label: modelDisplayName, href: `/models/${model}` },
-    { label: 'New' },
-  ], [model, modelDisplayName]);
+  const breadcrumbs: BreadcrumbItem[] = useMemo(
+    () => [
+      { label: "Dashboard", href: "/" },
+      { label: "Models", href: "/models" },
+      { label: modelDisplayName, href: `/models/${model}` },
+      { label: "New" },
+    ],
+    [model, modelDisplayName],
+  );
 
   const handleSubmit = useCallback(
     async (values: Record<string, unknown>) => {
@@ -309,7 +290,7 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
       setGeneralError(null);
       await createRecord.mutateAsync(values);
     },
-    [createRecord]
+    [createRecord],
   );
 
   const handleCancel = useCallback(() => {
@@ -324,10 +305,7 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
     return (
       <MainLayout>
         <div className="space-y-6">
-          <PageHeader
-            title={`Create ${modelDisplayName}`}
-            breadcrumbs={breadcrumbs}
-          />
+          <PageHeader title={`Create ${modelDisplayName}`} breadcrumbs={breadcrumbs} />
           <Card>
             <CardBody>
               <LoadingState />
@@ -340,8 +318,8 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
 
   if (schemaError || !schema) {
     const errorMessage = isApiError(schemaError)
-      ? schemaError.detail ?? schemaError.message
-      : 'Failed to load model schema. The model may not exist or you may not have permission to access it.';
+      ? (schemaError.detail ?? schemaError.message)
+      : "Failed to load model schema. The model may not exist or you may not have permission to access it.";
 
     return (
       <MainLayout>
@@ -382,10 +360,7 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
           breadcrumbs={breadcrumbs}
           actions={
             <Link href={`/models/${model}`}>
-              <Button
-                variant="secondary"
-                leftIcon={<ArrowLeftIcon className="h-4 w-4" />}
-              >
+              <Button variant="secondary" leftIcon={<ArrowLeftIcon className="h-4 w-4" />}>
                 Back to List
               </Button>
             </Link>
@@ -406,8 +381,8 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)]',
-                  'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                  "flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)]",
+                  "bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
                 )}
               >
                 <PlusIcon className="h-5 w-5" />

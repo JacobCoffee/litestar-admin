@@ -3,110 +3,66 @@
 import { Suspense } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { ModelListPage } from "@/components/pages/ModelListPage";
-import { RecordDetailPage } from "@/components/pages/RecordDetailPage";
-import { CreateRecordPage } from "@/components/pages/CreateRecordPage";
+import { CustomViewListPage } from "@/components/pages/CustomViewListPage";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Spinner, Skeleton } from "@/components/ui/Loading";
-import { useModels } from "@/hooks/useApi";
+import { useCustomViews } from "@/hooks/useApi";
 import { cn } from "@/lib/utils";
 
 /**
- * Models page - handles all model-related routes client-side.
+ * Custom views page - handles all custom view routes client-side.
  *
  * Supports both path-based and query param routing:
- *
- * Path-based (preferred for navigation):
- * - /models - Models index
- * - /models/User - User model list
- * - /models/User/create - Create new User
- * - /models/User/123 - User record detail
- *
- * Query params (fallback):
- * - /models?model=User - Model list page
- * - /models?model=User&action=new - Create new record
- * - /models?model=User&id=123 - Record detail page
- *
- * This approach enables static export while maintaining SPA-style navigation.
+ * - /custom - Custom views index
+ * - /custom/analytics - Analytics custom view list
+ * - /custom?view=analytics - Fallback query param
  */
-export default function ModelsPage() {
+export default function CustomViewsPage() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <ModelsContent />
+      <CustomViewsContent />
     </Suspense>
   );
 }
 
 interface PathParams {
-  model: string | null;
+  view: string | null;
   id: string | null;
-  action: string | null;
 }
 
-/**
- * Parse route parameters from pathname.
- * Handles paths like /models/User, /models/User/create, /models/User/123
- * Also handles basePath prefix: /admin/models/User
- */
 function parsePathParams(pathname: string): PathParams {
-  // Remove basePath (/admin) and /models prefix
-  // usePathname() may or may not include basePath in static export
-  const normalizedPath = pathname
-    .replace(/^\/admin/, "") // Remove basePath if present
-    .replace(/^\/models\/?/, ""); // Remove /models prefix
+  const normalizedPath = pathname.replace(/^\/admin/, "").replace(/^\/custom\/?/, "");
 
-  if (!normalizedPath) return { model: null, id: null, action: null };
+  if (!normalizedPath) return { view: null, id: null };
 
   const segments = normalizedPath.split("/").filter(Boolean);
-  if (segments.length === 0) return { model: null, id: null, action: null };
+  if (segments.length === 0) return { view: null, id: null };
 
-  const model = segments[0] ?? null;
-  const secondSegment = segments[1];
+  const view = segments[0] ?? null;
+  const id = segments[1] ?? null;
 
-  if (!secondSegment) {
-    return { model, id: null, action: null };
-  }
-
-  // Check if second segment is 'create' or 'new' action or a record ID
-  if (secondSegment === "create" || secondSegment === "new") {
-    return { model, id: null, action: "new" };
-  }
-
-  // Otherwise it's a record ID
-  return { model, id: secondSegment, action: null };
+  return { view, id };
 }
 
-function ModelsContent() {
+function CustomViewsContent() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  // First try to parse from pathname (path-based routing)
   const pathParams = parsePathParams(pathname);
+  const view = pathParams.view ?? searchParams.get("view");
+  // Note: id is parsed but not currently used - reserved for future detail/edit views
+  const _id = pathParams.id ?? searchParams.get("id");
 
-  // Fall back to query params if not in path
-  const model = pathParams.model ?? searchParams.get("model");
-  const id = pathParams.id ?? searchParams.get("id");
-  const action = pathParams.action ?? searchParams.get("action");
-
-  // If no model is specified, show the index page
-  if (!model) {
-    return <ModelsIndexPage />;
+  // If a specific view is selected, render it
+  if (view) {
+    // For now, just show the list page. Later can add detail/edit views.
+    return <CustomViewListPage identity={view} />;
   }
 
-  // Create new record
-  if (action === "new") {
-    return <CreateRecordPage model={model} />;
-  }
-
-  // Show record detail
-  if (id) {
-    return <RecordDetailPage model={model} id={id} />;
-  }
-
-  // Show model list
-  return <ModelListPage model={model} />;
+  // Show the custom views index
+  return <CustomViewsIndexPage />;
 }
 
 function LoadingFallback() {
@@ -119,8 +75,7 @@ function LoadingFallback() {
   );
 }
 
-// Icon for model cards
-const TableIcon = ({ className }: { className?: string }) => (
+const GridIcon = ({ className }: { className?: string }) => (
   <svg
     className={className}
     viewBox="0 0 24 24"
@@ -130,10 +85,10 @@ const TableIcon = ({ className }: { className?: string }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 9h18" />
-    <path d="M3 15h18" />
-    <path d="M9 3v18" />
+    <rect x="3" y="3" width="7" height="7" />
+    <rect x="14" y="3" width="7" height="7" />
+    <rect x="14" y="14" width="7" height="7" />
+    <rect x="3" y="14" width="7" height="7" />
   </svg>
 );
 
@@ -151,22 +106,18 @@ const ChevronRightIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-/**
- * Models index page - shows when navigating to /models without params
- */
-function ModelsIndexPage() {
-  const { data: models, isLoading, error } = useModels();
+function CustomViewsIndexPage() {
+  const { data: customViews, isLoading, error } = useCustomViews();
 
   return (
     <MainLayout>
       <div className="space-y-6">
         <PageHeader
-          title="Models"
-          subtitle="Browse and manage your database models"
-          breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Models" }]}
+          title="Custom Views"
+          subtitle="Browse custom data views and integrations"
+          breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Custom Views" }]}
         />
 
-        {/* Loading state */}
         {isLoading && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
@@ -181,20 +132,20 @@ function ModelsIndexPage() {
           </div>
         )}
 
-        {/* Error state */}
         {error && (
           <Card>
             <CardBody className="py-12 text-center">
-              <p className="text-[var(--color-error)]">Failed to load models: {error.message}</p>
+              <p className="text-[var(--color-error)]">
+                Failed to load custom views: {error.message}
+              </p>
             </CardBody>
           </Card>
         )}
 
-        {/* Models grid */}
-        {!isLoading && !error && models && models.length > 0 && (
+        {!isLoading && !error && customViews && customViews.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {models.map((model) => (
-              <Link key={model.model_name} href={`/models/${model.model_name}`} className="group">
+            {customViews.map((view) => (
+              <Link key={view.identity} href={`/custom/${view.identity}`} className="group">
                 <Card className="h-full transition-all duration-150 hover:border-[var(--color-primary)] hover:shadow-md">
                   <CardBody className="p-4">
                     <div className="flex items-start justify-between">
@@ -205,13 +156,13 @@ function ModelsIndexPage() {
                             "bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
                           )}
                         >
-                          <TableIcon className="h-6 w-6" />
+                          <GridIcon className="h-6 w-6" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-[var(--color-foreground)] group-hover:text-[var(--color-primary)]">
-                            {model.name}
+                            {view.name}
                           </h3>
-                          <p className="text-sm text-[var(--color-muted)]">{model.model_name}</p>
+                          <p className="text-sm text-[var(--color-muted)]">{view.identity}</p>
                         </div>
                       </div>
                       <ChevronRightIcon
@@ -221,7 +172,7 @@ function ModelsIndexPage() {
                         )}
                       />
                     </div>
-                    {model.category && (
+                    {view.category && (
                       <div className="mt-3">
                         <span
                           className={cn(
@@ -230,7 +181,7 @@ function ModelsIndexPage() {
                             "bg-[var(--color-card-hover)] text-[var(--color-muted)]",
                           )}
                         >
-                          {model.category}
+                          {view.category}
                         </span>
                       </div>
                     )}
@@ -241,18 +192,18 @@ function ModelsIndexPage() {
           </div>
         )}
 
-        {/* Empty state */}
-        {!isLoading && !error && (!models || models.length === 0) && (
+        {!isLoading && !error && (!customViews || customViews.length === 0) && (
           <Card>
             <CardBody className="py-16 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--color-card-hover)] flex items-center justify-center">
-                <TableIcon className="h-8 w-8 text-[var(--color-muted)]" />
+                <GridIcon className="h-8 w-8 text-[var(--color-muted)]" />
               </div>
               <h2 className="text-lg font-semibold text-[var(--color-foreground)] mb-2">
-                No Models Registered
+                No Custom Views
               </h2>
               <p className="text-sm text-[var(--color-muted)] max-w-md mx-auto">
-                Register your SQLAlchemy models with the admin panel to manage them here.
+                Custom views allow you to display non-model data sources with CRUD operations.
+                Register custom views in your admin configuration.
               </p>
             </CardBody>
           </Card>

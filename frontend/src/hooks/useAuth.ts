@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { useLogin, useLogout, useCurrentUser, apiClient, isApiError } from './useApi';
-import type { AdminUser } from '@/types';
+import { useLogin, useLogout, useCurrentUser, apiClient, isApiError } from "./useApi";
+import type { AdminUser } from "@/types";
 
 /**
  * Token storage key for localStorage.
  */
-const ACCESS_TOKEN_KEY = 'admin_access_token';
+const ACCESS_TOKEN_KEY = "admin_access_token";
 
 /**
  * Result of the useAuth hook.
@@ -61,7 +61,7 @@ export function useAuth(): UseAuthResult {
   } = useCurrentUser({
     retry: false,
     // Only run the query if we have a token
-    enabled: typeof window !== 'undefined' && !!localStorage.getItem(ACCESS_TOKEN_KEY),
+    enabled: typeof window !== "undefined" && !!localStorage.getItem(ACCESS_TOKEN_KEY),
   });
 
   // Login mutation
@@ -71,7 +71,7 @@ export function useAuth(): UseAuthResult {
       await refetchUser();
 
       // Redirect to returnUrl or default to dashboard
-      const returnUrl = searchParams.get('returnUrl') ?? '/';
+      const returnUrl = searchParams.get("returnUrl") ?? "/";
       router.push(returnUrl);
     },
   });
@@ -80,14 +80,14 @@ export function useAuth(): UseAuthResult {
   const logoutMutation = useLogout({
     onSuccess: () => {
       // Redirect to login page after logout
-      router.push('/login');
+      router.push("/login");
     },
   });
 
   // Check initial authentication state
   useEffect(() => {
     const checkAuth = async () => {
-      const hasToken = typeof window !== 'undefined' && !!localStorage.getItem(ACCESS_TOKEN_KEY);
+      const hasToken = typeof window !== "undefined" && !!localStorage.getItem(ACCESS_TOKEN_KEY);
 
       if (hasToken && !user && !isUserLoading) {
         // We have a token but no user data, try to fetch it
@@ -113,7 +113,7 @@ export function useAuth(): UseAuthResult {
   // Compute loading state - true during initial check or when fetching user
   const isLoading = useMemo(() => {
     if (!initialCheckDone) return true;
-    if (typeof window === 'undefined') return true;
+    if (typeof window === "undefined") return true;
 
     const hasToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (hasToken && isUserLoading) return true;
@@ -126,7 +126,7 @@ export function useAuth(): UseAuthResult {
     async (email: string, password: string, _rememberMe = false) => {
       await loginMutation.mutateAsync({ email, password });
     },
-    [loginMutation]
+    [loginMutation],
   );
 
   // Logout handler

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Loading';
-import { cn } from '@/lib/utils';
-import type { ActivityItem } from '@/types';
+import Link from "next/link";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Loading";
+import { cn } from "@/lib/utils";
+import type { ActivityItem } from "@/types";
 
 export interface ActivityFeedProps {
   /** List of activity items */
@@ -57,7 +57,10 @@ export function ActivityFeed({
         ) : (
           <ul className="divide-y divide-[var(--color-border)]">
             {displayActivities.map((activity, index) => (
-              <ActivityRow key={`${activity.model}-${activity.record_id}-${index}`} activity={activity} />
+              <ActivityRow
+                key={`${activity.model}-${activity.record_id}-${index}`}
+                activity={activity}
+              />
             ))}
           </ul>
         )}
@@ -79,20 +82,20 @@ function ActivityRow({ activity }: ActivityRowProps) {
       {/* Action icon */}
       <div
         className={cn(
-          'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-          actionConfig.bgColor
+          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          actionConfig.bgColor,
         )}
       >
-        <actionConfig.Icon className={cn('h-4 w-4', actionConfig.iconColor)} />
+        <actionConfig.Icon className={cn("h-4 w-4", actionConfig.iconColor)} />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-sm text-[var(--color-foreground)]">
-          <span className="font-medium">{activity.user ?? 'System'}</span>
+          <span className="font-medium">{activity.user ?? "System"}</span>
           <span className="text-[var(--color-muted)]"> {actionConfig.verb} </span>
           <Link
-            href={`/models/${activity.model}${activity.record_id ? `/${activity.record_id}` : ''}`}
+            href={`/models/${activity.model}${activity.record_id ? `/${activity.record_id}` : ""}`}
             className="font-medium text-[var(--color-accent)] hover:underline"
           >
             {activity.model}
@@ -124,9 +127,7 @@ function EmptyActivityState() {
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-card-hover)]">
         <ActivityIcon className="h-6 w-6 text-[var(--color-muted)]" />
       </div>
-      <p className="mt-4 text-sm font-medium text-[var(--color-foreground)]">
-        No recent activity
-      </p>
+      <p className="mt-4 text-sm font-medium text-[var(--color-foreground)]">No recent activity</p>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         Activity will appear here when changes are made
       </p>
@@ -164,7 +165,7 @@ function ActivityFeedSkeleton({ count = 5 }: ActivityFeedSkeletonProps) {
 }
 
 // Action configuration for icons and colors
-type ActionType = 'create' | 'update' | 'delete' | string;
+type ActionType = "create" | "update" | "delete" | string;
 
 interface ActionConfig {
   Icon: React.FC<{ className?: string }>;
@@ -175,33 +176,33 @@ interface ActionConfig {
 
 function getActionConfig(action: ActionType): ActionConfig {
   switch (action.toLowerCase()) {
-    case 'create':
+    case "create":
       return {
         Icon: CreateIcon,
-        verb: 'created',
-        bgColor: 'bg-[var(--color-success)]/10',
-        iconColor: 'text-[var(--color-success)]',
+        verb: "created",
+        bgColor: "bg-[var(--color-success)]/10",
+        iconColor: "text-[var(--color-success)]",
       };
-    case 'update':
+    case "update":
       return {
         Icon: UpdateIcon,
-        verb: 'updated',
-        bgColor: 'bg-[var(--color-accent)]/10',
-        iconColor: 'text-[var(--color-accent)]',
+        verb: "updated",
+        bgColor: "bg-[var(--color-accent)]/10",
+        iconColor: "text-[var(--color-accent)]",
       };
-    case 'delete':
+    case "delete":
       return {
         Icon: DeleteIcon,
-        verb: 'deleted',
-        bgColor: 'bg-[var(--color-error)]/10',
-        iconColor: 'text-[var(--color-error)]',
+        verb: "deleted",
+        bgColor: "bg-[var(--color-error)]/10",
+        iconColor: "text-[var(--color-error)]",
       };
     default:
       return {
         Icon: ActivityIcon,
         verb: action,
-        bgColor: 'bg-[var(--color-muted)]/10',
-        iconColor: 'text-[var(--color-muted)]',
+        bgColor: "bg-[var(--color-muted)]/10",
+        iconColor: "text-[var(--color-muted)]",
       };
   }
 }
@@ -216,28 +217,28 @@ function getRelativeTime(timestamp: string): string {
   const diffDays = Math.floor(diffHours / 24);
 
   if (diffSeconds < 60) {
-    return 'Just now';
+    return "Just now";
   }
   if (diffMinutes < 60) {
-    return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+    return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
   }
   if (diffHours < 24) {
-    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
   }
   if (diffDays < 7) {
-    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
   }
-  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return then.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 function formatDetails(details: Record<string, unknown>): string {
   const entries = Object.entries(details);
-  if (entries.length === 0) return '';
+  if (entries.length === 0) return "";
 
   return entries
     .slice(0, 3)
     .map(([key, value]) => `${key}: ${String(value)}`)
-    .join(', ');
+    .join(", ");
 }
 
 // Icon components
@@ -250,12 +251,7 @@ function CreateIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 4v16m8-8H4"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
     </svg>
   );
 }

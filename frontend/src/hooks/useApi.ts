@@ -11,10 +11,12 @@ import {
   type UseQueryOptions,
   type UseMutationOptions,
   type QueryKey,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
-import { api, apiClient, isApiError } from '@/lib/api';
+import { api, apiClient, isApiError } from "@/lib/api";
 import type {
+  ActionInfo,
+  ActionResult,
   AdminUser,
   ApiError,
   ActivityItem,
@@ -23,9 +25,14 @@ import type {
   BulkDeleteRequest,
   BulkDeleteResponse,
   BulkExportRequest,
+  CustomViewInfo,
+  CustomViewListResponse,
   DashboardStats,
   DeleteResponse,
+  EmbedConfig,
+  EmbedInfo,
   ExportFormat,
+  LinkInfo,
   ListQueryParams,
   ListRecordsResponse,
   LoginCredentials,
@@ -33,8 +40,10 @@ import type {
   ModelInfo,
   ModelRecord,
   ModelSchema,
+  PageContent,
+  PageInfo,
   PaginatedResponse,
-} from '@/types';
+} from "@/types";
 
 // ============================================================================
 // Query Keys Factory
@@ -47,33 +56,74 @@ import type {
 export const queryKeys = {
   // Auth
   auth: {
-    all: ['auth'] as const,
-    user: () => [...queryKeys.auth.all, 'user'] as const,
+    all: ["auth"] as const,
+    user: () => [...queryKeys.auth.all, "user"] as const,
   },
 
   // Models
   models: {
-    all: ['models'] as const,
-    list: () => [...queryKeys.models.all, 'list'] as const,
-    detail: (model: string) => [...queryKeys.models.all, 'detail', model] as const,
-    schema: (model: string) => [...queryKeys.models.all, 'schema', model] as const,
+    all: ["models"] as const,
+    list: () => [...queryKeys.models.all, "list"] as const,
+    detail: (model: string) => [...queryKeys.models.all, "detail", model] as const,
+    schema: (model: string) => [...queryKeys.models.all, "schema", model] as const,
   },
 
   // Records
   records: {
-    all: ['records'] as const,
+    all: ["records"] as const,
     model: (model: string) => [...queryKeys.records.all, model] as const,
     list: (model: string, params?: ListQueryParams) =>
-      [...queryKeys.records.model(model), 'list', params] as const,
+      [...queryKeys.records.model(model), "list", params] as const,
     detail: (model: string, id: string | number) =>
-      [...queryKeys.records.model(model), 'detail', id] as const,
+      [...queryKeys.records.model(model), "detail", id] as const,
   },
 
   // Dashboard
   dashboard: {
-    all: ['dashboard'] as const,
-    stats: () => [...queryKeys.dashboard.all, 'stats'] as const,
-    activity: (limit?: number) => [...queryKeys.dashboard.all, 'activity', limit] as const,
+    all: ["dashboard"] as const,
+    stats: () => [...queryKeys.dashboard.all, "stats"] as const,
+    activity: (limit?: number) => [...queryKeys.dashboard.all, "activity", limit] as const,
+  },
+
+  // Custom Views
+  customViews: {
+    all: ["customViews"] as const,
+    list: () => [...queryKeys.customViews.all, "list"] as const,
+    view: (identity: string) => [...queryKeys.customViews.all, "view", identity] as const,
+    items: (identity: string, params?: ListQueryParams) =>
+      [...queryKeys.customViews.view(identity), "items", params] as const,
+    item: (identity: string, itemId: string) =>
+      [...queryKeys.customViews.view(identity), "item", itemId] as const,
+    schema: (identity: string) => [...queryKeys.customViews.view(identity), "schema"] as const,
+  },
+
+  // Actions
+  actions: {
+    all: ["actions"] as const,
+    list: () => [...queryKeys.actions.all, "list"] as const,
+    detail: (identity: string) => [...queryKeys.actions.all, "detail", identity] as const,
+  },
+
+  // Pages
+  pages: {
+    all: ["pages"] as const,
+    list: () => [...queryKeys.pages.all, "list"] as const,
+    detail: (identity: string) => [...queryKeys.pages.all, "detail", identity] as const,
+    content: (identity: string) => [...queryKeys.pages.all, "content", identity] as const,
+  },
+
+  // Links
+  links: {
+    all: ["links"] as const,
+    list: () => [...queryKeys.links.all, "list"] as const,
+  },
+
+  // Embeds
+  embeds: {
+    all: ["embeds"] as const,
+    list: () => [...queryKeys.embeds.all, "list"] as const,
+    config: (identity: string) => [...queryKeys.embeds.all, "config", identity] as const,
+    props: (identity: string) => [...queryKeys.embeds.all, "props", identity] as const,
   },
 } as const;
 
@@ -86,7 +136,7 @@ export const queryKeys = {
  */
 type QueryOptions<TData, TError = ApiError> = Omit<
   UseQueryOptions<TData, TError, TData, QueryKey>,
-  'queryKey' | 'queryFn'
+  "queryKey" | "queryFn"
 >;
 
 /**
@@ -94,7 +144,7 @@ type QueryOptions<TData, TError = ApiError> = Omit<
  */
 type MutationOptions<TData, TVariables, TError = ApiError> = Omit<
   UseMutationOptions<TData, TError, TVariables>,
-  'mutationFn'
+  "mutationFn"
 >;
 
 // ============================================================================
@@ -215,8 +265,8 @@ export function useModels(options?: QueryOptions<ModelInfo[]>) {
  */
 export function useModelSchema(
   model: string,
-  mode: 'create' | 'edit' = 'create',
-  options?: QueryOptions<ModelSchema>
+  mode: "create" | "edit" = "create",
+  options?: QueryOptions<ModelSchema>,
 ) {
   return useQuery({
     queryKey: [...queryKeys.models.schema(model), mode],
@@ -248,7 +298,7 @@ export function useModelSchema(
 export function useRecords<T = ModelRecord>(
   model: string,
   params: ListQueryParams = {},
-  options?: QueryOptions<ListRecordsResponse<T>>
+  options?: QueryOptions<ListRecordsResponse<T>>,
 ) {
   return useQuery({
     queryKey: queryKeys.records.list(model, params),
@@ -270,7 +320,7 @@ export function useRecords<T = ModelRecord>(
 export function useRecordsPaginated<T = ModelRecord>(
   model: string,
   params: ListQueryParams = {},
-  options?: QueryOptions<PaginatedResponse<T>>
+  options?: QueryOptions<PaginatedResponse<T>>,
 ) {
   return useQuery({
     queryKey: queryKeys.records.list(model, params),
@@ -291,10 +341,10 @@ export function useRecordsPaginated<T = ModelRecord>(
 export function useRecord<T = ModelRecord>(
   model: string,
   id: string | number | undefined | null,
-  options?: QueryOptions<T>
+  options?: QueryOptions<T>,
 ) {
   return useQuery({
-    queryKey: queryKeys.records.detail(model, id ?? ''),
+    queryKey: queryKeys.records.detail(model, id ?? ""),
     queryFn: () => api.getRecord<T>(model, id!),
     enabled: !!model && id !== undefined && id !== null,
     ...options,
@@ -317,7 +367,7 @@ export function useRecord<T = ModelRecord>(
  */
 export function useCreateRecord<T = ModelRecord>(
   model: string,
-  options?: MutationOptions<T, Partial<T>>
+  options?: MutationOptions<T, Partial<T>>,
 ) {
   const queryClient = useQueryClient();
 
@@ -349,7 +399,7 @@ export function useCreateRecord<T = ModelRecord>(
  */
 export function useUpdateRecord<T = ModelRecord>(
   model: string,
-  options?: MutationOptions<T, { id: string | number; data: Partial<T> }>
+  options?: MutationOptions<T, { id: string | number; data: Partial<T> }>,
 ) {
   const queryClient = useQueryClient();
 
@@ -362,7 +412,7 @@ export function useUpdateRecord<T = ModelRecord>(
       // Invalidate list queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.records.model(model),
-        refetchType: 'active',
+        refetchType: "active",
       });
     },
     ...options,
@@ -380,7 +430,7 @@ export function useUpdateRecord<T = ModelRecord>(
  */
 export function usePatchRecord<T = ModelRecord>(
   model: string,
-  options?: MutationOptions<T, { id: string | number; data: Partial<T> }>
+  options?: MutationOptions<T, { id: string | number; data: Partial<T> }>,
 ) {
   const queryClient = useQueryClient();
 
@@ -393,7 +443,7 @@ export function usePatchRecord<T = ModelRecord>(
       // Invalidate list queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.records.model(model),
-        refetchType: 'active',
+        refetchType: "active",
       });
     },
     ...options,
@@ -416,7 +466,7 @@ export function usePatchRecord<T = ModelRecord>(
  */
 export function useDeleteRecord(
   model: string,
-  options?: MutationOptions<DeleteResponse, { id: string | number; softDelete?: boolean }>
+  options?: MutationOptions<DeleteResponse, { id: string | number; softDelete?: boolean }>,
 ) {
   const queryClient = useQueryClient();
 
@@ -494,7 +544,7 @@ export function useActivity(limit = 50, options?: QueryOptions<ActivityItem[]>) 
  */
 export function useBulkDelete(
   model: string,
-  options?: MutationOptions<BulkDeleteResponse, BulkDeleteRequest>
+  options?: MutationOptions<BulkDeleteResponse, BulkDeleteRequest>,
 ) {
   const queryClient = useQueryClient();
 
@@ -531,7 +581,7 @@ export function useBulkDelete(
 export function useBulkAction(
   model: string,
   action: string,
-  options?: MutationOptions<BulkActionResponse, BulkActionRequest>
+  options?: MutationOptions<BulkActionResponse, BulkActionRequest>,
 ) {
   const queryClient = useQueryClient();
 
@@ -565,11 +615,10 @@ export function useBulkAction(
  */
 export function useExportRecords(
   model: string,
-  options?: MutationOptions<Blob, { format?: ExportFormat }>
+  options?: MutationOptions<Blob, { format?: ExportFormat }>,
 ) {
   return useMutation({
-    mutationFn: ({ format = 'csv' }: { format?: ExportFormat }) =>
-      api.exportRecords(model, format),
+    mutationFn: ({ format = "csv" }: { format?: ExportFormat }) => api.exportRecords(model, format),
     ...options,
   });
 }
@@ -585,7 +634,7 @@ export function useExportRecords(
  */
 export function useExportSelected(
   model: string,
-  options?: MutationOptions<Blob, BulkExportRequest>
+  options?: MutationOptions<Blob, BulkExportRequest>,
 ) {
   return useMutation({
     mutationFn: (request: BulkExportRequest) => api.exportSelected(model, request),
@@ -693,6 +742,278 @@ export function useIsAuthenticated() {
     isLoading,
     user: data,
   };
+}
+
+// ============================================================================
+// Custom View Hooks
+// ============================================================================
+
+/**
+ * Hook to list all registered custom views.
+ */
+export function useCustomViews(options?: QueryOptions<CustomViewInfo[]>) {
+  return useQuery({
+    queryKey: queryKeys.customViews.list(),
+    queryFn: () => api.listCustomViews(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get items from a custom view.
+ */
+export function useCustomViewItems<T = Record<string, unknown>>(
+  identity: string,
+  params: ListQueryParams = {},
+  options?: QueryOptions<CustomViewListResponse<T>>,
+) {
+  return useQuery({
+    queryKey: queryKeys.customViews.items(identity, params),
+    queryFn: () => api.getCustomViewList<T>(identity, params),
+    enabled: !!identity,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get a single item from a custom view.
+ */
+export function useCustomViewItem<T = Record<string, unknown>>(
+  identity: string,
+  itemId: string | undefined | null,
+  options?: QueryOptions<T>,
+) {
+  return useQuery({
+    queryKey: queryKeys.customViews.item(identity, itemId ?? ""),
+    queryFn: () => api.getCustomViewItem<T>(identity, itemId!),
+    enabled: !!identity && !!itemId,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get the schema for a custom view.
+ */
+export function useCustomViewSchema(identity: string, options?: QueryOptions<ModelSchema>) {
+  return useQuery({
+    queryKey: queryKeys.customViews.schema(identity),
+    queryFn: () => api.getCustomViewSchema(identity),
+    staleTime: 30 * 60 * 1000,
+    enabled: !!identity,
+    ...options,
+  });
+}
+
+/**
+ * Hook to create an item in a custom view.
+ */
+export function useCreateCustomViewItem<T = Record<string, unknown>>(
+  identity: string,
+  options?: MutationOptions<T, Partial<T>>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Partial<T>) => api.createCustomViewItem<T>(identity, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.customViews.view(identity) });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to update an item in a custom view.
+ */
+export function useUpdateCustomViewItem<T = Record<string, unknown>>(
+  identity: string,
+  options?: MutationOptions<T, { itemId: string; data: Partial<T> }>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ itemId, data }: { itemId: string; data: Partial<T> }) =>
+      api.updateCustomViewItem<T>(identity, itemId, data),
+    onSuccess: (_data, variables) => {
+      queryClient.setQueryData(queryKeys.customViews.item(identity, variables.itemId), _data);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.customViews.view(identity),
+        refetchType: "active",
+      });
+    },
+    ...options,
+  });
+}
+
+/**
+ * Hook to delete an item from a custom view.
+ */
+export function useDeleteCustomViewItem(identity: string, options?: MutationOptions<void, string>) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (itemId: string) => api.deleteCustomViewItem(identity, itemId),
+    onSuccess: (_data, itemId) => {
+      queryClient.removeQueries({ queryKey: queryKeys.customViews.item(identity, itemId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.customViews.view(identity) });
+    },
+    ...options,
+  });
+}
+
+// ============================================================================
+// Action Hooks
+// ============================================================================
+
+/**
+ * Hook to list all registered actions.
+ */
+export function useActions(options?: QueryOptions<ActionInfo[]>) {
+  return useQuery({
+    queryKey: queryKeys.actions.list(),
+    queryFn: () => api.listActions(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get details of a specific action.
+ */
+export function useAction(identity: string, options?: QueryOptions<ActionInfo>) {
+  return useQuery({
+    queryKey: queryKeys.actions.detail(identity),
+    queryFn: () => api.getAction(identity),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!identity,
+    ...options,
+  });
+}
+
+/**
+ * Hook to execute an action.
+ */
+export function useExecuteAction(
+  identity: string,
+  options?: MutationOptions<ActionResult, Record<string, unknown>>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.executeAction(identity, data),
+    onSuccess: (result) => {
+      if (result.refresh) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.records.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.customViews.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
+      }
+    },
+    ...options,
+  });
+}
+
+// ============================================================================
+// Page Hooks
+// ============================================================================
+
+/**
+ * Hook to list all registered pages.
+ */
+export function usePages(options?: QueryOptions<PageInfo[]>) {
+  return useQuery({
+    queryKey: queryKeys.pages.list(),
+    queryFn: () => api.listPages(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get details of a specific page.
+ */
+export function usePage(identity: string, options?: QueryOptions<PageInfo>) {
+  return useQuery({
+    queryKey: queryKeys.pages.detail(identity),
+    queryFn: () => api.getPage(identity),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!identity,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get the content of a page.
+ */
+export function usePageContent(
+  identity: string,
+  refreshInterval?: number | null,
+  options?: QueryOptions<PageContent>,
+) {
+  return useQuery({
+    queryKey: queryKeys.pages.content(identity),
+    queryFn: () => api.getPageContent(identity),
+    enabled: !!identity,
+    ...(refreshInterval ? { refetchInterval: refreshInterval } : {}),
+    ...options,
+  });
+}
+
+// ============================================================================
+// Link Hooks
+// ============================================================================
+
+/**
+ * Hook to list all registered links.
+ */
+export function useLinks(options?: QueryOptions<LinkInfo[]>) {
+  return useQuery({
+    queryKey: queryKeys.links.list(),
+    queryFn: () => api.listLinks(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Embed Hooks
+// ============================================================================
+
+/**
+ * Hook to list all registered embeds.
+ */
+export function useEmbeds(options?: QueryOptions<EmbedInfo[]>) {
+  return useQuery({
+    queryKey: queryKeys.embeds.list(),
+    queryFn: () => api.listEmbeds(),
+    staleTime: 10 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get configuration for an embed.
+ */
+export function useEmbedConfig(identity: string, options?: QueryOptions<EmbedConfig>) {
+  return useQuery({
+    queryKey: queryKeys.embeds.config(identity),
+    queryFn: () => api.getEmbedConfig(identity),
+    staleTime: 30 * 60 * 1000,
+    enabled: !!identity,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get dynamic props for an embed component.
+ */
+export function useEmbedProps(identity: string, options?: QueryOptions<Record<string, unknown>>) {
+  return useQuery({
+    queryKey: queryKeys.embeds.props(identity),
+    queryFn: () => api.getEmbedProps(identity),
+    enabled: !!identity,
+    ...options,
+  });
 }
 
 // ============================================================================

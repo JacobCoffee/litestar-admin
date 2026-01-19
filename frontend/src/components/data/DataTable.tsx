@@ -1,14 +1,7 @@
-'use client';
+"use client";
 
-import {
-  useState,
-  useCallback,
-  useMemo,
-  useId,
-  type ReactNode,
-  type KeyboardEvent,
-} from 'react';
-import { cn } from '@/lib/utils';
+import { useState, useCallback, useMemo, useId, type ReactNode, type KeyboardEvent } from "react";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableHeader,
@@ -17,9 +10,9 @@ import {
   TableHead,
   TableCell,
   type SortDirection,
-} from '@/components/ui/Table';
-import { Button } from '@/components/ui/Button';
-import { Skeleton } from '@/components/ui/Loading';
+} from "@/components/ui/Table";
+import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Loading";
 
 // ============================================================================
 // Types
@@ -46,7 +39,7 @@ export interface Column<T> {
   /** Custom cell className */
   className?: string;
   /** Text alignment */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 }
 
 export interface DataTableProps<T> {
@@ -71,7 +64,7 @@ export interface DataTableProps<T> {
   /** Current sort column key */
   sortBy?: string;
   /** Current sort order */
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
   /** Sort change callback */
   onSort?: (column: string) => void;
   /** Enable row selection */
@@ -225,7 +218,7 @@ function Checkbox({
   id,
 }: CheckboxProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (!disabled) {
         onChange(!checked);
@@ -238,25 +231,25 @@ function Checkbox({
       id={id}
       type="button"
       role="checkbox"
-      aria-checked={indeterminate ? 'mixed' : checked}
+      aria-checked={indeterminate ? "mixed" : checked}
       aria-label={label}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
       onKeyDown={handleKeyDown}
       className={cn(
-        'h-4 w-4 shrink-0',
-        'rounded-[var(--radius-sm)]',
-        'border border-[var(--color-border)]',
-        'transition-colors duration-150',
-        'focus-visible:outline-none focus-visible:ring-2',
-        'focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2',
-        'focus-visible:ring-offset-[var(--color-background)]',
-        'disabled:cursor-not-allowed disabled:opacity-50',
+        "h-4 w-4 shrink-0",
+        "rounded-[var(--radius-sm)]",
+        "border border-[var(--color-border)]",
+        "transition-colors duration-150",
+        "focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2",
+        "focus-visible:ring-offset-[var(--color-background)]",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         (checked || indeterminate) && [
-          'bg-[var(--color-primary)] border-[var(--color-primary)]',
-          'text-[var(--color-primary-foreground)]',
+          "bg-[var(--color-primary)] border-[var(--color-primary)]",
+          "text-[var(--color-primary-foreground)]",
         ],
-        !checked && !indeterminate && 'hover:border-[var(--color-muted)]'
+        !checked && !indeterminate && "hover:border-[var(--color-muted)]",
       )}
     >
       {checked && !indeterminate && <CheckIcon className="h-3 w-3" />}
@@ -291,27 +284,23 @@ function ColumnVisibilityDropdown<T>({
       >
         <EyeIcon className="h-4 w-4" />
         <span className="hidden sm:inline">Columns</span>
-        <ChevronDownIcon className={cn('h-4 w-4 transition-transform', isOpen && 'rotate-180')} />
+        <ChevronDownIcon className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
       </Button>
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-            aria-hidden="true"
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
           {/* Dropdown menu */}
           <div
             id={dropdownId}
             role="menu"
             className={cn(
-              'absolute right-0 top-full z-50 mt-1',
-              'min-w-[180px] py-1',
-              'rounded-[var(--radius-md)]',
-              'border border-[var(--color-border)]',
-              'bg-[var(--color-card)]',
-              'shadow-lg shadow-black/20'
+              "absolute right-0 top-full z-50 mt-1",
+              "min-w-[180px] py-1",
+              "rounded-[var(--radius-md)]",
+              "border border-[var(--color-border)]",
+              "bg-[var(--color-card)]",
+              "shadow-lg shadow-black/20",
             )}
           >
             <div className="px-3 py-2 text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wide">
@@ -327,25 +316,25 @@ function ColumnVisibilityDropdown<T>({
                   aria-checked={isVisible}
                   onClick={() => onToggleColumn(key)}
                   className={cn(
-                    'w-full px-3 py-2',
-                    'flex items-center gap-2',
-                    'text-sm text-left',
-                    'hover:bg-[var(--color-card-hover)]',
-                    'transition-colors duration-150',
-                    'focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]'
+                    "w-full px-3 py-2",
+                    "flex items-center gap-2",
+                    "text-sm text-left",
+                    "hover:bg-[var(--color-card-hover)]",
+                    "transition-colors duration-150",
+                    "focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]",
                   )}
                 >
                   <span
                     className={cn(
-                      'flex h-4 w-4 items-center justify-center',
-                      'rounded-[var(--radius-sm)]',
-                      'border border-[var(--color-border)]',
-                      isVisible && 'bg-[var(--color-primary)] border-[var(--color-primary)]'
+                      "flex h-4 w-4 items-center justify-center",
+                      "rounded-[var(--radius-sm)]",
+                      "border border-[var(--color-border)]",
+                      isVisible && "bg-[var(--color-primary)] border-[var(--color-primary)]",
                     )}
                   >
                     {isVisible && <CheckIcon className="h-3 w-3 text-white" />}
                   </span>
-                  <span className={cn(!isVisible && 'text-[var(--color-muted)]')}>
+                  <span className={cn(!isVisible && "text-[var(--color-muted)]")}>
                     {column.header}
                   </span>
                 </button>
@@ -382,10 +371,10 @@ function Pagination({
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
-        'px-4 py-3',
-        'border-t border-[var(--color-border)]',
-        'bg-[var(--color-card)]/50'
+        "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
+        "px-4 py-3",
+        "border-t border-[var(--color-border)]",
+        "bg-[var(--color-card)]/50",
       )}
     >
       {/* Page info */}
@@ -393,21 +382,24 @@ function Pagination({
         {totalItems > 0 ? (
           <>
             Showing <span className="font-medium text-[var(--color-foreground)]">{startItem}</span>
-            {' to '}
+            {" to "}
             <span className="font-medium text-[var(--color-foreground)]">{endItem}</span>
-            {' of '}
+            {" of "}
             <span className="font-medium text-[var(--color-foreground)]">{totalItems}</span>
-            {' results'}
+            {" results"}
           </>
         ) : (
-          'No results'
+          "No results"
         )}
       </div>
 
       <div className="flex items-center gap-4">
         {/* Page size selector */}
         <div className="flex items-center gap-2">
-          <label htmlFor="page-size" className="text-sm text-[var(--color-muted)] whitespace-nowrap">
+          <label
+            htmlFor="page-size"
+            className="text-sm text-[var(--color-muted)] whitespace-nowrap"
+          >
             Per page:
           </label>
           <select
@@ -415,22 +407,22 @@ function Pagination({
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
             className={cn(
-              'h-8 px-2 pr-7',
-              'rounded-[var(--radius-md)]',
-              'border border-[var(--color-border)]',
-              'bg-[var(--color-card)]',
-              'text-sm text-[var(--color-foreground)]',
-              'transition-colors duration-150',
-              'hover:border-[var(--color-muted)]',
-              'focus-visible:outline-none focus-visible:ring-2',
-              'focus-visible:ring-[var(--color-accent)]',
-              'appearance-none cursor-pointer'
+              "h-8 px-2 pr-7",
+              "rounded-[var(--radius-md)]",
+              "border border-[var(--color-border)]",
+              "bg-[var(--color-card)]",
+              "text-sm text-[var(--color-foreground)]",
+              "transition-colors duration-150",
+              "hover:border-[var(--color-muted)]",
+              "focus-visible:outline-none focus-visible:ring-2",
+              "focus-visible:ring-[var(--color-accent)]",
+              "appearance-none cursor-pointer",
             )}
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b949e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.5rem center',
-              backgroundSize: '1rem',
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 0.5rem center",
+              backgroundSize: "1rem",
             }}
           >
             {pageSizeOptions.map((size) => (
@@ -485,14 +477,14 @@ export function DataTable<T>({
   onPageSizeChange,
   pageSizeOptions = [10, 25, 50, 100],
   sortBy,
-  sortOrder = 'asc',
+  sortOrder = "asc",
   onSort,
   selectable = false,
   selectedIds = new Set(),
   onSelectionChange,
   getRowId = (row: T) => (row as { id?: string | number }).id ?? 0,
   onRowClick,
-  emptyMessage = 'No data available',
+  emptyMessage = "No data available",
   showColumnToggle = false,
   className,
   striped = false,
@@ -531,7 +523,7 @@ export function DataTable<T>({
         onSelectionChange(new Set());
       }
     },
-    [data, getRowId, onSelectionChange]
+    [data, getRowId, onSelectionChange],
   );
 
   const handleSelectRow = useCallback(
@@ -546,7 +538,7 @@ export function DataTable<T>({
       }
       onSelectionChange(newSelection);
     },
-    [getRowId, selectedIds, onSelectionChange]
+    [getRowId, selectedIds, onSelectionChange],
   );
 
   // Sort handler
@@ -556,7 +548,7 @@ export function DataTable<T>({
         onSort(columnKey);
       }
     },
-    [onSort]
+    [onSort],
   );
 
   // Column toggle handler
@@ -579,18 +571,18 @@ export function DataTable<T>({
         onRowClick(row, index);
       }
     },
-    [onRowClick]
+    [onRowClick],
   );
 
   // Row keyboard handler
   const handleRowKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTableRowElement>, row: T, index: number) => {
-      if (onRowClick && (e.key === 'Enter' || e.key === ' ')) {
+      if (onRowClick && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         onRowClick(row, index);
       }
     },
-    [onRowClick]
+    [onRowClick],
   );
 
   // Compute selection state
@@ -599,10 +591,10 @@ export function DataTable<T>({
 
   // Get cell value by key (supports nested paths like "user.name")
   const getCellValue = useCallback((row: T, key: string): unknown => {
-    const keys = key.split('.');
+    const keys = key.split(".");
     let value: unknown = row;
     for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
+      if (value && typeof value === "object" && k in value) {
         value = (value as Record<string, unknown>)[k];
       } else {
         return undefined;
@@ -615,23 +607,23 @@ export function DataTable<T>({
   const getResponsiveClass = (priority?: number) => {
     switch (priority) {
       case 2:
-        return 'hidden lg:table-cell';
+        return "hidden lg:table-cell";
       case 3:
-        return 'hidden md:table-cell';
+        return "hidden md:table-cell";
       default:
-        return '';
+        return "";
     }
   };
 
   // Alignment classes
-  const getAlignClass = (align?: 'left' | 'center' | 'right') => {
+  const getAlignClass = (align?: "left" | "center" | "right") => {
     switch (align) {
-      case 'center':
-        return 'text-center';
-      case 'right':
-        return 'text-right';
+      case "center":
+        return "text-center";
+      case "right":
+        return "text-right";
       default:
-        return 'text-left';
+        return "text-left";
     }
   };
 
@@ -648,20 +640,20 @@ export function DataTable<T>({
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-lg)]',
-        'border border-[var(--color-border)]',
-        'overflow-hidden',
-        className
+        "rounded-[var(--radius-lg)]",
+        "border border-[var(--color-border)]",
+        "overflow-hidden",
+        className,
       )}
     >
       {/* Toolbar */}
       {(showColumnToggle || selectable) && (
         <div
           className={cn(
-            'flex items-center justify-between gap-4',
-            'px-4 py-2',
-            'border-b border-[var(--color-border)]',
-            'bg-[var(--color-card)]/50'
+            "flex items-center justify-between gap-4",
+            "px-4 py-2",
+            "border-b border-[var(--color-border)]",
+            "bg-[var(--color-card)]/50",
           )}
         >
           <div className="flex items-center gap-4">
@@ -670,7 +662,7 @@ export function DataTable<T>({
                 <span className="font-medium text-[var(--color-foreground)]">
                   {selectedIds.size}
                 </span>
-                {' selected'}
+                {" selected"}
               </span>
             )}
           </div>
@@ -695,16 +687,20 @@ export function DataTable<T>({
         id={`${tableId}-status`}
       >
         {isLoading
-          ? 'Loading data...'
+          ? "Loading data..."
           : data.length === 0
             ? emptyMessage
-            : `Showing ${data.length} rows. ${selectedIds.size > 0 ? `${selectedIds.size} rows selected.` : ''}`}
+            : `Showing ${data.length} rows. ${selectedIds.size > 0 ? `${selectedIds.size} rows selected.` : ""}`}
       </div>
 
       {/* Table */}
-      <Table striped={striped} aria-labelledby={`${tableId}-caption`} aria-describedby={`${tableId}-status`}>
+      <Table
+        striped={striped}
+        aria-labelledby={`${tableId}-caption`}
+        aria-describedby={`${tableId}-status`}
+      >
         <caption id={`${tableId}-caption`} className="sr-only">
-          Data table with {displayColumns.length} columns{selectable ? ', with row selection' : ''}
+          Data table with {displayColumns.length} columns{selectable ? ", with row selection" : ""}
         </caption>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -738,7 +734,7 @@ export function DataTable<T>({
                   className={cn(
                     getResponsiveClass(column.priority),
                     getAlignClass(column.align),
-                    column.className
+                    column.className,
                   )}
                   style={column.width ? { width: column.width } : undefined}
                 >
@@ -764,13 +760,10 @@ export function DataTable<T>({
                       key={`skeleton-${rowIndex}-${colIndex}`}
                       className={cn(
                         getResponsiveClass(column.priority),
-                        getAlignClass(column.align)
+                        getAlignClass(column.align),
                       )}
                     >
-                      <Skeleton
-                        variant="text"
-                        width={colIndex === 0 ? '80%' : '60%'}
-                      />
+                      <Skeleton variant="text" width={colIndex === 0 ? "80%" : "60%"} />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -814,19 +807,16 @@ export function DataTable<T>({
                   onClick={() => handleRowClick(row, rowIndex)}
                   onKeyDown={(e) => handleRowKeyDown(e, row, rowIndex)}
                   tabIndex={onRowClick ? 0 : undefined}
-                  role={onRowClick ? 'button' : undefined}
+                  role={onRowClick ? "button" : undefined}
                   aria-selected={selectable ? isSelected : undefined}
                   className={cn(
-                    isSelected && 'bg-[var(--color-primary)]/10',
-                    onRowClick && 'cursor-pointer'
+                    isSelected && "bg-[var(--color-primary)]/10",
+                    onRowClick && "cursor-pointer",
                   )}
                 >
                   {/* Selection checkbox */}
                   {selectable && (
-                    <TableCell
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-[52px]"
-                    >
+                    <TableCell onClick={(e) => e.stopPropagation()} className="w-[52px]">
                       <Checkbox
                         checked={isSelected}
                         onChange={(checked) => handleSelectRow(row, checked)}
@@ -840,7 +830,7 @@ export function DataTable<T>({
                     const value = getCellValue(row, key);
                     const content = column.render
                       ? column.render(value, row, rowIndex)
-                      : String(value ?? '');
+                      : String(value ?? "");
 
                     return (
                       <TableCell
@@ -848,7 +838,7 @@ export function DataTable<T>({
                         className={cn(
                           getResponsiveClass(column.priority),
                           getAlignClass(column.align),
-                          column.className
+                          column.className,
                         )}
                       >
                         {content}
@@ -876,7 +866,7 @@ export function DataTable<T>({
   );
 }
 
-DataTable.displayName = 'DataTable';
+DataTable.displayName = "DataTable";
 
 // ============================================================================
 // Hook for managing DataTable state
@@ -886,7 +876,7 @@ export interface UseDataTableOptions<T> {
   initialPage?: number;
   initialPageSize?: number;
   initialSortBy?: string;
-  initialSortOrder?: 'asc' | 'desc';
+  initialSortOrder?: "asc" | "desc";
   getRowId?: (row: T) => string | number;
 }
 
@@ -894,7 +884,7 @@ export interface UseDataTableReturn<T> {
   page: number;
   pageSize: number;
   sortBy: string | undefined;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: "asc" | "desc";
   selectedIds: Set<string | number>;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
@@ -908,27 +898,27 @@ export function useDataTable<T>({
   initialPage = 1,
   initialPageSize = 10,
   initialSortBy,
-  initialSortOrder = 'asc',
+  initialSortOrder = "asc",
   getRowId = (row: T) => (row as { id?: string | number }).id ?? 0,
 }: UseDataTableOptions<T> = {}): UseDataTableReturn<T> {
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [sortBy, setSortBy] = useState<string | undefined>(initialSortBy);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialSortOrder);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(initialSortOrder);
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
 
   const handleSort = useCallback(
     (column: string) => {
       if (sortBy === column) {
         // Toggle order if same column
-        setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+        setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
       } else {
         // New column, default to ascending
         setSortBy(column);
-        setSortOrder('asc');
+        setSortOrder("asc");
       }
     },
-    [sortBy]
+    [sortBy],
   );
 
   const handlePageSizeChange = useCallback((newSize: number) => {
@@ -945,7 +935,7 @@ export function useDataTable<T>({
       const getId = customGetRowId ?? getRowId;
       setSelectedIds(new Set(rows.map(getId)));
     },
-    [getRowId]
+    [getRowId],
   );
 
   return {

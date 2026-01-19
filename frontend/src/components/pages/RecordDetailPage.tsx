@@ -1,31 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { formatDate } from '@/lib/utils';
-import {
-  useRecord,
-  useModelSchema,
-  useUpdateRecord,
-  useDeleteRecord,
-} from '@/hooks/useApi';
-import { useToast } from '@/components/ui/Toast';
-import { PageHeader } from '@/components/layout/PageHeader';
-import type { BreadcrumbItem } from '@/components/layout/Breadcrumb';
-import { RecordForm, type FormMode } from '@/components/data/RecordForm';
-import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@/components/ui/Modal';
-import { Skeleton } from '@/components/ui/Loading';
-import { MainLayout } from '@/components/layout/MainLayout';
-import type { ModelRecord, SchemaProperty } from '@/types';
+import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { useRecord, useModelSchema, useUpdateRecord, useDeleteRecord } from "@/hooks/useApi";
+import { useToast } from "@/components/ui/Toast";
+import { PageHeader } from "@/components/layout/PageHeader";
+import type { BreadcrumbItem } from "@/components/layout/Breadcrumb";
+import { RecordForm, type FormMode } from "@/components/data/RecordForm";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/Modal";
+import { Skeleton } from "@/components/ui/Loading";
+import { MainLayout } from "@/components/layout/MainLayout";
+import type { ModelRecord, SchemaProperty } from "@/types";
 
 // ============================================================================
 // Types
@@ -153,63 +143,66 @@ const UserIcon = ({ className }: { className?: string }) => (
 
 function formatModelName(name: string): string {
   return name
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function getRecordTitle(record: ModelRecord, schema: { properties: Record<string, SchemaProperty> }): string {
-  const titleFields = ['name', 'title', 'label', 'email', 'username', 'slug'];
+function getRecordTitle(
+  record: ModelRecord,
+  schema: { properties: Record<string, SchemaProperty> },
+): string {
+  const titleFields = ["name", "title", "label", "email", "username", "slug"];
 
   for (const field of titleFields) {
-    if (record[field] && typeof record[field] === 'string') {
+    if (record[field] && typeof record[field] === "string") {
       return record[field] as string;
     }
   }
 
-  if (record['id'] !== undefined) {
-    return `Record #${record['id']}`;
+  if (record["id"] !== undefined) {
+    return `Record #${record["id"]}`;
   }
 
   const firstStringField = Object.entries(schema.properties).find(
-    ([key, prop]) => prop.type === 'string' && record[key]
+    ([key, prop]) => prop.type === "string" && record[key],
   );
 
   if (firstStringField) {
     return String(record[firstStringField[0]]);
   }
 
-  return 'Record';
+  return "Record";
 }
 
 function formatDisplayValue(value: unknown, property?: SchemaProperty): string {
   if (value === null || value === undefined) {
-    return '-';
+    return "-";
   }
 
-  if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No';
+  if (typeof value === "boolean") {
+    return value ? "Yes" : "No";
   }
 
-  if (property?.format === 'date' && typeof value === 'string') {
+  if (property?.format === "date" && typeof value === "string") {
     return formatDate(value);
   }
 
-  if (property?.format === 'date-time' && typeof value === 'string') {
+  if (property?.format === "date-time" && typeof value === "string") {
     return formatDate(value, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   }
 
   if (Array.isArray(value)) {
-    return value.length > 0 ? value.join(', ') : '-';
+    return value.length > 0 ? value.join(", ") : "-";
   }
 
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     return JSON.stringify(value, null, 2);
   }
 
@@ -218,17 +211,17 @@ function formatDisplayValue(value: unknown, property?: SchemaProperty): string {
 
 function extractRelatedRecords(
   record: ModelRecord,
-  schema: { properties: Record<string, SchemaProperty> }
+  schema: { properties: Record<string, SchemaProperty> },
 ): RelatedRecordInfo[] {
   const related: RelatedRecordInfo[] = [];
 
   for (const [key, property] of Object.entries(schema.properties)) {
     if (
-      key.endsWith('_id') ||
-      property.format === 'relation' ||
-      (property.description?.toLowerCase().includes('foreign key'))
+      key.endsWith("_id") ||
+      property.format === "relation" ||
+      property.description?.toLowerCase().includes("foreign key")
     ) {
-      const relatedModel = key.replace(/_id$/, '');
+      const relatedModel = key.replace(/_id$/, "");
       const relatedId = record[key];
 
       if (relatedId !== null && relatedId !== undefined) {
@@ -258,22 +251,17 @@ interface FieldDisplayProps {
 function FieldDisplay({ name, value, property }: FieldDisplayProps) {
   const label = property.title || formatModelName(name);
   const displayValue = formatDisplayValue(value, property);
-  const isLongContent = typeof displayValue === 'string' && displayValue.length > 100;
+  const isLongContent = typeof displayValue === "string" && displayValue.length > 100;
 
   return (
-    <div className={cn('py-3', isLongContent && 'col-span-full')}>
-      <dt className="text-sm font-medium text-[var(--color-muted)] mb-1">
-        {label}
-      </dt>
+    <div className={cn("py-3", isLongContent && "col-span-full")}>
+      <dt className="text-sm font-medium text-[var(--color-muted)] mb-1">{label}</dt>
       <dd
         className={cn(
-          'text-sm text-[var(--color-foreground)]',
-          isLongContent && 'whitespace-pre-wrap break-words',
-          property.type === 'boolean' && (
-            value
-              ? 'text-[var(--color-success)]'
-              : 'text-[var(--color-muted)]'
-          )
+          "text-sm text-[var(--color-foreground)]",
+          isLongContent && "whitespace-pre-wrap break-words",
+          property.type === "boolean" &&
+            (value ? "text-[var(--color-success)]" : "text-[var(--color-muted)]"),
         )}
       >
         {displayValue}
@@ -296,9 +284,7 @@ function RelatedRecordsSection({ records }: RelatedRecordsSectionProps) {
       <CardHeader>
         <div className="flex items-center gap-2">
           <LinkIcon className="h-4 w-4 text-[var(--color-muted)]" />
-          <h3 className="text-sm font-medium text-[var(--color-foreground)]">
-            Related Records
-          </h3>
+          <h3 className="text-sm font-medium text-[var(--color-foreground)]">Related Records</h3>
         </div>
       </CardHeader>
       <CardBody className="p-0">
@@ -308,15 +294,13 @@ function RelatedRecordsSection({ records }: RelatedRecordsSectionProps) {
               <Link
                 href={related.href}
                 className={cn(
-                  'block px-6 py-3',
-                  'hover:bg-[var(--color-card-hover)]',
-                  'transition-colors duration-150'
+                  "block px-6 py-3",
+                  "hover:bg-[var(--color-card-hover)]",
+                  "transition-colors duration-150",
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-[var(--color-foreground)]">
-                    {related.label}
-                  </span>
+                  <span className="text-sm text-[var(--color-foreground)]">{related.label}</span>
                   <span className="text-xs text-[var(--color-muted)]">
                     {formatModelName(related.model)}
                   </span>
@@ -342,9 +326,7 @@ function AuditLogSection({ entries, isLoading }: AuditLogSectionProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <ClockIcon className="h-4 w-4 text-[var(--color-muted)]" />
-            <h3 className="text-sm font-medium text-[var(--color-foreground)]">
-              Activity Log
-            </h3>
+            <h3 className="text-sm font-medium text-[var(--color-foreground)]">Activity Log</h3>
           </div>
         </CardHeader>
         <CardBody>
@@ -370,9 +352,7 @@ function AuditLogSection({ entries, isLoading }: AuditLogSectionProps) {
         <CardHeader>
           <div className="flex items-center gap-2">
             <ClockIcon className="h-4 w-4 text-[var(--color-muted)]" />
-            <h3 className="text-sm font-medium text-[var(--color-foreground)]">
-              Activity Log
-            </h3>
+            <h3 className="text-sm font-medium text-[var(--color-foreground)]">Activity Log</h3>
           </div>
         </CardHeader>
         <CardBody>
@@ -385,9 +365,9 @@ function AuditLogSection({ entries, isLoading }: AuditLogSectionProps) {
   }
 
   const actionColors: Record<string, string> = {
-    create: 'text-[var(--color-success)]',
-    update: 'text-[var(--color-info)]',
-    delete: 'text-[var(--color-error)]',
+    create: "text-[var(--color-success)]",
+    update: "text-[var(--color-info)]",
+    delete: "text-[var(--color-error)]",
   };
 
   return (
@@ -395,9 +375,7 @@ function AuditLogSection({ entries, isLoading }: AuditLogSectionProps) {
       <CardHeader>
         <div className="flex items-center gap-2">
           <ClockIcon className="h-4 w-4 text-[var(--color-muted)]" />
-          <h3 className="text-sm font-medium text-[var(--color-foreground)]">
-            Activity Log
-          </h3>
+          <h3 className="text-sm font-medium text-[var(--color-foreground)]">Activity Log</h3>
         </div>
       </CardHeader>
       <CardBody className="p-0">
@@ -407,41 +385,37 @@ function AuditLogSection({ entries, isLoading }: AuditLogSectionProps) {
               <div className="flex items-start gap-3">
                 <div
                   className={cn(
-                    'flex-shrink-0 w-8 h-8 rounded-full',
-                    'bg-[var(--color-card-hover)]',
-                    'flex items-center justify-center'
+                    "flex-shrink-0 w-8 h-8 rounded-full",
+                    "bg-[var(--color-card-hover)]",
+                    "flex items-center justify-center",
                   )}
                 >
                   <UserIcon className="h-4 w-4 text-[var(--color-muted)]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">
-                    <span className={cn('font-medium', actionColors[entry.action] || '')}>
+                    <span className={cn("font-medium", actionColors[entry.action] || "")}>
                       {entry.action.charAt(0).toUpperCase() + entry.action.slice(1)}
                     </span>
                     {entry.user && (
-                      <span className="text-[var(--color-muted)]">
-                        {' '}by {entry.user}
-                      </span>
+                      <span className="text-[var(--color-muted)]"> by {entry.user}</span>
                     )}
                   </p>
                   <p className="text-xs text-[var(--color-muted)] mt-0.5">
                     {formatDate(entry.timestamp, {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </p>
                   {entry.changes && Object.keys(entry.changes).length > 0 && (
                     <div className="mt-2 text-xs space-y-1">
                       {Object.entries(entry.changes).map(([field, change]) => (
                         <div key={field} className="text-[var(--color-muted)]">
-                          <span className="font-medium">{formatModelName(field)}:</span>{' '}
-                          <span className="line-through opacity-60">
-                            {String(change.old)}
-                          </span>{' '}
+                          <span className="font-medium">{formatModelName(field)}:</span>{" "}
+                          <span className="line-through opacity-60">{String(change.old)}</span>{" "}
                           <span>{String(change.new)}</span>
                         </div>
                       ))}
@@ -479,12 +453,11 @@ function DeleteConfirmModal({
       <ModalHeader onClose={onClose}>Delete {modelName}</ModalHeader>
       <ModalBody>
         <p className="text-sm text-[var(--color-foreground)]">
-          Are you sure you want to delete{' '}
-          <span className="font-semibold">{recordTitle}</span>?
+          Are you sure you want to delete <span className="font-semibold">{recordTitle}</span>?
         </p>
         <p className="text-sm text-[var(--color-muted)] mt-2">
-          This action cannot be undone. All data associated with this record
-          will be permanently removed.
+          This action cannot be undone. All data associated with this record will be permanently
+          removed.
         </p>
       </ModalBody>
       <ModalFooter>
@@ -510,9 +483,9 @@ function RecordDetailSkeleton({ modelName }: RecordDetailSkeletonProps) {
         title={modelName}
         subtitle="Loading record details..."
         breadcrumbs={[
-          { label: 'Models', href: '/models' },
+          { label: "Models", href: "/models" },
           { label: modelName, href: `/models/${modelName}` },
-          { label: 'Loading...' },
+          { label: "Loading..." },
         ]}
       />
 
@@ -565,7 +538,7 @@ function NotFoundDisplay({ modelName, recordId }: NotFoundDisplayProps) {
       <PageHeader
         title="Record Not Found"
         breadcrumbs={[
-          { label: 'Models', href: '/models' },
+          { label: "Models", href: "/models" },
           { label: formatModelName(modelName), href: `/models/${modelName}` },
           { label: recordId },
         ]}
@@ -575,9 +548,9 @@ function NotFoundDisplay({ modelName, recordId }: NotFoundDisplayProps) {
         <CardBody className="py-12 text-center">
           <div
             className={cn(
-              'w-16 h-16 mx-auto mb-4 rounded-full',
-              'bg-[var(--color-card-hover)]',
-              'flex items-center justify-center'
+              "w-16 h-16 mx-auto mb-4 rounded-full",
+              "bg-[var(--color-card-hover)]",
+              "flex items-center justify-center",
             )}
           >
             <svg
@@ -597,9 +570,8 @@ function NotFoundDisplay({ modelName, recordId }: NotFoundDisplayProps) {
             Record Not Found
           </h2>
           <p className="text-sm text-[var(--color-muted)] mb-6 max-w-md mx-auto">
-            The {formatModelName(modelName)} record with ID {recordId} could not
-            be found. It may have been deleted or you may not have permission to
-            view it.
+            The {formatModelName(modelName)} record with ID {recordId} could not be found. It may
+            have been deleted or you may not have permission to view it.
           </p>
           <Link href={`/models/${modelName}`}>
             <Button variant="secondary" leftIcon={<BackIcon className="h-4 w-4" />}>
@@ -620,7 +592,7 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   const router = useRouter();
   const { addToast } = useToast();
 
-  const [mode, setMode] = useState<FormMode>('view');
+  const [mode, setMode] = useState<FormMode>("view");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
@@ -631,31 +603,28 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
     refetch: refetchRecord,
   } = useRecord<ModelRecord>(model, id);
 
-  const {
-    data: schema,
-    isLoading: isLoadingSchema,
-  } = useModelSchema(model, 'edit');
+  const { data: schema, isLoading: isLoadingSchema } = useModelSchema(model, "edit");
 
   const updateMutation = useUpdateRecord<ModelRecord>(model, {
     onSuccess: () => {
       addToast({
-        variant: 'success',
-        title: 'Record Updated',
-        description: 'The record has been saved successfully.',
+        variant: "success",
+        title: "Record Updated",
+        description: "The record has been saved successfully.",
       });
-      setMode('view');
+      setMode("view");
       setServerErrors({});
       refetchRecord();
     },
     onError: (error) => {
       addToast({
-        variant: 'error',
-        title: 'Update Failed',
-        description: error.message || 'Failed to update the record.',
+        variant: "error",
+        title: "Update Failed",
+        description: error.message || "Failed to update the record.",
       });
-      if (error.response?.extra?.['errors']) {
+      if (error.response?.extra?.["errors"]) {
         const fieldErrors: Record<string, string> = {};
-        const errors = error.response.extra['errors'] as Array<{ field: string; message: string }>;
+        const errors = error.response.extra["errors"] as Array<{ field: string; message: string }>;
         for (const err of errors) {
           fieldErrors[err.field] = err.message;
         }
@@ -667,17 +636,17 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
   const deleteMutation = useDeleteRecord(model, {
     onSuccess: () => {
       addToast({
-        variant: 'success',
-        title: 'Record Deleted',
-        description: 'The record has been deleted successfully.',
+        variant: "success",
+        title: "Record Deleted",
+        description: "The record has been deleted successfully.",
       });
       router.push(`/models/${model}`);
     },
     onError: (error) => {
       addToast({
-        variant: 'error',
-        title: 'Delete Failed',
-        description: error.message || 'Failed to delete the record.',
+        variant: "error",
+        title: "Delete Failed",
+        description: error.message || "Failed to delete the record.",
       });
       setShowDeleteModal(false);
     },
@@ -700,42 +669,45 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
 
     const entries: AuditLogEntry[] = [];
 
-    if (record['created_at']) {
+    if (record["created_at"]) {
       entries.push({
-        id: 'created',
-        action: 'create',
-        timestamp: String(record['created_at']),
-        user: record['created_by'] ? String(record['created_by']) : null,
+        id: "created",
+        action: "create",
+        timestamp: String(record["created_at"]),
+        user: record["created_by"] ? String(record["created_by"]) : null,
       });
     }
 
-    if (record['updated_at'] && record['updated_at'] !== record['created_at']) {
+    if (record["updated_at"] && record["updated_at"] !== record["created_at"]) {
       entries.push({
-        id: 'updated',
-        action: 'update',
-        timestamp: String(record['updated_at']),
-        user: record['updated_by'] ? String(record['updated_by']) : null,
+        id: "updated",
+        action: "update",
+        timestamp: String(record["updated_at"]),
+        user: record["updated_by"] ? String(record["updated_by"]) : null,
       });
     }
 
-    return entries.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return entries.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
   }, [record]);
 
-  const breadcrumbs: BreadcrumbItem[] = useMemo(() => [
-    { label: 'Models', href: '/models' },
-    { label: modelDisplayName, href: `/models/${model}` },
-    { label: recordTitle },
-  ], [model, modelDisplayName, recordTitle]);
+  const breadcrumbs: BreadcrumbItem[] = useMemo(
+    () => [
+      { label: "Models", href: "/models" },
+      { label: modelDisplayName, href: `/models/${model}` },
+      { label: recordTitle },
+    ],
+    [model, modelDisplayName, recordTitle],
+  );
 
   const handleEdit = useCallback(() => {
-    setMode('edit');
+    setMode("edit");
     setServerErrors({});
   }, []);
 
   const handleCancel = useCallback(() => {
-    setMode('view');
+    setMode("view");
     setServerErrors({});
   }, []);
 
@@ -743,7 +715,7 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
     async (values: ModelRecord) => {
       await updateMutation.mutateAsync({ id, data: values });
     },
-    [updateMutation, id]
+    [updateMutation, id],
   );
 
   const handleDelete = useCallback(() => {
@@ -793,14 +765,10 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
           subtitle={`${modelDisplayName} Details`}
           breadcrumbs={breadcrumbs}
           actions={
-            mode === 'view' ? (
+            mode === "view" ? (
               <div className="flex items-center gap-3">
                 <Link href={`/models/${model}`}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    leftIcon={<BackIcon className="h-4 w-4" />}
-                  >
+                  <Button variant="secondary" size="sm" leftIcon={<BackIcon className="h-4 w-4" />}>
                     Back to List
                   </Button>
                 </Link>
@@ -836,11 +804,11 @@ export function RecordDetailPage({ model, id }: RecordDetailPageProps) {
             <Card>
               <CardHeader>
                 <h2 className="text-base font-medium text-[var(--color-foreground)]">
-                  {mode === 'view' ? 'Record Details' : 'Edit Record'}
+                  {mode === "view" ? "Record Details" : "Edit Record"}
                 </h2>
               </CardHeader>
               <CardBody>
-                {mode === 'view' ? (
+                {mode === "view" ? (
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                     {orderedFields.map(([name, property]) => (
                       <FieldDisplay

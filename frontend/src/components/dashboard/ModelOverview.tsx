@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { ModelCard, ModelCardSkeleton } from './ModelCard';
-import { cn } from '@/lib/utils';
-import type { ModelStats } from '@/types';
+import Link from "next/link";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { ModelCard, ModelCardSkeleton } from "./ModelCard";
+import { cn } from "@/lib/utils";
+import type { ModelStats } from "@/types";
 
 export interface ModelOverviewProps {
   /** Array of model statistics */
@@ -38,15 +38,13 @@ export function ModelOverview({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-foreground)]">
-            Model Overview
-          </h2>
+          <h2 className="text-base font-semibold text-[var(--color-foreground)]">Model Overview</h2>
           <p className="mt-0.5 text-sm text-[var(--color-muted)]">
-            {models?.length ?? 0} registered model{(models?.length ?? 0) === 1 ? '' : 's'}
+            {models?.length ?? 0} registered model{(models?.length ?? 0) === 1 ? "" : "s"}
           </p>
         </div>
         <Link
@@ -60,11 +58,7 @@ export function ModelOverview({
       {/* Model cards grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {displayModels.map((model) => (
-          <ModelCard
-            key={model.model_name}
-            model={model}
-            lastUpdated={new Date().toISOString()}
-          />
+          <ModelCard key={model.model_name} model={model} lastUpdated={new Date().toISOString()} />
         ))}
       </div>
 
@@ -74,9 +68,9 @@ export function ModelOverview({
           <Link
             href="/models"
             className={cn(
-              'inline-flex items-center gap-2 px-4 py-2 rounded-lg',
-              'text-sm font-medium text-[var(--color-accent)]',
-              'hover:bg-[var(--color-card-hover)] transition-colors'
+              "inline-flex items-center gap-2 px-4 py-2 rounded-lg",
+              "text-sm font-medium text-[var(--color-accent)]",
+              "hover:bg-[var(--color-card-hover)] transition-colors",
             )}
           >
             View {models.length - maxModels} more models
@@ -95,7 +89,7 @@ interface ModelOverviewSkeletonProps {
 
 function ModelOverviewSkeleton({ count = 6, className }: ModelOverviewSkeletonProps) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="h-5 w-32 animate-pulse rounded bg-[var(--color-card-hover)]" />
@@ -120,9 +114,7 @@ function EmptyModelsState({ className }: EmptyModelsStateProps) {
   return (
     <Card className={className}>
       <CardHeader>
-        <h2 className="text-base font-semibold text-[var(--color-foreground)]">
-          Model Overview
-        </h2>
+        <h2 className="text-base font-semibold text-[var(--color-foreground)]">Model Overview</h2>
       </CardHeader>
       <CardBody>
         <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -138,9 +130,9 @@ function EmptyModelsState({ className }: EmptyModelsStateProps) {
           <Link
             href="/docs/getting-started"
             className={cn(
-              'mt-4 inline-flex items-center gap-2',
-              'text-sm font-medium text-[var(--color-accent)]',
-              'hover:text-[var(--color-accent)]/80'
+              "mt-4 inline-flex items-center gap-2",
+              "text-sm font-medium text-[var(--color-accent)]",
+              "hover:text-[var(--color-accent)]/80",
             )}
           >
             Learn how to register models
@@ -180,12 +172,7 @@ function ChevronRightIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 5l7 7-7 7"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
     </svg>
   );
 }

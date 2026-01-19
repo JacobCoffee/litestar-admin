@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   forwardRef,
@@ -7,24 +7,24 @@ import {
   type TextareaHTMLAttributes,
   type ReactNode,
   type LabelHTMLAttributes,
-} from 'react';
-import { cn } from '@/lib/utils';
+} from "react";
+import { cn } from "@/lib/utils";
 
 const baseInputStyles = cn(
-  'w-full rounded-[var(--radius-md)]',
-  'bg-[var(--color-card)] text-[var(--color-foreground)]',
-  'border border-[var(--color-border)]',
-  'placeholder:text-[var(--color-muted)]',
-  'transition-colors duration-150',
-  'hover:border-[var(--color-muted)]',
-  'focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]',
-  'focus:outline-none',
-  'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-card-hover)]'
+  "w-full rounded-[var(--radius-md)]",
+  "bg-[var(--color-card)] text-[var(--color-foreground)]",
+  "border border-[var(--color-border)]",
+  "placeholder:text-[var(--color-muted)]",
+  "transition-colors duration-150",
+  "hover:border-[var(--color-muted)]",
+  "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]",
+  "focus:outline-none",
+  "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-card-hover)]",
 );
 
 const errorInputStyles = cn(
-  'border-[var(--color-error)]',
-  'focus:border-[var(--color-error)] focus:ring-[var(--color-error)]'
+  "border-[var(--color-error)]",
+  "focus:border-[var(--color-error)] focus:ring-[var(--color-error)]",
 );
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -32,25 +32,20 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error = false, className, type = 'text', ...props }, ref) => {
+  ({ error = false, className, type = "text", ...props }, ref) => {
     return (
       <input
         ref={ref}
         type={type}
-        className={cn(
-          baseInputStyles,
-          'h-10 px-3',
-          error && errorInputStyles,
-          className
-        )}
-        aria-invalid={error ? 'true' : undefined}
+        className={cn(baseInputStyles, "h-10 px-3", error && errorInputStyles, className)}
+        aria-invalid={error ? "true" : undefined}
         {...props}
       />
     );
-  }
+  },
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export interface SelectOption {
   value: string;
@@ -71,14 +66,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         ref={ref}
         className={cn(
           baseInputStyles,
-          'h-10 px-3 pr-8',
-          'appearance-none bg-no-repeat bg-right',
-          'bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center]',
+          "h-10 px-3 pr-8",
+          "appearance-none bg-no-repeat bg-right",
+          "bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center]",
           '[background-image:url("data:image/svg+xml,%3csvg%20xmlns%3d%27http%3a%2f%2fwww.w3.org%2f2000%2fsvg%27%20fill%3d%27none%27%20viewBox%3d%270%200%2024%2024%27%20stroke%3d%27%238b949e%27%20stroke-width%3d%272%27%3e%3cpath%20d%3d%27M7%2010l5%205%205-5%27%2f%3e%3c%2fsvg%3e")]',
           error && errorInputStyles,
-          className
+          className,
         )}
-        aria-invalid={error ? 'true' : undefined}
+        aria-invalid={error ? "true" : undefined}
         {...props}
       >
         {placeholder && (
@@ -93,12 +88,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         ))}
       </select>
     );
-  }
+  },
 );
 
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
-export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   label?: ReactNode;
   error?: boolean;
 }
@@ -108,32 +103,32 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const checkboxId = id || `checkbox-${Math.random().toString(36).substring(2, 9)}`;
 
     return (
-      <div className={cn('flex items-center gap-2', className)}>
+      <div className={cn("flex items-center gap-2", className)}>
         <input
           ref={ref}
           type="checkbox"
           id={checkboxId}
           className={cn(
-            'h-4 w-4 rounded-[var(--radius-sm)]',
-            'bg-[var(--color-card)] border border-[var(--color-border)]',
-            'text-[var(--color-primary)]',
-            'focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2',
-            'focus:ring-offset-[var(--color-background)]',
-            'transition-colors duration-150',
-            'cursor-pointer',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-[var(--color-error)]'
+            "h-4 w-4 rounded-[var(--radius-sm)]",
+            "bg-[var(--color-card)] border border-[var(--color-border)]",
+            "text-[var(--color-primary)]",
+            "focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2",
+            "focus:ring-offset-[var(--color-background)]",
+            "transition-colors duration-150",
+            "cursor-pointer",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            error && "border-[var(--color-error)]",
           )}
-          aria-invalid={error ? 'true' : undefined}
+          aria-invalid={error ? "true" : undefined}
           {...props}
         />
         {label && (
           <label
             htmlFor={checkboxId}
             className={cn(
-              'text-sm text-[var(--color-foreground)]',
-              'cursor-pointer select-none',
-              props.disabled && 'cursor-not-allowed opacity-50'
+              "text-sm text-[var(--color-foreground)]",
+              "cursor-pointer select-none",
+              props.disabled && "cursor-not-allowed opacity-50",
             )}
           >
             {label}
@@ -141,10 +136,10 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
-Checkbox.displayName = 'Checkbox';
+Checkbox.displayName = "Checkbox";
 
 export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: boolean;
@@ -158,19 +153,19 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         rows={rows}
         className={cn(
           baseInputStyles,
-          'min-h-[150px] max-h-[500px] px-3 py-2 resize-y',
-          'font-mono text-sm leading-relaxed',
+          "min-h-[150px] max-h-[500px] px-3 py-2 resize-y",
+          "font-mono text-sm leading-relaxed",
           error && errorInputStyles,
-          className
+          className,
         )}
-        aria-invalid={error ? 'true' : undefined}
+        aria-invalid={error ? "true" : undefined}
         {...props}
       />
     );
-  }
+  },
 );
 
-TextArea.displayName = 'TextArea';
+TextArea.displayName = "TextArea";
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
@@ -183,9 +178,9 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
       <label
         ref={ref}
         className={cn(
-          'block text-sm font-medium text-[var(--color-foreground)]',
-          'mb-1.5',
-          className
+          "block text-sm font-medium text-[var(--color-foreground)]",
+          "mb-1.5",
+          className,
         )}
         {...props}
       >
@@ -200,16 +195,16 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
         )}
       </label>
     );
-  }
+  },
 );
 
-Label.displayName = 'Label';
+Label.displayName = "Label";
 
 export interface FormFieldProps {
   label?: string;
   htmlFor?: string;
   required?: boolean;
-  error?: string;
+  error?: string | undefined;
   hint?: string;
   className?: string;
   children: ReactNode;
@@ -222,7 +217,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
     const errorId = htmlFor ? `${htmlFor}-error` : undefined;
 
     return (
-      <div ref={ref} className={cn('space-y-1.5', className)}>
+      <div ref={ref} className={cn("space-y-1.5", className)}>
         {label && (
           <Label htmlFor={htmlFor} required={required}>
             {label}
@@ -230,10 +225,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
         )}
         {children}
         {hint && !error && (
-          <p
-            id={hintId}
-            className="text-xs text-[var(--color-muted)]"
-          >
+          <p id={hintId} className="text-xs text-[var(--color-muted)]">
             {hint}
           </p>
         )}
@@ -249,7 +241,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
-FormField.displayName = 'FormField';
+FormField.displayName = "FormField";

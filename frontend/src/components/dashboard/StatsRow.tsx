@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { Card, CardBody } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Loading';
-import { Sparkline, SparklineSkeleton } from './Sparkline';
-import { cn } from '@/lib/utils';
-import { formatNumber } from '@/lib/utils';
-import type { ModelStats } from '@/types';
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { Card, CardBody } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Loading";
+import { Sparkline, SparklineSkeleton } from "./Sparkline";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
+import type { ModelStats } from "@/types";
 
 export interface StatItemProps {
   /** Stat title/label */
@@ -17,7 +17,7 @@ export interface StatItemProps {
   /** Previous value for trend calculation */
   previousValue?: number;
   /** Override trend direction */
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   /** Override trend percentage */
   trendValue?: number;
   /** Sparkline data points */
@@ -42,31 +42,28 @@ export function StatItem({
   href,
 }: StatItemProps) {
   // Calculate trend from previous value if not overridden
-  const numericValue = typeof value === 'number' ? value : parseFloat(value) || 0;
+  const numericValue = typeof value === "number" ? value : parseFloat(value) || 0;
   const calculatedChange = previousValue
     ? ((numericValue - previousValue) / (previousValue || 1)) * 100
     : 0;
 
   const trendValue = overrideTrendValue ?? Math.abs(calculatedChange);
-  const trend = overrideTrend ?? (
-    calculatedChange > 0 ? 'up' : calculatedChange < 0 ? 'down' : 'neutral'
-  );
+  const trend =
+    overrideTrend ?? (calculatedChange > 0 ? "up" : calculatedChange < 0 ? "down" : "neutral");
 
-  const displayValue = typeof value === 'number' ? formatNumber(value) : value;
+  const displayValue = typeof value === "number" ? formatNumber(value) : value;
 
   const content = (
     <Card
       className={cn(
-        'transition-all duration-200',
-        href && 'cursor-pointer hover:border-[var(--color-accent)] hover:shadow-md'
+        "transition-all duration-200",
+        href && "cursor-pointer hover:border-[var(--color-accent)] hover:shadow-md",
       )}
     >
       <CardBody className="flex flex-col gap-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--color-muted)] truncate">
-              {title}
-            </p>
+            <p className="text-sm font-medium text-[var(--color-muted)] truncate">{title}</p>
             <p className="mt-1 text-2xl font-semibold text-[var(--color-foreground)]">
               {displayValue}
             </p>
@@ -84,25 +81,20 @@ export function StatItem({
             <TrendArrow direction={trend} />
             <span
               className={cn(
-                'text-sm font-medium',
-                trend === 'up' && 'text-[var(--color-success)]',
-                trend === 'down' && 'text-[var(--color-error)]',
-                trend === 'neutral' && 'text-[var(--color-muted)]'
+                "text-sm font-medium",
+                trend === "up" && "text-[var(--color-success)]",
+                trend === "down" && "text-[var(--color-error)]",
+                trend === "neutral" && "text-[var(--color-muted)]",
               )}
             >
-              {trendValue > 0 ? `${trendValue.toFixed(1)}%` : 'No change'}
+              {trendValue > 0 ? `${trendValue.toFixed(1)}%` : "No change"}
             </span>
             <span className="text-xs text-[var(--color-muted)]">vs last period</span>
           </div>
 
           {/* Sparkline */}
           {sparklineData && sparklineData.length > 0 && (
-            <Sparkline
-              data={sparklineData}
-              trend={trend}
-              width={80}
-              height={24}
-            />
+            <Sparkline data={sparklineData} trend={trend} width={80} height={24} />
           )}
         </div>
       </CardBody>
@@ -121,11 +113,11 @@ export function StatItem({
 }
 
 interface TrendArrowProps {
-  direction: 'up' | 'down' | 'neutral';
+  direction: "up" | "down" | "neutral";
 }
 
 function TrendArrow({ direction }: TrendArrowProps) {
-  if (direction === 'neutral') {
+  if (direction === "neutral") {
     return (
       <svg
         className="h-4 w-4 text-[var(--color-muted)]"
@@ -134,12 +126,7 @@ function TrendArrow({ direction }: TrendArrowProps) {
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M5 12h14"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
       </svg>
     );
   }
@@ -147,9 +134,9 @@ function TrendArrow({ direction }: TrendArrowProps) {
   return (
     <svg
       className={cn(
-        'h-4 w-4',
-        direction === 'up' && 'text-[var(--color-success)]',
-        direction === 'down' && 'text-[var(--color-error)] rotate-180'
+        "h-4 w-4",
+        direction === "up" && "text-[var(--color-success)]",
+        direction === "down" && "text-[var(--color-error)] rotate-180",
       )}
       fill="none"
       stroke="currentColor"
@@ -204,21 +191,16 @@ export function StatsRow({
   };
 
   return (
-    <div className={cn('grid gap-4 sm:grid-cols-2 lg:grid-cols-4', className)}>
+    <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {/* Total Models stat */}
-      <StatItem
-        title="Total Models"
-        value={totalModels}
-        trend="neutral"
-        icon={<ModelsIcon />}
-      />
+      <StatItem title="Total Models" value={totalModels} trend="neutral" icon={<ModelsIcon />} />
 
       {/* Total Records stat */}
       <StatItem
         title="Total Records"
         value={totalRecords}
         sparklineData={generateSparklineData(totalRecords)}
-        trend={totalRecords > 0 ? 'up' : 'neutral'}
+        trend={totalRecords > 0 ? "up" : "neutral"}
         trendValue={12.5}
         icon={<RecordsIcon />}
       />
@@ -230,7 +212,7 @@ export function StatsRow({
           title={model.name}
           value={model.count}
           sparklineData={generateSparklineData(model.count)}
-          trend={model.count > 0 ? 'up' : 'neutral'}
+          trend={model.count > 0 ? "up" : "neutral"}
           trendValue={Math.random() * 15}
           href={`/models/${model.model_name}`}
           icon={<ModelIcon />}

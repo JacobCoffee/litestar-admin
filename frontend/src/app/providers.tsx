@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useEffect, type ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState, useEffect, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { AuthProvider } from '@/contexts/AuthContext';
-import { LayoutProvider } from '@/contexts/LayoutContext';
-import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import { ToastProvider } from '@/components/ui/Toast';
+import { AuthProvider } from "@/contexts/AuthContext";
+import { LayoutProvider } from "@/contexts/LayoutContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { ToastProvider } from "@/components/ui/Toast";
 
-const ACCENT_COLOR_KEY = 'admin_accent_color';
+const ACCENT_COLOR_KEY = "admin_accent_color";
 
 const accentColors = [
-  { value: '#f6821f', lightValue: '#d4690e' },
-  { value: '#58a6ff', lightValue: '#0969da' },
-  { value: '#3fb950', lightValue: '#1a7f37' },
-  { value: '#a371f7', lightValue: '#8250df' },
-  { value: '#f778ba', lightValue: '#bf3989' },
-  { value: '#f85149', lightValue: '#cf222e' },
-  { value: '#2dd4bf', lightValue: '#14b8a6' },
-  { value: '#e3b341', lightValue: '#9a6700' },
+  { value: "#f6821f", lightValue: "#d4690e" },
+  { value: "#58a6ff", lightValue: "#0969da" },
+  { value: "#3fb950", lightValue: "#1a7f37" },
+  { value: "#a371f7", lightValue: "#8250df" },
+  { value: "#f778ba", lightValue: "#bf3989" },
+  { value: "#f85149", lightValue: "#cf222e" },
+  { value: "#2dd4bf", lightValue: "#14b8a6" },
+  { value: "#e3b341", lightValue: "#9a6700" },
 ];
 
 /**
  * Adjust the brightness of a hex color.
  */
 function adjustBrightness(hex: string, percent: number): string {
-  const color = hex.replace('#', '');
+  const color = hex.replace("#", "");
   const r = parseInt(color.substring(0, 2), 16);
   const g = parseInt(color.substring(2, 4), 16);
   const b = parseInt(color.substring(4, 6), 16);
@@ -35,7 +35,7 @@ function adjustBrightness(hex: string, percent: number): string {
     return Math.max(0, Math.min(255, adjusted));
   };
 
-  const toHex = (value: number) => value.toString(16).padStart(2, '0');
+  const toHex = (value: number) => value.toString(16).padStart(2, "0");
   return `#${toHex(adjust(r))}${toHex(adjust(g))}${toHex(adjust(b))}`;
 }
 
@@ -53,7 +53,7 @@ function AccentColorLoader({ children }: { children: ReactNode }) {
       if (stored) {
         const color = accentColors.find((c) => c.value === stored);
         if (color) {
-          const colorValue = resolvedTheme === 'light' ? color.lightValue : color.value;
+          const colorValue = resolvedTheme === "light" ? color.lightValue : color.value;
           const hoverColor = adjustBrightness(colorValue, -15);
 
           // Create CSS that overrides the theme variables
@@ -96,7 +96,7 @@ function makeQueryClient() {
     defaultOptions: {
       queries: {
         // Don't refetch on window focus in development for better DX
-        refetchOnWindowFocus: process.env['NODE_ENV'] === 'production',
+        refetchOnWindowFocus: process.env["NODE_ENV"] === "production",
         // Don't refetch on reconnect unless explicitly needed
         refetchOnReconnect: false,
         // Don't refetch on mount if data is fresh
@@ -104,7 +104,7 @@ function makeQueryClient() {
         // Retry failed requests up to 2 times with exponential backoff
         retry: (failureCount, error) => {
           // Don't retry on 4xx errors (except 408 and 429)
-          if (error && typeof error === 'object' && 'status' in error) {
+          if (error && typeof error === "object" && "status" in error) {
             const status = (error as { status: number }).status;
             if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
               return false;
@@ -131,7 +131,7 @@ function makeQueryClient() {
 let browserQueryClient: QueryClient | undefined;
 
 function getQueryClient() {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     // Server: always make a new query client
     return makeQueryClient();
   }

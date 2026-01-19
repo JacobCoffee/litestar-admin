@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   forwardRef,
@@ -10,9 +10,9 @@ import {
   type HTMLAttributes,
   type ReactNode,
   type MouseEvent,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
+} from "react";
+import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 
 export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   closeOnEscape?: boolean;
   children?: ReactNode;
   /** Accessible label for the modal (used if no ModalHeader is present) */
-  'aria-label'?: string;
+  "aria-label"?: string;
 }
 
 /**
@@ -29,13 +29,13 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
  */
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   const focusableSelectors = [
-    'button:not([disabled])',
-    'a[href]',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
+    "button:not([disabled])",
+    "a[href]",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
     '[tabindex]:not([tabindex="-1"])',
-  ].join(', ');
+  ].join(", ");
 
   return Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[];
 }
@@ -49,10 +49,10 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       closeOnEscape = true,
       className,
       children,
-      'aria-label': ariaLabel,
+      "aria-label": ariaLabel,
       ...props
     },
-    ref
+    ref,
   ) => {
     const modalId = useId();
     const titleId = `${modalId}-title`;
@@ -61,11 +61,11 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
     const handleEscape = useCallback(
       (e: KeyboardEvent) => {
-        if (closeOnEscape && e.key === 'Escape') {
+        if (closeOnEscape && e.key === "Escape") {
           onClose();
         }
       },
-      [closeOnEscape, onClose]
+      [closeOnEscape, onClose],
     );
 
     const handleOverlayClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -76,7 +76,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
 
     // Focus trap handler
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !modalRef.current) return;
+      if (e.key !== "Tab" || !modalRef.current) return;
 
       const focusableElements = getFocusableElements(modalRef.current);
       if (focusableElements.length === 0) return;
@@ -107,9 +107,9 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
         // Store the currently focused element to restore later
         previousActiveElement.current = document.activeElement as HTMLElement;
 
-        document.addEventListener('keydown', handleEscape);
-        document.addEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = 'hidden';
+        document.addEventListener("keydown", handleEscape);
+        document.addEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "hidden";
 
         // Focus the modal or first focusable element
         requestAnimationFrame(() => {
@@ -126,12 +126,15 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       }
 
       return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = '';
+        document.removeEventListener("keydown", handleEscape);
+        document.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "";
 
         // Restore focus to the previously focused element
-        if (previousActiveElement.current && typeof previousActiveElement.current.focus === 'function') {
+        if (
+          previousActiveElement.current &&
+          typeof previousActiveElement.current.focus === "function"
+        ) {
           previousActiveElement.current.focus();
         }
       };
@@ -142,9 +145,9 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const modalContent = (
       <div
         className={cn(
-          'fixed inset-0 z-50',
-          'flex items-center justify-center p-4',
-          'animate-[fadeIn_150ms_ease-out]'
+          "fixed inset-0 z-50",
+          "flex items-center justify-center p-4",
+          "animate-[fadeIn_150ms_ease-out]",
         )}
         onClick={handleOverlayClick}
         role="dialog"
@@ -152,15 +155,12 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
         aria-labelledby={ariaLabel ? undefined : titleId}
         aria-label={ariaLabel}
       >
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
         <div
           ref={(node) => {
             // Handle both refs using type assertion for mutable ref
             (modalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-            if (typeof ref === 'function') {
+            if (typeof ref === "function") {
               ref(node);
             } else if (ref) {
               (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
@@ -168,13 +168,13 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
           }}
           tabIndex={-1}
           className={cn(
-            'relative z-10 w-full max-w-lg',
-            'bg-[var(--color-card)] rounded-[var(--radius-lg)]',
-            'border border-[var(--color-border)]',
-            'shadow-2xl shadow-black/40',
-            'animate-[scaleIn_150ms_ease-out]',
-            'focus:outline-none',
-            className
+            "relative z-10 w-full max-w-lg",
+            "bg-[var(--color-card)] rounded-[var(--radius-lg)]",
+            "border border-[var(--color-border)]",
+            "shadow-2xl shadow-black/40",
+            "animate-[scaleIn_150ms_ease-out]",
+            "focus:outline-none",
+            className,
           )}
           data-modal-title-id={titleId}
           {...props}
@@ -184,13 +184,13 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       </div>
     );
 
-    if (typeof document === 'undefined') return null;
+    if (typeof document === "undefined") return null;
 
     return createPortal(modalContent, document.body);
-  }
+  },
 );
 
-Modal.displayName = 'Modal';
+Modal.displayName = "Modal";
 
 export interface ModalHeaderProps extends HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
@@ -205,8 +205,8 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
     useEffect(() => {
       // Get the title ID from parent modal via data attribute
       if (headerRef.current) {
-        const modal = headerRef.current.closest('[data-modal-title-id]');
-        const id = modal?.getAttribute('data-modal-title-id');
+        const modal = headerRef.current.closest("[data-modal-title-id]");
+        const id = modal?.getAttribute("data-modal-title-id");
         if (id) {
           setTitleId(id);
         }
@@ -217,24 +217,21 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
       <div
         ref={(node) => {
           (headerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          if (typeof ref === 'function') {
+          if (typeof ref === "function") {
             ref(node);
           } else if (ref) {
             (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
           }
         }}
         className={cn(
-          'flex items-center justify-between',
-          'px-6 py-4',
-          'border-b border-[var(--color-border)]',
-          className
+          "flex items-center justify-between",
+          "px-6 py-4",
+          "border-b border-[var(--color-border)]",
+          className,
         )}
         {...props}
       >
-        <h2
-          id={titleId}
-          className="text-lg font-semibold text-[var(--color-foreground)]"
-        >
+        <h2 id={titleId} className="text-lg font-semibold text-[var(--color-foreground)]">
           {children}
         </h2>
         {onClose && (
@@ -242,11 +239,11 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
             type="button"
             onClick={onClose}
             className={cn(
-              'p-1 rounded-[var(--radius-md)]',
-              'text-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-              'hover:bg-[var(--color-card-hover)]',
-              'transition-colors duration-150',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+              "p-1 rounded-[var(--radius-md)]",
+              "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+              "hover:bg-[var(--color-card-hover)]",
+              "transition-colors duration-150",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
             )}
             aria-label="Close modal"
           >
@@ -264,10 +261,10 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
-ModalHeader.displayName = 'ModalHeader';
+ModalHeader.displayName = "ModalHeader";
 
 export interface ModalBodyProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
@@ -276,18 +273,14 @@ export interface ModalBodyProps extends HTMLAttributes<HTMLDivElement> {
 export const ModalBody = forwardRef<HTMLDivElement, ModalBodyProps>(
   ({ className, children, ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={cn('px-6 py-4', className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("px-6 py-4", className)} {...props}>
         {children}
       </div>
     );
-  }
+  },
 );
 
-ModalBody.displayName = 'ModalBody';
+ModalBody.displayName = "ModalBody";
 
 export interface ModalFooterProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
@@ -299,18 +292,18 @@ export const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(
       <div
         ref={ref}
         className={cn(
-          'flex items-center justify-end gap-3',
-          'px-6 py-4',
-          'border-t border-[var(--color-border)]',
-          'bg-[var(--color-background)]/50',
-          className
+          "flex items-center justify-end gap-3",
+          "px-6 py-4",
+          "border-t border-[var(--color-border)]",
+          "bg-[var(--color-background)]/50",
+          className,
         )}
         {...props}
       >
         {children}
       </div>
     );
-  }
+  },
 );
 
-ModalFooter.displayName = 'ModalFooter';
+ModalFooter.displayName = "ModalFooter";

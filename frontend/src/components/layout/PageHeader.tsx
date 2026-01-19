@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { Breadcrumb, type BreadcrumbItem } from './Breadcrumb';
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { Breadcrumb, type BreadcrumbItem } from "./Breadcrumb";
 
 export interface PageHeaderProps {
   /** Page title */
@@ -28,7 +28,7 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Breadcrumbs */}
       {showBreadcrumbs && breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumb items={breadcrumbs} />
@@ -40,15 +40,11 @@ export function PageHeader({
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-foreground)]">
             {title}
           </h1>
-          {subtitle && (
-            <p className="mt-1 text-sm text-[var(--color-muted)]">{subtitle}</p>
-          )}
+          {subtitle && <p className="mt-1 text-sm text-[var(--color-muted)]">{subtitle}</p>}
         </div>
 
         {/* Actions */}
-        {actions && (
-          <div className="flex shrink-0 items-center gap-3">{actions}</div>
-        )}
+        {actions && <div className="flex shrink-0 items-center gap-3">{actions}</div>}
       </div>
     </div>
   );

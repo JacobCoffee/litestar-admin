@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardBody } from '@/components/ui/Card';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Card, CardBody } from "@/components/ui/Card";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const ClipboardIcon = ({ className }: { className?: string }) => (
   <svg
@@ -32,10 +32,7 @@ export default function AuditPage() {
           <PageHeader
             title="Audit Log"
             subtitle="View activity history and changes"
-            breadcrumbs={[
-              { label: 'Dashboard', href: '/' },
-              { label: 'Audit Log' },
-            ]}
+            breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Audit Log" }]}
           />
 
           <Card>
@@ -47,8 +44,8 @@ export default function AuditPage() {
                 Coming Soon
               </h2>
               <p className="text-sm text-[var(--color-muted)] max-w-md mx-auto">
-                Full audit log viewing will be available in a future update.
-                Activity feed is available on the dashboard.
+                Full audit log viewing will be available in a future update. Activity feed is
+                available on the dashboard.
               </p>
             </CardBody>
           </Card>

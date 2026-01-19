@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useState,
@@ -7,22 +7,13 @@ import {
   useRef,
   type ReactNode,
   type KeyboardEvent,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@/components/ui/Modal';
-import {
-  useBulkDelete,
-  useBulkAction,
-  useExportSelected,
-} from '@/hooks/useApi';
-import type { ExportFormat } from '@/types';
+} from "react";
+import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/Modal";
+import { useBulkDelete, useBulkAction, useExportSelected } from "@/hooks/useApi";
+import type { ExportFormat } from "@/types";
 
 // ============================================================================
 // Types
@@ -51,7 +42,7 @@ export interface BulkAction {
   /** Icon to display alongside the label */
   icon?: ReactNode;
   /** Visual variant for the action button */
-  variant?: 'default' | 'danger';
+  variant?: "default" | "danger";
   /** Title for confirmation dialog */
   confirmTitle?: string;
   /** Message for confirmation dialog */
@@ -79,7 +70,7 @@ export interface BulkActionsProps {
   /** Additional CSS classes */
   className?: string;
   /** Position of the toolbar */
-  position?: 'inline' | 'floating';
+  position?: "inline" | "floating";
   /** Available export formats */
   exportFormats?: ExportFormat[];
 }
@@ -236,25 +227,21 @@ function ProgressIndicator({ label, isComplete, hasError }: ProgressIndicatorPro
         <div className="relative h-5 w-5">
           <div
             className={cn(
-              'absolute inset-0 rounded-full',
-              'border-2 border-[var(--color-primary)]/20'
+              "absolute inset-0 rounded-full",
+              "border-2 border-[var(--color-primary)]/20",
             )}
           />
           <div
             className={cn(
-              'absolute inset-0 rounded-full',
-              'border-2 border-[var(--color-primary)] border-t-transparent',
-              'animate-spin'
+              "absolute inset-0 rounded-full",
+              "border-2 border-[var(--color-primary)] border-t-transparent",
+              "animate-spin",
             )}
           />
         </div>
       )}
-      {isComplete && (
-        <CheckCircleIcon className="h-5 w-5 text-[var(--color-success)]" />
-      )}
-      {hasError && (
-        <AlertTriangleIcon className="h-5 w-5 text-[var(--color-error)]" />
-      )}
+      {isComplete && <CheckCircleIcon className="h-5 w-5 text-[var(--color-success)]" />}
+      {hasError && <AlertTriangleIcon className="h-5 w-5 text-[var(--color-error)]" />}
       <span className="text-sm text-[var(--color-foreground)]">{label}</span>
     </div>
   );
@@ -274,14 +261,11 @@ function ActionDropdown({ actions, onSelectAction, disabled }: ActionDropdownPro
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-      }
-    },
-    []
-  );
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Escape") {
+      setIsOpen(false);
+    }
+  }, []);
 
   // Close on click outside
   useEffect(() => {
@@ -293,8 +277,8 @@ function ActionDropdown({ actions, onSelectAction, disabled }: ActionDropdownPro
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   if (actions.length === 0) return null;
@@ -313,7 +297,7 @@ function ActionDropdown({ actions, onSelectAction, disabled }: ActionDropdownPro
         <MoreHorizontalIcon className="h-4 w-4" />
         <span className="hidden sm:inline">More Actions</span>
         <ChevronDownIcon
-          className={cn('h-4 w-4 transition-transform duration-150', isOpen && 'rotate-180')}
+          className={cn("h-4 w-4 transition-transform duration-150", isOpen && "rotate-180")}
         />
       </Button>
 
@@ -321,13 +305,13 @@ function ActionDropdown({ actions, onSelectAction, disabled }: ActionDropdownPro
         <div
           role="menu"
           className={cn(
-            'absolute right-0 top-full z-50 mt-1',
-            'min-w-[180px] py-1',
-            'rounded-[var(--radius-md)]',
-            'border border-[var(--color-border)]',
-            'bg-[var(--color-card)]',
-            'shadow-lg shadow-black/20',
-            'animate-[scaleIn_100ms_ease-out]'
+            "absolute right-0 top-full z-50 mt-1",
+            "min-w-[180px] py-1",
+            "rounded-[var(--radius-md)]",
+            "border border-[var(--color-border)]",
+            "bg-[var(--color-card)]",
+            "shadow-lg shadow-black/20",
+            "animate-[scaleIn_100ms_ease-out]",
           )}
         >
           {actions.map((action) => (
@@ -340,14 +324,14 @@ function ActionDropdown({ actions, onSelectAction, disabled }: ActionDropdownPro
                 setIsOpen(false);
               }}
               className={cn(
-                'w-full px-4 py-2',
-                'flex items-center gap-2',
-                'text-sm text-left',
-                'transition-colors duration-150',
-                'focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]',
-                action.variant === 'danger'
-                  ? 'text-[var(--color-error)] hover:bg-[var(--color-error)]/10'
-                  : 'text-[var(--color-foreground)] hover:bg-[var(--color-card-hover)]'
+                "w-full px-4 py-2",
+                "flex items-center gap-2",
+                "text-sm text-left",
+                "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]",
+                action.variant === "danger"
+                  ? "text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
+                  : "text-[var(--color-foreground)] hover:bg-[var(--color-card-hover)]",
               )}
             >
               {action.icon && <span className="h-4 w-4">{action.icon}</span>}
@@ -385,13 +369,13 @@ function ExportDropdown({ formats, onExport, disabled, isExporting }: ExportDrop
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   const formatLabels: Record<ExportFormat, string> = {
-    csv: 'Export as CSV',
-    json: 'Export as JSON',
+    csv: "Export as CSV",
+    json: "Export as JSON",
   };
 
   return (
@@ -409,8 +393,8 @@ function ExportDropdown({ formats, onExport, disabled, isExporting }: ExportDrop
         <span className="hidden sm:inline">Export</span>
         <ChevronDownIcon
           className={cn(
-            'h-4 w-4 transition-transform duration-150 sm:block hidden',
-            isOpen && 'rotate-180'
+            "h-4 w-4 transition-transform duration-150 sm:block hidden",
+            isOpen && "rotate-180",
           )}
         />
       </Button>
@@ -419,13 +403,13 @@ function ExportDropdown({ formats, onExport, disabled, isExporting }: ExportDrop
         <div
           role="menu"
           className={cn(
-            'absolute right-0 top-full z-50 mt-1',
-            'min-w-[160px] py-1',
-            'rounded-[var(--radius-md)]',
-            'border border-[var(--color-border)]',
-            'bg-[var(--color-card)]',
-            'shadow-lg shadow-black/20',
-            'animate-[scaleIn_100ms_ease-out]'
+            "absolute right-0 top-full z-50 mt-1",
+            "min-w-[160px] py-1",
+            "rounded-[var(--radius-md)]",
+            "border border-[var(--color-border)]",
+            "bg-[var(--color-card)]",
+            "shadow-lg shadow-black/20",
+            "animate-[scaleIn_100ms_ease-out]",
           )}
         >
           {formats.map((format) => (
@@ -438,12 +422,12 @@ function ExportDropdown({ formats, onExport, disabled, isExporting }: ExportDrop
                 setIsOpen(false);
               }}
               className={cn(
-                'w-full px-4 py-2',
-                'text-sm text-left',
-                'text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150',
-                'focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]'
+                "w-full px-4 py-2",
+                "text-sm text-left",
+                "text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]",
               )}
             >
               {formatLabels[format]}
@@ -467,7 +451,7 @@ interface ConfirmationModalProps {
   message: string;
   confirmLabel: string;
   isLoading: boolean;
-  variant?: 'default' | 'danger';
+  variant?: "default" | "danger";
   progress?: {
     label: string;
     isComplete: boolean;
@@ -485,7 +469,7 @@ function ConfirmationModal({
   message,
   confirmLabel,
   isLoading,
-  variant = 'default',
+  variant = "default",
   progress,
   onRetry,
 }: ConfirmationModalProps) {
@@ -502,13 +486,13 @@ function ConfirmationModal({
         {!progress ? (
           <>
             <div className="flex gap-4">
-              {variant === 'danger' && (
+              {variant === "danger" && (
                 <div
                   className={cn(
-                    'flex-shrink-0',
-                    'h-10 w-10 rounded-full',
-                    'bg-[var(--color-error)]/10',
-                    'flex items-center justify-center'
+                    "flex-shrink-0",
+                    "h-10 w-10 rounded-full",
+                    "bg-[var(--color-error)]/10",
+                    "flex items-center justify-center",
                   )}
                 >
                   <AlertTriangleIcon className="h-5 w-5 text-[var(--color-error)]" />
@@ -516,7 +500,7 @@ function ConfirmationModal({
               )}
               <div className="flex-1">
                 <p className="text-sm text-[var(--color-foreground)]">{message}</p>
-                {variant === 'danger' && (
+                {variant === "danger" && (
                   <p className="text-sm text-[var(--color-muted)] mt-2">
                     This action cannot be undone.
                   </p>
@@ -534,9 +518,9 @@ function ConfirmationModal({
             {progress.hasError && progress.errorMessage && (
               <div
                 className={cn(
-                  'px-4 py-3 rounded-[var(--radius-md)]',
-                  'bg-[var(--color-error)]/10',
-                  'border border-[var(--color-error)]/20'
+                  "px-4 py-3 rounded-[var(--radius-md)]",
+                  "bg-[var(--color-error)]/10",
+                  "border border-[var(--color-error)]/20",
                 )}
               >
                 <p className="text-sm text-[var(--color-error)]">{progress.errorMessage}</p>
@@ -552,7 +536,7 @@ function ConfirmationModal({
               Cancel
             </Button>
             <Button
-              variant={variant === 'danger' ? 'danger' : 'primary'}
+              variant={variant === "danger" ? "danger" : "primary"}
               onClick={onConfirm}
               loading={isLoading}
             >
@@ -618,17 +602,17 @@ function ToolbarContent({
       {/* Selection info */}
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-[var(--color-foreground)]">
-          {totalSelected} {totalSelected === 1 ? 'item' : 'items'} selected
+          {totalSelected} {totalSelected === 1 ? "item" : "items"} selected
         </span>
         <button
           type="button"
           onClick={onClearSelection}
           disabled={isDisabled}
           className={cn(
-            'text-sm text-[var(--color-muted)]',
-            'hover:text-[var(--color-foreground)]',
-            'transition-colors duration-150',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+            "text-sm text-[var(--color-muted)]",
+            "hover:text-[var(--color-foreground)]",
+            "transition-colors duration-150",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
           Clear selection
@@ -687,34 +671,32 @@ function FloatingToolbar({ children, isVisible }: FloatingToolbarProps) {
     setMounted(true);
   }, []);
 
-  if (!mounted || typeof document === 'undefined') return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   return createPortal(
     <div
       className={cn(
-        'fixed left-1/2 bottom-6 z-50',
-        '-translate-x-1/2',
-        'transition-all duration-300 ease-out',
-        isVisible
-          ? 'opacity-100 translate-y-0'
-          : 'opacity-0 translate-y-4 pointer-events-none'
+        "fixed left-1/2 bottom-6 z-50",
+        "-translate-x-1/2",
+        "transition-all duration-300 ease-out",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none",
       )}
     >
       <div
         className={cn(
-          'px-4 py-3',
-          'bg-[var(--color-card)]',
-          'border border-[var(--color-border)]',
-          'rounded-[var(--radius-lg)]',
-          'shadow-2xl shadow-black/40',
-          'backdrop-blur-sm',
-          'min-w-[320px] max-w-[90vw]'
+          "px-4 py-3",
+          "bg-[var(--color-card)]",
+          "border border-[var(--color-border)]",
+          "rounded-[var(--radius-lg)]",
+          "shadow-2xl shadow-black/40",
+          "backdrop-blur-sm",
+          "min-w-[320px] max-w-[90vw]",
         )}
       >
         {children}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -730,17 +712,17 @@ export function BulkActions({
   customActions = [],
   onActionComplete,
   className,
-  position = 'inline',
-  exportFormats = ['csv', 'json'],
+  position = "inline",
+  exportFormats = ["csv", "json"],
 }: BulkActionsProps) {
   // Modal state
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    type: 'delete' | 'custom';
+    type: "delete" | "custom";
     action?: BulkAction;
   }>({
     isOpen: false,
-    type: 'delete',
+    type: "delete",
   });
 
   // Progress state
@@ -762,81 +744,77 @@ export function BulkActions({
         isComplete: true,
         hasError: false,
       });
-      onActionComplete?.('delete', {
+      onActionComplete?.("delete", {
         success: true,
         affected: response.deleted,
       });
     },
     onError: (error) => {
       setProgress({
-        label: 'Delete operation failed',
+        label: "Delete operation failed",
         isComplete: false,
         hasError: true,
-        errorMessage: error.message || 'An unexpected error occurred',
+        errorMessage: error.message || "An unexpected error occurred",
       });
-      onActionComplete?.('delete', {
+      onActionComplete?.("delete", {
         success: false,
         affected: 0,
-        errors: [error.message || 'Delete failed'],
+        errors: [error.message || "Delete failed"],
       });
     },
   });
 
   // Bulk action mutation (for custom actions)
-  const bulkAction = useBulkAction(
-    model,
-    confirmModal.action?.key ?? '',
-    {
-      onSuccess: (response) => {
-        setProgress({
-          label: `Successfully completed action on ${response.affected} records`,
-          isComplete: true,
-          hasError: false,
-        });
-        onActionComplete?.(confirmModal.action?.key ?? '', {
-          success: true,
-          affected: response.affected,
-        });
-      },
-      onError: (error) => {
-        setProgress({
-          label: 'Action failed',
-          isComplete: false,
-          hasError: true,
-          errorMessage: error.message || 'An unexpected error occurred',
-        });
-        onActionComplete?.(confirmModal.action?.key ?? '', {
-          success: false,
-          affected: 0,
-          errors: [error.message || 'Action failed'],
-        });
-      },
-    }
-  );
+  const bulkAction = useBulkAction(model, confirmModal.action?.key ?? "", {
+    onSuccess: (response) => {
+      setProgress({
+        label: `Successfully completed action on ${response.affected} records`,
+        isComplete: true,
+        hasError: false,
+      });
+      onActionComplete?.(confirmModal.action?.key ?? "", {
+        success: true,
+        affected: response.affected,
+      });
+    },
+    onError: (error) => {
+      setProgress({
+        label: "Action failed",
+        isComplete: false,
+        hasError: true,
+        errorMessage: error.message || "An unexpected error occurred",
+      });
+      onActionComplete?.(confirmModal.action?.key ?? "", {
+        success: false,
+        affected: 0,
+        errors: [error.message || "Action failed"],
+      });
+    },
+  });
 
   // Export mutation
   const exportSelected = useExportSelected(model, {
     onSuccess: (blob) => {
       // Trigger file download
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `${model}-export-${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `${model}-export-${new Date().toISOString().split("T")[0]}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      onActionComplete?.('export', {
+      onActionComplete?.("export", {
         success: true,
         affected: selectedIdsArray.length,
       });
     },
     onError: (error) => {
-      onActionComplete?.('export', {
+      onActionComplete?.("export", {
         success: false,
         affected: 0,
-        errors: [error.message || 'Export failed'],
+        errors: [error.message || "Export failed"],
       });
     },
   });
@@ -844,16 +822,16 @@ export function BulkActions({
   // Handlers
   const handleOpenDeleteModal = useCallback(() => {
     setProgress(null);
-    setConfirmModal({ isOpen: true, type: 'delete' });
+    setConfirmModal({ isOpen: true, type: "delete" });
   }, []);
 
   const handleOpenCustomActionModal = useCallback((action: BulkAction) => {
     setProgress(null);
-    setConfirmModal({ isOpen: true, type: 'custom', action });
+    setConfirmModal({ isOpen: true, type: "custom", action });
   }, []);
 
   const handleCloseModal = useCallback(() => {
-    setConfirmModal({ isOpen: false, type: 'delete' });
+    setConfirmModal({ isOpen: false, type: "delete" });
     setProgress(null);
     // Clear selection if action was successful
     if (progress?.isComplete) {
@@ -878,9 +856,10 @@ export function BulkActions({
       isComplete: false,
       hasError: false,
     });
-    const mutationPayload: { ids: readonly (string | number)[]; params?: Record<string, unknown> } = {
-      ids: selectedIdsArray,
-    };
+    const mutationPayload: { ids: readonly (string | number)[]; params?: Record<string, unknown> } =
+      {
+        ids: selectedIdsArray,
+      };
     if (confirmModal.action.params) {
       mutationPayload.params = confirmModal.action.params;
     }
@@ -891,11 +870,11 @@ export function BulkActions({
     (format: ExportFormat) => {
       exportSelected.mutate({ ids: selectedIdsArray, format });
     },
-    [exportSelected, selectedIdsArray]
+    [exportSelected, selectedIdsArray],
   );
 
   const handleRetry = useCallback(() => {
-    if (confirmModal.type === 'delete') {
+    if (confirmModal.type === "delete") {
       handleConfirmDelete();
     } else {
       handleConfirmCustomAction();
@@ -921,16 +900,16 @@ export function BulkActions({
 
   // Confirmation modal content
   const getModalContent = () => {
-    if (confirmModal.type === 'delete') {
+    if (confirmModal.type === "delete") {
       return {
         title: confirmModal.action?.confirmTitle ?? `Delete ${totalSelected} Records`,
         message:
           confirmModal.action?.confirmMessage ??
           `Are you sure you want to delete ${totalSelected} selected ${
-            totalSelected === 1 ? 'record' : 'records'
+            totalSelected === 1 ? "record" : "records"
           }? All associated data will be permanently removed.`,
-        confirmLabel: `Delete ${totalSelected} ${totalSelected === 1 ? 'Record' : 'Records'}`,
-        variant: 'danger' as const,
+        confirmLabel: `Delete ${totalSelected} ${totalSelected === 1 ? "Record" : "Records"}`,
+        variant: "danger" as const,
       };
     }
 
@@ -940,10 +919,10 @@ export function BulkActions({
       message:
         confirmModal.action?.confirmMessage ??
         `Are you sure you want to execute "${confirmModal.action?.label}" on ${totalSelected} selected ${
-          totalSelected === 1 ? 'record' : 'records'
+          totalSelected === 1 ? "record" : "records"
         }?`,
-      confirmLabel: confirmModal.action?.label ?? 'Confirm',
-      variant: confirmModal.action?.variant ?? ('default' as const),
+      confirmLabel: confirmModal.action?.label ?? "Confirm",
+      variant: confirmModal.action?.variant ?? ("default" as const),
     };
   };
 
@@ -952,18 +931,18 @@ export function BulkActions({
   return (
     <>
       {/* Toolbar */}
-      {position === 'floating' ? (
+      {position === "floating" ? (
         <FloatingToolbar isVisible={totalSelected > 0}>{toolbarContent}</FloatingToolbar>
       ) : (
         <div
           className={cn(
-            'flex items-center justify-between gap-4',
-            'px-4 py-3',
-            'bg-[var(--color-primary)]/5',
-            'border border-[var(--color-primary)]/20',
-            'rounded-[var(--radius-lg)]',
-            'animate-[slideIn_200ms_ease-out]',
-            className
+            "flex items-center justify-between gap-4",
+            "px-4 py-3",
+            "bg-[var(--color-primary)]/5",
+            "border border-[var(--color-primary)]/20",
+            "rounded-[var(--radius-lg)]",
+            "animate-[slideIn_200ms_ease-out]",
+            className,
           )}
         >
           {toolbarContent}
@@ -974,7 +953,7 @@ export function BulkActions({
       <ConfirmationModal
         isOpen={confirmModal.isOpen}
         onClose={handleCloseModal}
-        onConfirm={confirmModal.type === 'delete' ? handleConfirmDelete : handleConfirmCustomAction}
+        onConfirm={confirmModal.type === "delete" ? handleConfirmDelete : handleConfirmCustomAction}
         title={modalContent.title}
         message={modalContent.message}
         confirmLabel={modalContent.confirmLabel}
@@ -987,7 +966,7 @@ export function BulkActions({
   );
 }
 
-BulkActions.displayName = 'BulkActions';
+BulkActions.displayName = "BulkActions";
 
 // ============================================================================
 // Hook for managing bulk selection
@@ -1024,7 +1003,7 @@ export function useBulkSelection<T>({
 
   const isSelected = useCallback(
     (row: T) => selectedIds.has(getRowId(row)),
-    [selectedIds, getRowId]
+    [selectedIds, getRowId],
   );
 
   const toggleSelection = useCallback(
@@ -1040,7 +1019,7 @@ export function useBulkSelection<T>({
         return next;
       });
     },
-    [getRowId]
+    [getRowId],
   );
 
   const selectMultiple = useCallback(
@@ -1051,7 +1030,7 @@ export function useBulkSelection<T>({
         return next;
       });
     },
-    [getRowId]
+    [getRowId],
   );
 
   const clearSelection = useCallback(() => {
@@ -1062,7 +1041,7 @@ export function useBulkSelection<T>({
     (rows: T[]) => {
       setSelectedIds(new Set(rows.map(getRowId)));
     },
-    [getRowId]
+    [getRowId],
   );
 
   return {

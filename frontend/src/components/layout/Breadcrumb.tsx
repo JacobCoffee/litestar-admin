@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Fragment } from 'react';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { Fragment } from "react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 // Icons as inline SVGs
 const HomeIcon = ({ className }: { className?: string }) => (
@@ -60,13 +60,11 @@ export interface BreadcrumbProps {
 export function Breadcrumb({
   items,
   showHome = true,
-  homeHref = '/',
+  homeHref = "/",
   separator,
   className,
 }: BreadcrumbProps) {
-  const defaultSeparator = (
-    <ChevronRightIcon className="h-4 w-4 text-[var(--color-muted)]" />
-  );
+  const defaultSeparator = <ChevronRightIcon className="h-4 w-4 text-[var(--color-muted)]" />;
 
   const separatorElement = separator ?? defaultSeparator;
 
@@ -79,10 +77,10 @@ export function Breadcrumb({
             <Link
               href={homeHref}
               className={cn(
-                'rounded-[var(--radius-sm)] p-1',
-                'text-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                'transition-colors duration-150',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+                "rounded-[var(--radius-sm)] p-1",
+                "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+                "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
               )}
               aria-label="Home"
             >
@@ -109,10 +107,10 @@ export function Breadcrumb({
                   <Link
                     href={item.href}
                     className={cn(
-                      'rounded-[var(--radius-sm)] px-1.5 py-0.5 text-sm',
-                      'text-[var(--color-muted)] hover:text-[var(--color-foreground)]',
-                      'transition-colors duration-150',
-                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]'
+                      "rounded-[var(--radius-sm)] px-1.5 py-0.5 text-sm",
+                      "text-[var(--color-muted)] hover:text-[var(--color-foreground)]",
+                      "transition-colors duration-150",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
                     )}
                   >
                     {item.label}
@@ -120,12 +118,12 @@ export function Breadcrumb({
                 ) : (
                   <span
                     className={cn(
-                      'px-1.5 py-0.5 text-sm',
+                      "px-1.5 py-0.5 text-sm",
                       isLast
-                        ? 'font-medium text-[var(--color-foreground)]'
-                        : 'text-[var(--color-muted)]'
+                        ? "font-medium text-[var(--color-foreground)]"
+                        : "text-[var(--color-muted)]",
                     )}
-                    aria-current={isLast ? 'page' : undefined}
+                    aria-current={isLast ? "page" : undefined}
                   >
                     {item.label}
                   </span>
@@ -152,14 +150,12 @@ export function Breadcrumb({
  */
 export function generateBreadcrumbsFromPath(
   pathname: string,
-  basePath: string = '/'
+  basePath: string = "/",
 ): BreadcrumbItem[] {
   // Remove base path and split into segments
-  const relativePath = pathname.startsWith(basePath)
-    ? pathname.slice(basePath.length)
-    : pathname;
+  const relativePath = pathname.startsWith(basePath) ? pathname.slice(basePath.length) : pathname;
 
-  const segments = relativePath.split('/').filter(Boolean);
+  const segments = relativePath.split("/").filter(Boolean);
 
   if (segments.length === 0) {
     return [];
@@ -167,12 +163,10 @@ export function generateBreadcrumbsFromPath(
 
   return segments.map((segment, index) => {
     // Build href from base path + all segments up to and including current
-    const href = `${basePath}/${segments.slice(0, index + 1).join('/')}`;
+    const href = `${basePath}/${segments.slice(0, index + 1).join("/")}`;
 
     // Format label: capitalize and replace hyphens/underscores with spaces
-    const label = segment
-      .replace(/[-_]/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
+    const label = segment.replace(/[-_]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
     // Last item doesn't need href (current page)
     const isLast = index === segments.length - 1;

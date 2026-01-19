@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useState,
@@ -8,10 +8,10 @@ import {
   useRef,
   useEffect,
   type KeyboardEvent,
-} from 'react';
-import { cn } from '@/lib/utils';
-import { Input, Select, type SelectOption } from '@/components/ui/Form';
-import { Button } from '@/components/ui/Button';
+} from "react";
+import { cn } from "@/lib/utils";
+import { Input, Select, type SelectOption } from "@/components/ui/Form";
+import { Button } from "@/components/ui/Button";
 import {
   useSearchFilter,
   getOperatorsForType,
@@ -24,7 +24,7 @@ import {
   type FilterOperator,
   type DateRangeValue,
   type UseSearchFilterOptions,
-} from '@/hooks/useSearchFilter';
+} from "@/hooks/useSearchFilter";
 
 // ============================================================================
 // Types
@@ -50,13 +50,7 @@ export interface SearchFilterProps {
 }
 
 // Re-export types for convenience
-export type {
-  FilterableColumn,
-  FilterState,
-  ColumnFilter,
-  FilterOperator,
-  DateRangeValue,
-};
+export type { FilterableColumn, FilterState, ColumnFilter, FilterOperator, DateRangeValue };
 
 // ============================================================================
 // Icons
@@ -170,16 +164,16 @@ function FilterBadge({ filter, column, onRemove }: FilterBadgeProps) {
 
     if (Array.isArray(filter.value)) {
       return filter.value.length > 2
-        ? `${filter.value.slice(0, 2).join(', ')} +${filter.value.length - 2}`
-        : filter.value.join(', ');
+        ? `${filter.value.slice(0, 2).join(", ")} +${filter.value.length - 2}`
+        : filter.value.join(", ");
     }
 
-    if (typeof filter.value === 'object' && filter.value !== null) {
+    if (typeof filter.value === "object" && filter.value !== null) {
       const range = filter.value as DateRangeValue;
       if (range.from && range.to) {
         return `${range.from} to ${range.to}`;
       }
-      return range.from || range.to || '';
+      return range.from || range.to || "";
     }
 
     return String(filter.value);
@@ -188,32 +182,28 @@ function FilterBadge({ filter, column, onRemove }: FilterBadgeProps) {
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5',
-        'h-7 px-2 pr-1',
-        'rounded-[var(--radius-md)]',
-        'bg-[var(--color-primary)]/10',
-        'border border-[var(--color-primary)]/20',
-        'text-sm text-[var(--color-foreground)]'
+        "inline-flex items-center gap-1.5",
+        "h-7 px-2 pr-1",
+        "rounded-[var(--radius-md)]",
+        "bg-[var(--color-primary)]/10",
+        "border border-[var(--color-primary)]/20",
+        "text-sm text-[var(--color-foreground)]",
       )}
     >
-      <span className="font-medium text-[var(--color-primary)]">
-        {column.label}
-      </span>
+      <span className="font-medium text-[var(--color-primary)]">{column.label}</span>
       <span className="text-[var(--color-muted)]">
         {getOperatorLabel(filter.operator).toLowerCase()}
       </span>
-      {displayValue && (
-        <span className="max-w-[150px] truncate">{displayValue}</span>
-      )}
+      {displayValue && <span className="max-w-[150px] truncate">{displayValue}</span>}
       <button
         type="button"
         onClick={onRemove}
         className={cn(
-          'ml-0.5 p-0.5 rounded-[var(--radius-sm)]',
-          'hover:bg-[var(--color-primary)]/20',
-          'transition-colors duration-150',
-          'focus-visible:outline-none focus-visible:ring-2',
-          'focus-visible:ring-[var(--color-accent)]'
+          "ml-0.5 p-0.5 rounded-[var(--radius-sm)]",
+          "hover:bg-[var(--color-primary)]/20",
+          "transition-colors duration-150",
+          "focus-visible:outline-none focus-visible:ring-2",
+          "focus-visible:ring-[var(--color-accent)]",
         )}
         aria-label={`Remove ${column.label} filter`}
       >
@@ -226,11 +216,11 @@ function FilterBadge({ filter, column, onRemove }: FilterBadgeProps) {
 interface DateRangeInputProps {
   value: DateRangeValue;
   onChange: (value: DateRangeValue) => void;
-  type: 'date' | 'datetime';
+  type: "date" | "datetime";
 }
 
 function DateRangeInput({ value, onChange, type }: DateRangeInputProps) {
-  const inputType = type === 'datetime' ? 'datetime-local' : 'date';
+  const inputType = type === "datetime" ? "datetime-local" : "date";
 
   return (
     <div className="flex items-center gap-2">
@@ -238,7 +228,7 @@ function DateRangeInput({ value, onChange, type }: DateRangeInputProps) {
         <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-muted)]" />
         <Input
           type={inputType}
-          value={value.from || ''}
+          value={value.from || ""}
           onChange={(e) => onChange({ ...value, from: e.target.value })}
           placeholder="From"
           className="pl-9 text-sm"
@@ -249,7 +239,7 @@ function DateRangeInput({ value, onChange, type }: DateRangeInputProps) {
         <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-muted)]" />
         <Input
           type={inputType}
-          value={value.to || ''}
+          value={value.to || ""}
           onChange={(e) => onChange({ ...value, to: e.target.value })}
           placeholder="To"
           className="pl-9 text-sm"
@@ -270,7 +260,7 @@ function MultiSelect({
   options,
   selected,
   onChange,
-  placeholder = 'Select values...',
+  placeholder = "Select values...",
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownId = useId();
@@ -281,16 +271,13 @@ function MultiSelect({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   const toggleOption = (option: string) => {
@@ -302,7 +289,7 @@ function MultiSelect({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       setIsOpen(false);
     }
   };
@@ -324,22 +311,22 @@ function MultiSelect({
         aria-controls={dropdownId}
         aria-haspopup="listbox"
         className={cn(
-          'w-full h-10 px-3',
-          'flex items-center justify-between gap-2',
-          'rounded-[var(--radius-md)]',
-          'bg-[var(--color-card)] text-[var(--color-foreground)]',
-          'border border-[var(--color-border)]',
-          'text-sm text-left',
-          'transition-colors duration-150',
-          'hover:border-[var(--color-muted)]',
-          'focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]',
-          'focus:outline-none',
-          selected.length === 0 && 'text-[var(--color-muted)]'
+          "w-full h-10 px-3",
+          "flex items-center justify-between gap-2",
+          "rounded-[var(--radius-md)]",
+          "bg-[var(--color-card)] text-[var(--color-foreground)]",
+          "border border-[var(--color-border)]",
+          "text-sm text-left",
+          "transition-colors duration-150",
+          "hover:border-[var(--color-muted)]",
+          "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]",
+          "focus:outline-none",
+          selected.length === 0 && "text-[var(--color-muted)]",
         )}
       >
         <span className="truncate">{displayText}</span>
         <ChevronDownIcon
-          className={cn('h-4 w-4 shrink-0 transition-transform', isOpen && 'rotate-180')}
+          className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-180")}
         />
       </button>
 
@@ -349,13 +336,13 @@ function MultiSelect({
           role="listbox"
           aria-multiselectable="true"
           className={cn(
-            'absolute z-50 w-full mt-1',
-            'max-h-[200px] overflow-auto',
-            'rounded-[var(--radius-md)]',
-            'border border-[var(--color-border)]',
-            'bg-[var(--color-card)]',
-            'shadow-lg shadow-black/20',
-            'py-1'
+            "absolute z-50 w-full mt-1",
+            "max-h-[200px] overflow-auto",
+            "rounded-[var(--radius-md)]",
+            "border border-[var(--color-border)]",
+            "bg-[var(--color-card)]",
+            "shadow-lg shadow-black/20",
+            "py-1",
           )}
         >
           {options.map((option) => {
@@ -368,21 +355,21 @@ function MultiSelect({
                 aria-selected={isSelected}
                 onClick={() => toggleOption(option)}
                 className={cn(
-                  'w-full px-3 py-2',
-                  'flex items-center gap-2',
-                  'text-sm text-left',
-                  'transition-colors duration-150',
-                  'hover:bg-[var(--color-card-hover)]',
-                  'focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]'
+                  "w-full px-3 py-2",
+                  "flex items-center gap-2",
+                  "text-sm text-left",
+                  "transition-colors duration-150",
+                  "hover:bg-[var(--color-card-hover)]",
+                  "focus-visible:outline-none focus-visible:bg-[var(--color-card-hover)]",
                 )}
               >
                 <span
                   className={cn(
-                    'flex h-4 w-4 items-center justify-center shrink-0',
-                    'rounded-[var(--radius-sm)]',
-                    'border border-[var(--color-border)]',
-                    'transition-colors duration-150',
-                    isSelected && 'bg-[var(--color-primary)] border-[var(--color-primary)]'
+                    "flex h-4 w-4 items-center justify-center shrink-0",
+                    "rounded-[var(--radius-sm)]",
+                    "border border-[var(--color-border)]",
+                    "transition-colors duration-150",
+                    isSelected && "bg-[var(--color-primary)] border-[var(--color-primary)]",
                   )}
                 >
                   {isSelected && (
@@ -403,9 +390,7 @@ function MultiSelect({
             );
           })}
           {options.length === 0 && (
-            <div className="px-3 py-2 text-sm text-[var(--color-muted)]">
-              No options available
-            </div>
+            <div className="px-3 py-2 text-sm text-[var(--color-muted)]">No options available</div>
           )}
         </div>
       )}
@@ -421,38 +406,27 @@ interface FilterEditorProps {
   existingFilters: string[];
 }
 
-function FilterEditor({
-  columns,
-  filter,
-  onChange,
-  onCancel,
-  existingFilters,
-}: FilterEditorProps) {
-  const [selectedColumn, setSelectedColumn] = useState<string>(filter.column || '');
+function FilterEditor({ columns, filter, onChange, onCancel, existingFilters }: FilterEditorProps) {
+  const [selectedColumn, setSelectedColumn] = useState<string>(filter.column || "");
   const [selectedOperator, setSelectedOperator] = useState<FilterOperator>(
-    filter.operator || 'equals'
+    filter.operator || "equals",
   );
-  const [value, setValue] = useState<string | string[] | DateRangeValue>(
-    filter.value || ''
-  );
+  const [value, setValue] = useState<string | string[] | DateRangeValue>(filter.value || "");
 
   // Get available columns (exclude already filtered columns)
   const availableColumns = useMemo(
     () => columns.filter((col) => !existingFilters.includes(col.key) || col.key === filter.column),
-    [columns, existingFilters, filter.column]
+    [columns, existingFilters, filter.column],
   );
 
   // Get selected column definition
   const column = useMemo(
     () => columns.find((c) => c.key === selectedColumn),
-    [columns, selectedColumn]
+    [columns, selectedColumn],
   );
 
   // Get operators for selected column type
-  const operators = useMemo(
-    () => (column ? getOperatorsForType(column.type) : []),
-    [column]
-  );
+  const operators = useMemo(() => (column ? getOperatorsForType(column.type) : []), [column]);
 
   // Reset operator and value when column changes
   const handleColumnChange = (key: string) => {
@@ -462,13 +436,13 @@ function FilterEditor({
       const defaultOp = getDefaultOperator(newColumn.type);
       setSelectedOperator(defaultOp);
       // Reset value based on type
-      if (newColumn.type === 'enum') {
+      if (newColumn.type === "enum") {
         setValue([]);
-      } else if (newColumn.type === 'date' || newColumn.type === 'datetime') {
+      } else if (newColumn.type === "date" || newColumn.type === "datetime") {
         const emptyRange: DateRangeValue = { from: undefined, to: undefined };
         setValue(emptyRange);
       } else {
-        setValue('');
+        setValue("");
       }
     }
   };
@@ -477,16 +451,16 @@ function FilterEditor({
   const handleOperatorChange = (op: FilterOperator) => {
     setSelectedOperator(op);
     // Reset value for between operator
-    if (op === 'between' && column) {
+    if (op === "between" && column) {
       const emptyRange: DateRangeValue = { from: undefined, to: undefined };
       setValue(emptyRange);
-    } else if (op === 'in' && column?.type === 'enum') {
+    } else if (op === "in" && column?.type === "enum") {
       setValue([]);
     } else if (
-      (op === 'isNull' || op === 'isNotNull') &&
-      (Array.isArray(value) || typeof value === 'object')
+      (op === "isNull" || op === "isNotNull") &&
+      (Array.isArray(value) || typeof value === "object")
     ) {
-      setValue('');
+      setValue("");
     }
   };
 
@@ -509,7 +483,7 @@ function FilterEditor({
     if (Array.isArray(value)) {
       return value.length > 0;
     }
-    if (typeof value === 'object' && value !== null) {
+    if (typeof value === "object" && value !== null) {
       const range = value as DateRangeValue;
       return Boolean(range.from || range.to);
     }
@@ -522,7 +496,7 @@ function FilterEditor({
       return null;
     }
 
-    if (column.type === 'enum' && selectedOperator === 'in') {
+    if (column.type === "enum" && selectedOperator === "in") {
       return (
         <MultiSelect
           options={column.enumValues || []}
@@ -533,40 +507,37 @@ function FilterEditor({
       );
     }
 
-    if (
-      (column.type === 'date' || column.type === 'datetime') &&
-      selectedOperator === 'between'
-    ) {
+    if ((column.type === "date" || column.type === "datetime") && selectedOperator === "between") {
       const rangeValue: DateRangeValue =
-        typeof value === 'object' && !Array.isArray(value)
+        typeof value === "object" && !Array.isArray(value)
           ? (value as DateRangeValue)
           : { from: undefined, to: undefined };
       return (
         <DateRangeInput
           value={rangeValue}
           onChange={(newValue) => setValue(newValue)}
-          type={column.type as 'date' | 'datetime'}
+          type={column.type as "date" | "datetime"}
         />
       );
     }
 
-    if (column.type === 'date' || column.type === 'datetime') {
-      const inputType = column.type === 'datetime' ? 'datetime-local' : 'date';
+    if (column.type === "date" || column.type === "datetime") {
+      const inputType = column.type === "datetime" ? "datetime-local" : "date";
       return (
         <Input
           type={inputType}
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => setValue(e.target.value)}
           className="text-sm"
         />
       );
     }
 
-    if (column.type === 'number') {
+    if (column.type === "number") {
       return (
         <Input
           type="number"
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Enter value..."
           className="text-sm"
@@ -574,25 +545,25 @@ function FilterEditor({
       );
     }
 
-    if (column.type === 'boolean') {
+    if (column.type === "boolean") {
       return (
         <Select
           options={[
-            { value: 'true', label: 'True' },
-            { value: 'false', label: 'False' },
+            { value: "true", label: "True" },
+            { value: "false", label: "False" },
           ]}
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Select..."
         />
       );
     }
 
-    if (column.type === 'enum' && selectedOperator === 'equals') {
+    if (column.type === "enum" && selectedOperator === "equals") {
       return (
         <Select
           options={(column.enumValues || []).map((v) => ({ value: v, label: v }))}
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Select value..."
         />
@@ -603,7 +574,7 @@ function FilterEditor({
     return (
       <Input
         type="text"
-        value={typeof value === 'string' ? value : ''}
+        value={typeof value === "string" ? value : ""}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Enter value..."
         className="text-sm"
@@ -639,9 +610,7 @@ function FilterEditor({
         />
       </div>
 
-      {column && operatorRequiresValue(selectedOperator) && (
-        <div>{renderValueInput()}</div>
-      )}
+      {column && operatorRequiresValue(selectedOperator) && <div>{renderValueInput()}</div>}
 
       <div className="flex items-center justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={onCancel}>
@@ -688,7 +657,7 @@ export function SearchFilter({
   onFilterChange,
   initialFilters,
   className,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder = "Search...",
   showAddFilter = true,
   debounceMs = 300,
   syncToUrl = true,
@@ -708,7 +677,7 @@ export function SearchFilter({
       initialState: initialFilters ?? undefined,
       onFilterChange,
     }),
-    [debounceMs, syncToUrl, initialFilters, onFilterChange]
+    [debounceMs, syncToUrl, initialFilters, onFilterChange],
   );
 
   const {
@@ -727,22 +696,19 @@ export function SearchFilter({
     if (!showFilterPanel) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterPanelRef.current &&
-        !filterPanelRef.current.contains(event.target as Node)
-      ) {
+      if (filterPanelRef.current && !filterPanelRef.current.contains(event.target as Node)) {
         setShowFilterPanel(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showFilterPanel]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setSearch('');
+    if (e.key === "Escape") {
+      setSearch("");
     }
   };
 
@@ -752,7 +718,7 @@ export function SearchFilter({
       addFilter(filter);
       setShowFilterPanel(false);
     },
-    [addFilter]
+    [addFilter],
   );
 
   // Get column definition for filter badge
@@ -762,7 +728,7 @@ export function SearchFilter({
   const existingFilterColumns = filterState.filters.map((f) => f.column);
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn("space-y-3", className)}>
       {/* Search and filter controls */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Search input */}
@@ -781,16 +747,16 @@ export function SearchFilter({
           {searchValue && (
             <button
               type="button"
-              onClick={() => setSearch('')}
+              onClick={() => setSearch("")}
               className={cn(
-                'absolute right-3 top-1/2 -translate-y-1/2',
-                'p-0.5 rounded-[var(--radius-sm)]',
-                'text-[var(--color-muted)]',
-                'hover:text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150',
-                'focus-visible:outline-none focus-visible:ring-2',
-                'focus-visible:ring-[var(--color-accent)]'
+                "absolute right-3 top-1/2 -translate-y-1/2",
+                "p-0.5 rounded-[var(--radius-sm)]",
+                "text-[var(--color-muted)]",
+                "hover:text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:ring-2",
+                "focus-visible:ring-[var(--color-accent)]",
               )}
               aria-label="Clear search"
             >
@@ -815,11 +781,11 @@ export function SearchFilter({
                 {activeFilterCount > 0 && (
                   <span
                     className={cn(
-                      'flex items-center justify-center',
-                      'h-5 min-w-[20px] px-1.5',
-                      'rounded-full',
-                      'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]',
-                      'text-xs font-medium'
+                      "flex items-center justify-center",
+                      "h-5 min-w-[20px] px-1.5",
+                      "rounded-full",
+                      "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]",
+                      "text-xs font-medium",
                     )}
                   >
                     {activeFilterCount}
@@ -832,12 +798,12 @@ export function SearchFilter({
                 <div
                   id={filterPanelId}
                   className={cn(
-                    'absolute right-0 top-full z-50 mt-2',
-                    'w-[360px] p-4',
-                    'rounded-[var(--radius-lg)]',
-                    'border border-[var(--color-border)]',
-                    'bg-[var(--color-card)]',
-                    'shadow-lg shadow-black/20'
+                    "absolute right-0 top-full z-50 mt-2",
+                    "w-[360px] p-4",
+                    "rounded-[var(--radius-lg)]",
+                    "border border-[var(--color-border)]",
+                    "bg-[var(--color-card)]",
+                    "shadow-lg shadow-black/20",
                   )}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -848,11 +814,11 @@ export function SearchFilter({
                       type="button"
                       onClick={() => setShowFilterPanel(false)}
                       className={cn(
-                        'p-1 rounded-[var(--radius-sm)]',
-                        'text-[var(--color-muted)]',
-                        'hover:text-[var(--color-foreground)]',
-                        'hover:bg-[var(--color-card-hover)]',
-                        'transition-colors duration-150'
+                        "p-1 rounded-[var(--radius-sm)]",
+                        "text-[var(--color-muted)]",
+                        "hover:text-[var(--color-foreground)]",
+                        "hover:bg-[var(--color-card-hover)]",
+                        "transition-colors duration-150",
                       )}
                       aria-label="Close filter panel"
                     >
@@ -906,6 +872,6 @@ export function SearchFilter({
   );
 }
 
-SearchFilter.displayName = 'SearchFilter';
+SearchFilter.displayName = "SearchFilter";
 
 export default SearchFilter;

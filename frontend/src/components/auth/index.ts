@@ -12,11 +12,11 @@
  * ```
  */
 
-export { ProtectedRoute } from './ProtectedRoute';
-export type { ProtectedRouteProps } from './ProtectedRoute';
+export { ProtectedRoute } from "./ProtectedRoute";
+export type { ProtectedRouteProps } from "./ProtectedRoute";
 
-export { AuthGuard, useIsAuthorized } from './AuthGuard';
-export type { AuthGuardProps } from './AuthGuard';
+export { AuthGuard, useIsAuthorized } from "./AuthGuard";
+export type { AuthGuardProps } from "./AuthGuard";
 
-export { UserMenu } from './UserMenu';
-export type { UserMenuProps } from './UserMenu';
+export { UserMenu } from "./UserMenu";
+export type { UserMenuProps } from "./UserMenu";

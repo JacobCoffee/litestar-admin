@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, type ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, type ReactNode } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
-import { useAuthContext } from '@/contexts/AuthContext';
-import { Spinner } from '@/components/ui/Loading';
-import { cn } from '@/lib/utils';
+import { useAuthContext } from "@/contexts/AuthContext";
+import { Spinner } from "@/components/ui/Loading";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for ProtectedRoute component.
@@ -28,8 +28,8 @@ function DefaultLoadingComponent() {
   return (
     <div
       className={cn(
-        'flex min-h-screen items-center justify-center',
-        'bg-[var(--color-background)]'
+        "flex min-h-screen items-center justify-center",
+        "bg-[var(--color-background)]",
       )}
     >
       <div className="flex flex-col items-center gap-4">
@@ -66,7 +66,7 @@ function DefaultLoadingComponent() {
 export function ProtectedRoute({
   children,
   loadingComponent,
-  loginUrl = '/login',
+  loginUrl = "/login",
   includeReturnUrl = true,
 }: ProtectedRouteProps) {
   const router = useRouter();

@@ -9,7 +9,7 @@
  * - Supports variable height items (estimated)
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
 export interface UseVirtualListOptions<T> {
   /** The full list of items */
@@ -45,7 +45,7 @@ export interface UseVirtualListReturn<T> {
   /** Current scroll position */
   scrollTop: number;
   /** Scroll to a specific index */
-  scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void;
+  scrollToIndex: (index: number, align?: "start" | "center" | "end") => void;
   /** Whether the list is currently being scrolled */
   isScrolling: boolean;
 }
@@ -151,7 +151,7 @@ export function useVirtualList<T>({
     setContainerHeight(container.clientHeight);
 
     // Set up scroll listener
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener("scroll", handleScroll, { passive: true });
 
     // Set up resize observer
     const resizeObserver = new ResizeObserver((entries) => {
@@ -163,7 +163,7 @@ export function useVirtualList<T>({
     resizeObserver.observe(container);
 
     return () => {
-      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener("scroll", handleScroll);
       resizeObserver.disconnect();
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
@@ -173,15 +173,15 @@ export function useVirtualList<T>({
 
   // Scroll to index function
   const scrollToIndex = useCallback(
-    (index: number, align: 'start' | 'center' | 'end' = 'start') => {
+    (index: number, align: "start" | "center" | "end" = "start") => {
       if (!containerRef.current) return;
 
       const clampedIndex = Math.max(0, Math.min(index, items.length - 1));
       let targetScrollTop = clampedIndex * itemHeight;
 
-      if (align === 'center') {
+      if (align === "center") {
         targetScrollTop -= containerHeight / 2 - itemHeight / 2;
-      } else if (align === 'end') {
+      } else if (align === "end") {
         targetScrollTop -= containerHeight - itemHeight;
       }
 
@@ -189,10 +189,10 @@ export function useVirtualList<T>({
 
       containerRef.current.scrollTo({
         top: targetScrollTop,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     },
-    [items.length, itemHeight, containerHeight, totalHeight]
+    [items.length, itemHeight, containerHeight, totalHeight],
   );
 
   return {
@@ -213,7 +213,7 @@ export function useVirtualList<T>({
 export function estimateVisibleItems(
   containerHeight: number,
   itemHeight: number,
-  overscan = 0
+  overscan = 0,
 ): number {
   return Math.ceil(containerHeight / itemHeight) + overscan * 2;
 }

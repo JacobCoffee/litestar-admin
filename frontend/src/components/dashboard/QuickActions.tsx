@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 export interface QuickAction {
   /** Unique identifier */
@@ -17,7 +17,7 @@ export interface QuickAction {
   /** Icon component */
   icon?: React.ReactNode;
   /** Button variant */
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: "primary" | "secondary" | "ghost";
 }
 
 export interface QuickActionsProps {
@@ -29,47 +29,40 @@ export interface QuickActionsProps {
 
 const defaultActions: QuickAction[] = [
   {
-    id: 'browse-models',
-    label: 'Browse Models',
-    description: 'View and manage all models',
-    href: '/models',
+    id: "browse-models",
+    label: "Browse Models",
+    description: "View and manage all models",
+    href: "/models",
     icon: <ModelsIcon />,
-    variant: 'primary',
+    variant: "primary",
   },
   {
-    id: 'create-record',
-    label: 'Create Record',
-    description: 'Add a new record to any model',
-    href: '/models',
+    id: "create-record",
+    label: "Create Record",
+    description: "Add a new record to any model",
+    href: "/models",
     icon: <UserPlusIcon />,
-    variant: 'secondary',
+    variant: "secondary",
   },
   {
-    id: 'export-data',
-    label: 'Export Data',
-    description: 'Export from model list pages',
-    href: '/models',
+    id: "export-data",
+    label: "Export Data",
+    description: "Export from model list pages",
+    href: "/models",
     icon: <DownloadIcon />,
-    variant: 'secondary',
+    variant: "secondary",
   },
 ];
 
 /**
  * Panel displaying quick action buttons for common operations.
  */
-export function QuickActions({
-  actions = defaultActions,
-  className,
-}: QuickActionsProps) {
+export function QuickActions({ actions = defaultActions, className }: QuickActionsProps) {
   return (
     <Card className={className}>
       <CardHeader>
-        <h2 className="text-base font-semibold text-[var(--color-foreground)]">
-          Quick Actions
-        </h2>
-        <p className="mt-0.5 text-sm text-[var(--color-muted)]">
-          Common tasks and shortcuts
-        </p>
+        <h2 className="text-base font-semibold text-[var(--color-foreground)]">Quick Actions</h2>
+        <p className="mt-0.5 text-sm text-[var(--color-muted)]">Common tasks and shortcuts</p>
       </CardHeader>
       <CardBody className="flex flex-col gap-2">
         {actions.map((action) => (
@@ -85,25 +78,25 @@ interface QuickActionButtonProps {
 }
 
 function QuickActionButton({ action }: QuickActionButtonProps) {
-  const isPrimary = action.variant === 'primary';
+  const isPrimary = action.variant === "primary";
 
   return (
     <Link href={action.href} className="block">
       <Button
-        variant={action.variant ?? 'secondary'}
+        variant={action.variant ?? "secondary"}
         className={cn(
-          'w-full justify-start gap-3 h-auto py-3 px-4',
-          'text-left',
-          !isPrimary && 'hover:bg-[var(--color-card-hover)]'
+          "w-full justify-start gap-3 h-auto py-3 px-4",
+          "text-left",
+          !isPrimary && "hover:bg-[var(--color-card-hover)]",
         )}
       >
         {action.icon && (
           <span
             className={cn(
-              'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
               isPrimary
-                ? 'bg-white/20'
-                : 'bg-[var(--color-card)] border border-[var(--color-border)]'
+                ? "bg-white/20"
+                : "bg-[var(--color-card)] border border-[var(--color-border)]",
             )}
           >
             {action.icon}
@@ -112,8 +105,8 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
         <span className="flex-1 min-w-0">
           <span
             className={cn(
-              'block text-sm font-medium',
-              isPrimary ? 'text-white' : 'text-[var(--color-foreground)]'
+              "block text-sm font-medium",
+              isPrimary ? "text-white" : "text-[var(--color-foreground)]",
             )}
           >
             {action.label}
@@ -121,8 +114,8 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
           {action.description && (
             <span
               className={cn(
-                'block text-xs mt-0.5',
-                isPrimary ? 'text-white/80' : 'text-[var(--color-muted)]'
+                "block text-xs mt-0.5",
+                isPrimary ? "text-white/80" : "text-[var(--color-muted)]",
               )}
             >
               {action.description}
@@ -130,10 +123,7 @@ function QuickActionButton({ action }: QuickActionButtonProps) {
           )}
         </span>
         <ChevronRightIcon
-          className={cn(
-            'h-4 w-4',
-            isPrimary ? 'text-white/70' : 'text-[var(--color-muted)]'
-          )}
+          className={cn("h-4 w-4", isPrimary ? "text-white/70" : "text-[var(--color-muted)]")}
         />
       </Button>
     </Link>
@@ -251,12 +241,7 @@ function ChevronRightIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 5l7 7-7 7"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
     </svg>
   );
 }

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardHeader, CardBody } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useTheme, type Theme } from '@/contexts/ThemeContext';
-import { cn } from '@/lib/utils';
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Card, CardHeader, CardBody } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useTheme, type Theme } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/utils";
 
-const ACCENT_COLOR_KEY = 'admin_accent_color';
+const ACCENT_COLOR_KEY = "admin_accent_color";
 
 /**
  * Adjust the brightness of a hex color.
@@ -18,7 +18,7 @@ const ACCENT_COLOR_KEY = 'admin_accent_color';
  */
 function adjustBrightness(hex: string, percent: number): string {
   // Remove # if present
-  const color = hex.replace('#', '');
+  const color = hex.replace("#", "");
 
   // Parse RGB values
   const r = parseInt(color.substring(0, 2), 16);
@@ -32,7 +32,7 @@ function adjustBrightness(hex: string, percent: number): string {
   };
 
   // Convert back to hex
-  const toHex = (value: number) => value.toString(16).padStart(2, '0');
+  const toHex = (value: number) => value.toString(16).padStart(2, "0");
 
   return `#${toHex(adjust(r))}${toHex(adjust(g))}${toHex(adjust(b))}`;
 }
@@ -43,23 +43,23 @@ interface AccentColor {
   lightValue: string;
 }
 
-const DEFAULT_ACCENT_COLOR = '#f6821f';
+const DEFAULT_ACCENT_COLOR = "#f6821f";
 
 const accentColors: AccentColor[] = [
-  { name: 'Orange', value: '#f6821f', lightValue: '#d4690e' },
-  { name: 'Blue', value: '#58a6ff', lightValue: '#0969da' },
-  { name: 'Green', value: '#3fb950', lightValue: '#1a7f37' },
-  { name: 'Purple', value: '#a371f7', lightValue: '#8250df' },
-  { name: 'Pink', value: '#f778ba', lightValue: '#bf3989' },
-  { name: 'Red', value: '#f85149', lightValue: '#cf222e' },
-  { name: 'Teal', value: '#2dd4bf', lightValue: '#14b8a6' },
-  { name: 'Yellow', value: '#e3b341', lightValue: '#9a6700' },
+  { name: "Orange", value: "#f6821f", lightValue: "#d4690e" },
+  { name: "Blue", value: "#58a6ff", lightValue: "#0969da" },
+  { name: "Green", value: "#3fb950", lightValue: "#1a7f37" },
+  { name: "Purple", value: "#a371f7", lightValue: "#8250df" },
+  { name: "Pink", value: "#f778ba", lightValue: "#bf3989" },
+  { name: "Red", value: "#f85149", lightValue: "#cf222e" },
+  { name: "Teal", value: "#2dd4bf", lightValue: "#14b8a6" },
+  { name: "Yellow", value: "#e3b341", lightValue: "#9a6700" },
 ];
 
 const themeOptions: { value: Theme; label: string; description: string }[] = [
-  { value: 'dark', label: 'Dark', description: 'Dark theme optimized for low-light environments' },
-  { value: 'light', label: 'Light', description: 'Light theme for bright environments' },
-  { value: 'system', label: 'System', description: 'Automatically match your system preferences' },
+  { value: "dark", label: "Dark", description: "Dark theme optimized for low-light environments" },
+  { value: "light", label: "Light", description: "Light theme for bright environments" },
+  { value: "system", label: "System", description: "Automatically match your system preferences" },
 ];
 
 // Icons
@@ -141,13 +141,13 @@ const CheckIcon = ({ className }: { className?: string }) => (
 );
 
 function getThemeIcon(theme: Theme, className?: string) {
-  const iconClass = className ?? '';
+  const iconClass = className ?? "";
   switch (theme) {
-    case 'light':
+    case "light":
       return <SunIcon className={iconClass} />;
-    case 'dark':
+    case "dark":
       return <MoonIcon className={iconClass} />;
-    case 'system':
+    case "system":
       return <MonitorIcon className={iconClass} />;
   }
 }
@@ -177,7 +177,7 @@ export default function SettingsPage() {
     const selectedColor = accentColors.find((c) => c.value === accentColor);
     if (!selectedColor) return null;
 
-    const colorValue = resolvedTheme === 'light' ? selectedColor.lightValue : selectedColor.value;
+    const colorValue = resolvedTheme === "light" ? selectedColor.lightValue : selectedColor.value;
     const hoverColor = adjustBrightness(colorValue, -15);
 
     return `
@@ -199,7 +199,7 @@ export default function SettingsPage() {
   }, []);
 
   const resetToDefaults = useCallback(() => {
-    setTheme('dark');
+    setTheme("dark");
     // Setting to default color will update the styles via useMemo
     setAccentColor(DEFAULT_ACCENT_COLOR);
     // Also remove from localStorage so the app uses CSS defaults
@@ -223,24 +223,19 @@ export default function SettingsPage() {
           <PageHeader
             title="Settings"
             subtitle="Configure your admin panel preferences"
-            breadcrumbs={[
-              { label: 'Dashboard', href: '/' },
-              { label: 'Settings' },
-            ]}
+            breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Settings" }]}
           />
 
           {/* Theme Selection */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                {getThemeIcon(theme, 'h-5 w-5 text-[var(--color-accent)]')}
+                {getThemeIcon(theme, "h-5 w-5 text-[var(--color-accent)]")}
                 <div>
                   <h2 className="text-base font-semibold text-[var(--color-foreground)]">
                     Appearance
                   </h2>
-                  <p className="text-sm text-[var(--color-muted)]">
-                    Choose your preferred theme
-                  </p>
+                  <p className="text-sm text-[var(--color-muted)]">Choose your preferred theme</p>
                 </div>
               </div>
             </CardHeader>
@@ -251,37 +246,35 @@ export default function SettingsPage() {
                     key={option.value}
                     onClick={() => setTheme(option.value)}
                     className={cn(
-                      'relative flex flex-col items-center gap-3 p-4 rounded-lg border-2 transition-all',
-                      'hover:border-[var(--color-accent)] hover:bg-[var(--color-card-hover)]',
+                      "relative flex flex-col items-center gap-3 p-4 rounded-lg border-2 transition-all",
+                      "hover:border-[var(--color-accent)] hover:bg-[var(--color-card-hover)]",
                       theme === option.value
-                        ? 'border-[var(--color-accent)] bg-[var(--color-card-hover)]'
-                        : 'border-[var(--color-border)] bg-[var(--color-card)]'
+                        ? "border-[var(--color-accent)] bg-[var(--color-card-hover)]"
+                        : "border-[var(--color-border)] bg-[var(--color-card)]",
                     )}
                   >
                     <div
                       className={cn(
-                        'flex h-12 w-12 items-center justify-center rounded-full',
+                        "flex h-12 w-12 items-center justify-center rounded-full",
                         theme === option.value
-                          ? 'bg-[var(--color-accent)] text-white'
-                          : 'bg-[var(--color-card-hover)] text-[var(--color-muted)]'
+                          ? "bg-[var(--color-accent)] text-white"
+                          : "bg-[var(--color-card-hover)] text-[var(--color-muted)]",
                       )}
                     >
-                      {getThemeIcon(option.value, 'h-6 w-6')}
+                      {getThemeIcon(option.value, "h-6 w-6")}
                     </div>
                     <div className="text-center">
                       <p
                         className={cn(
-                          'font-medium',
+                          "font-medium",
                           theme === option.value
-                            ? 'text-[var(--color-accent)]'
-                            : 'text-[var(--color-foreground)]'
+                            ? "text-[var(--color-accent)]"
+                            : "text-[var(--color-foreground)]",
                         )}
                       >
                         {option.label}
                       </p>
-                      <p className="text-xs text-[var(--color-muted)] mt-1">
-                        {option.description}
-                      </p>
+                      <p className="text-xs text-[var(--color-muted)] mt-1">{option.description}</p>
                     </div>
                     {theme === option.value && (
                       <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-[var(--color-accent)] flex items-center justify-center">
@@ -317,21 +310,22 @@ export default function SettingsPage() {
                     onClick={() => setAccentColor(color.value)}
                     title={color.name}
                     className={cn(
-                      'group relative flex flex-col items-center gap-2',
-                      'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)] rounded-lg'
+                      "group relative flex flex-col items-center gap-2",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)] rounded-lg",
                     )}
                   >
                     <div
                       className={cn(
-                        'h-10 w-10 rounded-full border-2 transition-all',
-                        'group-hover:scale-110 group-hover:shadow-lg',
+                        "h-10 w-10 rounded-full border-2 transition-all",
+                        "group-hover:scale-110 group-hover:shadow-lg",
                         accentColor === color.value
-                          ? 'border-[var(--color-foreground)] ring-2 ring-offset-2 ring-offset-[var(--color-background)]'
-                          : 'border-transparent'
+                          ? "border-[var(--color-foreground)] ring-2 ring-offset-2 ring-offset-[var(--color-background)]"
+                          : "border-transparent",
                       )}
                       style={{
-                        backgroundColor: resolvedTheme === 'dark' ? color.value : color.lightValue,
-                        boxShadow: accentColor === color.value ? `0 0 0 2px ${color.value}` : undefined,
+                        backgroundColor: resolvedTheme === "dark" ? color.value : color.lightValue,
+                        boxShadow:
+                          accentColor === color.value ? `0 0 0 2px ${color.value}` : undefined,
                       }}
                     >
                       {accentColor === color.value && (
@@ -356,7 +350,7 @@ export default function SettingsPage() {
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                     style={{
                       backgroundColor: `color-mix(in srgb, var(--color-accent) 20%, transparent)`,
-                      color: 'var(--color-accent)',
+                      color: "var(--color-accent)",
                     }}
                   >
                     Accent Badge

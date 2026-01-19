@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
-import Link from 'next/link';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from "react";
+import Link from "next/link";
 
-import { useAuthContext } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
+import { useAuthContext } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for UserMenu component.
@@ -83,11 +83,7 @@ function LogoutIcon({ className }: { className?: string }) {
 function ChevronIcon({ className, isOpen }: { className?: string; isOpen: boolean }) {
   return (
     <svg
-      className={cn(
-        className,
-        'transition-transform duration-150',
-        isOpen && 'rotate-180'
-      )}
+      className={cn(className, "transition-transform duration-150", isOpen && "rotate-180")}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -104,12 +100,12 @@ function ChevronIcon({ className, isOpen }: { className?: string; isOpen: boolea
  * Get initials from user email.
  */
 function getInitials(email: string): string {
-  const localPart = email.split('@')[0] ?? '';
+  const localPart = email.split("@")[0] ?? "";
   const parts = localPart.split(/[._-]/);
   if (parts.length >= 2) {
-    const first = parts[0] ?? '';
-    const second = parts[1] ?? '';
-    return ((first[0] ?? '') + (second[0] ?? '')).toUpperCase();
+    const first = parts[0] ?? "";
+    const second = parts[1] ?? "";
+    return ((first[0] ?? "") + (second[0] ?? "")).toUpperCase();
   }
   return email.slice(0, 2).toUpperCase();
 }
@@ -149,22 +145,22 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Close menu on escape key
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsOpen(false);
         buttonRef.current?.focus();
       }
     }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
   }, [isOpen]);
 
@@ -184,17 +180,17 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
   const initials = getInitials(user.email);
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <button
         ref={buttonRef}
         type="button"
         onClick={toggleMenu}
         className={cn(
-          'flex items-center gap-2 rounded-[var(--radius-md)] p-2',
-          'text-[var(--color-foreground)]',
-          'hover:bg-[var(--color-card-hover)]',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]',
-          'transition-colors duration-150'
+          "flex items-center gap-2 rounded-[var(--radius-md)] p-2",
+          "text-[var(--color-foreground)]",
+          "hover:bg-[var(--color-card-hover)]",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
+          "transition-colors duration-150",
         )}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -202,9 +198,9 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
         {avatar ?? (
           <div
             className={cn(
-              'flex h-8 w-8 items-center justify-center rounded-full',
-              'bg-[var(--color-primary)] text-[var(--color-primary-foreground)]',
-              'text-xs font-medium'
+              "flex h-8 w-8 items-center justify-center rounded-full",
+              "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]",
+              "text-xs font-medium",
             )}
           >
             {initials}
@@ -218,19 +214,22 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
             </p>
           )}
         </div>
-        <ChevronIcon className="h-4 w-4 text-[var(--color-muted)] hidden sm:block" isOpen={isOpen} />
+        <ChevronIcon
+          className="h-4 w-4 text-[var(--color-muted)] hidden sm:block"
+          isOpen={isOpen}
+        />
       </button>
 
       {isOpen && (
         <div
           ref={menuRef}
           className={cn(
-            'absolute right-0 top-full mt-2 z-50',
-            'w-56 rounded-[var(--radius-lg)]',
-            'bg-[var(--color-card)] border border-[var(--color-border)]',
-            'shadow-lg shadow-black/30',
-            'animate-[scaleIn_150ms_ease-out]',
-            'origin-top-right'
+            "absolute right-0 top-full mt-2 z-50",
+            "w-56 rounded-[var(--radius-lg)]",
+            "bg-[var(--color-card)] border border-[var(--color-border)]",
+            "shadow-lg shadow-black/30",
+            "animate-[scaleIn_150ms_ease-out]",
+            "origin-top-right",
           )}
           role="menu"
           aria-orientation="vertical"
@@ -241,9 +240,7 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
               {user.email}
             </p>
             {user.roles.length > 0 && (
-              <p className="text-xs text-[var(--color-muted)] mt-0.5">
-                {user.roles.join(', ')}
-              </p>
+              <p className="text-xs text-[var(--color-muted)] mt-0.5">{user.roles.join(", ")}</p>
             )}
           </div>
 
@@ -253,10 +250,10 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
               href="/profile"
               onClick={() => setIsOpen(false)}
               className={cn(
-                'flex items-center gap-3 px-4 py-2',
-                'text-sm text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150'
+                "flex items-center gap-3 px-4 py-2",
+                "text-sm text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
               )}
               role="menuitem"
             >
@@ -268,10 +265,10 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
               href="/settings"
               onClick={() => setIsOpen(false)}
               className={cn(
-                'flex items-center gap-3 px-4 py-2',
-                'text-sm text-[var(--color-foreground)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150'
+                "flex items-center gap-3 px-4 py-2",
+                "text-sm text-[var(--color-foreground)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
               )}
               role="menuitem"
             >
@@ -287,16 +284,16 @@ export function UserMenu({ className, avatar }: UserMenuProps) {
               onClick={handleLogout}
               disabled={isLoggingOut}
               className={cn(
-                'flex w-full items-center gap-3 px-4 py-2',
-                'text-sm text-[var(--color-error)]',
-                'hover:bg-[var(--color-card-hover)]',
-                'transition-colors duration-150',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
+                "flex w-full items-center gap-3 px-4 py-2",
+                "text-sm text-[var(--color-error)]",
+                "hover:bg-[var(--color-card-hover)]",
+                "transition-colors duration-150",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
               )}
               role="menuitem"
             >
               <LogoutIcon className="h-4 w-4" />
-              {isLoggingOut ? 'Signing out...' : 'Sign out'}
+              {isLoggingOut ? "Signing out..." : "Sign out"}
             </button>
           </div>
         </div>

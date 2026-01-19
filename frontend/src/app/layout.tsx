@@ -1,21 +1,21 @@
-import type { Metadata, Viewport } from 'next';
-import { Suspense } from 'react';
-import './globals.css';
-import { Providers } from './providers';
+import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
+import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: 'Litestar Admin',
-  description: 'Modern admin panel for Litestar applications',
+  title: "Litestar Admin",
+  description: "Modern admin panel for Litestar applications",
   icons: {
-    icon: '/admin/favicon.svg',
+    icon: "/admin/favicon.svg",
   },
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  themeColor: '#0d1117',
-  colorScheme: 'dark',
+  themeColor: "#0d1117",
+  colorScheme: "dark",
 };
 
 interface RootLayoutProps {

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
   type ReactNode,
-} from 'react';
+} from "react";
 
 interface SidebarState {
   /** Whether the sidebar is open (mobile drawer) */
@@ -37,7 +37,7 @@ interface SidebarContextValue extends SidebarState {
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 const MOBILE_BREAKPOINT = 768;
-const STORAGE_KEY = 'litestar-admin-sidebar-collapsed';
+const STORAGE_KEY = "litestar-admin-sidebar-collapsed";
 
 interface LayoutProviderProps {
   readonly children: ReactNode;
@@ -52,7 +52,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored !== null) {
-      setIsCollapsed(stored === 'true');
+      setIsCollapsed(stored === "true");
     }
 
     const checkMobile = () => {
@@ -65,8 +65,8 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Persist collapsed state
@@ -93,7 +93,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
       collapse,
       toggleCollapse,
     }),
-    [isOpen, isCollapsed, isMobile, open, close, toggle, expand, collapse, toggleCollapse]
+    [isOpen, isCollapsed, isMobile, open, close, toggle, expand, collapse, toggleCollapse],
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
@@ -102,7 +102,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
 export function useSidebar(): SidebarContextValue {
   const context = useContext(SidebarContext);
   if (!context) {
-    throw new Error('useSidebar must be used within a LayoutProvider');
+    throw new Error("useSidebar must be used within a LayoutProvider");
   }
   return context;
 }

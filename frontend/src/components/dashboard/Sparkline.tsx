@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useMemo, type SVGProps } from 'react';
-import { cn } from '@/lib/utils';
+import { useMemo, type SVGProps } from "react";
+import { cn } from "@/lib/utils";
 
-export interface SparklineProps extends Omit<SVGProps<SVGSVGElement>, 'data' | 'fill'> {
+export interface SparklineProps extends Omit<SVGProps<SVGSVGElement>, "data" | "fill"> {
   /** Array of numeric values to plot */
   data: readonly number[];
   /** Width of the sparkline */
@@ -21,7 +21,7 @@ export interface SparklineProps extends Omit<SVGProps<SVGSVGElement>, 'data' | '
   /** Whether to show a dot at the last data point */
   showEndDot?: boolean;
   /** Trend direction for color styling */
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
 }
 
 /**
@@ -37,13 +37,13 @@ export function Sparkline({
   showFill = true,
   fillColor,
   showEndDot = true,
-  trend = 'neutral',
+  trend = "neutral",
   className,
   ...props
 }: SparklineProps) {
   const { path, fillPath, lastPoint } = useMemo(() => {
     if (!data.length) {
-      return { path: '', fillPath: '', lastPoint: null };
+      return { path: "", fillPath: "", lastPoint: null };
     }
 
     const min = Math.min(...data);
@@ -61,17 +61,15 @@ export function Sparkline({
     });
 
     const linePath = points
-      .map((point, index) =>
-        index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
-      )
-      .join(' ');
+      .map((point, index) => (index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`))
+      .join(" ");
 
     const lastPt = points[points.length - 1];
     const firstPt = points[0];
     const areaPath =
       points.length > 0 && lastPt && firstPt
         ? `${linePath} L ${lastPt.x} ${height - padding} L ${firstPt.x} ${height - padding} Z`
-        : '';
+        : "";
 
     return {
       path: linePath,
@@ -83,12 +81,12 @@ export function Sparkline({
   const strokeColor = useMemo(() => {
     if (stroke) return stroke;
     switch (trend) {
-      case 'up':
-        return 'var(--color-success)';
-      case 'down':
-        return 'var(--color-error)';
+      case "up":
+        return "var(--color-success)";
+      case "down":
+        return "var(--color-error)";
       default:
-        return 'var(--color-primary)';
+        return "var(--color-primary)";
     }
   }, [stroke, trend]);
 
@@ -99,7 +97,7 @@ export function Sparkline({
       <svg
         width={width}
         height={height}
-        className={cn('text-[var(--color-muted)]', className)}
+        className={cn("text-[var(--color-muted)]", className)}
         aria-label="No data available"
         role="img"
         {...props}
@@ -128,13 +126,7 @@ export function Sparkline({
       aria-label={`Sparkline chart showing ${data.length} data points`}
       {...props}
     >
-      {showFill && (
-        <path
-          d={fillPath}
-          fill={computedFillColor}
-          opacity={0.15}
-        />
-      )}
+      {showFill && <path d={fillPath} fill={computedFillColor} opacity={0.15} />}
       <path
         d={path}
         fill="none"
@@ -144,12 +136,7 @@ export function Sparkline({
         strokeLinejoin="round"
       />
       {showEndDot && lastPoint && (
-        <circle
-          cx={lastPoint.x}
-          cy={lastPoint.y}
-          r={2.5}
-          fill={strokeColor}
-        />
+        <circle cx={lastPoint.x} cy={lastPoint.y} r={2.5} fill={strokeColor} />
       )}
     </svg>
   );
@@ -164,17 +151,10 @@ export interface SparklineSkeletonProps {
 /**
  * Skeleton loader for Sparkline component.
  */
-export function SparklineSkeleton({
-  width = 80,
-  height = 24,
-  className,
-}: SparklineSkeletonProps) {
+export function SparklineSkeleton({ width = 80, height = 24, className }: SparklineSkeletonProps) {
   return (
     <div
-      className={cn(
-        'animate-pulse rounded bg-[var(--color-card-hover)]',
-        className
-      )}
+      className={cn("animate-pulse rounded bg-[var(--color-card-hover)]", className)}
       style={{ width, height }}
     />
   );

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { debounce } from '@/lib/utils';
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { debounce } from "@/lib/utils";
 
 // ============================================================================
 // Types
@@ -12,29 +12,23 @@ import { debounce } from '@/lib/utils';
  * Filter operators for different column types.
  */
 export type FilterOperator =
-  | 'equals'
-  | 'contains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'between'
-  | 'in'
-  | 'isNull'
-  | 'isNotNull';
+  | "equals"
+  | "contains"
+  | "startsWith"
+  | "endsWith"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "between"
+  | "in"
+  | "isNull"
+  | "isNotNull";
 
 /**
  * Column type for filtering.
  */
-export type FilterableColumnType =
-  | 'string'
-  | 'number'
-  | 'date'
-  | 'datetime'
-  | 'enum'
-  | 'boolean';
+export type FilterableColumnType = "string" | "number" | "date" | "datetime" | "enum" | "boolean";
 
 /**
  * Definition of a column that can be filtered.
@@ -124,19 +118,19 @@ export interface UseSearchFilterReturn {
  */
 export function getOperatorsForType(type: FilterableColumnType): FilterOperator[] {
   switch (type) {
-    case 'string':
-      return ['equals', 'contains', 'startsWith', 'endsWith', 'isNull', 'isNotNull'];
-    case 'number':
-      return ['equals', 'gt', 'gte', 'lt', 'lte', 'between', 'isNull', 'isNotNull'];
-    case 'date':
-    case 'datetime':
-      return ['equals', 'gt', 'gte', 'lt', 'lte', 'between', 'isNull', 'isNotNull'];
-    case 'enum':
-      return ['equals', 'in', 'isNull', 'isNotNull'];
-    case 'boolean':
-      return ['equals', 'isNull', 'isNotNull'];
+    case "string":
+      return ["equals", "contains", "startsWith", "endsWith", "isNull", "isNotNull"];
+    case "number":
+      return ["equals", "gt", "gte", "lt", "lte", "between", "isNull", "isNotNull"];
+    case "date":
+    case "datetime":
+      return ["equals", "gt", "gte", "lt", "lte", "between", "isNull", "isNotNull"];
+    case "enum":
+      return ["equals", "in", "isNull", "isNotNull"];
+    case "boolean":
+      return ["equals", "isNull", "isNotNull"];
     default:
-      return ['equals'];
+      return ["equals"];
   }
 }
 
@@ -145,18 +139,18 @@ export function getOperatorsForType(type: FilterableColumnType): FilterOperator[
  */
 export function getOperatorLabel(operator: FilterOperator): string {
   const labels: Record<FilterOperator, string> = {
-    equals: 'Equals',
-    contains: 'Contains',
-    startsWith: 'Starts with',
-    endsWith: 'Ends with',
-    gt: 'Greater than',
-    gte: 'Greater than or equal',
-    lt: 'Less than',
-    lte: 'Less than or equal',
-    between: 'Between',
-    in: 'Is one of',
-    isNull: 'Is empty',
-    isNotNull: 'Is not empty',
+    equals: "Equals",
+    contains: "Contains",
+    startsWith: "Starts with",
+    endsWith: "Ends with",
+    gt: "Greater than",
+    gte: "Greater than or equal",
+    lt: "Less than",
+    lte: "Less than or equal",
+    between: "Between",
+    in: "Is one of",
+    isNull: "Is empty",
+    isNotNull: "Is not empty",
   };
   return labels[operator];
 }
@@ -166,15 +160,15 @@ export function getOperatorLabel(operator: FilterOperator): string {
  */
 export function getDefaultOperator(type: FilterableColumnType): FilterOperator {
   switch (type) {
-    case 'string':
-      return 'contains';
-    case 'enum':
-      return 'in';
-    case 'date':
-    case 'datetime':
-      return 'equals';
+    case "string":
+      return "contains";
+    case "enum":
+      return "in";
+    case "date":
+    case "datetime":
+      return "equals";
     default:
-      return 'equals';
+      return "equals";
   }
 }
 
@@ -182,7 +176,7 @@ export function getDefaultOperator(type: FilterableColumnType): FilterOperator {
  * Check if an operator requires a value input.
  */
 export function operatorRequiresValue(operator: FilterOperator): boolean {
-  return operator !== 'isNull' && operator !== 'isNotNull';
+  return operator !== "isNull" && operator !== "isNotNull";
 }
 
 // ============================================================================
@@ -197,20 +191,20 @@ export function serializeFiltersToUrl(state: FilterState): URLSearchParams {
   const params = new URLSearchParams();
 
   if (state.search) {
-    params.set('search', state.search);
+    params.set("search", state.search);
   }
 
   for (const filter of state.filters) {
     const key = `filter[${filter.column}][${filter.operator}]`;
 
     if (Array.isArray(filter.value)) {
-      params.set(key, filter.value.join(','));
-    } else if (typeof filter.value === 'object' && filter.value !== null) {
+      params.set(key, filter.value.join(","));
+    } else if (typeof filter.value === "object" && filter.value !== null) {
       const rangeValue = filter.value as DateRangeValue;
       const parts: string[] = [];
       if (rangeValue.from) parts.push(rangeValue.from);
       if (rangeValue.to) parts.push(rangeValue.to);
-      params.set(key, parts.join(','));
+      params.set(key, parts.join(","));
     } else {
       params.set(key, String(filter.value));
     }
@@ -224,7 +218,7 @@ export function serializeFiltersToUrl(state: FilterState): URLSearchParams {
  */
 export function parseFiltersFromUrl(searchParams: URLSearchParams): FilterState {
   const state: FilterState = {
-    search: searchParams.get('search') || '',
+    search: searchParams.get("search") || "",
     filters: [],
   };
 
@@ -245,10 +239,10 @@ export function parseFiltersFromUrl(searchParams: URLSearchParams): FilterState 
       // Determine value type based on operator
       let parsedValue: string | string[] | DateRangeValue = value;
 
-      if (validOperator === 'in') {
-        parsedValue = value.split(',').filter(Boolean);
-      } else if (validOperator === 'between') {
-        const parts = value.split(',');
+      if (validOperator === "in") {
+        parsedValue = value.split(",").filter(Boolean);
+      } else if (validOperator === "between") {
+        const parts = value.split(",");
         const fromValue = parts[0];
         const toValue = parts[1];
         const rangeValue: DateRangeValue = {
@@ -275,7 +269,7 @@ export function parseFiltersFromUrl(searchParams: URLSearchParams): FilterState 
 export function validateFilterValue(
   value: string | string[] | DateRangeValue,
   type: FilterableColumnType,
-  operator: FilterOperator
+  operator: FilterOperator,
 ): boolean {
   // No validation needed for null operators
   if (!operatorRequiresValue(operator)) {
@@ -287,26 +281,26 @@ export function validateFilterValue(
     return value.length > 0;
   }
 
-  if (typeof value === 'object' && value !== null) {
+  if (typeof value === "object" && value !== null) {
     const rangeValue = value as DateRangeValue;
     return Boolean(rangeValue.from || rangeValue.to);
   }
 
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     if (!value.trim()) return false;
 
     // Type-specific validation
-    if (type === 'number') {
+    if (type === "number") {
       return !isNaN(Number(value));
     }
 
-    if (type === 'date' || type === 'datetime') {
+    if (type === "date" || type === "datetime") {
       const date = new Date(value);
       return !isNaN(date.getTime());
     }
 
-    if (type === 'boolean') {
-      return value === 'true' || value === 'false';
+    if (type === "boolean") {
+      return value === "true" || value === "false";
     }
   }
 
@@ -318,7 +312,7 @@ export function validateFilterValue(
 // ============================================================================
 
 const DEFAULT_STATE: FilterState = {
-  search: '',
+  search: "",
   filters: [],
 };
 
@@ -341,15 +335,8 @@ const DEFAULT_STATE: FilterState = {
  * });
  * ```
  */
-export function useSearchFilter(
-  options: UseSearchFilterOptions = {}
-): UseSearchFilterReturn {
-  const {
-    debounceMs = 300,
-    syncToUrl = true,
-    initialState,
-    onFilterChange,
-  } = options;
+export function useSearchFilter(options: UseSearchFilterOptions = {}): UseSearchFilterReturn {
+  const { debounceMs = 300, syncToUrl = true, initialState, onFilterChange } = options;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -398,7 +385,7 @@ export function useSearchFilter(
           search: value,
         }));
       }, debounceMs),
-    [debounceMs]
+    [debounceMs],
   );
 
   // Sync filter state to URL
@@ -406,10 +393,10 @@ export function useSearchFilter(
     if (!syncToUrl || !initializedRef.current) return;
 
     const newParams = serializeFiltersToUrl(filterState);
-    const newUrl = `${pathname}${newParams.toString() ? `?${newParams.toString()}` : ''}`;
+    const newUrl = `${pathname}${newParams.toString() ? `?${newParams.toString()}` : ""}`;
 
     // Only update if URL actually changed
-    const currentUrl = `${pathname}${searchParams?.toString() ? `?${searchParams.toString()}` : ''}`;
+    const currentUrl = `${pathname}${searchParams?.toString() ? `?${searchParams.toString()}` : ""}`;
     if (newUrl !== currentUrl) {
       router.replace(newUrl, { scroll: false });
     }
@@ -428,7 +415,7 @@ export function useSearchFilter(
       setSearchValue(value);
       debouncedSearchUpdate(value);
     },
-    [debouncedSearchUpdate]
+    [debouncedSearchUpdate],
   );
 
   // Add a new filter
@@ -452,22 +439,17 @@ export function useSearchFilter(
   }, []);
 
   // Update an existing filter
-  const updateFilter = useCallback(
-    (column: string, updates: Partial<ColumnFilter>) => {
-      setFilterState((prev) => ({
-        ...prev,
-        filters: prev.filters.map((f) =>
-          f.column === column ? { ...f, ...updates } : f
-        ),
-      }));
-    },
-    []
-  );
+  const updateFilter = useCallback((column: string, updates: Partial<ColumnFilter>) => {
+    setFilterState((prev) => ({
+      ...prev,
+      filters: prev.filters.map((f) => (f.column === column ? { ...f, ...updates } : f)),
+    }));
+  }, []);
 
   // Clear all filters and search
   const clearAll = useCallback(() => {
     setFilterState(DEFAULT_STATE);
-    setSearchValue('');
+    setSearchValue("");
   }, []);
 
   // Clear only column filters
@@ -481,18 +463,17 @@ export function useSearchFilter(
   // Get filter for a specific column
   const getFilter = useCallback(
     (column: string) => filterState.filters.find((f) => f.column === column),
-    [filterState.filters]
+    [filterState.filters],
   );
 
   // Check if filter exists for column
   const hasFilter = useCallback(
     (column: string) => filterState.filters.some((f) => f.column === column),
-    [filterState.filters]
+    [filterState.filters],
   );
 
   // Computed values
-  const hasActiveFilters =
-    filterState.search.length > 0 || filterState.filters.length > 0;
+  const hasActiveFilters = filterState.search.length > 0 || filterState.filters.length > 0;
   const activeFilterCount = filterState.filters.length;
 
   return {

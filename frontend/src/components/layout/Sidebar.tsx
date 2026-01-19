@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useCallback, useState, useId, type ReactNode, type KeyboardEvent } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { useSidebar } from '@/contexts/LayoutContext';
-import type { NavCategory, NavItem } from '@/types';
+import { useCallback, useState, useId, type ReactNode, type KeyboardEvent } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "@/contexts/LayoutContext";
+import type { NavCategory, NavItem } from "@/types";
 
 // Icons as inline SVGs for zero dependencies
 const ChevronDownIcon = ({ className }: { className?: string }) => (
@@ -149,12 +149,15 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
     setIsExpanded((prev) => !prev);
   }, []);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleExpanded();
-    }
-  }, [toggleExpanded]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleExpanded();
+      }
+    },
+    [toggleExpanded],
+  );
 
   if (isCollapsed) {
     // In collapsed mode, show only icons in a vertical list
@@ -174,13 +177,13 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
         onClick={toggleExpanded}
         onKeyDown={handleKeyDown}
         className={cn(
-          'flex w-full items-center justify-between px-3 py-2',
-          'text-xs font-semibold uppercase tracking-wider',
-          'text-[var(--color-muted)] hover:text-[var(--color-sidebar-foreground)]',
-          'transition-colors duration-150',
-          'focus-visible:outline-none focus-visible:ring-2',
-          'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
-          'rounded-[var(--radius-md)]'
+          "flex w-full items-center justify-between px-3 py-2",
+          "text-xs font-semibold uppercase tracking-wider",
+          "text-[var(--color-muted)] hover:text-[var(--color-sidebar-foreground)]",
+          "transition-colors duration-150",
+          "focus-visible:outline-none focus-visible:ring-2",
+          "focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset",
+          "rounded-[var(--radius-md)]",
         )}
         aria-expanded={isExpanded}
         aria-controls={regionId}
@@ -188,8 +191,8 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
         <span>{category.label}</span>
         <ChevronDownIcon
           className={cn(
-            'h-4 w-4 transition-transform duration-200',
-            isExpanded ? 'rotate-0' : '-rotate-90'
+            "h-4 w-4 transition-transform duration-200",
+            isExpanded ? "rotate-0" : "-rotate-90",
           )}
         />
       </button>
@@ -198,8 +201,8 @@ function CategorySection({ category, isCollapsed, pathname }: CategorySectionPro
         role="region"
         aria-label={`${category.label} navigation items`}
         className={cn(
-          'overflow-hidden transition-all duration-200',
-          isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+          "overflow-hidden transition-all duration-200",
+          isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0",
         )}
         aria-hidden={!isExpanded}
       >
@@ -221,40 +224,49 @@ interface NavItemLinkProps {
   pathname: string;
 }
 
+// External link icon for links that open in new tab
+const ExternalLinkIndicator = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+  </svg>
+);
+
 function NavItemLink({ item, isCollapsed, pathname }: NavItemLinkProps) {
-  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const isExternal = item.target === "_blank" || item.href.startsWith("http");
+  const isActive = !isExternal && (pathname === item.href || pathname.startsWith(`${item.href}/`));
   const Icon = item.icon ?? DefaultModelIcon;
 
-  return (
-    <Link
-      href={item.href}
-      className={cn(
-        'group flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2',
-        'text-sm font-medium transition-all duration-150',
-        'focus-visible:outline-none focus-visible:ring-2',
-        'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
-        isActive
-          ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
-          : 'text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card-hover)] hover:text-[var(--color-foreground)]',
-        isCollapsed && 'justify-center px-2'
-      )}
-      title={isCollapsed ? item.label : undefined}
-      aria-current={isActive ? 'page' : undefined}
-    >
+  const linkClasses = cn(
+    "group flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2",
+    "text-sm font-medium transition-all duration-150",
+    "focus-visible:outline-none focus-visible:ring-2",
+    "focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset",
+    isActive
+      ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+      : "text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card-hover)] hover:text-[var(--color-foreground)]",
+    isCollapsed && "justify-center px-2",
+  );
+
+  const content = (
+    <>
       <Icon
         className={cn(
-          'h-5 w-5 shrink-0 transition-colors',
-          isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-muted)]'
+          "h-5 w-5 shrink-0 transition-colors",
+          isActive ? "text-[var(--color-primary)]" : "text-[var(--color-muted)]",
         )}
       />
       {!isCollapsed && (
         <>
           <span className="truncate">{item.label}</span>
-          {item.badge !== undefined && (
+          {isExternal && (
+            <ExternalLinkIndicator className="h-3 w-3 ml-auto text-[var(--color-muted)] shrink-0" />
+          )}
+          {!isExternal && item.badge !== undefined && (
             <span
               className={cn(
-                'ml-auto rounded-full px-2 py-0.5 text-xs font-medium',
-                'bg-[var(--color-primary)]/20 text-[var(--color-primary)]'
+                "ml-auto rounded-full px-2 py-0.5 text-xs font-medium",
+                "bg-[var(--color-primary)]/20 text-[var(--color-primary)]",
               )}
               aria-label={`${item.badge} items`}
             >
@@ -263,13 +275,39 @@ function NavItemLink({ item, isCollapsed, pathname }: NavItemLinkProps) {
           )}
         </>
       )}
+    </>
+  );
+
+  // Use anchor tag for external links, Link for internal
+  if (isExternal) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={linkClasses}
+        title={isCollapsed ? `${item.label} (opens in new tab)` : undefined}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      href={item.href}
+      className={linkClasses}
+      title={isCollapsed ? item.label : undefined}
+      aria-current={isActive ? "page" : undefined}
+    >
+      {content}
     </Link>
   );
 }
 
 export function Sidebar({
   logo,
-  title = 'Litestar Admin',
+  title = "Litestar Admin",
   categories = [],
   userAvatar,
   userName,
@@ -285,15 +323,15 @@ export function Sidebar({
       {/* Header with logo and title */}
       <div
         className={cn(
-          'flex h-16 items-center border-b border-[var(--color-sidebar-border)]',
-          isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'
+          "flex h-16 items-center border-b border-[var(--color-sidebar-border)]",
+          isCollapsed ? "justify-center px-2" : "gap-3 px-4",
         )}
       >
         {logo ?? (
           <div
             className={cn(
-              'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)]',
-              'bg-[var(--color-primary)] text-white font-bold text-lg'
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)]",
+              "bg-[var(--color-primary)] text-white font-bold text-lg",
             )}
           >
             L
@@ -317,7 +355,7 @@ export function Sidebar({
         {/* Dashboard link */}
         <div className="mb-4">
           <NavItemLink
-            item={{ id: 'dashboard', label: 'Dashboard', href: '/', icon: HomeIcon }}
+            item={{ id: "dashboard", label: "Dashboard", href: "/", icon: HomeIcon }}
             isCollapsed={isCollapsed}
             pathname={pathname}
           />
@@ -343,11 +381,11 @@ export function Sidebar({
             type="button"
             onClick={toggleCollapse}
             className={cn(
-              'flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] p-2',
-              'text-[var(--color-muted)] hover:bg-[var(--color-card-hover)] hover:text-[var(--color-sidebar-foreground)]',
-              'transition-colors duration-150'
+              "flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] p-2",
+              "text-[var(--color-muted)] hover:bg-[var(--color-card-hover)] hover:text-[var(--color-sidebar-foreground)]",
+              "transition-colors duration-150",
             )}
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
               <ChevronRightIcon className="h-5 w-5" />
@@ -367,18 +405,14 @@ export function Sidebar({
           type="button"
           onClick={onUserMenuClick}
           className={cn(
-            'flex w-full items-center gap-3 rounded-[var(--radius-md)] p-2',
-            'hover:bg-[var(--color-card-hover)] transition-colors duration-150',
-            isCollapsed && 'justify-center'
+            "flex w-full items-center gap-3 rounded-[var(--radius-md)] p-2",
+            "hover:bg-[var(--color-card-hover)] transition-colors duration-150",
+            isCollapsed && "justify-center",
           )}
           aria-label="User menu"
         >
           {userAvatar ? (
-            <img
-              src={userAvatar}
-              alt=""
-              className="h-8 w-8 shrink-0 rounded-full object-cover"
-            />
+            <img src={userAvatar} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
           ) : (
             <UserCircleIcon className="h-8 w-8 shrink-0 text-[var(--color-muted)]" />
           )}
@@ -406,8 +440,8 @@ export function Sidebar({
         {/* Overlay */}
         <div
           className={cn(
-            'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
-            isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+            "fixed inset-0 z-40 bg-black/50 transition-opacity duration-300",
+            isOpen ? "opacity-100" : "pointer-events-none opacity-0",
           )}
           onClick={close}
           aria-hidden="true"
@@ -415,11 +449,11 @@ export function Sidebar({
         {/* Drawer */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-50 flex w-64 flex-col',
-            'bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)]',
-            'transform transition-transform duration-300 ease-in-out',
-            isOpen ? 'translate-x-0' : '-translate-x-full',
-            className
+            "fixed inset-y-0 left-0 z-50 flex w-64 flex-col",
+            "bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)]",
+            "transform transition-transform duration-300 ease-in-out",
+            isOpen ? "translate-x-0" : "-translate-x-full",
+            className,
           )}
           aria-label="Sidebar navigation"
         >
@@ -433,12 +467,12 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        'fixed inset-y-0 left-0 z-30 flex flex-col',
-        'bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)]',
-        'border-r border-[var(--color-sidebar-border)]',
-        'transition-all duration-300 ease-in-out',
-        isCollapsed ? 'w-16' : 'w-64',
-        className
+        "fixed inset-y-0 left-0 z-30 flex flex-col",
+        "bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)]",
+        "border-r border-[var(--color-sidebar-border)]",
+        "transition-all duration-300 ease-in-out",
+        isCollapsed ? "w-16" : "w-64",
+        className,
       )}
       aria-label="Sidebar navigation"
     >

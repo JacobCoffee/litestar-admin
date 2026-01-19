@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   forwardRef,
@@ -6,10 +6,10 @@ import {
   type TdHTMLAttributes,
   type ThHTMLAttributes,
   type ReactNode,
-} from 'react';
-import { cn } from '@/lib/utils';
+} from "react";
+import { cn } from "@/lib/utils";
 
-export type SortDirection = 'asc' | 'desc' | null;
+export type SortDirection = "asc" | "desc" | null;
 
 export interface TableProps extends HTMLAttributes<HTMLTableElement> {
   striped?: boolean;
@@ -23,10 +23,10 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(
         <table
           ref={ref}
           className={cn(
-            'w-full border-collapse',
-            'text-sm text-[var(--color-foreground)]',
-            striped && '[&_tbody_tr:nth-child(even)]:bg-[var(--color-card-hover)]/30',
-            className
+            "w-full border-collapse",
+            "text-sm text-[var(--color-foreground)]",
+            striped && "[&_tbody_tr:nth-child(even)]:bg-[var(--color-card-hover)]/30",
+            className,
           )}
           {...props}
         >
@@ -34,10 +34,10 @@ export const Table = forwardRef<HTMLTableElement, TableProps>(
         </table>
       </div>
     );
-  }
+  },
 );
 
-Table.displayName = 'Table';
+Table.displayName = "Table";
 
 export interface TableHeaderProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: ReactNode;
@@ -48,20 +48,16 @@ export const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>
     return (
       <thead
         ref={ref}
-        className={cn(
-          'bg-[var(--color-card)]',
-          'border-b border-[var(--color-border)]',
-          className
-        )}
+        className={cn("bg-[var(--color-card)]", "border-b border-[var(--color-border)]", className)}
         {...props}
       >
         {children}
       </thead>
     );
-  }
+  },
 );
 
-TableHeader.displayName = 'TableHeader';
+TableHeader.displayName = "TableHeader";
 
 export interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> {
   children?: ReactNode;
@@ -72,16 +68,16 @@ export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
     return (
       <tbody
         ref={ref}
-        className={cn('divide-y divide-[var(--color-border)]', className)}
+        className={cn("divide-y divide-[var(--color-border)]", className)}
         {...props}
       >
         {children}
       </tbody>
     );
-  }
+  },
 );
 
-TableBody.displayName = 'TableBody';
+TableBody.displayName = "TableBody";
 
 export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
   children?: ReactNode;
@@ -93,19 +89,19 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={cn(
-          'transition-colors duration-150',
-          'hover:bg-[var(--color-card-hover)]',
-          className
+          "transition-colors duration-150",
+          "hover:bg-[var(--color-card-hover)]",
+          className,
         )}
         {...props}
       >
         {children}
       </tr>
     );
-  }
+  },
 );
 
-TableRow.displayName = 'TableRow';
+TableRow.displayName = "TableRow";
 
 export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {
   sortable?: boolean;
@@ -139,22 +135,15 @@ const SortIcon = ({ direction }: { direction: SortDirection }) => {
       strokeWidth="2"
       aria-hidden="true"
     >
-      {direction === 'asc' ? (
-        <path d="M7 14l5-5 5 5" />
-      ) : (
-        <path d="M7 10l5 5 5-5" />
-      )}
+      {direction === "asc" ? <path d="M7 14l5-5 5 5" /> : <path d="M7 10l5 5 5-5" />}
     </svg>
   );
 };
 
 export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
-  (
-    { sortable = false, sortDirection = null, onSort, className, children, ...props },
-    ref
-  ) => {
+  ({ sortable = false, sortDirection = null, onSort, className, children, ...props }, ref) => {
     const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (sortable && onSort && (e.key === 'Enter' || e.key === ' ')) {
+      if (sortable && onSort && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         onSort();
       }
@@ -163,10 +152,10 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
     // Build aria-label for sortable columns
     const getSortAriaLabel = () => {
       if (!sortable) return undefined;
-      const columnName = typeof children === 'string' ? children : 'column';
-      if (sortDirection === 'asc') {
+      const columnName = typeof children === "string" ? children : "column";
+      if (sortDirection === "asc") {
         return `${columnName}, sorted ascending, click to sort descending`;
-      } else if (sortDirection === 'desc') {
+      } else if (sortDirection === "desc") {
         return `${columnName}, sorted descending, click to sort ascending`;
       }
       return `${columnName}, click to sort ascending`;
@@ -176,26 +165,26 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
       <th
         ref={ref}
         className={cn(
-          'px-4 py-3 text-left font-semibold',
-          'text-[var(--color-muted)]',
+          "px-4 py-3 text-left font-semibold",
+          "text-[var(--color-muted)]",
           sortable && [
-            'cursor-pointer select-none',
-            'hover:text-[var(--color-foreground)]',
-            'transition-colors duration-150',
-            'focus-visible:outline-none focus-visible:ring-2',
-            'focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset',
+            "cursor-pointer select-none",
+            "hover:text-[var(--color-foreground)]",
+            "transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2",
+            "focus-visible:ring-[var(--color-accent)] focus-visible:ring-inset",
           ],
-          className
+          className,
         )}
         onClick={sortable ? onSort : undefined}
         onKeyDown={handleKeyDown}
         tabIndex={sortable ? 0 : undefined}
-        role={sortable ? 'columnheader button' : 'columnheader'}
+        role={sortable ? "columnheader button" : "columnheader"}
         aria-sort={
-          sortDirection === 'asc'
-            ? 'ascending'
-            : sortDirection === 'desc'
-              ? 'descending'
+          sortDirection === "asc"
+            ? "ascending"
+            : sortDirection === "desc"
+              ? "descending"
               : undefined
         }
         aria-label={getSortAriaLabel()}
@@ -208,10 +197,10 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
         </div>
       </th>
     );
-  }
+  },
 );
 
-TableHead.displayName = 'TableHead';
+TableHead.displayName = "TableHead";
 
 export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
   children?: ReactNode;
@@ -220,15 +209,11 @@ export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
 export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className, children, ...props }, ref) => {
     return (
-      <td
-        ref={ref}
-        className={cn('px-4 py-3', className)}
-        {...props}
-      >
+      <td ref={ref} className={cn("px-4 py-3", className)} {...props}>
         {children}
       </td>
     );
-  }
+  },
 );
 
-TableCell.displayName = 'TableCell';
+TableCell.displayName = "TableCell";

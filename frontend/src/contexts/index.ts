@@ -7,7 +7,7 @@
  * ```
  */
 
-export { AuthProvider, useAuthContext } from './AuthContext';
-export type { AuthContextValue, AuthProviderProps } from './AuthContext';
+export { AuthProvider, useAuthContext } from "./AuthContext";
+export type { AuthContextValue, AuthProviderProps } from "./AuthContext";
 
-export { LayoutProvider, useSidebar } from './LayoutContext';
+export { LayoutProvider, useSidebar } from "./LayoutContext";

@@ -1,31 +1,27 @@
-'use client';
+"use client";
 
-import { forwardRef, type HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
+import { forwardRef, type HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
-export type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl';
+export type SpinnerSize = "sm" | "md" | "lg" | "xl";
 
 export interface SpinnerProps extends HTMLAttributes<SVGSVGElement> {
   size?: SpinnerSize;
 }
 
 const spinnerSizes: Record<SpinnerSize, string> = {
-  sm: 'h-4 w-4',
-  md: 'h-6 w-6',
-  lg: 'h-8 w-8',
-  xl: 'h-12 w-12',
+  sm: "h-4 w-4",
+  md: "h-6 w-6",
+  lg: "h-8 w-8",
+  xl: "h-12 w-12",
 };
 
 export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
-  ({ size = 'md', className, ...props }, ref) => {
+  ({ size = "md", className, ...props }, ref) => {
     return (
       <svg
         ref={ref}
-        className={cn(
-          'animate-spin text-[var(--color-primary)]',
-          spinnerSizes[size],
-          className
-        )}
+        className={cn("animate-spin text-[var(--color-primary)]", spinnerSizes[size], className)}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -48,12 +44,12 @@ export const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
         />
       </svg>
     );
-  }
+  },
 );
 
-Spinner.displayName = 'Spinner';
+Spinner.displayName = "Spinner";
 
-export type SkeletonVariant = 'text' | 'rectangular' | 'circular';
+export type SkeletonVariant = "text" | "rectangular" | "circular";
 
 export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
   variant?: SkeletonVariant;
@@ -63,37 +59,31 @@ export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
-  (
-    { variant = 'text', width, height, lines = 1, className, style, ...props },
-    ref
-  ) => {
-    const baseStyles = cn(
-      'bg-[var(--color-card-hover)]',
-      'animate-pulse'
-    );
+  ({ variant = "text", width, height, lines = 1, className, style, ...props }, ref) => {
+    const baseStyles = cn("bg-[var(--color-card-hover)]", "animate-pulse");
 
     const variantStyles: Record<SkeletonVariant, string> = {
-      text: 'h-4 rounded-[var(--radius-sm)]',
-      rectangular: 'rounded-[var(--radius-md)]',
-      circular: 'rounded-full',
+      text: "h-4 rounded-[var(--radius-sm)]",
+      rectangular: "rounded-[var(--radius-md)]",
+      circular: "rounded-full",
     };
 
     const computedStyle = {
-      width: typeof width === 'number' ? `${width}px` : width,
-      height: typeof height === 'number' ? `${height}px` : height,
+      width: typeof width === "number" ? `${width}px` : width,
+      height: typeof height === "number" ? `${height}px` : height,
       ...style,
     };
 
-    if (variant === 'text' && lines > 1) {
+    if (variant === "text" && lines > 1) {
       return (
-        <div ref={ref} className={cn('space-y-2', className)} {...props}>
+        <div ref={ref} className={cn("space-y-2", className)} {...props}>
           {Array.from({ length: lines }).map((_, index) => (
             <div
               key={index}
               className={cn(baseStyles, variantStyles.text)}
               style={{
                 ...computedStyle,
-                width: index === lines - 1 ? '75%' : computedStyle.width,
+                width: index === lines - 1 ? "75%" : computedStyle.width,
               }}
             />
           ))}
@@ -109,10 +99,10 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
-Skeleton.displayName = 'Skeleton';
+Skeleton.displayName = "Skeleton";
 
 export interface LoadingOverlayProps extends HTMLAttributes<HTMLDivElement> {
   isLoading?: boolean;
@@ -122,35 +112,33 @@ export interface LoadingOverlayProps extends HTMLAttributes<HTMLDivElement> {
 
 export const LoadingOverlay = forwardRef<HTMLDivElement, LoadingOverlayProps>(
   (
-    { isLoading = true, label = 'Loading...', spinnerSize = 'lg', className, children, ...props },
-    ref
+    { isLoading = true, label = "Loading...", spinnerSize = "lg", className, children, ...props },
+    ref,
   ) => {
     if (!isLoading) {
       return <>{children}</>;
     }
 
     return (
-      <div ref={ref} className={cn('relative', className)} {...props}>
+      <div ref={ref} className={cn("relative", className)} {...props}>
         {children}
         <div
           className={cn(
-            'absolute inset-0 z-10',
-            'flex flex-col items-center justify-center gap-3',
-            'bg-[var(--color-background)]/80 backdrop-blur-sm',
-            'rounded-[var(--radius-md)]'
+            "absolute inset-0 z-10",
+            "flex flex-col items-center justify-center gap-3",
+            "bg-[var(--color-background)]/80 backdrop-blur-sm",
+            "rounded-[var(--radius-md)]",
           )}
         >
           <Spinner size={spinnerSize} />
-          {label && (
-            <p className="text-sm text-[var(--color-muted)]">{label}</p>
-          )}
+          {label && <p className="text-sm text-[var(--color-muted)]">{label}</p>}
         </div>
       </div>
     );
-  }
+  },
 );
 
-LoadingOverlay.displayName = 'LoadingOverlay';
+LoadingOverlay.displayName = "LoadingOverlay";
 
 export interface SkeletonTableProps {
   rows?: number;
@@ -158,11 +146,7 @@ export interface SkeletonTableProps {
   showHeader?: boolean;
 }
 
-export function SkeletonTable({
-  rows = 5,
-  columns = 4,
-  showHeader = true,
-}: SkeletonTableProps) {
+export function SkeletonTable({ rows = 5, columns = 4, showHeader = true }: SkeletonTableProps) {
   return (
     <div className="w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)]">
       {showHeader && (

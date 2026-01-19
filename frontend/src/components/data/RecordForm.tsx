@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useState,
@@ -7,8 +7,8 @@ import {
   type FormEvent,
   type ChangeEvent,
   type ReactNode,
-} from 'react';
-import { cn } from '@/lib/utils';
+} from "react";
+import { cn } from "@/lib/utils";
 import {
   Input,
   Select,
@@ -16,15 +16,15 @@ import {
   TextArea,
   FormField,
   type SelectOption,
-} from '@/components/ui/Form';
-import { Button } from '@/components/ui/Button';
-import type { ModelSchema, SchemaProperty } from '@/types';
+} from "@/components/ui/Form";
+import { Button } from "@/components/ui/Button";
+import type { ModelSchema, SchemaProperty } from "@/types";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-export type FormMode = 'create' | 'edit' | 'view';
+export type FormMode = "create" | "edit" | "view";
 
 export interface RecordFormProps<T = Record<string, unknown>> {
   /** JSON Schema describing the model structure */
@@ -78,32 +78,32 @@ interface ValidationResult {
 function getInputType(property: SchemaProperty): string {
   const { type, format } = property;
 
-  if (type === 'boolean') return 'checkbox';
-  if (type === 'integer' || type === 'number') return 'number';
+  if (type === "boolean") return "checkbox";
+  if (type === "integer" || type === "number") return "number";
 
-  if (type === 'string') {
+  if (type === "string") {
     switch (format) {
-      case 'email':
-        return 'email';
-      case 'uri':
-      case 'url':
-        return 'url';
-      case 'date':
-        return 'date';
-      case 'date-time':
-        return 'datetime-local';
-      case 'time':
-        return 'time';
-      case 'password':
-        return 'password';
-      case 'textarea':
-        return 'textarea';
+      case "email":
+        return "email";
+      case "uri":
+      case "url":
+        return "url";
+      case "date":
+        return "date";
+      case "date-time":
+        return "datetime-local";
+      case "time":
+        return "time";
+      case "password":
+        return "password";
+      case "textarea":
+        return "textarea";
       default:
-        return 'text';
+        return "text";
     }
   }
 
-  return 'text';
+  return "text";
 }
 
 /**
@@ -121,8 +121,8 @@ function enumToOptions(enumValues: readonly unknown[]): SelectOption[] {
  */
 function formatLabel(str: string): string {
   return str
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
@@ -132,16 +132,16 @@ function formatLabel(str: string): string {
 function coerceValue(value: unknown, property: SchemaProperty): unknown {
   const { type } = property;
 
-  if (value === '' || value === undefined || value === null) {
+  if (value === "" || value === undefined || value === null) {
     return property.default ?? null;
   }
 
   switch (type) {
-    case 'integer':
+    case "integer":
       return Number.isNaN(Number(value)) ? null : Math.floor(Number(value));
-    case 'number':
+    case "number":
       return Number.isNaN(Number(value)) ? null : Number(value);
-    case 'boolean':
+    case "boolean":
       return Boolean(value);
     default:
       return value;
@@ -153,7 +153,7 @@ function coerceValue(value: unknown, property: SchemaProperty): unknown {
  */
 function getInitialFormValues(
   schema: ModelSchema,
-  initialValues?: Record<string, unknown>
+  initialValues?: Record<string, unknown>,
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
 
@@ -162,10 +162,10 @@ function getInitialFormValues(
       values[name] = initialValues[name];
     } else if (property.default !== undefined) {
       values[name] = property.default;
-    } else if (property.type === 'boolean') {
+    } else if (property.type === "boolean") {
       values[name] = false;
     } else {
-      values[name] = '';
+      values[name] = "";
     }
   }
 
@@ -175,10 +175,7 @@ function getInitialFormValues(
 /**
  * Validates form values against the schema.
  */
-function validateForm(
-  values: Record<string, unknown>,
-  schema: ModelSchema
-): ValidationResult {
+function validateForm(values: Record<string, unknown>, schema: ModelSchema): ValidationResult {
   const errors: Record<string, string> = {};
 
   for (const [name, property] of Object.entries(schema.properties)) {
@@ -189,16 +186,16 @@ function validateForm(
     if (property.readOnly) continue;
 
     // Required validation
-    if (isRequired && (value === null || value === undefined || value === '')) {
+    if (isRequired && (value === null || value === undefined || value === "")) {
       errors[name] = `${property.title || formatLabel(name)} is required`;
       continue;
     }
 
     // Skip further validation if value is empty and not required
-    if (value === null || value === undefined || value === '') continue;
+    if (value === null || value === undefined || value === "") continue;
 
     // String validations
-    if (property.type === 'string' && typeof value === 'string') {
+    if (property.type === "string" && typeof value === "string") {
       if (property.minLength !== undefined && value.length < property.minLength) {
         errors[name] = `Minimum length is ${property.minLength} characters`;
       }
@@ -212,24 +209,24 @@ function validateForm(
         }
       }
       // Email format validation
-      if (property.format === 'email') {
+      if (property.format === "email") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
-          errors[name] = 'Invalid email address';
+          errors[name] = "Invalid email address";
         }
       }
       // URL format validation
-      if (property.format === 'uri' || property.format === 'url') {
+      if (property.format === "uri" || property.format === "url") {
         try {
           new URL(value);
         } catch {
-          errors[name] = 'Invalid URL';
+          errors[name] = "Invalid URL";
         }
       }
     }
 
     // Number validations
-    if ((property.type === 'integer' || property.type === 'number') && typeof value === 'number') {
+    if ((property.type === "integer" || property.type === "number") && typeof value === "number") {
       if (property.minimum !== undefined && value < property.minimum) {
         errors[name] = `Minimum value is ${property.minimum}`;
       }
@@ -249,27 +246,27 @@ function validateForm(
  * Formats a value for display in view mode.
  */
 function formatDisplayValue(value: unknown, property: SchemaProperty): string {
-  if (value === null || value === undefined || value === '') {
-    return '-';
+  if (value === null || value === undefined || value === "") {
+    return "-";
   }
 
-  if (property.type === 'boolean') {
-    return value ? 'Yes' : 'No';
+  if (property.type === "boolean") {
+    return value ? "Yes" : "No";
   }
 
-  if (property.format === 'date' && typeof value === 'string') {
+  if (property.format === "date" && typeof value === "string") {
     return new Date(value).toLocaleDateString();
   }
 
-  if (property.format === 'date-time' && typeof value === 'string') {
+  if (property.format === "date-time" && typeof value === "string") {
     return new Date(value).toLocaleString();
   }
 
   if (Array.isArray(value)) {
-    return value.join(', ');
+    return value.join(", ");
   }
 
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     return JSON.stringify(value);
   }
 
@@ -292,7 +289,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
   const inputType = getInputType(property);
   const label = property.title || formatLabel(name);
   const hint = property.description;
-  const isViewMode = mode === 'view';
+  const isViewMode = mode === "view";
   const fieldId = `field-${name}`;
 
   const handleChange = useCallback(
@@ -300,17 +297,17 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
       const target = e.target;
       let newValue: unknown;
 
-      if (target instanceof HTMLInputElement && target.type === 'checkbox') {
+      if (target instanceof HTMLInputElement && target.type === "checkbox") {
         newValue = target.checked;
-      } else if (target instanceof HTMLInputElement && (target.type === 'number')) {
-        newValue = target.value === '' ? '' : Number(target.value);
+      } else if (target instanceof HTMLInputElement && target.type === "number") {
+        newValue = target.value === "" ? "" : Number(target.value);
       } else {
         newValue = target.value;
       }
 
       onChange(name, newValue);
     },
-    [name, onChange]
+    [name, onChange],
   );
 
   // Build aria-describedby attribute
@@ -326,9 +323,9 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
       <FormField label={label} htmlFor={fieldId} className="col-span-1">
         <div
           className={cn(
-            'min-h-[40px] px-3 py-2 rounded-[var(--radius-md)]',
-            'bg-[var(--color-card-hover)] text-[var(--color-foreground)]',
-            'border border-[var(--color-border)]'
+            "min-h-[40px] px-3 py-2 rounded-[var(--radius-md)]",
+            "bg-[var(--color-card-hover)] text-[var(--color-foreground)]",
+            "border border-[var(--color-border)]",
           )}
         >
           {formatDisplayValue(value, property)}
@@ -340,15 +337,10 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
   // Read-only field (not view mode)
   if (property.readOnly) {
     return (
-      <FormField
-        label={label}
-        htmlFor={fieldId}
-        {...(hint ? { hint } : {})}
-        className="col-span-1"
-      >
+      <FormField label={label} htmlFor={fieldId} {...(hint ? { hint } : {})} className="col-span-1">
         <Input
           id={fieldId}
-          value={String(value ?? '')}
+          value={String(value ?? "")}
           disabled
           aria-describedby={getAriaDescribedBy(false, !!hint)}
         />
@@ -371,7 +363,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
         <Select
           id={fieldId}
           options={options}
-          value={String(value ?? '')}
+          value={String(value ?? "")}
           onChange={handleChange}
           disabled={disabled}
           error={!!error}
@@ -400,7 +392,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
         <Select
           id={fieldId}
           options={options}
-          value={String(value ?? '')}
+          value={String(value ?? "")}
           onChange={handleChange}
           disabled={disabled}
           error={!!error}
@@ -412,7 +404,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
   }
 
   // Boolean -> Checkbox
-  if (inputType === 'checkbox') {
+  if (inputType === "checkbox") {
     return (
       <FormField
         htmlFor={fieldId}
@@ -434,7 +426,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
   }
 
   // Textarea
-  if (inputType === 'textarea') {
+  if (inputType === "textarea") {
     return (
       <FormField
         label={label}
@@ -446,7 +438,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
       >
         <TextArea
           id={fieldId}
-          value={String(value ?? '')}
+          value={String(value ?? "")}
           onChange={handleChange}
           disabled={disabled}
           error={!!error}
@@ -460,7 +452,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
   }
 
   // Number input
-  if (inputType === 'number') {
+  if (inputType === "number") {
     return (
       <FormField
         label={label}
@@ -473,13 +465,13 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
         <Input
           id={fieldId}
           type="number"
-          value={value === null || value === undefined ? '' : String(value)}
+          value={value === null || value === undefined ? "" : String(value)}
           onChange={handleChange}
           disabled={disabled}
           error={!!error}
           min={property.minimum}
           max={property.maximum}
-          step={property.type === 'integer' ? 1 : 'any'}
+          step={property.type === "integer" ? 1 : "any"}
           placeholder={property.description || `Enter ${label.toLowerCase()}`}
           aria-describedby={getAriaDescribedBy(!!error, !!hint)}
         />
@@ -500,7 +492,7 @@ function FieldRenderer({ config, onChange, relatedRecords, mode }: FieldRenderer
       <Input
         id={fieldId}
         type={inputType}
-        value={String(value ?? '')}
+        value={String(value ?? "")}
         onChange={handleChange}
         disabled={disabled}
         error={!!error}
@@ -544,14 +536,14 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
   onSubmit,
   onCancel,
   isSubmitting = false,
-  mode = 'create',
+  mode = "create",
   errors: serverErrors = {},
   className,
   relatedRecords = {},
   renderField,
 }: RecordFormProps<T>) {
   const [formValues, setFormValues] = useState<Record<string, unknown>>(() =>
-    getInitialFormValues(schema, initialValues as Record<string, unknown>)
+    getInitialFormValues(schema, initialValues as Record<string, unknown>),
   );
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
@@ -559,7 +551,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
   // Merge server and client errors
   const allErrors = useMemo(
     () => ({ ...clientErrors, ...serverErrors }),
-    [clientErrors, serverErrors]
+    [clientErrors, serverErrors],
   );
 
   // Get ordered fields (required first, then alphabetical)
@@ -592,7 +584,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      if (mode === 'view') return;
+      if (mode === "view") return;
 
       // Coerce values to proper types
       const coercedValues: Record<string, unknown> = {};
@@ -615,18 +607,14 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
       setClientErrors({});
       await onSubmit(coercedValues as T);
     },
-    [formValues, mode, onSubmit, schema]
+    [formValues, mode, onSubmit, schema],
   );
 
-  const isViewMode = mode === 'view';
-  const submitLabel = mode === 'create' ? 'Create' : 'Save Changes';
+  const isViewMode = mode === "view";
+  const submitLabel = mode === "create" ? "Create" : "Save Changes";
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={cn('space-y-6', className)}
-      noValidate
-    >
+    <form onSubmit={handleSubmit} className={cn("space-y-6", className)} noValidate>
       {/* Form Fields Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {orderedFields.map(([name, property]) => {
@@ -651,11 +639,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
           );
 
           if (renderField) {
-            return (
-              <div key={name}>
-                {renderField(fieldConfig, defaultRender)}
-              </div>
-            );
+            return <div key={name}>{renderField(fieldConfig, defaultRender)}</div>;
           }
 
           return defaultRender();
@@ -665,26 +649,13 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
       {/* Form Actions */}
       {!isViewMode && (
         <div
-          className={cn(
-            'flex items-center gap-3 pt-4',
-            'border-t border-[var(--color-border)]'
-          )}
+          className={cn("flex items-center gap-3 pt-4", "border-t border-[var(--color-border)]")}
         >
-          <Button
-            type="submit"
-            variant="primary"
-            loading={isSubmitting}
-            disabled={isSubmitting}
-          >
+          <Button type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>
             {submitLabel}
           </Button>
           {onCancel && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
               Cancel
             </Button>
           )}
@@ -694,10 +665,7 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
       {/* View Mode: Back/Edit Actions */}
       {isViewMode && onCancel && (
         <div
-          className={cn(
-            'flex items-center gap-3 pt-4',
-            'border-t border-[var(--color-border)]'
-          )}
+          className={cn("flex items-center gap-3 pt-4", "border-t border-[var(--color-border)]")}
         >
           <Button type="button" variant="secondary" onClick={onCancel}>
             Back
@@ -708,4 +676,4 @@ export function RecordForm<T extends Record<string, unknown> = Record<string, un
   );
 }
 
-RecordForm.displayName = 'RecordForm';
+RecordForm.displayName = "RecordForm";
