@@ -210,13 +210,17 @@ export function useModels(options?: QueryOptions<ModelInfo[]>) {
  *
  * @example
  * ```tsx
- * const { data: schema } = useModelSchema('User');
+ * const { data: schema } = useModelSchema('User', 'create');
  * ```
  */
-export function useModelSchema(model: string, options?: QueryOptions<ModelSchema>) {
+export function useModelSchema(
+  model: string,
+  mode: 'create' | 'edit' = 'create',
+  options?: QueryOptions<ModelSchema>
+) {
   return useQuery({
-    queryKey: queryKeys.models.schema(model),
-    queryFn: () => api.getModelSchema(model),
+    queryKey: [...queryKeys.models.schema(model), mode],
+    queryFn: () => api.getModelSchema(model, mode),
     staleTime: 30 * 60 * 1000, // Schema rarely changes
     enabled: !!model,
     ...options,

@@ -259,7 +259,7 @@ function CreateRecordContent({ model }: CreateRecordPageProps) {
     isLoading: isLoadingSchema,
     error: schemaError,
     refetch: refetchSchema,
-  } = useModelSchema(model);
+  } = useModelSchema(model, 'create');
 
   const createRecord = useCreateRecord<ModelRecord>(model, {
     onSuccess: (newRecord) => {
