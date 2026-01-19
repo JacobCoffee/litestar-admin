@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
 
-    from litestar_admin.auth.protocols import AdminUser
+    from litestar_admin.auth.protocols import AdminUserProtocol
 
 __all__ = ["JWTAuthBackend", "JWTConfig"]
 
@@ -133,7 +133,7 @@ class JWTAuthBackend:
     def __init__(
         self,
         config: JWTConfig,
-        user_loader: Callable[[str | int], Awaitable[AdminUser | None]],
+        user_loader: Callable[[str | int], Awaitable[AdminUserProtocol | None]],
         password_verifier: Callable[[str, str], Awaitable[bool]] | None = None,
         password_hasher: Callable[[str], Awaitable[str]] | None = None,
         password_updater: Callable[[str | int, str], Awaitable[bool]] | None = None,
@@ -157,7 +157,7 @@ class JWTAuthBackend:
         self,
         connection: ASGIConnection,  # noqa: ARG002
         credentials: dict[str, str],
-    ) -> AdminUser | None:
+    ) -> AdminUserProtocol | None:
         """Authenticate a user with email/password credentials.
 
         This method validates the provided credentials against the user database.
@@ -195,7 +195,7 @@ class JWTAuthBackend:
     async def get_current_user(
         self,
         connection: ASGIConnection,
-    ) -> AdminUser | None:
+    ) -> AdminUserProtocol | None:
         """Get the currently authenticated user from the request.
 
         Extracts the JWT token from the request (header or cookie based on config),
@@ -228,7 +228,7 @@ class JWTAuthBackend:
     async def login(
         self,
         connection: ASGIConnection,  # noqa: ARG002
-        user: AdminUser,
+        user: AdminUserProtocol,
     ) -> dict[str, str]:
         """Create a session for the authenticated user.
 
@@ -350,7 +350,7 @@ class JWTAuthBackend:
         new_hash = await self.password_hasher(new_password)
         return await self.password_updater(user.id, new_hash)
 
-    def _create_token(self, user: AdminUser, kind: str = "access") -> str:
+    def _create_token(self, user: AdminUserProtocol, kind: str = "access") -> str:
         """Create a JWT token for a user.
 
         Args:

@@ -7,14 +7,15 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
 
-__all__ = ["AdminUser", "AuthBackend"]
+__all__ = ["AdminUserProtocol", "AuthBackend"]
 
 
 @runtime_checkable
-class AdminUser(Protocol):
+class AdminUserProtocol(Protocol):
     """Protocol for admin user objects.
 
     Any user class that implements this protocol can be used with the admin panel.
+    This includes the concrete AdminUser model from litestar_admin.auth.models.
 
     Attributes:
         id: Unique identifier for the user.
@@ -56,7 +57,7 @@ class AuthBackend(Protocol):
         self,
         connection: ASGIConnection,
         credentials: dict[str, str],
-    ) -> AdminUser | None:
+    ) -> AdminUserProtocol | None:
         """Authenticate a user with credentials.
 
         Args:
@@ -71,7 +72,7 @@ class AuthBackend(Protocol):
     async def get_current_user(
         self,
         connection: ASGIConnection,
-    ) -> AdminUser | None:
+    ) -> AdminUserProtocol | None:
         """Get the currently authenticated user.
 
         Args:
@@ -85,7 +86,7 @@ class AuthBackend(Protocol):
     async def login(
         self,
         connection: ASGIConnection,
-        user: AdminUser,
+        user: AdminUserProtocol,
     ) -> dict[str, str]:
         """Create a session for the user.
 

@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from litestar.handlers.base import BaseRouteHandler
     from litestar.types import Guard
 
-    from litestar_admin.auth.protocols import AdminUser
+    from litestar_admin.auth.protocols import AdminUserProtocol
 
 __all__ = [
     "Permission",
@@ -164,7 +164,7 @@ def _get_valid_role(role_str: str) -> Role | None:
         return None
 
 
-def user_has_permission(user: AdminUser, permission: Permission) -> bool:
+def user_has_permission(user: AdminUserProtocol, permission: Permission) -> bool:
     """Check if a user has a specific permission.
 
     Checks both direct permission assignment and role-based permissions.
@@ -191,7 +191,7 @@ def user_has_permission(user: AdminUser, permission: Permission) -> bool:
     return any(permission in get_permissions_for_role(role) for role in valid_roles)
 
 
-def user_has_role(user: AdminUser, role: Role) -> bool:
+def user_has_role(user: AdminUserProtocol, role: Role) -> bool:
     """Check if a user has a specific role.
 
     Args:

@@ -52,8 +52,11 @@ redis = [
 structlog = [
     "structlog>=24.1.0",
 ]
+auth = [
+    "passlib[argon2]>=1.7.4",
+]
 all = [
-    "litestar-admin[jwt,oauth,sqladmin,redis,structlog]",
+    "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth]",
 ]
 
 [project.urls]
