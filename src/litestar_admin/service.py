@@ -9,19 +9,25 @@ Performance optimizations implemented:
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from sqlalchemy import String, asc, desc, func, inspect, or_, select
 
+from litestar_admin.fields.sanitize import NH3_AVAILABLE, sanitize_html
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from litestar.connection import ASGIConnection
     from sqlalchemy.ext.asyncio import AsyncSession
     from sqlalchemy.schema import Column
     from sqlalchemy.sql import ColumnElement
 
     from litestar_admin.views import BaseModelView
+
+logger = logging.getLogger(__name__)
 
 __all__ = ["AdminService"]
 
@@ -369,20 +375,69 @@ class AdminService(Generic[T]):
         result = await self._session.scalars(query)
         return result.first()
 
-    async def create_record(self, data: dict[str, Any]) -> T:
+    def _sanitize_rich_text_fields(self, data: dict[str, Any]) -> dict[str, Any]:
+        """Sanitize rich text fields in the data dictionary.
+
+        This method identifies rich text fields from the view class configuration
+        and sanitizes their HTML content using the field's allowed_tags setting.
+
+        Args:
+            data: Dictionary of field values to sanitize.
+
+        Returns:
+            Dictionary with sanitized rich text field values.
+        """
+        rich_text_fields = self._view_class.get_rich_text_fields()
+        if not rich_text_fields:
+            return data
+
+        # Build a lookup of field name -> RichTextField config
+        rich_text_config = {field.name: field for field in rich_text_fields}
+
+        sanitized_data = data.copy()
+        for field_name, field_config in rich_text_config.items():
+            if field_name in sanitized_data:
+                content = sanitized_data[field_name]
+                if content is not None and isinstance(content, str):
+                    # Sanitize using the field's allowed_tags configuration
+                    sanitized_content = sanitize_html(
+                        content,
+                        allowed_tags=field_config.allowed_tags_set,
+                    )
+                    sanitized_data[field_name] = sanitized_content
+                    if NH3_AVAILABLE and content != sanitized_content:
+                        logger.debug(
+                            "Sanitized rich text field '%s': removed %d characters",
+                            field_name,
+                            len(content) - len(sanitized_content),
+                        )
+
+        return sanitized_data
+
+    async def create_record(
+        self,
+        data: dict[str, Any],
+        *,
+        request: ASGIConnection | None = None,
+    ) -> T:
         """Create a new record.
 
         Args:
             data: Dictionary of field values.
+            request: The current ASGI connection (for user context in hooks).
 
         Returns:
             The created record.
         """
+        # Sanitize rich text fields before processing
+        sanitized_data = self._sanitize_rich_text_fields(data)
+
         # Call the on_model_change hook to allow modification/validation
         processed_data = await self._view_class.on_model_change(
-            data,
+            sanitized_data,
             record=None,
             is_create=True,
+            request=request,
         )
 
         # Coerce values to proper Python types
@@ -417,6 +472,7 @@ class AdminService(Generic[T]):
         data: dict[str, Any],
         *,
         partial: bool = False,
+        request: ASGIConnection | None = None,
     ) -> T | None:
         """Update an existing record.
 
@@ -424,6 +480,7 @@ class AdminService(Generic[T]):
             pk: The primary key value.
             data: Dictionary of field values to update.
             partial: If True, only update provided fields (PATCH).
+            request: The current ASGI connection (for user context in hooks).
 
         Returns:
             The updated record if found, None otherwise.
@@ -433,11 +490,15 @@ class AdminService(Generic[T]):
         if record is None:
             return None
 
+        # Sanitize rich text fields before processing
+        sanitized_data = self._sanitize_rich_text_fields(data)
+
         # Call the on_model_change hook
         processed_data = await self._view_class.on_model_change(
-            data,
+            sanitized_data,
             record=record,
             is_create=False,
+            request=request,
         )
 
         # Get column mapping for value coercion
@@ -447,12 +508,11 @@ class AdminService(Generic[T]):
         # Apply updates
         if partial:
             # Only update provided fields
-            for key, value in processed_data.items():
+            for key, raw_value in processed_data.items():
                 if hasattr(record, key):
                     column = column_map.get(key)
-                    if column is not None:
-                        value = self._coerce_value(value, column)
-                    setattr(record, key, value)
+                    coerced_value = self._coerce_value(raw_value, column) if column is not None else raw_value
+                    setattr(record, key, coerced_value)
         else:
             # Full update - set all fields, using None for missing ones
             self._apply_full_update(record, processed_data)
@@ -468,7 +528,7 @@ class AdminService(Generic[T]):
 
         return record
 
-    def _coerce_value(self, value: Any, column: Any) -> Any:
+    def _coerce_value(self, value: Any, column: Any) -> Any:  # noqa: PLR0911
         """Coerce a value to the appropriate Python type for the column.
 
         Args:
@@ -502,14 +562,14 @@ class AdminService(Generic[T]):
                     return None
             return value
 
-        # Handle time types
+        # Handle time types - DTZ007 is acceptable as we only need the time component
         if type_name == "TIME":
             if isinstance(value, str):
                 try:
-                    return datetime.strptime(value, "%H:%M:%S").time()
+                    return datetime.strptime(value, "%H:%M:%S").time()  # noqa: DTZ007
                 except ValueError:
                     try:
-                        return datetime.strptime(value, "%H:%M").time()
+                        return datetime.strptime(value, "%H:%M").time()  # noqa: DTZ007
                     except ValueError:
                         return None
             return value
@@ -524,7 +584,6 @@ class AdminService(Generic[T]):
             data: The data to apply.
         """
         mapper = inspect(self.model)
-        column_map = {c.name: c for c in mapper.columns}
 
         for column in mapper.columns:
             column_name = column.name

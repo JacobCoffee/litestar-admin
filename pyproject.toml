@@ -63,8 +63,11 @@ storage = [
 excel = [
     "openpyxl>=3.1.0",
 ]
+sanitize = [
+    "nh3>=0.2.0",
+]
 all = [
-    "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth,storage,excel]",
+    "litestar-admin[jwt,oauth,sqladmin,redis,structlog,auth,storage,excel,sanitize]",
 ]
 
 [project.urls]

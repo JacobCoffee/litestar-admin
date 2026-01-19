@@ -67,6 +67,12 @@ from litestar_admin.fields.rich_text import (
     RichTextFieldValidationError,
     validate_rich_text_field,
 )
+from litestar_admin.fields.sanitize import (
+    DEFAULT_TAG_ATTRIBUTES,
+    NH3_AVAILABLE,
+    get_sanitizer_status,
+    sanitize_html,
+)
 
 __all__ = [
     # Field types
@@ -83,11 +89,16 @@ __all__ = [
     "validate_file_field",
     "validate_multiple_files",
     "validate_rich_text_field",
+    # Sanitization
+    "sanitize_html",
+    "get_sanitizer_status",
+    "NH3_AVAILABLE",
     # Constants
     "DEFAULT_FILE_EXTENSIONS",
     "DEFAULT_IMAGE_EXTENSIONS",
     "DEFAULT_MAX_FILE_SIZE",
     "DEFAULT_RICH_TEXT_TOOLBAR",
     "DEFAULT_SAFE_HTML_TAGS",
+    "DEFAULT_TAG_ATTRIBUTES",
     "DEFAULT_THUMBNAIL_SIZE",
 ]
