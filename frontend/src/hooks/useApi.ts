@@ -27,6 +27,7 @@ import type {
   BulkExportRequest,
   CustomViewInfo,
   CustomViewListResponse,
+  CustomViewSchemaResponse,
   DashboardStats,
   DeleteResponse,
   EmbedConfig,
@@ -822,7 +823,7 @@ export function useCustomViewItem<T = Record<string, unknown>>(
 /**
  * Hook to get the schema for a custom view.
  */
-export function useCustomViewSchema(identity: string, options?: QueryOptions<ModelSchema>) {
+export function useCustomViewSchema(identity: string, options?: QueryOptions<CustomViewSchemaResponse>) {
   return useQuery({
     queryKey: queryKeys.customViews.schema(identity),
     queryFn: () => api.getCustomViewSchema(identity),

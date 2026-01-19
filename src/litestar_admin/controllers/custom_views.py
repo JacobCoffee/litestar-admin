@@ -10,7 +10,7 @@ from litestar.exceptions import NotFoundException, PermissionDeniedException
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
 from litestar_admin.registry import ViewRegistry  # noqa: TC001
-from litestar_admin.views import ActionView, CustomView, EmbedView, PageView
+from litestar_admin.views import ActionView, CustomView, EmbedView, LinkView, PageView
 
 if TYPE_CHECKING:
     from litestar_admin.views import ActionResult, ListResult
@@ -20,6 +20,7 @@ __all__ = [
     "ActionsController",
     "CustomViewsController",
     "EmbedsController",
+    "LinksController",
     "PagesController",
     # DTOs - CustomView
     "CustomViewDeleteResponse",
@@ -33,8 +34,11 @@ __all__ = [
     # DTOs - PageView
     "PageContentResponse",
     "PageMetadataResponse",
+    # DTOs - LinkView
+    "LinkInfoResponse",
     # DTOs - EmbedView
     "EmbedConfigResponse",
+    "EmbedInfoResponse",
     "EmbedPropsResponse",
 ]
 
@@ -112,10 +116,20 @@ class CustomViewSchemaResponse:
     Attributes:
         schema: JSON Schema dictionary describing the item structure.
         columns: List of column definitions.
+        pk_field: Name of the primary key field.
+        can_create: Whether new items can be created.
+        can_edit: Whether items can be edited.
+        can_delete: Whether items can be deleted.
+        can_view_details: Whether item details can be viewed.
     """
 
     schema: dict[str, Any]
     columns: list[dict[str, Any]]
+    pk_field: str = "id"
+    can_create: bool = False
+    can_edit: bool = False
+    can_delete: bool = False
+    can_view_details: bool = True
 
 
 # =============================================================================
@@ -131,6 +145,7 @@ class ActionInfoResponse:
         name: The display name of the action.
         identity: URL-safe identifier for the action.
         icon: Icon identifier for the action.
+        category: Category grouping for the action.
         form_fields: List of form field definitions.
         confirmation_message: Message shown in confirmation dialog.
         requires_confirmation: Whether to show confirmation dialog.
@@ -141,7 +156,8 @@ class ActionInfoResponse:
     name: str
     identity: str
     icon: str
-    form_fields: list[dict[str, Any]]
+    category: str | None = None
+    form_fields: list[dict[str, Any]] | None = None
     confirmation_message: str = ""
     requires_confirmation: bool = True
     submit_label: str = "Execute"
@@ -191,6 +207,7 @@ class PageMetadataResponse:
         name: The display name of the page.
         identity: URL-safe identifier for the page.
         icon: Icon identifier for the page.
+        category: Category grouping for the page.
         content_type: Type of content (markdown, html, text, dynamic, template).
         layout: Page layout type.
         refresh_interval: Auto-refresh interval in seconds.
@@ -200,7 +217,8 @@ class PageMetadataResponse:
     name: str
     identity: str
     icon: str
-    content_type: Literal["markdown", "html", "text", "dynamic", "template"]
+    category: str | None = None
+    content_type: Literal["markdown", "html", "text", "dynamic", "template"] = "text"
     layout: Literal["default", "full-width", "sidebar"] = "default"
     refresh_interval: int = 0
     content: str | None = None
@@ -211,15 +229,68 @@ class PageContentResponse:
     """Dynamic content response for a page view.
 
     Attributes:
-        content: Dynamic content data from the page.
+        content: The rendered content string (HTML, markdown, or plain text).
+        content_type: The type of content returned.
+        title: Optional title override from the dynamic content.
+        metadata: Additional metadata from the dynamic content.
     """
 
-    content: dict[str, Any]
+    content: str
+    content_type: Literal["markdown", "html", "text", "dynamic", "template"]
+    title: str | None = None
+    metadata: dict[str, Any] | None = None
+
+
+# =============================================================================
+# LinkView DTOs
+# =============================================================================
+
+
+@dataclass
+class LinkInfoResponse:
+    """Information about a link view for sidebar navigation.
+
+    Attributes:
+        name: The display name of the link.
+        identity: URL-safe identifier for the link.
+        icon: Icon identifier for the link.
+        category: Category grouping for the link.
+        url: The destination URL.
+        target: Link target (_blank or _self).
+    """
+
+    name: str
+    identity: str
+    icon: str
+    category: str | None = None
+    url: str = ""
+    target: Literal["_blank", "_self"] = "_blank"
 
 
 # =============================================================================
 # EmbedView DTOs
 # =============================================================================
+
+
+@dataclass
+class EmbedInfoResponse:
+    """Information about an embed view for sidebar navigation.
+
+    Attributes:
+        name: The display name of the embed.
+        identity: URL-safe identifier for the embed.
+        icon: Icon identifier for the embed.
+        category: Category grouping for the embed.
+        embed_type: Type of embed (iframe or component).
+        layout: Layout mode (full, sidebar, card).
+    """
+
+    name: str
+    identity: str
+    icon: str
+    category: str | None = None
+    embed_type: Literal["iframe", "component"] = "iframe"
+    layout: Literal["full", "sidebar", "card"] = "full"
 
 
 @dataclass
@@ -287,16 +358,16 @@ class CustomViewsController(Controller):
     Example:
         The controller is automatically registered by AdminPlugin.
         Access endpoints at:
-        - GET /admin/api/custom - List all registered custom views
-        - GET /admin/api/custom/{view_identity} - List items for a custom view
-        - POST /admin/api/custom/{view_identity} - Create a new item
-        - GET /admin/api/custom/{view_identity}/{item_id} - Get a single item
-        - PUT /admin/api/custom/{view_identity}/{item_id} - Update an item
-        - DELETE /admin/api/custom/{view_identity}/{item_id} - Delete an item
-        - GET /admin/api/custom/{view_identity}/schema - Get schema
+        - GET /admin/api/views/custom - List all registered custom views
+        - GET /admin/api/views/custom/{view_identity} - List items for a custom view
+        - POST /admin/api/views/custom/{view_identity} - Create a new item
+        - GET /admin/api/views/custom/{view_identity}/{item_id} - Get a single item
+        - PUT /admin/api/views/custom/{view_identity}/{item_id} - Update an item
+        - DELETE /admin/api/views/custom/{view_identity}/{item_id} - Delete an item
+        - GET /admin/api/views/custom/{view_identity}/schema - Get schema
     """
 
-    path = "/api/custom"
+    path = "/api/views/custom"
     tags: ClassVar[list[str]] = ["Custom Views"]
 
     @get(
@@ -438,7 +509,15 @@ class CustomViewsController(Controller):
             for col in view_class.get_list_columns()
         ]
 
-        return CustomViewSchemaResponse(schema=schema, columns=columns)
+        return CustomViewSchemaResponse(
+            schema=schema,
+            columns=columns,
+            pk_field=view_class.pk_field,
+            can_create=view_class.can_create,
+            can_edit=view_class.can_edit,
+            can_delete=view_class.can_delete,
+            can_view_details=view_class.can_view_details,
+        )
 
     @get(
         "/{view_identity:str}/{item_id:str}",
@@ -659,12 +738,12 @@ class ActionsController(Controller):
     Example:
         The controller is automatically registered by AdminPlugin.
         Access endpoints at:
-        - GET /admin/api/actions - List all registered actions
-        - GET /admin/api/actions/{view_identity} - Get action metadata
-        - POST /admin/api/actions/{view_identity}/execute - Execute action
+        - GET /admin/api/views/actions - List all registered actions
+        - GET /admin/api/views/actions/{view_identity} - Get action metadata
+        - POST /admin/api/views/actions/{view_identity}/execute - Execute action
     """
 
-    path = "/api/actions"
+    path = "/api/views/actions"
     tags: ClassVar[list[str]] = ["Actions"]
 
     @get(
@@ -691,6 +770,7 @@ class ActionsController(Controller):
                 name=view.name,
                 identity=view.identity,
                 icon=view.icon,
+                category=view.category,
                 form_fields=view.get_form_schema(),
                 confirmation_message=view.confirmation_message,
                 requires_confirmation=view.requires_confirmation,
@@ -735,6 +815,7 @@ class ActionsController(Controller):
             name=view_class.name,
             identity=view_class.identity,
             icon=view_class.icon,
+            category=view_class.category,
             form_fields=view_class.get_form_schema(),
             confirmation_message=view_class.confirmation_message,
             requires_confirmation=view_class.requires_confirmation,
@@ -815,12 +896,12 @@ class PagesController(Controller):
     Example:
         The controller is automatically registered by AdminPlugin.
         Access endpoints at:
-        - GET /admin/api/pages - List all registered pages
-        - GET /admin/api/pages/{view_identity} - Get page metadata
-        - GET /admin/api/pages/{view_identity}/content - Get dynamic content
+        - GET /admin/api/views/pages - List all registered pages
+        - GET /admin/api/views/pages/{view_identity} - Get page metadata
+        - GET /admin/api/views/pages/{view_identity}/content - Get dynamic content
     """
 
-    path = "/api/pages"
+    path = "/api/views/pages"
     tags: ClassVar[list[str]] = ["Pages"]
 
     @get(
@@ -847,6 +928,7 @@ class PagesController(Controller):
                 name=view.name,
                 identity=view.identity,
                 icon=view.icon,
+                category=view.category,
                 content_type=view.content_type,
                 layout=view.layout,
                 refresh_interval=view.refresh_interval,
@@ -890,6 +972,7 @@ class PagesController(Controller):
             name=view_class.name,
             identity=view_class.identity,
             icon=view_class.icon,
+            category=view_class.category,
             content_type=view_class.content_type,
             layout=view_class.layout,
             refresh_interval=view_class.refresh_interval,
@@ -925,15 +1008,52 @@ class PagesController(Controller):
             NotFoundException: If the page is not registered.
             PermissionDeniedException: If the user cannot access the page.
         """
+        import json
+
         view_class = _get_page_view(admin_registry, view_identity)
 
         if not await view_class.is_accessible(request):
             raise PermissionDeniedException(f"Access denied to page '{view_identity}'")
 
         view_instance = view_class()
-        content = await view_instance.get_content()
+        raw_content = await view_instance.get_content()
 
-        return PageContentResponse(content=content)
+        # Extract content from various formats
+        if isinstance(raw_content, str):
+            content_str = raw_content
+            title = None
+            metadata = None
+        elif isinstance(raw_content, dict):
+            # If the dict has a 'content' key, use it
+            if "content" in raw_content and isinstance(raw_content["content"], str):
+                content_str = raw_content["content"]
+            else:
+                # Otherwise, serialize the whole thing to JSON for display
+                content_str = json.dumps(raw_content, indent=2, default=str)
+            title = raw_content.get("title")
+            metadata = {k: v for k, v in raw_content.items() if k not in ("content", "title")}
+        else:
+            content_str = str(raw_content)
+            title = None
+            metadata = None
+
+        # Determine the actual content type for rendering
+        # If content contains markdown syntax, treat it as markdown
+        render_type = view_class.content_type
+        if render_type == "dynamic" and isinstance(raw_content, dict):
+            # Check if the dict specifies a content_type
+            if "content_type" in raw_content:
+                render_type = raw_content["content_type"]
+            # Or detect markdown syntax
+            elif content_str.startswith("#") or "\n##" in content_str or "\n- " in content_str:
+                render_type = "markdown"
+
+        return PageContentResponse(
+            content=content_str,
+            content_type=render_type,
+            title=title,
+            metadata=metadata or None,
+        )
 
 
 # =============================================================================
@@ -950,12 +1070,12 @@ class EmbedsController(Controller):
     Example:
         The controller is automatically registered by AdminPlugin.
         Access endpoints at:
-        - GET /admin/api/embeds - List all registered embeds
-        - GET /admin/api/embeds/{view_identity}/config - Get embed configuration
-        - GET /admin/api/embeds/{view_identity}/props - Get dynamic props
+        - GET /admin/api/views/embeds - List all registered embeds
+        - GET /admin/api/views/embeds/{view_identity}/config - Get embed configuration
+        - GET /admin/api/views/embeds/{view_identity}/props - Get dynamic props
     """
 
-    path = "/api/embeds"
+    path = "/api/views/embeds"
     tags: ClassVar[list[str]] = ["Embeds"]
 
     @get(
@@ -967,42 +1087,27 @@ class EmbedsController(Controller):
     async def list_embeds(
         self,
         admin_registry: ViewRegistry,
-    ) -> list[EmbedConfigResponse]:
-        """List all registered embed views with their configurations.
+    ) -> list[EmbedInfoResponse]:
+        """List all registered embed views with their navigation info.
 
         Args:
             admin_registry: The view registry containing all registered views.
 
         Returns:
-            List of embed configuration objects.
+            List of embed info objects for sidebar navigation.
         """
         views = cast("list[type[EmbedView]]", admin_registry.list_embed_views())
-        result: list[EmbedConfigResponse] = []
-
-        for view in views:
-            config = EmbedConfigResponse(
-                type=view.embed_type,
-                width=view.width,
-                height=view.height,
-                min_height=view.min_height,
+        return [
+            EmbedInfoResponse(
+                name=view.name,
+                identity=view.identity,
+                icon=view.icon,
+                category=view.category,
+                embed_type=view.embed_type,
                 layout=view.layout,
-                refresh_interval=view.refresh_interval,
-                show_toolbar=view.show_toolbar,
             )
-
-            if view.embed_type == "iframe":
-                config.url = view.embed_url
-                config.sandbox = view.sandbox
-                config.allow = view.allow
-                config.loading = view.loading
-                config.referrer_policy = view.referrer_policy
-            else:
-                config.component_name = view.component_name
-                config.props = view.props
-
-            result.append(config)
-
-        return result
+            for view in views
+        ]
 
     @get(
         "/{view_identity:str}/config",
@@ -1099,6 +1204,58 @@ class EmbedsController(Controller):
         props = await view_instance.get_props(request)
 
         return EmbedPropsResponse(props=props)
+
+
+# =============================================================================
+# LinksController
+# =============================================================================
+
+
+class LinksController(Controller):
+    """Controller for LinkView endpoints.
+
+    Provides REST API endpoints for external navigation links. Links are used
+    to add external URLs to the admin sidebar navigation.
+
+    Example:
+        The controller is automatically registered by AdminPlugin.
+        Access endpoints at:
+        - GET /admin/api/views/links - List all registered links
+    """
+
+    path = "/api/views/links"
+    tags: ClassVar[list[str]] = ["Links"]
+
+    @get(
+        "/",
+        status_code=HTTP_200_OK,
+        summary="List registered links",
+        description="Returns a list of all external links registered with the admin panel.",
+    )
+    async def list_links(
+        self,
+        admin_registry: ViewRegistry,
+    ) -> list[LinkInfoResponse]:
+        """List all registered link views with their metadata.
+
+        Args:
+            admin_registry: The view registry containing all registered views.
+
+        Returns:
+            List of link information objects for sidebar navigation.
+        """
+        views = cast("list[type[LinkView]]", admin_registry.list_link_views())
+        return [
+            LinkInfoResponse(
+                name=view.name,
+                identity=view.identity,
+                icon=view.icon,
+                category=view.category,
+                url=view.url,
+                target=view.target,
+            )
+            for view in views
+        ]
 
 
 # =============================================================================

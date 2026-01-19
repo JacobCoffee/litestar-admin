@@ -333,8 +333,8 @@ function generateFilterableColumns(schema: ModelSchema): FilterableColumn[] {
   return columns;
 }
 
-function getRecordId(record: CustomViewRecord): string {
-  const id = record["id"] ?? record["_id"] ?? record["pk"] ?? "";
+function getRecordId(record: CustomViewRecord, pkField: string = "id"): string {
+  const id = record[pkField] ?? record["id"] ?? record["_id"] ?? record["pk"] ?? "";
   return String(id);
 }
 
@@ -608,10 +608,17 @@ function CustomViewListContent({
   } = useCustomViewItems<CustomViewRecord>(identity, queryParams);
 
   const {
-    data: schema,
+    data: schemaResponse,
     isLoading: isLoadingSchema,
     error: schemaError,
   } = useCustomViewSchema(identity);
+
+  // Extract schema and metadata from response
+  const schema = schemaResponse?.schema;
+  const pkField = schemaResponse?.pk_field ?? "id";
+  const viewCanCreate = schemaResponse?.can_create ?? canCreate ?? false;
+  const viewCanEdit = schemaResponse?.can_edit ?? canEdit ?? false;
+  const viewCanDelete = schemaResponse?.can_delete ?? canDelete ?? false;
 
   const deleteItem = useDeleteCustomViewItem(identity, {
     onSuccess: () => {
@@ -644,11 +651,11 @@ function CustomViewListContent({
     }
 
     const handleView = (record: CustomViewRecord) => {
-      router.push(`/custom/${identity}/${getRecordId(record)}`);
+      router.push(`/custom/${identity}/${getRecordId(record, pkField)}`);
     };
 
     const handleEdit = (record: CustomViewRecord) => {
-      router.push(`/custom/${identity}/${getRecordId(record)}?edit=true`);
+      router.push(`/custom/${identity}/${getRecordId(record, pkField)}?edit=true`);
     };
 
     const handleDelete = (record: CustomViewRecord) => {
@@ -661,12 +668,12 @@ function CustomViewListContent({
         handleView,
         handleEdit,
         handleDelete,
-        canEdit ?? false,
-        canDelete ?? false,
+        viewCanEdit,
+        viewCanDelete,
       ),
       filterableColumns: generateFilterableColumns(schema),
     };
-  }, [schema, identity, router, canEdit, canDelete]);
+  }, [schema, identity, router, pkField, viewCanEdit, viewCanDelete]);
 
   const breadcrumbs: BreadcrumbItem[] = useMemo(
     () => [
@@ -681,11 +688,17 @@ function CustomViewListContent({
     router.push(`/custom/${identity}/new`);
   }, [router, identity]);
 
+  // Memoized getRowId that uses the pk_field from schema
+  const getRowIdWithPk = useCallback(
+    (record: CustomViewRecord) => getRecordId(record, pkField),
+    [pkField],
+  );
+
   const handleRowClick = useCallback(
     (record: CustomViewRecord) => {
-      router.push(`/custom/${identity}/${getRecordId(record)}`);
+      router.push(`/custom/${identity}/${getRecordId(record, pkField)}`);
     },
-    [router, identity],
+    [router, identity, pkField],
   );
 
   const handleFilterChange = useCallback(
@@ -703,10 +716,10 @@ function CustomViewListContent({
 
   const handleConfirmDelete = useCallback(() => {
     if (deleteModalState.record) {
-      const id = getRecordId(deleteModalState.record);
+      const id = getRecordId(deleteModalState.record, pkField);
       deleteItem.mutate(id);
     }
-  }, [deleteModalState, deleteItem]);
+  }, [deleteModalState, deleteItem, pkField]);
 
   const handleCloseDeleteModal = useCallback(() => {
     setDeleteModalState({ isOpen: false, record: null });
@@ -760,7 +773,7 @@ function CustomViewListContent({
           }
           breadcrumbs={breadcrumbs}
           actions={
-            canCreate ? (
+            viewCanCreate ? (
               <Button onClick={handleCreateNew} leftIcon={<PlusIcon className="h-4 w-4" />}>
                 Create {displayName}
               </Button>
@@ -809,7 +822,7 @@ function CustomViewListContent({
             <CardBody>
               <EmptyState
                 viewName={displayName}
-                onCreateNew={canCreate ? handleCreateNew : undefined}
+                onCreateNew={viewCanCreate ? handleCreateNew : undefined}
                 hasFilters={hasActiveFilters}
                 onClearFilters={handleClearFilters}
               />
@@ -827,7 +840,7 @@ function CustomViewListContent({
               {...(sortBy ? { sortBy } : {})}
               sortOrder={sortOrder}
               onSort={handleSort}
-              getRowId={getRecordId}
+              getRowId={getRowIdWithPk}
               onRowClick={handleRowClick}
               emptyMessage={`No ${displayName.toLowerCase()} items found`}
               showColumnToggle

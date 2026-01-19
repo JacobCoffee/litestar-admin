@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { CustomViewListPage } from "@/components/pages/CustomViewListPage";
+import { CustomViewDetailPage } from "@/components/pages/CustomViewDetailPage";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -52,12 +53,15 @@ function CustomViewsContent() {
 
   const pathParams = parsePathParams(pathname);
   const view = pathParams.view ?? searchParams.get("view");
-  // Note: id is parsed but not currently used - reserved for future detail/edit views
-  const _id = pathParams.id ?? searchParams.get("id");
+  const id = pathParams.id ?? searchParams.get("id");
 
-  // If a specific view is selected, render it
+  // If a specific item is selected, show the detail page
+  if (view && id && id !== "new") {
+    return <CustomViewDetailPage identity={view} itemId={id} />;
+  }
+
+  // If a specific view is selected, show the list page
   if (view) {
-    // For now, just show the list page. Later can add detail/edit views.
     return <CustomViewListPage identity={view} />;
   }
 

@@ -410,6 +410,7 @@ class ModelsController(Controller):
         Raises:
             NotFoundException: If the model or record is not found.
         """
+        print(f"[UPDATE] PUT request for {model_name}/{record_id} with data: {data}")
         try:
             view_class = admin_registry.get_view_by_name(model_name)
         except KeyError as exc:
@@ -582,10 +583,15 @@ class ModelsController(Controller):
             metadata: Optional additional metadata.
         """
         import logging
+
+        from litestar_admin.audit.models import AuditLog
+
         audit_logger = logging.getLogger("litestar_admin.audit")
         audit_logger.info(f"Audit log: {action.value} on {model_name} record {record_id}")
 
         try:
+            print(f"[AUDIT] Starting audit log for {action.value} on {model_name} record {record_id}")
+
             entry = await audit_admin_action(
                 connection=request,
                 action=action,
@@ -594,15 +600,33 @@ class ModelsController(Controller):
                 changes=changes,
                 metadata=metadata,
             )
-            audit_logger.info(f"Created audit entry: {entry.id}")
+            print(f"[AUDIT] Created audit entry: {entry.id}, actor: {entry.actor_email}")
 
-            logger = DatabaseAuditLogger(db_session)
-            await logger.log(entry)
-            audit_logger.info("Audit entry added to session, committing...")
+            # Create the AuditLog model directly and add to session
+            audit_log = AuditLog(
+                id=entry.id,
+                timestamp=entry.timestamp,
+                action=entry.action.value,
+                actor_id=str(entry.actor_id) if entry.actor_id is not None else None,
+                actor_email=entry.actor_email,
+                model_name=entry.model_name,
+                record_id=str(entry.record_id) if entry.record_id is not None else None,
+                changes=entry.changes,
+                metadata_=entry.metadata,
+                ip_address=entry.ip_address,
+                user_agent=entry.user_agent,
+            )
 
+            print(f"[AUDIT] Session state before add: in_transaction={db_session.in_transaction()}")
+            db_session.add(audit_log)
+            print("[AUDIT] Added to session, flushing...")
+            await db_session.flush()
+            print("[AUDIT] Flushed, committing...")
             await db_session.commit()
+            print("[AUDIT] Committed successfully!")
             audit_logger.info("Audit entry committed successfully")
         except Exception as e:
+            print(f"[AUDIT] ERROR: {type(e).__name__}: {e}")
             audit_logger.error(f"Audit logging failed: {e}", exc_info=True)
             try:
                 await db_session.rollback()

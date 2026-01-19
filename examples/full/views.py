@@ -932,7 +932,7 @@ class ChangelogPage(PageView):
     icon = "clock"
     category = "Help"
 
-    content_type = "dynamic"
+    content_type = "dynamic"  # Fetches content via get_content()
     layout = "default"
     refresh_interval = 300  # Refresh every 5 minutes
 
@@ -1010,10 +1010,23 @@ class ChangelogPage(PageView):
             },
         ]
 
+        # Build markdown content from changelog entries
+        lines = ["# Litestar Admin Changelog\n"]
+        for entry in changelog_entries:
+            type_badge = f"**[{entry['type'].upper()}]**"
+            lines.append(f"\n## {entry['version']} - {entry['date']} {type_badge}\n")
+            lines.append(f"\n### {entry['title']}\n")
+            lines.append(f"\n{entry['description']}\n")
+            if entry.get("changes"):
+                lines.append("\n**Changes:**\n")
+                for change in entry["changes"]:
+                    lines.append(f"- {change}\n")
+
+        content_str = "".join(lines)
+
         return {
-            "type": "changelog",
+            "content": content_str,
             "title": "Litestar Admin Changelog",
-            "entries": changelog_entries,
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 

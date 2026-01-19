@@ -400,7 +400,13 @@ def extract_actor_info(connection: ASGIConnection) -> tuple[str | int | None, st
                 ...
             )
     """
-    user = getattr(connection, "user", None)
+    try:
+        # Access .user property - this may raise if no auth middleware is configured
+        user = connection.user
+    except Exception:
+        # No user in scope (no auth middleware or user not authenticated)
+        return None, None
+
     if user is None:
         return None, None
 

@@ -408,7 +408,7 @@ export interface NavItem {
   readonly id: string;
   readonly label: string;
   readonly href: string;
-  readonly icon?: React.ComponentType<{ className?: string }>;
+  readonly icon?: React.ComponentType<{ className?: string | undefined }>;
   readonly badge?: string | number;
   readonly target?: "_blank" | "_self";
 }
@@ -456,6 +456,19 @@ export interface CustomViewListResponse<T = Record<string, unknown>> {
   readonly total: number;
   readonly offset: number;
   readonly limit: number;
+}
+
+/**
+ * Response containing the schema for a custom view.
+ */
+export interface CustomViewSchemaResponse {
+  readonly schema: ModelSchema;
+  readonly columns: readonly ColumnDefinition[];
+  readonly pk_field: string;
+  readonly can_create: boolean;
+  readonly can_edit: boolean;
+  readonly can_delete: boolean;
+  readonly can_view_details: boolean;
 }
 
 // ============================================================================

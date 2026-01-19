@@ -1,8 +1,16 @@
 "use client";
 
-import { useMemo, type ReactNode, type ComponentType } from "react";
+import { useMemo, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  getModelIcon,
+  getCustomViewIcon,
+  getActionIcon,
+  getPageIcon,
+  getLinkIcon,
+  getEmbedIcon,
+} from "@/lib/icons";
 import { useSidebar } from "@/contexts/LayoutContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 import {
@@ -35,66 +43,6 @@ export interface MainLayoutProps {
   className?: string;
 }
 
-// Icon components for sidebar navigation
-const TableIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path
-      fillRule="evenodd"
-      d="M3 3a1 1 0 011-1h12a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V3zm2 0v4h10V3H5zm10 6H5v8h10V9z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const GridIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-  </svg>
-);
-
-const ZapIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path
-      fillRule="evenodd"
-      d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const FileTextIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path
-      fillRule="evenodd"
-      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const ExternalLinkIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-  </svg>
-);
-
-const LayoutIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-  </svg>
-);
-
-// Icon map for dynamic icon selection
-const iconMap: Record<string, ComponentType<{ className?: string }>> = {
-  table: TableIcon,
-  grid: GridIcon,
-  zap: ZapIcon,
-  file: FileTextIcon,
-  "external-link": ExternalLinkIcon,
-  layout: LayoutIcon,
-};
-
 export function MainLayout({
   children,
   sidebar,
@@ -117,11 +65,6 @@ export function MainLayout({
   const { data: links } = useLinks();
   const { data: embeds } = useEmbeds();
 
-  // Helper to get icon component from icon string
-  const getIcon = (iconName: string): ComponentType<{ className?: string }> => {
-    return iconMap[iconName] ?? TableIcon;
-  };
-
   // Build sidebar categories from all view types
   const sidebarCategories = useMemo<NavCategory[]>(() => {
     const categories: NavCategory[] = [];
@@ -143,7 +86,7 @@ export function MainLayout({
           id: `model-${model.model_name}`,
           label: model.name,
           href: `/models/${model.model_name}`,
-          icon: TableIcon,
+          icon: getModelIcon(model.icon),
         });
       }
     }
@@ -156,7 +99,7 @@ export function MainLayout({
           id: `custom-${view.identity}`,
           label: view.name,
           href: `/custom/${view.identity}`,
-          icon: getIcon(view.icon) ?? GridIcon,
+          icon: getCustomViewIcon(view.icon),
         });
       }
     }
@@ -169,7 +112,7 @@ export function MainLayout({
           id: `action-${action.identity}`,
           label: action.name,
           href: `/actions/${action.identity}`,
-          icon: getIcon(action.icon) ?? ZapIcon,
+          icon: getActionIcon(action.icon),
         });
       }
     }
@@ -182,7 +125,7 @@ export function MainLayout({
           id: `page-${page.identity}`,
           label: page.name,
           href: `/pages/${page.identity}`,
-          icon: getIcon(page.icon) ?? FileTextIcon,
+          icon: getPageIcon(page.icon),
         });
       }
     }
@@ -195,7 +138,7 @@ export function MainLayout({
           id: `link-${link.identity}`,
           label: link.name,
           href: link.url,
-          icon: getIcon(link.icon) ?? ExternalLinkIcon,
+          icon: getLinkIcon(link.icon),
           target: link.target,
         });
       }
@@ -209,7 +152,7 @@ export function MainLayout({
           id: `embed-${embed.identity}`,
           label: embed.name,
           href: `/embeds/${embed.identity}`,
-          icon: getIcon(embed.icon) ?? LayoutIcon,
+          icon: getEmbedIcon(embed.icon),
         });
       }
     }

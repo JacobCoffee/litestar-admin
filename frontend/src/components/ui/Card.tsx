@@ -27,7 +27,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           "rounded-[var(--radius-lg)]",
-          "overflow-hidden",
           variantStyles[variant],
           className,
         )}

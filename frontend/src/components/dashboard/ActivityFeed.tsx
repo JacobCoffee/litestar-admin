@@ -51,7 +51,7 @@ export function ActivityFeed({
           View all
         </Link>
       </CardHeader>
-      <CardBody className="p-0">
+      <CardBody className="max-h-96 overflow-y-auto p-0">
         {displayActivities.length === 0 ? (
           <EmptyActivityState />
         ) : (

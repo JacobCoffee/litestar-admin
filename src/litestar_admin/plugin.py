@@ -150,6 +150,7 @@ class AdminPlugin(InitPluginProtocol):
             DashboardController,
             EmbedsController,
             ExportController,
+            LinksController,
             ModelsController,
             OAuthController,
             PagesController,
@@ -169,6 +170,7 @@ class AdminPlugin(InitPluginProtocol):
                 DashboardController,
                 EmbedsController,
                 ExportController,
+                LinksController,
                 ModelsController,
                 OAuthController,
                 PagesController,
@@ -197,6 +199,10 @@ class AdminPlugin(InitPluginProtocol):
 
         index_html_path = static_path / "index.html"
         models_html_path = static_path / "models" / "index.html"
+        actions_html_path = static_path / "actions" / "index.html"
+        pages_html_path = static_path / "pages" / "index.html"
+        custom_html_path = static_path / "custom" / "index.html"
+        embeds_html_path = static_path / "embeds" / "index.html"
 
         # Create static router for actual static files (_next/*, login/, etc.)
         static_router = create_static_files_router(
@@ -207,7 +213,7 @@ class AdminPlugin(InitPluginProtocol):
             after_request=_add_cache_headers,
         )
 
-        # SPA catch-all route - serves models/index.html for model routes
+        # SPA catch-all route - serves appropriate index.html for SPA routes
         # This enables client-side routing for paths like /admin/models/User
         # IMPORTANT: We only handle routes that are NOT static assets
         @get(
@@ -215,13 +221,92 @@ class AdminPlugin(InitPluginProtocol):
                 f"{self._config.base_url}/models/",
                 f"{self._config.base_url}/models/{{path:path}}",
             ],
-            name="admin_spa_fallback",
+            name="admin_spa_models_fallback",
             include_in_schema=False,
         )
-        async def spa_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+        async def spa_models_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
             """Serve models/index.html for SPA client-side routing."""
-            # Serve the models page HTML for all /models/* routes
             html_path = models_html_path if models_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
+
+        @get(
+            path=[
+                f"{self._config.base_url}/actions/",
+                f"{self._config.base_url}/actions/{{path:path}}",
+            ],
+            name="admin_spa_actions_fallback",
+            include_in_schema=False,
+        )
+        async def spa_actions_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+            """Serve actions/index.html for SPA client-side routing."""
+            html_path = actions_html_path if actions_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
+
+        @get(
+            path=[
+                f"{self._config.base_url}/pages/",
+                f"{self._config.base_url}/pages/{{path:path}}",
+            ],
+            name="admin_spa_pages_fallback",
+            include_in_schema=False,
+        )
+        async def spa_pages_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+            """Serve pages/index.html for SPA client-side routing."""
+            html_path = pages_html_path if pages_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
+
+        @get(
+            path=[
+                f"{self._config.base_url}/custom/",
+                f"{self._config.base_url}/custom/{{path:path}}",
+            ],
+            name="admin_spa_custom_fallback",
+            include_in_schema=False,
+        )
+        async def spa_custom_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+            """Serve custom/index.html for SPA client-side routing."""
+            html_path = custom_html_path if custom_html_path.exists() else index_html_path
+            if html_path.exists():
+                content = html_path.read_bytes()
+                return Response(
+                    content=content,
+                    media_type="text/html",
+                    headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                )
+            return Response(content=b"Not Found", status_code=404)
+
+        @get(
+            path=[
+                f"{self._config.base_url}/embeds/",
+                f"{self._config.base_url}/embeds/{{path:path}}",
+            ],
+            name="admin_spa_embeds_fallback",
+            include_in_schema=False,
+        )
+        async def spa_embeds_fallback(path: str = "") -> Response[bytes]:  # noqa: ARG001
+            """Serve embeds/index.html for SPA client-side routing."""
+            html_path = embeds_html_path if embeds_html_path.exists() else index_html_path
             if html_path.exists():
                 content = html_path.read_bytes()
                 return Response(
@@ -234,7 +319,11 @@ class AdminPlugin(InitPluginProtocol):
         app_config.route_handlers = [
             *list(app_config.route_handlers or []),
             static_router,
-            spa_fallback,
+            spa_models_fallback,
+            spa_actions_fallback,
+            spa_pages_fallback,
+            spa_custom_fallback,
+            spa_embeds_fallback,
         ]
 
     async def _startup(self, app: Litestar) -> None:
