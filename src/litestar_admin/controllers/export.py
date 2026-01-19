@@ -5,7 +5,7 @@ from __future__ import annotations
 import csv
 import json
 from dataclasses import dataclass
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from litestar import Controller, get, post
@@ -28,8 +28,15 @@ __all__ = [
 ]
 
 # Supported export formats
-ExportFormat = Literal["csv", "json"]
-SUPPORTED_FORMATS: frozenset[str] = frozenset({"csv", "json"})
+ExportFormat = Literal["csv", "json", "xlsx"]
+SUPPORTED_FORMATS: frozenset[str] = frozenset({"csv", "json", "xlsx"})
+
+# Content types for export formats
+CONTENT_TYPES: dict[str, str] = {
+    "csv": "text/csv",
+    "json": "application/json",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
 
 # Streaming configuration
 CHUNK_SIZE = 1000  # Number of records to process per chunk
@@ -41,23 +48,49 @@ class BulkExportRequest:
 
     Attributes:
         ids: List of record IDs to export.
-        format: Export format (csv or json).
+        format: Export format (csv, json, or xlsx).
     """
 
     ids: list[Any]
     format: ExportFormat = "csv"
 
 
+def _get_openpyxl() -> Any:
+    """Import and return openpyxl module.
+
+    This function lazily imports openpyxl only when XLSX export is requested,
+    allowing the library to remain an optional dependency.
+
+    Returns:
+        The openpyxl module.
+
+    Raises:
+        ValidationException: If openpyxl is not installed.
+    """
+    try:
+        import openpyxl
+
+        return openpyxl
+    except ImportError:
+        msg = "XLSX export requires the 'openpyxl' package. Install it with: pip install litestar-admin[excel]"
+        raise ValidationException(msg) from None
+
+
 class ExportController(Controller):
     """Controller for exporting model data.
 
-    Provides endpoints for exporting records in CSV or JSON format.
+    Provides endpoints for exporting records in CSV, JSON, or XLSX format.
     Supports both full exports and selective bulk exports.
+
+    Note:
+        XLSX export requires the optional 'excel' dependency (openpyxl).
+        Install with: pip install litestar-admin[excel]
 
     Example:
         The controller is automatically registered by AdminPlugin.
         Access endpoints at:
         - GET /admin/api/models/{model}/export?format=csv
+        - GET /admin/api/models/{model}/export?format=xlsx
         - POST /admin/api/models/{model}/bulk/export
     """
 
@@ -68,7 +101,7 @@ class ExportController(Controller):
         "/{model_name:str}/export",
         status_code=HTTP_200_OK,
         summary="Export all records",
-        description="Export all records from a model in CSV or JSON format.",
+        description="Export all records from a model in CSV, JSON, or XLSX format.",
     )
     async def export_all(
         self,
@@ -83,7 +116,7 @@ class ExportController(Controller):
             model_name: The name of the model to export.
             admin_registry: The model registry containing all registered views.
             db_session: The database session.
-            format: Export format (csv or json). Defaults to csv.
+            format: Export format (csv, json, or xlsx). Defaults to csv.
 
         Returns:
             Streaming response with exported data.
@@ -107,11 +140,14 @@ class ExportController(Controller):
             if format == "csv":
                 async for chunk in self._stream_csv(db_session, model, columns):
                     yield chunk
+            elif format == "xlsx":
+                async for chunk in self._stream_xlsx(db_session, model, columns, model_name):
+                    yield chunk
             else:
                 async for chunk in self._stream_json(db_session, model, columns):
                     yield chunk
 
-        content_type = "text/csv" if format == "csv" else "application/json"
+        content_type = CONTENT_TYPES.get(format, "application/octet-stream")
         filename = f"{model_name}_export.{format}"
 
         return Stream(
@@ -126,7 +162,7 @@ class ExportController(Controller):
         "/{model_name:str}/bulk/export",
         status_code=HTTP_200_OK,
         summary="Export selected records",
-        description="Export selected records by their IDs in CSV or JSON format.",
+        description="Export selected records by their IDs in CSV, JSON, or XLSX format.",
     )
     async def export_selected(
         self,
@@ -172,11 +208,16 @@ class ExportController(Controller):
             if data.format == "csv":
                 async for chunk in self._stream_csv_by_ids(db_session, model, columns, pk_column, data.ids):
                     yield chunk
+            elif data.format == "xlsx":
+                async for chunk in self._stream_xlsx_by_ids(
+                    db_session, model, columns, pk_column, data.ids, model_name
+                ):
+                    yield chunk
             else:
                 async for chunk in self._stream_json_by_ids(db_session, model, columns, pk_column, data.ids):
                     yield chunk
 
-        content_type = "text/csv" if data.format == "csv" else "application/json"
+        content_type = CONTENT_TYPES.get(data.format, "application/octet-stream")
         filename = f"{model_name}_export.{data.format}"
 
         return Stream(
@@ -432,3 +473,149 @@ class ExportController(Controller):
                 yield (prefix + json.dumps(row_data, default=str)).encode("utf-8")
 
         yield b"]"
+
+    @staticmethod
+    def _prepare_cell_value(value: Any) -> Any:
+        """Prepare a value for writing to an Excel cell.
+
+        openpyxl handles many types natively (datetime, date, int, float, bool, str).
+        This method handles special cases that need conversion.
+
+        Args:
+            value: The value to prepare.
+
+        Returns:
+            The value ready for Excel cell writing.
+        """
+        if value is None:
+            return None
+        # UUID needs to be converted to string
+        if hasattr(value, "hex") and hasattr(value, "int"):
+            # Duck typing check for UUID-like objects
+            return str(value)
+        # Decimal is handled natively by openpyxl, but we ensure it's numeric
+        # datetime, date, time are handled natively by openpyxl
+        # Lists and dicts should be converted to JSON strings
+        if isinstance(value, (list, dict)):
+            return json.dumps(value, default=str)
+        # Related objects - just use string representation
+        if hasattr(value, "__dict__") and not isinstance(value, (str, bytes, int, float, bool)):
+            return str(value)
+        return value
+
+    async def _stream_xlsx(
+        self,
+        session: AsyncSession,
+        model: type[Any],
+        columns: list[str],
+        sheet_name: str,
+    ) -> AsyncGenerator[bytes, None]:
+        """Stream XLSX data for all records.
+
+        Note: openpyxl does not support true streaming, so we build the entire
+        workbook in memory and yield the complete content.
+
+        Args:
+            session: The database session.
+            model: The SQLAlchemy model class.
+            columns: List of column names to export.
+            sheet_name: Name for the worksheet (typically the model name).
+
+        Yields:
+            Complete XLSX file content as bytes.
+        """
+        openpyxl = _get_openpyxl()
+
+        # Create workbook and worksheet
+        workbook = openpyxl.Workbook()
+        worksheet = workbook.active
+        worksheet.title = sheet_name[:31]  # Excel sheet names limited to 31 chars
+
+        # Write header row
+        for col_idx, column_name in enumerate(columns, start=1):
+            worksheet.cell(row=1, column=col_idx, value=column_name)
+
+        # Fetch and write all records
+        row_idx = 2
+        offset = 0
+        while True:
+            query = select(model).offset(offset).limit(CHUNK_SIZE)
+            result = await session.scalars(query)
+            records = result.all()
+
+            if not records:
+                break
+
+            for record in records:
+                for col_idx, column in enumerate(columns, start=1):
+                    value = getattr(record, column, None)
+                    worksheet.cell(row=row_idx, column=col_idx, value=self._prepare_cell_value(value))
+                row_idx += 1
+
+            offset += CHUNK_SIZE
+
+            if len(records) < CHUNK_SIZE:
+                break
+
+        # Save to BytesIO and yield
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+        yield output.getvalue()
+
+    async def _stream_xlsx_by_ids(
+        self,
+        session: AsyncSession,
+        model: type[Any],
+        columns: list[str],
+        pk_column: str,
+        ids: list[Any],
+        sheet_name: str,
+    ) -> AsyncGenerator[bytes, None]:
+        """Stream XLSX data for selected records.
+
+        Note: openpyxl does not support true streaming, so we build the entire
+        workbook in memory and yield the complete content.
+
+        Args:
+            session: The database session.
+            model: The SQLAlchemy model class.
+            columns: List of column names to export.
+            pk_column: The primary key column name.
+            ids: List of record IDs to export.
+            sheet_name: Name for the worksheet (typically the model name).
+
+        Yields:
+            Complete XLSX file content as bytes.
+        """
+        openpyxl = _get_openpyxl()
+
+        # Create workbook and worksheet
+        workbook = openpyxl.Workbook()
+        worksheet = workbook.active
+        worksheet.title = sheet_name[:31]  # Excel sheet names limited to 31 chars
+
+        # Write header row
+        for col_idx, column_name in enumerate(columns, start=1):
+            worksheet.cell(row=1, column=col_idx, value=column_name)
+
+        # Fetch and write selected records
+        row_idx = 2
+        for i in range(0, len(ids), CHUNK_SIZE):
+            chunk_ids = ids[i : i + CHUNK_SIZE]
+            pk_attr = getattr(model, pk_column)
+            query = select(model).where(pk_attr.in_(chunk_ids))
+            result = await session.scalars(query)
+            records = result.all()
+
+            for record in records:
+                for col_idx, column in enumerate(columns, start=1):
+                    value = getattr(record, column, None)
+                    worksheet.cell(row=row_idx, column=col_idx, value=self._prepare_cell_value(value))
+                row_idx += 1
+
+        # Save to BytesIO and yield
+        output = BytesIO()
+        workbook.save(output)
+        output.seek(0)
+        yield output.getvalue()
