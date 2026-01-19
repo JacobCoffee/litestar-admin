@@ -35,6 +35,7 @@ class UserAdmin(ModelView, model=User):
     - Email and name searchable
     - Sortable by created_at and email
     - Password hash excluded from forms (security)
+    - Virtual 'password' field for user creation
     - Delete disabled for safety (use deactivation instead)
     """
 
@@ -50,8 +51,8 @@ class UserAdmin(ModelView, model=User):
     column_sortable_list = ["id", "email", "created_at", "role", "is_active"]
     column_default_sort = ("created_at", "desc")
 
-    # Form configuration - exclude sensitive fields
-    form_excluded_columns = ["password_hash", "articles"]
+    # Form configuration - exclude sensitive/auto fields
+    form_excluded_columns = ["password_hash", "articles", "created_at", "updated_at"]
 
     # Permission controls
     can_create = True
@@ -63,6 +64,27 @@ class UserAdmin(ModelView, model=User):
     # Pagination
     page_size = 25
     page_size_options = [10, 25, 50, 100]
+
+    @classmethod
+    def get_form_extra_fields(cls, *, is_create: bool = False) -> dict[str, dict[str, Any]]:
+        """Get extra virtual fields for user forms.
+
+        Args:
+            is_create: Whether this is for a create form.
+
+        Returns:
+            Dictionary with password field configuration.
+        """
+        return {
+            "password": {
+                "type": "string",
+                "format": "password",
+                "title": "Password",
+                "description": "Enter password" + (" (required)" if is_create else " (leave empty to keep unchanged)"),
+                "minLength": 8,
+                "required": is_create,  # Required on create, optional on edit
+            },
+        }
 
     @classmethod
     async def on_model_change(

@@ -66,6 +66,7 @@ class BaseModelView:
     # Form configuration
     form_columns: ClassVar[list[str]] = []
     form_excluded_columns: ClassVar[list[str]] = []
+    form_extra_fields: ClassVar[dict[str, dict[str, Any]]] = {}
 
     # Permissions
     can_create: ClassVar[bool] = True
@@ -133,6 +134,22 @@ class BaseModelView:
             return columns
 
         return []
+
+    @classmethod
+    def get_form_extra_fields(cls, *, is_create: bool = False) -> dict[str, dict[str, Any]]:
+        """Get extra virtual fields to include in forms.
+
+        Virtual fields are form-only fields that don't map directly to database
+        columns. Use this for fields like 'password' that get processed via
+        on_model_change hook before saving.
+
+        Args:
+            is_create: Whether this is for a create form.
+
+        Returns:
+            Dictionary of field names to JSON schema property definitions.
+        """
+        return cls.form_extra_fields.copy()
 
     @classmethod
     def get_column_info(cls, column_name: str) -> dict[str, Any]:

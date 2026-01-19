@@ -543,11 +543,14 @@ class AdminService(Generic[T]):
 
         return deleted_count
 
-    def get_model_schema(self) -> dict[str, Any]:
+    def get_model_schema(self, *, is_create: bool = True) -> dict[str, Any]:
         """Get JSON schema for the model.
 
         This method generates a JSON schema representation of the model's
         columns, useful for form generation in the frontend.
+
+        Args:
+            is_create: Whether this schema is for create mode (default True).
 
         Returns:
             Dictionary representing the JSON schema.
@@ -556,14 +559,35 @@ class AdminService(Generic[T]):
         properties: dict[str, Any] = {}
         required: list[str] = []
 
+        # Get form columns configuration
+        form_columns = self._view_class.get_form_columns(is_create=is_create)
+        form_excluded = set(self._view_class.form_excluded_columns)
+
         for column in mapper.columns:
             column_name = column.name
+
+            # Skip columns excluded from forms or not in form_columns list
+            if column_name in form_excluded:
+                continue
+            if form_columns and column_name not in form_columns:
+                continue
+
             column_schema = self._column_to_schema(column)
             properties[column_name] = column_schema
 
-            # Add to required list if not nullable and no default
-            if not column.nullable and column.default is None and not column.primary_key:
+            # Add to required list if not nullable and no default (Python or server)
+            has_default = column.default is not None or column.server_default is not None
+            if not column.nullable and not has_default and not column.primary_key:
                 required.append(column_name)
+
+        # Add extra form fields (virtual fields like 'password')
+        extra_fields = self._view_class.get_form_extra_fields(is_create=is_create)
+        for field_name, field_schema in extra_fields.items():
+            properties[field_name] = field_schema
+            if field_schema.get("required"):
+                required.append(field_name)
+                # Remove 'required' from the property schema itself
+                del field_schema["required"]
 
         return {
             "type": "object",
