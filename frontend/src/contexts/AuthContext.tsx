@@ -35,6 +35,8 @@ export interface AuthContextValue {
   user: AdminUser | null;
   /** Whether the user is authenticated */
   isAuthenticated: boolean;
+  /** Whether auth is via session (not JWT) */
+  isSessionAuth: boolean;
   /** Whether the initial auth check is loading */
   isLoading: boolean;
   /** Error from the auth operations */
@@ -107,14 +109,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [isSessionAuth, setIsSessionAuth] = useState(false);
 
-  // Check if we have a token in storage (client-side only)
-  const hasStoredToken = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem(ACCESS_TOKEN_KEY);
-  }, []);
-
-  // Get current user query - this validates the token and fetches user data
+  // Get current user query - always enabled to support both JWT and session auth.
+  // For session auth, there's no localStorage token — the session cookie is sent
+  // automatically via credentials: 'include' on the fetch call.
   const {
     data: user,
     isLoading: isUserLoading,
@@ -122,7 +121,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refetch: refetchUser,
   } = useCurrentUser({
     retry: false,
-    enabled: hasStoredToken,
+    enabled: true,
   });
 
   // Login mutation
@@ -142,8 +141,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     onSuccess: () => {
       // Clear all queries to ensure fresh state
       queryClient.removeQueries({ queryKey: queryKeys.auth.all });
-      // Redirect to login page after logout
-      router.push("/login");
+      if (isSessionAuth) {
+        // Session auth — redirect to the main app's login page
+        window.location.href = "/auth/login";
+      } else {
+        // JWT auth — redirect to admin login page
+        router.push("/login");
+      }
     },
   });
 
@@ -168,10 +172,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const hasToken = !!localStorage.getItem(ACCESS_TOKEN_KEY);
 
-      if (hasToken) {
-        try {
-          await refetchUser();
-        } catch {
+      try {
+        const result = await refetchUser();
+        // If we got a user but have no localStorage token, we're using session auth
+        if (result.data && !hasToken) {
+          setIsSessionAuth(true);
+        }
+      } catch {
+        if (hasToken) {
           // Token is invalid, clear it
           apiClient.clearTokens();
         }
@@ -192,9 +200,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isLoading = useMemo(() => {
     if (!initialCheckDone) return true;
     if (typeof window === "undefined") return true;
-
-    const hasToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-    if (hasToken && isUserLoading) return true;
+    if (isUserLoading) return true;
 
     return false;
   }, [initialCheckDone, isUserLoading]);
@@ -270,6 +276,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       user: user ?? null,
       isAuthenticated,
+      isSessionAuth,
       isLoading,
       error,
       login,
@@ -285,6 +292,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [
       user,
       isAuthenticated,
+      isSessionAuth,
       isLoading,
       error,
       login,

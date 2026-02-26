@@ -31,7 +31,9 @@ Example:
 from __future__ import annotations
 
 from litestar_admin.middleware.auth import (
+    AdminAuthMiddleware,
     JWTAuthMiddleware,
+    create_auth_middleware,
     create_jwt_auth_middleware,
 )
 from litestar_admin.middleware.ratelimit import (
@@ -51,8 +53,10 @@ __all__ = [
     "InMemoryRateLimitStore",
     "RateLimitStore",
     # Middleware
+    "AdminAuthMiddleware",
     "JWTAuthMiddleware",
     "RateLimitMiddleware",
+    "create_auth_middleware",
     "create_jwt_auth_middleware",
     "create_rate_limit_middleware",
     # Helpers

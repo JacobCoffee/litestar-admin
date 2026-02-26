@@ -23,6 +23,7 @@ from litestar_admin.auth.password_reset import (
     PasswordResetToken,
 )
 from litestar_admin.auth.protocols import AdminUserProtocol, AuthBackend
+from litestar_admin.auth.session import SessionAuthBackend
 
 __all__ = [
     # Models
@@ -34,6 +35,8 @@ __all__ = [
     # JWT
     "JWTAuthBackend",
     "JWTConfig",
+    # Session
+    "SessionAuthBackend",
     # Password utilities
     "PasswordHasher",
     "hash_password",

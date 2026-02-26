@@ -382,6 +382,7 @@ export class AdminApiClient {
       let response = await fetch(requestUrl, {
         ...requestOptions,
         signal: controller.signal,
+        credentials: "include",
       });
 
       clearTimeout(timeoutId);
