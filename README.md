@@ -21,15 +21,24 @@ litestar-admin provides a production-ready admin interface for managing SQLAlche
   ### Examples
 
 <table>
-<tr>
-  <td><img width="400" alt="image"
-src="https://github.com/user-attachments/assets/0b4852fb-b1e3-40a0-80c0-3d76ab29b5cb"
-/></td>
-  <td><img width="400" alt="image"
-src="https://github.com/user-attachments/assets/085b380e-1f47-401c-8487-1e034e829490"
-/></td>
-</tr>
+    <tr>
+      <td><img width="400" alt="image"
+  src="https://github.com/user-attachments/assets/0b4852fb-b1e3-40a0-80c0-3d76ab29b5cb"
+  /></td>
+      <td><img width="400" alt="image"
+  src="https://github.com/user-attachments/assets/085b380e-1f47-401c-8487-1e034e829490"
+  /></td>
+    </tr>
+    <tr>
+      <td><img width="400" alt="image"
+  src="https://github.com/user-attachments/assets/c476f1ce-943f-4b56-9807-eb23061a9419"
+  /></td>
+      <td><img width="400" alt="image"
+  src="https://github.com/user-attachments/assets/74e9610a-33a8-4eb9-8992-311b5d39718f"
+  /></td>
+    </tr>
 </table>
+
 
 ## Installation
 
