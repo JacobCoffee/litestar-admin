@@ -5,6 +5,7 @@ This module provides the authentication configuration including:
 - user_loader async function for loading users by email/id
 - password_verifier async function for credential validation
 - JWTAuthBackend configuration (default)
+- SessionAuthBackend configuration (for session-based SSO)
 - OAuthAuthBackend configuration (optional, for GitHub OAuth)
 - DemoOAuthProvider for local testing without real OAuth credentials
 
@@ -12,6 +13,10 @@ Example:
     JWT Authentication (default):
         >>> from examples.full.auth import get_auth_backend
         >>> backend = get_auth_backend(db_session_factory)
+
+    Session Authentication (SSO with host app):
+        >>> from examples.full.auth import get_session_auth_backend
+        >>> backend = get_session_auth_backend(db_session_factory)
 
     OAuth Authentication (GitHub):
         >>> from examples.full.auth import get_oauth_backend
@@ -61,8 +66,10 @@ from litestar_admin.guards import ROLE_PERMISSIONS, Permission, Role
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from litestar.connection import ASGIConnection
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from litestar_admin.auth.session import SessionAuthBackend
     from litestar_admin.contrib.oauth import OAuthAuthBackend, OAuthUserInfo
 
 __all__ = [
@@ -73,6 +80,7 @@ __all__ = [
     "get_auth_backend",
     "get_demo_oauth_backend",
     "get_oauth_backend",
+    "get_session_auth_backend",
     "hash_password",
     "hash_password_async",
     "verify_password",
@@ -330,6 +338,69 @@ def get_auth_backend(session_factory: Callable[[], AsyncSession]) -> JWTAuthBack
         password_verifier=verify_password,
         password_hasher=hash_password_async,
         password_updater=password_updater,
+    )
+
+
+def get_session_auth_backend(
+    session_factory: Callable[[], AsyncSession],
+) -> SessionAuthBackend:
+    """Create and configure a session-based authentication backend.
+
+    This backend reads from the host application's session middleware,
+    following the same ``retrieve_user_handler(session, connection)`` pattern
+    as Litestar's built-in ``SessionAuth``. Use this when the admin panel is
+    embedded in an app that already has session-based authentication — users
+    logged into the host app get seamless SSO into the admin panel.
+
+    The host app must configure session middleware (e.g.,
+    ``ServerSideSessionConfig``) independently. This backend simply reads
+    from ``connection.session``.
+
+    Unauthenticated or non-admin users receive a 404 (not 401/403) to avoid
+    leaking the admin panel's existence.
+
+    Args:
+        session_factory: A callable that returns an AsyncSession for database access.
+
+    Returns:
+        A configured SessionAuthBackend instance.
+
+    Example:
+        >>> from litestar.middleware.session.server_side import ServerSideSessionConfig
+        >>> from examples.full.auth import get_session_auth_backend
+        >>>
+        >>> backend = get_session_auth_backend(get_session)
+        >>> admin_config = AdminConfig(auth_backend=backend, ...)
+        >>>
+        >>> # Host app must also configure session middleware:
+        >>> session_config = ServerSideSessionConfig(store="sessions")
+        >>> app = Litestar(middleware=[session_config.middleware], ...)
+    """
+    from litestar_admin.auth.session import SessionAuthBackend
+
+    user_loader = create_user_loader(session_factory)
+
+    async def retrieve_user_handler(
+        session: dict,
+        connection: ASGIConnection,
+    ) -> DemoAdminUser | None:
+        """Load the admin user from the session.
+
+        Args:
+            session: The session dictionary from the connection.
+            connection: The current ASGI connection.
+
+        Returns:
+            A DemoAdminUser if the session contains a valid, active user ID.
+        """
+        user_id = session.get("user_id")
+        if not user_id:
+            return None
+        return await user_loader(user_id)
+
+    return SessionAuthBackend(
+        retrieve_user_handler=retrieve_user_handler,
+        session_key="user_id",
     )
 
 

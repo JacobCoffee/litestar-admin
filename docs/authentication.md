@@ -406,6 +406,137 @@ app = Litestar(
 )
 ```
 
+## Session Authentication (SSO)
+
+If your application already uses Litestar's session middleware (e.g., `ServerSideSessionConfig`), you can use `SessionAuthBackend` to give logged-in users seamless access to the admin panel without a second login. Unauthenticated or non-admin users see a 404 — the admin panel's existence is not leaked.
+
+### Quick Setup
+
+```python
+from litestar_admin import AdminPlugin, AdminConfig
+from litestar_admin.auth import SessionAuthBackend
+
+
+async def retrieve_user_handler(session: dict, connection):
+    """Load admin user from the host app's session."""
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+
+    user = await load_user_from_db(user_id)
+    if user is None or not user.is_admin:
+        return None
+    return user  # Must implement AdminUserProtocol
+
+
+backend = SessionAuthBackend(
+    retrieve_user_handler=retrieve_user_handler,
+    session_key="user_id",  # Key in session dict (default)
+)
+
+admin_plugin = AdminPlugin(
+    config=AdminConfig(
+        title="My Admin",
+        auth_backend=backend,
+    ),
+)
+```
+
+### How It Works
+
+`SessionAuthBackend` follows the same `retrieve_user_handler(session, connection)` pattern as Litestar's built-in `SessionAuth`. The host app configures session middleware independently — the admin backend simply reads from `connection.session`.
+
+The `retrieve_user_handler` receives:
+- `session`: The session dictionary (same as `connection.session`)
+- `connection`: The `ASGIConnection` for accessing app state, headers, etc.
+
+### Constructor Arguments
+
+#### retrieve_user_handler
+
+An async callable with signature `(dict, ASGIConnection) -> AdminUserProtocol | None`. This is the only required argument.
+
+#### session_key
+
+The key in the session dictionary that holds the user identifier. Defaults to `"user_id"`. Used by the backend to short-circuit early when the key is absent.
+
+#### authenticate_handler (optional)
+
+An async callable for email/password login via the admin login form. If not provided, the admin login form is effectively disabled — authentication happens entirely through the host app's session.
+
+```python
+async def authenticate_handler(connection, credentials):
+    """Optional: allow password login through the admin form too."""
+    email = credentials.get("email")
+    password = credentials.get("password")
+    user = await verify_and_load(email, password)
+    if user and user.is_admin:
+        return user
+    return None
+
+
+backend = SessionAuthBackend(
+    retrieve_user_handler=retrieve_user_handler,
+    authenticate_handler=authenticate_handler,
+)
+```
+
+### Complete Example with SQLAlchemy
+
+```python
+from litestar import Litestar
+from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.stores.redis import RedisStore
+from litestar_admin import AdminConfig, AdminPlugin
+from litestar_admin.auth import SessionAuthBackend
+
+
+# Your existing user model
+class AdminUserAdapter:
+    """Wrap your app's User model to satisfy AdminUserProtocol."""
+
+    def __init__(self, user):
+        self._user = user
+
+    @property
+    def id(self): return str(self._user.id)
+
+    @property
+    def email(self): return self._user.email
+
+    @property
+    def roles(self): return [r.name for r in self._user.roles]
+
+    @property
+    def permissions(self): return ["admin:access"]
+
+
+async def retrieve_user_handler(session, connection):
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+    user = await load_user(user_id)  # Your DB lookup
+    if user is None or not user.is_admin:
+        return None
+    return AdminUserAdapter(user)
+
+
+# Session auth backend — no JWT, no secrets to configure
+backend = SessionAuthBackend(retrieve_user_handler=retrieve_user_handler)
+
+admin_plugin = AdminPlugin(
+    config=AdminConfig(title="My Admin", auth_backend=backend),
+)
+
+# Host app with session middleware
+session_config = ServerSideSessionConfig(store="sessions")
+app = Litestar(
+    plugins=[admin_plugin],
+    middleware=[session_config.middleware],
+    stores={"sessions": RedisStore.with_client(url="redis://localhost")},
+)
+```
+
 ## Custom Auth Backend
 
 You can create custom authentication backends by implementing the `AuthBackend` protocol:

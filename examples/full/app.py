@@ -954,12 +954,19 @@ logger.info(
 # - Demo users are seeded on startup
 # - Use credentials: admin@example.com / admin
 #
-# Option 2: OAuth Authentication (GitHub)
+# Option 2: Session Authentication (SSO with host app)
+# - Reads from the host app's existing session middleware
+# - Logged-in users get seamless access to /admin/ (no second login)
+# - Unauthenticated / non-admin users see 404 (admin panel hidden)
+# - Requires host app to configure session middleware independently
+# - See get_session_auth_backend() in auth.py
+#
+# Option 3: OAuth Authentication (GitHub)
 # - Login with GitHub OAuth
 # - Requires GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET env vars
 # - New users are auto-created on first login
 #
-# Option 3: Demo OAuth Authentication (no external credentials)
+# Option 4: Demo OAuth Authentication (no external credentials)
 # - Simulates OAuth flow without external API calls
 # - Enabled via OAUTH_DEMO_MODE=true environment variable
 # - Demo user created in database on first login
@@ -988,6 +995,7 @@ logger.info(
 # the automatic detection above:
 #
 # auth_backend = get_auth_backend(get_session)  # JWT
+# auth_backend = get_session_auth_backend(get_session)  # Session SSO
 # auth_backend = get_oauth_backend(get_session)  # GitHub OAuth
 # auth_backend = get_demo_oauth_backend(get_session)  # Demo OAuth
 
