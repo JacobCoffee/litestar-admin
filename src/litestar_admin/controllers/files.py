@@ -17,10 +17,10 @@ from dataclasses import dataclass
 from typing import Any, ClassVar
 
 from litestar import Controller, Request, delete, get, post
-from litestar.datastructures import UploadFile  # noqa: TC002  # Required for runtime signature
+from litestar.datastructures import UploadFile  # Required for runtime signature
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body, Parameter
+from litestar.params import Body
 from litestar.response import Redirect, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
@@ -212,7 +212,7 @@ class FilesController(Controller):
         generate_thumbnail = request.query_params.get("generate_thumbnail", "false").lower() == "true"
 
         # Debug logging
-        _logger.info(f"=== FILE UPLOAD DEBUG ===")
+        _logger.info("=== FILE UPLOAD DEBUG ===")
         _logger.info(f"model_name: {model_name}")
         _logger.info(f"field_name: {field_name}")
         _logger.info(f"admin_storage: {admin_storage}")
@@ -239,7 +239,9 @@ class FilesController(Controller):
             form_data = await request.form()
             _logger.info(f"Form data keys: {list(form_data.keys())}")
             for key, value in form_data.items():
-                _logger.info(f"  {key}: {type(value).__name__} = {value if not isinstance(value, UploadFile) else f'UploadFile({value.filename})'}")
+                _logger.info(
+                    f"  {key}: {type(value).__name__} = {value if not isinstance(value, UploadFile) else f'UploadFile({value.filename})'}"
+                )
         except Exception as e:
             _logger.error(f"Error parsing form data: {e}")
             return Response(
@@ -327,7 +329,9 @@ class FilesController(Controller):
         try:
             _logger.info(f"Starting upload to storage... generate_thumbnail={generate_thumbnail}")
             # Generate thumbnail if requested (regardless of validation config)
-            should_generate_thumb = generate_thumbnail or (isinstance(field_config, ImageField) and field_config.generate_thumbnail)
+            should_generate_thumb = generate_thumbnail or (
+                isinstance(field_config, ImageField) and field_config.generate_thumbnail
+            )
             if should_generate_thumb:
                 storage_path, thumbnail_path = await admin_storage.upload_with_thumbnail(
                     file_content=file_content,

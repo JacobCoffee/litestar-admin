@@ -307,7 +307,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <LitestarLogo className="h-12 w-12" />
           </div>
-          <h1 className="text-2xl font-bold text-[var(--color-foreground)]">Litestar Admin</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-foreground)]">{config?.title ?? "Litestar Admin"}</h1>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
             Sign in to your account to continue
           </p>
@@ -492,7 +492,7 @@ export default function LoginPage() {
 
         {/* Footer text */}
         <p className="mt-6 text-center text-xs text-[var(--color-muted)]">
-          Protected by Litestar Admin.{" "}
+          Protected by {config?.title ?? "Litestar Admin"}.{" "}
           <a
             href="https://litestar.dev"
             target="_blank"

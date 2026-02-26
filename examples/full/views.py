@@ -45,9 +45,12 @@ import logging
 import platform
 import sys
 from datetime import datetime, timezone
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from examples.full.models import Article, ArticleStatus, BlogPost, BlogPostStatus, Document, Tag, User
+
+if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
 from litestar_admin import ModelView
 from litestar_admin.contrib.providers import ColumnDefinition, InMemoryView, ListResult
 from litestar_admin.fields import FileField, ImageField
@@ -162,6 +165,7 @@ class UserAdmin(ModelView, model=User):
         record: Any | None,
         *,
         is_create: bool,
+        request: ASGIConnection | None = None,
     ) -> dict[str, Any]:
         """Handle user creation/update with password hashing.
 
@@ -169,6 +173,7 @@ class UserAdmin(ModelView, model=User):
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides user context).
 
         Returns:
             The modified data to save.
@@ -249,6 +254,7 @@ class ArticleAdmin(ModelView, model=Article):
         record: Any | None,
         *,
         is_create: bool,
+        request: ASGIConnection | None = None,
     ) -> dict[str, Any]:
         """Handle article creation/update with automatic published_at.
 
@@ -258,6 +264,7 @@ class ArticleAdmin(ModelView, model=Article):
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides user context).
 
         Returns:
             The modified data to save.
@@ -344,6 +351,7 @@ class TagAdmin(ModelView, model=Tag):
         record: Any | None,
         *,
         is_create: bool,
+        request: ASGIConnection | None = None,
     ) -> dict[str, Any]:
         """Handle tag creation/update with slug auto-generation.
 
@@ -353,6 +361,7 @@ class TagAdmin(ModelView, model=Tag):
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides user context).
 
         Returns:
             The modified data to save.
@@ -438,6 +447,7 @@ class BlogPostAdmin(ModelView, model=BlogPost):
         record: Any | None,
         *,
         is_create: bool,
+        request: ASGIConnection | None = None,
     ) -> dict[str, Any]:
         """Handle blog post creation/update with slug auto-generation and published_at.
 
@@ -445,6 +455,7 @@ class BlogPostAdmin(ModelView, model=BlogPost):
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides user context).
 
         Returns:
             The modified data to save.
@@ -524,6 +535,9 @@ class DocumentAdmin(ModelView, model=Document):
     column_list = [
         "id",
         "title",
+        "description",
+        "file_path",
+        "thumbnail_path",
         "original_filename",
         "file_size",
         "mime_type",
@@ -535,10 +549,15 @@ class DocumentAdmin(ModelView, model=Document):
     column_default_sort = ("created_at", "desc")
 
     # Form configuration - exclude auto-generated and read-only fields
-    form_excluded_columns = ["created_at", "updated_at", "file_size", "mime_type", "original_filename"]
-
-    # uploaded_by_id is excluded from form - it's set automatically to current user
-    form_excluded_columns_on_create = ["uploaded_by_id"]
+    # uploaded_by_id is set automatically to current user via on_model_change hook
+    form_excluded_columns = [
+        "created_at",
+        "updated_at",
+        "file_size",
+        "mime_type",
+        "original_filename",
+        "uploaded_by_id",
+    ]
 
     # Permission controls
     can_create = True
@@ -582,19 +601,39 @@ class DocumentAdmin(ModelView, model=Document):
         record: Any | None,
         *,
         is_create: bool,
+        request: ASGIConnection | None = None,
     ) -> dict[str, Any]:
         """Handle document creation/update with file processing.
 
-        This hook processes uploaded files and populates metadata fields.
+        This hook processes uploaded files, populates metadata fields,
+        and sets uploaded_by_id to the current user on creation.
 
         Args:
             data: The data being saved.
             record: The existing record (None for create).
             is_create: Whether this is a create operation.
+            request: The current ASGI connection (provides user context).
 
         Returns:
             The modified data to save.
         """
+        # Set uploaded_by_id from current user on create
+        if is_create and request is not None:
+            # Try to get user from request.user or request.auth (for JWT)
+            user = getattr(request, "user", None)
+            if user is not None and hasattr(user, "id"):
+                data["uploaded_by_id"] = user.id
+                logger.debug("Set uploaded_by_id=%s from current user", user.id)
+            else:
+                # Try JWT auth payload
+                auth = getattr(request, "auth", None)
+                if auth is not None:
+                    # JWT payload has sub (subject) which is the user ID
+                    user_id = auth.get("sub") if isinstance(auth, dict) else getattr(auth, "sub", None)
+                    if user_id is not None:
+                        data["uploaded_by_id"] = int(user_id)
+                        logger.debug("Set uploaded_by_id=%s from JWT auth", user_id)
+
         # If a new file was uploaded, extract metadata
         # In a real implementation, this would integrate with the storage backend
         if "file_content" in data:
@@ -927,7 +966,7 @@ class SystemInfoAdmin(InMemoryView):
                         "value": f"{psutil.cpu_percent(interval=0.1)}%",
                         "category": "CPU",
                     },
-                ]
+                ],
             )
 
         return info

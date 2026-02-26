@@ -180,7 +180,7 @@ class AdminStorageBackend:
         if backend_type == StorageBackendType.LOCAL:
             base_path = kwargs.get("path", ".")
             fs_config = FileSystemConfig(
-                path=Path(base_path) if base_path else Path("."),
+                path=Path(base_path) if base_path else Path(),
                 base_url=self.config.public_url_base,
                 create_dirs=True,
             )

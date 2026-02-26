@@ -281,7 +281,7 @@ class ModelsController(Controller):
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
         service: AdminService[Any] = AdminService(view_class, db_session)
-        record = await service.create_record(data)
+        record = await service.create_record(data, request=request)
 
         serialized = _serialize_record(record)
 
@@ -422,7 +422,7 @@ class ModelsController(Controller):
         old_record = await service.get_record(pk)
         old_data = _serialize_record(old_record) if old_record else {}
 
-        record = await service.update_record(pk, data, partial=False)
+        record = await service.update_record(pk, data, partial=False, request=request)
         if record is None:
             raise NotFoundException(f"Record '{record_id}' not found in '{model_name}'")
 
@@ -484,7 +484,7 @@ class ModelsController(Controller):
         old_record = await service.get_record(pk)
         old_data = _serialize_record(old_record) if old_record else {}
 
-        record = await service.update_record(pk, data, partial=True)
+        record = await service.update_record(pk, data, partial=True, request=request)
         if record is None:
             raise NotFoundException(f"Record '{record_id}' not found in '{model_name}'")
 
