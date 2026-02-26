@@ -18,6 +18,19 @@ litestar-admin provides a production-ready admin interface for managing SQLAlche
 - **JWT & OAuth2 Authentication** - Flexible, pluggable auth backends
 - **Static Export Frontend** - Next.js frontend with no runtime Node.js required
 
+  ### Examples
+
+<table>
+<tr>
+  <td><img width="400" alt="image"
+src="https://github.com/user-attachments/assets/0b4852fb-b1e3-40a0-80c0-3d76ab29b5cb"
+/></td>
+  <td><img width="400" alt="image"
+src="https://github.com/user-attachments/assets/085b380e-1f47-401c-8487-1e034e829490"
+/></td>
+</tr>
+</table>
+
 ## Installation
 
 ```bash
