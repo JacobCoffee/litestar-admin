@@ -26,11 +26,9 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
-          token: ${{ secrets.CHANGELOG_PAT }}
-          persist-credentials: false
 
       - name: Generate changelog
-        uses: orhun/git-cliff-action@e16f179f0be49ecdfe63753837f20b9531642772 # v4.7.0
+        uses: orhun/git-cliff-action@c93ef52f3d0ddcdcc9bd5447d98d458a11cd4f72 # v4.7.1
         with:
           config: pyproject.toml
           args: --verbose
@@ -41,18 +39,16 @@ jobs:
       - name: Commit and push changelog
         env:
           TAG: ${{ inputs.tag || github.ref_name }}
-          GH_TOKEN: ${{ secrets.CHANGELOG_PAT }}
         run: |
           if git diff --quiet docs/changelog.md; then
             echo "No changes to commit"
             exit 0
           fi
 
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
-          git checkout main
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
+          git checkout main
           git add docs/changelog.md
           git commit -m "docs: regenerate changelog for ${TAG}"
           git push origin main

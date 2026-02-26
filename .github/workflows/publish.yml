@@ -31,7 +31,7 @@ jobs:
         run: uv build
 
       - name: Upload dist artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4.7.1
         with:
           name: dist
           path: dist/
@@ -48,7 +48,7 @@ jobs:
       id-token: write
     steps:
       - name: Download dist artifacts
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4.7.1
         with:
           name: dist
           path: dist/
@@ -59,7 +59,7 @@ jobs:
           inputs: ./dist/*
 
       - name: Upload signed artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4.7.1
         with:
           name: dist-signed
           path: dist/
@@ -82,14 +82,14 @@ jobs:
           persist-credentials: false
 
       - name: Download signed artifacts
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4.7.1
         with:
           name: dist-signed
           path: dist/
 
       - name: Generate release notes with git-cliff
         id: changelog
-        uses: orhun/git-cliff-action@14bb67f1a42c7959d1eb81ee6ba2c5a15542078a # v4
+        uses: orhun/git-cliff-action@c93ef52f3d0ddcdcc9bd5447d98d458a11cd4f72 # v4.7.1
         with:
           config: pyproject.toml
           args: --current --strip header
@@ -116,7 +116,7 @@ jobs:
       url: https://pypi.org/project/litestar-admin/
     steps:
       - name: Download dist artifacts
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v4.7.1
         with:
           name: dist
           path: dist/
