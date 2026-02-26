@@ -152,3 +152,4 @@ src/litestar_admin/static/
 # Benchmark results
 benchmark-results.json
 demo.db
+examples/full/uploads/
