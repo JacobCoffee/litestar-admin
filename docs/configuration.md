@@ -109,47 +109,40 @@ AdminConfig(auth_backend=backend)
 
 See {doc}`authentication` for detailed authentication setup.
 
-### Model Views
-
-#### views
-
-- **Type:** `list[type[BaseModelView]]`
-- **Default:** `[]`
-
-List of model view classes to register with the admin panel.
-
-```python
-from litestar_admin import AdminConfig, ModelView
-
-class UserAdmin(ModelView, model=User):
-    column_list = ["id", "email"]
-
-class PostAdmin(ModelView, model=Post):
-    column_list = ["id", "title"]
-
-AdminConfig(views=[UserAdmin, PostAdmin])
-```
+### Model Discovery and Views
 
 #### auto_discover
 
 - **Type:** `bool`
 - **Default:** `True`
 
-Whether to automatically discover and register SQLAlchemy models that don't have explicit views defined.
+Auto-discovery is on by default. The plugin finds your `DeclarativeBase` subclasses, walks their model registries, and generates views for any model that doesn't already have an explicit `ModelView`. Generated views include all columns, make string columns searchable, and exclude auto-increment PKs from forms.
 
 ```python
-# Auto-discover all models (creates default views)
-AdminConfig(auto_discover=True)
+# This is enough — all your models get admin views
+AdminConfig(title="My Admin")
 
-# Only use explicitly registered views
-AdminConfig(auto_discover=False)
+# Turn it off if you only want explicitly registered views
+AdminConfig(auto_discover=False, views=[UserAdmin, PostAdmin])
 ```
 
-When enabled, the admin plugin will:
-1. Scan for all SQLAlchemy `DeclarativeBase` classes in your application
-2. Find all model classes registered with those bases
-3. Create default views for models that don't have explicit view classes
-4. Skip models that already have registered views
+#### views
+
+- **Type:** `list[type[BaseAdminView]]`
+- **Default:** `[]`
+
+Explicit view classes to register. Use this when you need to customize column lists, permissions, form behavior, or lifecycle hooks for specific models. Auto-discovery skips any model that already has a view registered here.
+
+```python
+from litestar_admin import AdminConfig, ModelView
+
+class UserAdmin(ModelView, model=User):
+    column_list = ["id", "email"]
+    can_delete = False
+
+# UserAdmin is explicit; other models still auto-discovered
+AdminConfig(views=[UserAdmin])
+```
 
 ### Development
 

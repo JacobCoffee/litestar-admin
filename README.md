@@ -61,14 +61,17 @@ pip install litestar-admin[all]
 
 ## Quick Start
 
+Point the plugin at your app and it picks up your SQLAlchemy models automatically:
+
 ```python
 from litestar import Litestar
-from litestar_admin import AdminPlugin, AdminConfig, ModelView
+from litestar_admin import AdminPlugin, AdminConfig
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-# Define your models
+
 class Base(DeclarativeBase):
     pass
+
 
 class User(Base):
     __tablename__ = "users"
@@ -77,92 +80,44 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     name: Mapped[str]
 
-# Create admin views
-class UserAdmin(ModelView, model=User):
-    column_list = ["id", "email", "name"]
-    column_searchable_list = ["email", "name"]
-    can_delete = False  # Disable deletion
 
-# Create the app
 app = Litestar(
-    plugins=[
-        AdminPlugin(
-            config=AdminConfig(
-                title="My Admin",
-                views=[UserAdmin],
-            )
-        )
-    ]
+    plugins=[AdminPlugin(config=AdminConfig(title="My Admin"))]
 )
 ```
 
-## Configuration
+That's it. Auto-discovery finds your models, builds column lists from the table schema, makes string columns searchable, and gives you full CRUD. No boilerplate view classes required.
 
-```python
-from litestar_admin import AdminConfig
-from litestar_admin.auth import JWTAuthBackend
+### Customizing a Model View
 
-config = AdminConfig(
-    # Basic settings
-    title="My Admin Panel",
-    base_url="/admin",
-    theme="dark",  # or "light"
-
-    # Authentication
-    auth_backend=JWTAuthBackend(
-        secret_key="your-secret-key",
-        algorithm="HS256",
-    ),
-
-    # Model views
-    views=[UserAdmin, PostAdmin],
-    auto_discover=True,  # Auto-discover models
-
-    # Rate limiting
-    rate_limit_enabled=True,
-    rate_limit_requests=100,
-    rate_limit_window_seconds=60,
-)
-```
-
-## Model Views
+When you need more control over how a model looks or behaves in the admin, create a `ModelView` subclass. Auto-discovery skips any model that already has an explicit view registered.
 
 ```python
 from litestar_admin import ModelView
 
 class UserAdmin(ModelView, model=User):
-    # Display settings
-    name = "User"
-    name_plural = "Users"
-    icon = "user"
-    category = "User Management"
-
-    # Column configuration
     column_list = ["id", "email", "name", "created_at"]
     column_exclude_list = ["password_hash"]
     column_searchable_list = ["email", "name"]
-    column_sortable_list = ["id", "email", "created_at"]
     column_default_sort = ("created_at", "desc")
 
-    # Form configuration
-    form_columns = ["email", "name"]
-    form_excluded_columns = ["id", "created_at"]
-
-    # Permissions
     can_create = True
     can_edit = True
     can_delete = False
-    can_export = True
 
-    # Pagination
     page_size = 25
-    page_size_options = [10, 25, 50, 100]
-
-    # Custom access control
-    async def is_accessible(self, connection) -> bool:
-        user = connection.user
-        return user and user.is_admin
 ```
+
+Pass it in via `views=`:
+
+```python
+AdminConfig(
+    title="My Admin",
+    views=[UserAdmin],
+)
+```
+
+Any models *without* an explicit view still get auto-discovered.
 
 ## RBAC Guards
 
