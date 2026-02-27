@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - docs: regenerate changelog for v0.1.0 - ([c0a97a3](https://github.com/JacobCoffee/litestar-admin/commit/c0a97a3e5bff14b8ed61db94a6143663436fbeab))
 
 - docs: lead with auto-discovery, add litestar-permissions integration test - ([3c2be17](https://github.com/JacobCoffee/litestar-admin/commit/3c2be177598a52c941285cbbaaad88c7f2f9e686))
+
+- docs: regenerate changelog for v0.1.1 - ([fffe202](https://github.com/JacobCoffee/litestar-admin/commit/fffe202f81d92927ba29e7abaeab8435cfc6e5c8))
 ## [0.1.0] - 2026-02-26
 
 
