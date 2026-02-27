@@ -4,7 +4,7 @@ requires = ["uv_build>=0.9.11,<0.10.0"]
 
 [project]
 name = "litestar-admin"
-version = "0.1.0"
+version = "0.1.1"
 description = "Modern admin panel framework for Litestar with Cloudflare-inspired UI"
 readme = "README.md"
 license = "MIT"
