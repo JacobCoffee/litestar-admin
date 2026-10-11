@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3](https://github.com/JacobCoffee/litestar-admin/compare/v0.1.2..v0.1.3) - 2026-10-11
+
+
+### Bug Fixes
+
+
+- fix(examples): count same-timestamp requests in Redis rate limiter (#4) - ([ca5d74f](https://github.com/JacobCoffee/litestar-admin/commit/ca5d74fcbe171b3720b4752d0dd451e155f0ed35))
+
+
+### Documentation
+
+
+- docs: regenerate changelog for v0.1.2 - ([c1f0e84](https://github.com/JacobCoffee/litestar-admin/commit/c1f0e84f49a84dd8823f53c6874ddebef9e7d683))
+
+
+### Features
+
+
+- feat: support Python 3.14 and 3.15 (#5) - ([423a42b](https://github.com/JacobCoffee/litestar-admin/commit/423a42b731026860df7a02e2dcf85e42b97a595f))
 ## [0.1.2](https://github.com/JacobCoffee/litestar-admin/compare/v0.1.1..v0.1.2) - 2026-10-11
 
 
