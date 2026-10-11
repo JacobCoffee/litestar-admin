@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2](https://github.com/JacobCoffee/litestar-admin/compare/v0.1.1..v0.1.2) - 2026-10-11
+
+
+### Bug Fixes
+
+
+- fix: include built frontend in package and fix CI (#3) - ([ca1e5ad](https://github.com/JacobCoffee/litestar-admin/commit/ca1e5ad0a93b74d9e1a72af4111e91044de5f5ec))
+
+
+### Documentation
+
+
+- docs: regenerate changelog for v0.1.1 - ([1091b92](https://github.com/JacobCoffee/litestar-admin/commit/1091b92615f82e0c6cc9f781ceebb702a6fffd2c))
 ## [0.1.1](https://github.com/JacobCoffee/litestar-admin/compare/v0.1.0..v0.1.1) - 2026-02-27
 
 
