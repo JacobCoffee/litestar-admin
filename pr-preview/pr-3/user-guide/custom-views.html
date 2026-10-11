@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Custom Views and Embeds - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="File Uploads" href="file-uploads.html" /><link rel="prev" title="Model Views" href="../model-views.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Custom Views and Embeds"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#view-type-overview">View Type Overview</a></li>
+<li><a class="reference internal" href="#baseadminview">BaseAdminView</a><ul>
+<li><a class="reference internal" href="#common-attributes">Common Attributes</a></li>
+<li><a class="reference internal" href="#access-control">Access Control</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customview">CustomView</a><ul>
+<li><a class="reference internal" href="#column-definitions">Column Definitions</a><ul>
+<li><a class="reference internal" href="#columndefinition-options">ColumnDefinition Options</a></li>
+<li><a class="reference internal" href="#supported-column-types">Supported Column Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-provider-methods">Data Provider Methods</a></li>
+<li><a class="reference internal" href="#optional-crud-methods">Optional CRUD Methods</a></li>
+<li><a class="reference internal" href="#lifecycle-hooks">Lifecycle Hooks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#built-in-data-providers">Built-in Data Providers</a><ul>
+<li><a class="reference internal" href="#inmemoryview">InMemoryView</a><ul>
+<li><a class="reference internal" href="#inmemoryview-features">InMemoryView Features</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jsonfileview">JSONFileView</a><ul>
+<li><a class="reference internal" href="#jsonfileview-options">JSONFileView Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#httpapiview">HTTPAPIView</a><ul>
+<li><a class="reference internal" href="#httpapiview-options">HTTPAPIView Options</a></li>
+<li><a class="reference internal" href="#custom-request-handling">Custom Request Handling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#actionview">ActionView</a><ul>
+<li><a class="reference internal" href="#basic-action">Basic Action</a></li>
+<li><a class="reference internal" href="#form-fields">Form Fields</a><ul>
+<li><a class="reference internal" href="#formfield-types">FormField Types</a></li>
+<li><a class="reference internal" href="#formfield-options">FormField Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#actionresult">ActionResult</a></li>
+<li><a class="reference internal" href="#action-configuration">Action Configuration</a></li>
+<li><a class="reference internal" href="#custom-validation">Custom Validation</a></li>
+<li><a class="reference internal" href="#authorization">Authorization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pageview">PageView</a><ul>
+<li><a class="reference internal" href="#static-content">Static Content</a><ul>
+<li><a class="reference internal" href="#content-types">Content Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dynamic-content">Dynamic Content</a></li>
+<li><a class="reference internal" href="#template-based-pages">Template-Based Pages</a></li>
+<li><a class="reference internal" href="#page-layout-options">Page Layout Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linkview">LinkView</a><ul>
+<li><a class="reference internal" href="#dynamic-urls">Dynamic URLs</a></li>
+<li><a class="reference internal" href="#conditional-links">Conditional Links</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#embedview">EmbedView</a><ul>
+<li><a class="reference internal" href="#iframe-embeds">Iframe Embeds</a></li>
+<li><a class="reference internal" href="#dynamic-iframe-urls">Dynamic Iframe URLs</a></li>
+<li><a class="reference internal" href="#component-embeds">Component Embeds</a></li>
+<li><a class="reference internal" href="#iframe-security-options">Iframe Security Options</a></li>
+<li><a class="reference internal" href="#layout-options">Layout Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#registering-views">Registering Views</a><ul>
+<li><a class="reference internal" href="#view-ordering">View Ordering</a></li>
+<li><a class="reference internal" href="#grouping-with-categories">Grouping with Categories</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#complete-example">Complete Example</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Custom Views and Embeds</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="custom-views-and-embeds">
+<h1>Custom Views and Embeds<a class="headerlink" href="#custom-views-and-embeds" title="Link to this heading">#</a></h1>
+<p>Beyond model-based views, litestar-admin provides several specialized view types for building rich admin interfaces. This guide covers all non-model view types and when to use them.</p>
+<section id="view-type-overview">
+<h2>View Type Overview<a class="headerlink" href="#view-type-overview" title="Link to this heading">#</a></h2>
+<p>litestar-admin supports six view types, each designed for specific use cases:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>View Type</p></th>
+<th class="head"><p>Use Case</p></th>
+<th class="head"><p>Has API Routes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ModelView</span></code></p></td>
+<td><p>CRUD operations on SQLAlchemy models</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CustomView</span></code></p></td>
+<td><p>Data from non-model sources (APIs, files, memory)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ActionView</span></code></p></td>
+<td><p>One-off admin operations with forms</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PageView</span></code></p></td>
+<td><p>Static or dynamic content pages</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LinkView</span></code></p></td>
+<td><p>External navigation links</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EmbedView</span></code></p></td>
+<td><p>Embedded iframes or React components</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="baseadminview">
+<h2>BaseAdminView<a class="headerlink" href="#baseadminview" title="Link to this heading">#</a></h2>
+<p>All view types inherit from <code class="docutils literal notranslate"><span class="pre">BaseAdminView</span></code>, which provides common functionality for navigation, access control, and identification.</p>
+<section id="common-attributes">
+<h3>Common Attributes<a class="headerlink" href="#common-attributes" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseAdminView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">MyView</span><span class="p">(</span><span class="n">BaseAdminView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="c1"># Display name in sidebar</span>
+</span><span data-line="5">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"My View"</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="c1"># Plural display name (auto-generated if not set)</span>
+</span><span data-line="8">    <span class="n">name_plural</span> <span class="o">=</span> <span class="s2">"My Views"</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="c1"># URL-safe identifier (auto-generated from name)</span>
+</span><span data-line="11">    <span class="n">identity</span> <span class="o">=</span> <span class="s2">"my-view"</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="c1"># Icon name for sidebar (FontAwesome)</span>
+</span><span data-line="14">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"file"</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="c1"># Category for sidebar grouping</span>
+</span><span data-line="17">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Tools"</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="c1"># Sort order within category (lower = higher)</span>
+</span><span data-line="20">    <span class="n">order</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="c1"># Whether to show in navigation</span>
+</span><span data-line="23">    <span class="n">is_visible</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="c1"># Default access control</span>
+</span><span data-line="26">    <span class="n">can_access</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="c1"># Permission/role requirements</span>
+</span><span data-line="29">    <span class="n">required_permission</span> <span class="o">=</span> <span class="s2">"admin.view"</span>
+</span><span data-line="30">    <span class="n">required_role</span> <span class="o">=</span> <span class="s2">"admin"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="access-control">
+<h3>Access Control<a class="headerlink" href="#access-control" title="Link to this heading">#</a></h3>
+<p>Override <code class="docutils literal notranslate"><span class="pre">is_accessible</span></code> for dynamic access control:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">SecureView</span><span class="p">(</span><span class="n">BaseAdminView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="nd">@classmethod</span>
+</span><span data-line="5">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="6">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="7">        <span class="k">return</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="customview">
+<h2>CustomView<a class="headerlink" href="#customview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CustomView</span></code> enables admin interfaces for data that doesn’t come from SQLAlchemy models. Use it for external APIs, files, in-memory data, or any custom data source.</p>
+<section id="column-definitions">
+<h3>Column Definitions<a class="headerlink" href="#column-definitions" title="Link to this heading">#</a></h3>
+<p>Unlike model views that introspect the database schema, custom views require explicit column definitions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomView</span><span class="p">,</span> <span class="n">ColumnDefinition</span><span class="p">,</span> <span class="n">ListResult</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">ExternalUsersView</span><span class="p">(</span><span class="n">CustomView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"External Users"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"users"</span>
+</span><span data-line="6">    <span class="n">pk_field</span> <span class="o">=</span> <span class="s2">"id"</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="9">        <span class="n">ColumnDefinition</span><span class="p">(</span>
+</span><span data-line="10">            <span class="n">name</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span>
+</span><span data-line="11">            <span class="n">label</span><span class="o">=</span><span class="s2">"ID"</span><span class="p">,</span>
+</span><span data-line="12">            <span class="nb">type</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">,</span>
+</span><span data-line="13">            <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="14">        <span class="p">),</span>
+</span><span data-line="15">        <span class="n">ColumnDefinition</span><span class="p">(</span>
+</span><span data-line="16">            <span class="n">name</span><span class="o">=</span><span class="s2">"email"</span><span class="p">,</span>
+</span><span data-line="17">            <span class="n">label</span><span class="o">=</span><span class="s2">"Email Address"</span><span class="p">,</span>
+</span><span data-line="18">            <span class="nb">type</span><span class="o">=</span><span class="s2">"email"</span><span class="p">,</span>
+</span><span data-line="19">            <span class="n">searchable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="20">        <span class="p">),</span>
+</span><span data-line="21">        <span class="n">ColumnDefinition</span><span class="p">(</span>
+</span><span data-line="22">            <span class="n">name</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span>
+</span><span data-line="23">            <span class="n">label</span><span class="o">=</span><span class="s2">"Full Name"</span><span class="p">,</span>
+</span><span data-line="24">            <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span>
+</span><span data-line="25">            <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="26">            <span class="n">searchable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="27">        <span class="p">),</span>
+</span><span data-line="28">        <span class="n">ColumnDefinition</span><span class="p">(</span>
+</span><span data-line="29">            <span class="n">name</span><span class="o">=</span><span class="s2">"created_at"</span><span class="p">,</span>
+</span><span data-line="30">            <span class="n">label</span><span class="o">=</span><span class="s2">"Created"</span><span class="p">,</span>
+</span><span data-line="31">            <span class="nb">type</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+</span><span data-line="32">            <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="33">        <span class="p">),</span>
+</span><span data-line="34">        <span class="n">ColumnDefinition</span><span class="p">(</span>
+</span><span data-line="35">            <span class="n">name</span><span class="o">=</span><span class="s2">"is_active"</span><span class="p">,</span>
+</span><span data-line="36">            <span class="n">label</span><span class="o">=</span><span class="s2">"Active"</span><span class="p">,</span>
+</span><span data-line="37">            <span class="nb">type</span><span class="o">=</span><span class="s2">"boolean"</span><span class="p">,</span>
+</span><span data-line="38">            <span class="n">filterable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="39">        <span class="p">),</span>
+</span><span data-line="40">    <span class="p">]</span>
+</span></pre></div>
+</div>
+<section id="columndefinition-options">
+<h4>ColumnDefinition Options<a class="headerlink" href="#columndefinition-options" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Internal field name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">label</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Auto from name</p></td>
+<td><p>Display label</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code></p></td>
+<td><p>Data type (see below)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sortable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Enable sorting</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">searchable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Include in search</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">filterable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Enable filtering</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">visible</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Show in list view</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Display format</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">render_template</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Custom render template</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="supported-column-types">
+<h4>Supported Column Types<a class="headerlink" href="#supported-column-types" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code> - Plain text</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> - Long text</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">integer</span></code> - Whole numbers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code> - Decimal numbers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code> - True/false</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code> - Date and time</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code> - Date only</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code> - Time only</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">email</span></code> - Email address</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code> - Web URL</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code> - UUID string</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json</span></code> - JSON object</p></li>
+</ul>
+</section>
+</section>
+<section id="data-provider-methods">
+<h3>Data Provider Methods<a class="headerlink" href="#data-provider-methods" title="Link to this heading">#</a></h3>
+<p>Custom views must implement at least <code class="docutils literal notranslate"><span class="pre">get_list</span></code> and <code class="docutils literal notranslate"><span class="pre">get_one</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomView</span><span class="p">(</span><span class="n">CustomView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="c1"># ... column definitions ...</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span>
+</span><span data-line="7">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+</span><span data-line="10">        <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">sort_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">sort_order</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"asc"</span><span class="p">,</span> <span class="s2">"desc"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"asc"</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">search</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="14">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListResult</span><span class="p">:</span>
+</span><span data-line="15"><span class="w">        </span><span class="sd">"""Fetch paginated list of items."""</span>
+</span><span data-line="16">        <span class="c1"># Implement your data fetching logic</span>
+</span><span data-line="17">        <span class="n">items</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_from_source</span><span class="p">()</span>
+</span><span data-line="18">
+</span><span data-line="19">        <span class="k">return</span> <span class="n">ListResult</span><span class="p">(</span>
+</span><span data-line="20">            <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+</span><span data-line="21">            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span>
+</span><span data-line="22">            <span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+</span><span data-line="23">            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+</span><span data-line="24">        <span class="p">)</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="27"><span class="w">        </span><span class="sd">"""Fetch a single item by ID."""</span>
+</span><span data-line="28">        <span class="c1"># Implement your single-item fetch</span>
+</span><span data-line="29">        <span class="k">return</span> <span class="k">await</span> <span class="n">fetch_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="optional-crud-methods">
+<h3>Optional CRUD Methods<a class="headerlink" href="#optional-crud-methods" title="Link to this heading">#</a></h3>
+<p>Enable create, update, and delete by implementing these methods and setting the corresponding flags:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">EditableCustomView</span><span class="p">(</span><span class="n">CustomView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="3">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="4">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="7"><span class="w">        </span><span class="sd">"""Create a new item."""</span>
+</span><span data-line="8">        <span class="c1"># Validate and create</span>
+</span><span data-line="9">        <span class="k">return</span> <span class="n">created_item</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="12"><span class="w">        </span><span class="sd">"""Update an existing item."""</span>
+</span><span data-line="13">        <span class="c1"># Validate and update</span>
+</span><span data-line="14">        <span class="k">return</span> <span class="n">updated_item</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">        </span><span class="sd">"""Delete an item."""</span>
+</span><span data-line="18">        <span class="c1"># Perform deletion</span>
+</span><span data-line="19">        <span class="k">return</span> <span class="kc">True</span>
+</span></pre></div>
+</div>
+</section>
+<section id="lifecycle-hooks">
+<h3>Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Link to this heading">#</a></h3>
+<p>Custom views support hooks for preprocessing and side effects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">HookedCustomView</span><span class="p">(</span><span class="n">CustomView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_before_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="3"><span class="w">        </span><span class="sd">"""Modify data before creating."""</span>
+</span><span data-line="4">        <span class="n">data</span><span class="p">[</span><span class="s2">"created_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+</span><span data-line="5">        <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_after_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">        </span><span class="sd">"""Side effects after creating."""</span>
+</span><span data-line="9">        <span class="k">await</span> <span class="n">send_notification</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created: </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_before_update</span><span class="p">(</span>
+</span><span data-line="12">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="15">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="16"><span class="w">        </span><span class="sd">"""Modify data before updating."""</span>
+</span><span data-line="17">        <span class="n">data</span><span class="p">[</span><span class="s2">"updated_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+</span><span data-line="18">        <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="19">
+</span><span data-line="20">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_after_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="21"><span class="w">        </span><span class="sd">"""Side effects after updating."""</span>
+</span><span data-line="22">        <span class="k">await</span> <span class="n">invalidate_cache</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">"id"</span><span class="p">])</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_before_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="25"><span class="w">        </span><span class="sd">"""Actions before deleting."""</span>
+</span><span data-line="26">        <span class="k">await</span> <span class="n">backup_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_after_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="29"><span class="w">        </span><span class="sd">"""Cleanup after deleting."""</span>
+</span><span data-line="30">        <span class="k">await</span> <span class="n">remove_from_search_index</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="built-in-data-providers">
+<h2>Built-in Data Providers<a class="headerlink" href="#built-in-data-providers" title="Link to this heading">#</a></h2>
+<p>litestar-admin includes three pre-built CustomView implementations for common data sources.</p>
+<section id="inmemoryview">
+<h3>InMemoryView<a class="headerlink" href="#inmemoryview" title="Link to this heading">#</a></h3>
+<p>Stores data in memory. Useful for settings, caches, or testing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">InMemoryView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnDefinition</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">AppSettingsView</span><span class="p">(</span><span class="n">InMemoryView</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"App Settings"</span>
+</span><span data-line="6">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"cog"</span>
+</span><span data-line="7">    <span class="n">pk_field</span> <span class="o">=</span> <span class="s2">"key"</span>
+</span><span data-line="8">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="9">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="10">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="13">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"key"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="14">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"value"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">),</span>
+</span><span data-line="15">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"description"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+</span><span data-line="16">    <span class="p">]</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="c1"># Pre-populate with default settings</span>
+</span><span data-line="19">    <span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="20">        <span class="s2">"site_name"</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="21">            <span class="s2">"key"</span><span class="p">:</span> <span class="s2">"site_name"</span><span class="p">,</span>
+</span><span data-line="22">            <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"My Application"</span><span class="p">,</span>
+</span><span data-line="23">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Displayed in the header"</span><span class="p">,</span>
+</span><span data-line="24">        <span class="p">},</span>
+</span><span data-line="25">        <span class="s2">"maintenance_mode"</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="26">            <span class="s2">"key"</span><span class="p">:</span> <span class="s2">"maintenance_mode"</span><span class="p">,</span>
+</span><span data-line="27">            <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+</span><span data-line="28">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Enable maintenance mode"</span><span class="p">,</span>
+</span><span data-line="29">        <span class="p">},</span>
+</span><span data-line="30">    <span class="p">}</span>
+</span></pre></div>
+</div>
+<section id="inmemoryview-features">
+<h4>InMemoryView Features<a class="headerlink" href="#inmemoryview-features" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Auto-generate primary keys</strong>: Set <code class="docutils literal notranslate"><span class="pre">auto_generate_pk</span> <span class="pre">=</span> <span class="pre">True</span></code> to auto-generate UUIDs</p></li>
+<li><p><strong>Seed data</strong>: Use <code class="docutils literal notranslate"><span class="pre">seed_data()</span></code> class method to populate initial data</p></li>
+<li><p><strong>Clear data</strong>: Use <code class="docutils literal notranslate"><span class="pre">clear_data()</span></code> class method to reset the store</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Seed data at startup</span>
+</span><span data-line="2"><span class="n">AppSettingsView</span><span class="o">.</span><span class="n">seed_data</span><span class="p">([</span>
+</span><span data-line="3">    <span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"theme"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"dark"</span><span class="p">},</span>
+</span><span data-line="4">    <span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"language"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"en"</span><span class="p">},</span>
+</span><span data-line="5"><span class="p">])</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Clear all data</span>
+</span><span data-line="8"><span class="n">AppSettingsView</span><span class="o">.</span><span class="n">clear_data</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Data in <code class="docutils literal notranslate"><span class="pre">InMemoryView</span></code> is lost when the application restarts. Use <code class="docutils literal notranslate"><span class="pre">JSONFileView</span></code> or a database for persistence.</p>
+</div>
+</section>
+</section>
+<section id="jsonfileview">
+<h3>JSONFileView<a class="headerlink" href="#jsonfileview" title="Link to this heading">#</a></h3>
+<p>Stores data in a JSON file for simple persistence.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONFileView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnDefinition</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">BookmarksView</span><span class="p">(</span><span class="n">JSONFileView</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Bookmarks"</span>
+</span><span data-line="6">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"bookmark"</span>
+</span><span data-line="7">    <span class="n">file_path</span> <span class="o">=</span> <span class="s2">"/data/bookmarks.json"</span>  <span class="c1"># Required</span>
+</span><span data-line="8">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="9">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="10">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="13">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"uuid"</span><span class="p">),</span>
+</span><span data-line="14">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"title"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">searchable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="15">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"url"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"url"</span><span class="p">),</span>
+</span><span data-line="16">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"tags"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"json"</span><span class="p">),</span>
+</span><span data-line="17">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"created_at"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">),</span>
+</span><span data-line="18">    <span class="p">]</span>
+</span><span data-line="19">
+</span><span data-line="20">    <span class="c1"># Optional configuration</span>
+</span><span data-line="21">    <span class="n">auto_generate_pk</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Auto-generate UUID for new items</span>
+</span><span data-line="22">    <span class="n">create_file_if_missing</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Create file if it doesn't exist</span>
+</span><span data-line="23">    <span class="n">indent</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># JSON indentation (None for compact)</span>
+</span></pre></div>
+</div>
+<section id="jsonfileview-options">
+<h4>JSONFileView Options<a class="headerlink" href="#jsonfileview-options" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">file_path</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Path to JSON file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_generate_pk</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Auto-generate UUIDs for new items</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_file_if_missing</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Create file if it doesn’t exist</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">indent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+<td><p>JSON indentation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">JSONFileView</span></code> uses synchronous file I/O. For high-concurrency scenarios, consider using a proper database or implementing async file operations with <code class="docutils literal notranslate"><span class="pre">aiofiles</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="httpapiview">
+<h3>HTTPAPIView<a class="headerlink" href="#httpapiview" title="Link to this heading">#</a></h3>
+<p>Fetches data from external REST APIs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPAPIView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnDefinition</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">GitHubReposView</span><span class="p">(</span><span class="n">HTTPAPIView</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"GitHub Repositories"</span>
+</span><span data-line="6">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"github"</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="c1"># API configuration</span>
+</span><span data-line="9">    <span class="n">api_base_url</span> <span class="o">=</span> <span class="s2">"https://api.github.com"</span>
+</span><span data-line="10">    <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"application/vnd.github.v3+json"</span><span class="p">}</span>
+</span><span data-line="11">    <span class="n">api_timeout</span> <span class="o">=</span> <span class="mf">30.0</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="c1"># Endpoint paths</span>
+</span><span data-line="14">    <span class="n">list_endpoint</span> <span class="o">=</span> <span class="s2">"/users/octocat/repos"</span>
+</span><span data-line="15">    <span class="n">detail_endpoint</span> <span class="o">=</span> <span class="s2">"/repos/octocat/</span><span class="si">{id}</span><span class="s2">"</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="c1"># Response parsing</span>
+</span><span data-line="18">    <span class="n">items_key</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Response is a list directly</span>
+</span><span data-line="19">    <span class="n">total_key</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Use len(items) for total</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="c1"># Request parameter names</span>
+</span><span data-line="22">    <span class="n">page_param</span> <span class="o">=</span> <span class="s2">"page"</span>
+</span><span data-line="23">    <span class="n">page_size_param</span> <span class="o">=</span> <span class="s2">"per_page"</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="26">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">),</span>
+</span><span data-line="27">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="28">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"full_name"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">),</span>
+</span><span data-line="29">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"description"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">searchable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="30">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"stargazers_count"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="31">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"html_url"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"url"</span><span class="p">),</span>
+</span><span data-line="32">    <span class="p">]</span>
+</span></pre></div>
+</div>
+<section id="httpapiview-options">
+<h4>HTTPAPIView Options<a class="headerlink" href="#httpapiview-options" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api_base_url</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Base URL for API</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api_headers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+<td><p>Default request headers</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api_timeout</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">30.0</span></code></p></td>
+<td><p>Request timeout (seconds)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">list_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Endpoint for listing</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">detail_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/{id}&quot;</span></code></p></td>
+<td><p>Endpoint for single item</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">create_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Endpoint for creating</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">update_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/{id}&quot;</span></code></p></td>
+<td><p>Endpoint for updating</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delete_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/{id}&quot;</span></code></p></td>
+<td><p>Endpoint for deleting</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">items_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;items&quot;</span></code></p></td>
+<td><p>Response key for items list</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">total_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;total&quot;</span></code></p></td>
+<td><p>Response key for total count</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">page_param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;page&quot;</span></code></p></td>
+<td><p>Query param for page</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">page_size_param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;page_size&quot;</span></code></p></td>
+<td><p>Query param for page size</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">search_param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;search&quot;</span></code></p></td>
+<td><p>Query param for search</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sort_param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;sort_by&quot;</span></code></p></td>
+<td><p>Query param for sort field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">order_param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;sort_order&quot;</span></code></p></td>
+<td><p>Query param for sort order</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="custom-request-handling">
+<h4>Custom Request Handling<a class="headerlink" href="#custom-request-handling" title="Link to this heading">#</a></h4>
+<p>Override methods for custom API interactions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">CustomAPIView</span><span class="p">(</span><span class="n">HTTPAPIView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">username</span> <span class="o">=</span> <span class="s2">"octocat"</span>  <span class="c1"># Custom parameter</span>
+</span><span data-line="3">
+</span><span data-line="4">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListResult</span><span class="p">:</span>
+</span><span data-line="5">        <span class="c1"># Build custom endpoint</span>
+</span><span data-line="6">        <span class="n">endpoint</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">/repos"</span>
+</span><span data-line="7">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_list</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">        <span class="n">endpoint</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"/repos/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="11">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_one</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">HTTPAPIView</span></code> requires the <code class="docutils literal notranslate"><span class="pre">httpx</span></code> package. Install with: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">httpx</span></code></p>
+</div>
+</section>
+</section>
+</section>
+<section id="actionview">
+<h2>ActionView<a class="headerlink" href="#actionview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ActionView</span></code> creates standalone admin actions with optional form inputs. Use it for one-off operations like cache clearing, data imports, or maintenance tasks.</p>
+<section id="basic-action">
+<h3>Basic Action<a class="headerlink" href="#basic-action" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionView</span><span class="p">,</span> <span class="n">ActionResult</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">ClearCacheAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Clear Cache"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"trash"</span>
+</span><span data-line="6">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Maintenance"</span>
+</span><span data-line="7">    <span class="n">confirmation_message</span> <span class="o">=</span> <span class="s2">"Are you sure you want to clear the cache?"</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ActionResult</span><span class="p">:</span>
+</span><span data-line="10">        <span class="k">await</span> <span class="n">cache_service</span><span class="o">.</span><span class="n">clear_all</span><span class="p">()</span>
+</span><span data-line="11">        <span class="k">return</span> <span class="n">ActionResult</span><span class="p">(</span>
+</span><span data-line="12">            <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="13">            <span class="n">message</span><span class="o">=</span><span class="s2">"Cache cleared successfully!"</span><span class="p">,</span>
+</span><span data-line="14">        <span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="form-fields">
+<h3>Form Fields<a class="headerlink" href="#form-fields" title="Link to this heading">#</a></h3>
+<p>Add input fields to collect data before execution:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionView</span><span class="p">,</span> <span class="n">ActionResult</span><span class="p">,</span> <span class="n">FormField</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">SendNewsletterAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Send Newsletter"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"envelope"</span>
+</span><span data-line="6">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Marketing"</span>
+</span><span data-line="7">    <span class="n">submit_label</span> <span class="o">=</span> <span class="s2">"Send Now"</span>
+</span><span data-line="8">    <span class="n">dangerous</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Shows warning styling</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="n">form_fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="11">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="12">            <span class="n">name</span><span class="o">=</span><span class="s2">"subject"</span><span class="p">,</span>
+</span><span data-line="13">            <span class="n">label</span><span class="o">=</span><span class="s2">"Email Subject"</span><span class="p">,</span>
+</span><span data-line="14">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span>
+</span><span data-line="15">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="16">            <span class="n">placeholder</span><span class="o">=</span><span class="s2">"Enter subject line..."</span><span class="p">,</span>
+</span><span data-line="17">        <span class="p">),</span>
+</span><span data-line="18">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="19">            <span class="n">name</span><span class="o">=</span><span class="s2">"template"</span><span class="p">,</span>
+</span><span data-line="20">            <span class="n">label</span><span class="o">=</span><span class="s2">"Template"</span><span class="p">,</span>
+</span><span data-line="21">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"select"</span><span class="p">,</span>
+</span><span data-line="22">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="23">            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="24">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"weekly"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Weekly Digest"</span><span class="p">},</span>
+</span><span data-line="25">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"promo"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Promotional"</span><span class="p">},</span>
+</span><span data-line="26">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"announcement"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Announcement"</span><span class="p">},</span>
+</span><span data-line="27">            <span class="p">],</span>
+</span><span data-line="28">        <span class="p">),</span>
+</span><span data-line="29">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="30">            <span class="n">name</span><span class="o">=</span><span class="s2">"audience"</span><span class="p">,</span>
+</span><span data-line="31">            <span class="n">label</span><span class="o">=</span><span class="s2">"Target Audience"</span><span class="p">,</span>
+</span><span data-line="32">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"multiselect"</span><span class="p">,</span>
+</span><span data-line="33">            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="34">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"all"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"All Subscribers"</span><span class="p">},</span>
+</span><span data-line="35">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"active"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Active Users Only"</span><span class="p">},</span>
+</span><span data-line="36">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"premium"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Premium Members"</span><span class="p">},</span>
+</span><span data-line="37">            <span class="p">],</span>
+</span><span data-line="38">        <span class="p">),</span>
+</span><span data-line="39">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="40">            <span class="n">name</span><span class="o">=</span><span class="s2">"schedule"</span><span class="p">,</span>
+</span><span data-line="41">            <span class="n">label</span><span class="o">=</span><span class="s2">"Send Time"</span><span class="p">,</span>
+</span><span data-line="42">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span>
+</span><span data-line="43">            <span class="n">help_text</span><span class="o">=</span><span class="s2">"Leave empty to send immediately"</span><span class="p">,</span>
+</span><span data-line="44">        <span class="p">),</span>
+</span><span data-line="45">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="46">            <span class="n">name</span><span class="o">=</span><span class="s2">"confirm"</span><span class="p">,</span>
+</span><span data-line="47">            <span class="n">label</span><span class="o">=</span><span class="s2">"I understand this will send emails to real users"</span><span class="p">,</span>
+</span><span data-line="48">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"checkbox"</span><span class="p">,</span>
+</span><span data-line="49">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="50">        <span class="p">),</span>
+</span><span data-line="51">    <span class="p">]</span>
+</span><span data-line="52">
+</span><span data-line="53">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ActionResult</span><span class="p">:</span>
+</span><span data-line="54">        <span class="n">count</span> <span class="o">=</span> <span class="k">await</span> <span class="n">newsletter_service</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+</span><span data-line="55">            <span class="n">subject</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"subject"</span><span class="p">],</span>
+</span><span data-line="56">            <span class="n">template</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">"template"</span><span class="p">],</span>
+</span><span data-line="57">            <span class="n">audience</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"audience"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"all"</span><span class="p">]),</span>
+</span><span data-line="58">            <span class="n">scheduled_for</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"schedule"</span><span class="p">),</span>
+</span><span data-line="59">        <span class="p">)</span>
+</span><span data-line="60">        <span class="k">return</span> <span class="n">ActionResult</span><span class="p">(</span>
+</span><span data-line="61">            <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="62">            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Newsletter queued for </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> recipients!"</span><span class="p">,</span>
+</span><span data-line="63">            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"recipient_count"</span><span class="p">:</span> <span class="n">count</span><span class="p">},</span>
+</span><span data-line="64">        <span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="formfield-types">
+<h4>FormField Types<a class="headerlink" href="#formfield-types" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>Single-line text input</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">textarea</span></code></p></td>
+<td><p>Multi-line text input</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>Numeric input</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">email</span></code></p></td>
+<td><p>Email input with validation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
+<td><p>Password input (masked)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select</span></code></p></td>
+<td><p>Single-select dropdown</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">multiselect</span></code></p></td>
+<td><p>Multi-select dropdown</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">checkbox</span></code></p></td>
+<td><p>Boolean checkbox</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">radio</span></code></p></td>
+<td><p>Radio button group</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">date</span></code></p></td>
+<td><p>Date picker</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code></p></td>
+<td><p>Date and time picker</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">file</span></code></p></td>
+<td><p>File upload</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hidden</span></code></p></td>
+<td><p>Hidden field</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="formfield-options">
+<h4>FormField Options<a class="headerlink" href="#formfield-options" title="Link to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">name</span><span class="o">=</span><span class="s2">"field_name"</span><span class="p">,</span>           <span class="c1"># Required: field identifier</span>
+</span><span data-line="3">    <span class="n">label</span><span class="o">=</span><span class="s2">"Display Label"</span><span class="p">,</span>       <span class="c1"># Required: display text</span>
+</span><span data-line="4">    <span class="n">field_type</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span>          <span class="c1"># Input type</span>
+</span><span data-line="5">    <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>             <span class="c1"># Is field required?</span>
+</span><span data-line="6">    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>               <span class="c1"># Default value</span>
+</span><span data-line="7">    <span class="n">placeholder</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>             <span class="c1"># Placeholder text</span>
+</span><span data-line="8">    <span class="n">help_text</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>               <span class="c1"># Help text below field</span>
+</span><span data-line="9">    <span class="n">options</span><span class="o">=</span><span class="p">[],</span>                 <span class="c1"># Options for select/radio</span>
+</span><span data-line="10">    <span class="n">validation</span><span class="o">=</span><span class="p">{</span>                <span class="c1"># Validation rules</span>
+</span><span data-line="11">        <span class="s2">"min"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="12">        <span class="s2">"max"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span data-line="13">        <span class="s2">"pattern"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"^\d+$"</span><span class="p">,</span>
+</span><span data-line="14">    <span class="p">},</span>
+</span><span data-line="15"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="actionresult">
+<h3>ActionResult<a class="headerlink" href="#actionresult" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">execute</span></code> method must return an <code class="docutils literal notranslate"><span class="pre">ActionResult</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">ActionResult</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>                           <span class="c1"># Success or failure</span>
+</span><span data-line="3">    <span class="n">message</span><span class="o">=</span><span class="s2">"Operation completed"</span><span class="p">,</span>          <span class="c1"># User-facing message</span>
+</span><span data-line="4">    <span class="n">redirect</span><span class="o">=</span><span class="s2">"/admin/users"</span><span class="p">,</span>                <span class="c1"># Optional redirect URL</span>
+</span><span data-line="5">    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">},</span>                  <span class="c1"># Optional response data</span>
+</span><span data-line="6">    <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>                           <span class="c1"># Refresh current view?</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="action-configuration">
+<h3>Action Configuration<a class="headerlink" href="#action-configuration" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">MyAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="c1"># Confirmation</span>
+</span><span data-line="3">    <span class="n">confirmation_message</span> <span class="o">=</span> <span class="s2">"Are you sure?"</span>  <span class="c1"># Optional confirmation</span>
+</span><span data-line="4">    <span class="n">requires_confirmation</span> <span class="o">=</span> <span class="kc">True</span>            <span class="c1"># Show confirmation dialog</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="c1"># UI</span>
+</span><span data-line="7">    <span class="n">submit_label</span> <span class="o">=</span> <span class="s2">"Execute"</span>                <span class="c1"># Submit button text</span>
+</span><span data-line="8">    <span class="n">dangerous</span> <span class="o">=</span> <span class="kc">False</span>                       <span class="c1"># Dangerous action styling</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="c1"># Execution</span>
+</span><span data-line="11">    <span class="n">success_redirect</span> <span class="o">=</span> <span class="s2">"/admin/logs"</span>        <span class="c1"># Redirect on success</span>
+</span><span data-line="12">    <span class="n">run_in_background</span> <span class="o">=</span> <span class="kc">False</span>               <span class="c1"># Run asynchronously</span>
+</span><span data-line="13">    <span class="n">timeout_seconds</span> <span class="o">=</span> <span class="mi">60</span>                    <span class="c1"># Execution timeout</span>
+</span></pre></div>
+</div>
+</section>
+<section id="custom-validation">
+<h3>Custom Validation<a class="headerlink" href="#custom-validation" title="Link to this heading">#</a></h3>
+<p>Override <code class="docutils literal notranslate"><span class="pre">validate_data</span></code> for complex validation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">DateRangeAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">form_fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="3">        <span class="n">FormField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"start_date"</span><span class="p">,</span> <span class="n">field_type</span><span class="o">=</span><span class="s2">"date"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="4">        <span class="n">FormField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"end_date"</span><span class="p">,</span> <span class="n">field_type</span><span class="o">=</span><span class="s2">"date"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="5">    <span class="p">]</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="nd">@classmethod</span>
+</span><span data-line="8">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validate_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="9">        <span class="c1"># First run default validation</span>
+</span><span data-line="10">        <span class="n">is_valid</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="11">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+</span><span data-line="12">            <span class="k">return</span> <span class="n">is_valid</span><span class="p">,</span> <span class="n">error</span>
+</span><span data-line="13">
+</span><span data-line="14">        <span class="c1"># Custom validation</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">"start_date"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">data</span><span class="p">[</span><span class="s2">"end_date"</span><span class="p">]:</span>
+</span><span data-line="16">            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"Start date must be before end date"</span>
+</span><span data-line="17">
+</span><span data-line="18">        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
+</span></pre></div>
+</div>
+</section>
+<section id="authorization">
+<h3>Authorization<a class="headerlink" href="#authorization" title="Link to this heading">#</a></h3>
+<p>Control who can execute actions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">AdminOnlyAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_execute</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="4">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="5">        <span class="k">return</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"admin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="pageview">
+<h2>PageView<a class="headerlink" href="#pageview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PageView</span></code> creates content pages within the admin panel. Use it for documentation, dashboards, help pages, or any custom content.</p>
+<section id="static-content">
+<h3>Static Content<a class="headerlink" href="#static-content" title="Link to this heading">#</a></h3>
+<p>For simple static pages, set the content directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">PageView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">AboutPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"About"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"info-circle"</span>
+</span><span data-line="6">    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">"markdown"</span>
+</span><span data-line="7">    <span class="n">content</span> <span class="o">=</span> <span class="s2">"""</span>
+</span><span data-line="8"><span class="s2"># About This Admin Panel</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="s2">Welcome to the administration interface for MyApp.</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="s2">## Features</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="s2">- User management with role-based access</span>
+</span><span data-line="15"><span class="s2">- Content editing and publishing</span>
+</span><span data-line="16"><span class="s2">- Analytics and reporting dashboard</span>
+</span><span data-line="17"><span class="s2">- Audit logging for compliance</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="s2">## Getting Help</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="s2">Contact support at support@example.com</span>
+</span><span data-line="22"><span class="s2">"""</span>
+</span></pre></div>
+</div>
+<section id="content-types">
+<h4>Content Types<a class="headerlink" href="#content-types" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">markdown</span></code></p></td>
+<td><p>Markdown content (rendered to HTML)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">html</span></code></p></td>
+<td><p>Raw HTML content</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>Plain text</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code></p></td>
+<td><p>Content fetched via <code class="docutils literal notranslate"><span class="pre">get_content()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">template</span></code></p></td>
+<td><p>Server-side template rendering</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="dynamic-content">
+<h3>Dynamic Content<a class="headerlink" href="#dynamic-content" title="Link to this heading">#</a></h3>
+<p>For pages with dynamic data, use <code class="docutils literal notranslate"><span class="pre">content_type</span> <span class="pre">=</span> <span class="pre">&quot;dynamic&quot;</span></code> and override <code class="docutils literal notranslate"><span class="pre">get_content</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">AnalyticsDashboard</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Analytics"</span>
+</span><span data-line="3">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"chart-bar"</span>
+</span><span data-line="4">    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">"dynamic"</span>
+</span><span data-line="5">    <span class="n">refresh_interval</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># Auto-refresh every 60 seconds</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_content</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="8">        <span class="n">users_count</span> <span class="o">=</span> <span class="k">await</span> <span class="n">User</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span data-line="9">        <span class="n">orders_today</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Order</span><span class="o">.</span><span class="n">count_today</span><span class="p">()</span>
+</span><span data-line="10">        <span class="n">revenue</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Order</span><span class="o">.</span><span class="n">total_revenue_today</span><span class="p">()</span>
+</span><span data-line="11">
+</span><span data-line="12">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="13">            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"dashboard"</span><span class="p">,</span>
+</span><span data-line="14">            <span class="s2">"widgets"</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="15">                <span class="p">{</span>
+</span><span data-line="16">                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span>
+</span><span data-line="17">                    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Total Users"</span><span class="p">,</span>
+</span><span data-line="18">                    <span class="s2">"value"</span><span class="p">:</span> <span class="n">users_count</span><span class="p">,</span>
+</span><span data-line="19">                    <span class="s2">"icon"</span><span class="p">:</span> <span class="s2">"users"</span><span class="p">,</span>
+</span><span data-line="20">                <span class="p">},</span>
+</span><span data-line="21">                <span class="p">{</span>
+</span><span data-line="22">                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span>
+</span><span data-line="23">                    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Orders Today"</span><span class="p">,</span>
+</span><span data-line="24">                    <span class="s2">"value"</span><span class="p">:</span> <span class="n">orders_today</span><span class="p">,</span>
+</span><span data-line="25">                    <span class="s2">"icon"</span><span class="p">:</span> <span class="s2">"shopping-cart"</span><span class="p">,</span>
+</span><span data-line="26">                    <span class="s2">"change"</span><span class="p">:</span> <span class="s2">"+12%"</span><span class="p">,</span>
+</span><span data-line="27">                <span class="p">},</span>
+</span><span data-line="28">                <span class="p">{</span>
+</span><span data-line="29">                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span>
+</span><span data-line="30">                    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Revenue Today"</span><span class="p">,</span>
+</span><span data-line="31">                    <span class="s2">"value"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"$</span><span class="si">{</span><span class="n">revenue</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+</span><span data-line="32">                    <span class="s2">"icon"</span><span class="p">:</span> <span class="s2">"dollar-sign"</span><span class="p">,</span>
+</span><span data-line="33">                <span class="p">},</span>
+</span><span data-line="34">                <span class="p">{</span>
+</span><span data-line="35">                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"chart"</span><span class="p">,</span>
+</span><span data-line="36">                    <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Weekly Signups"</span><span class="p">,</span>
+</span><span data-line="37">                    <span class="s2">"chart_type"</span><span class="p">:</span> <span class="s2">"line"</span><span class="p">,</span>
+</span><span data-line="38">                    <span class="s2">"data"</span><span class="p">:</span> <span class="k">await</span> <span class="n">get_signup_chart_data</span><span class="p">(),</span>
+</span><span data-line="39">                <span class="p">},</span>
+</span><span data-line="40">            <span class="p">],</span>
+</span><span data-line="41">        <span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="template-based-pages">
+<h3>Template-Based Pages<a class="headerlink" href="#template-based-pages" title="Link to this heading">#</a></h3>
+<p>For complex layouts, use templates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">SettingsPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Settings"</span>
+</span><span data-line="3">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"cog"</span>
+</span><span data-line="4">    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">"template"</span>
+</span><span data-line="5">    <span class="n">template</span> <span class="o">=</span> <span class="s2">"admin/settings.html"</span>
+</span><span data-line="6">    <span class="n">template_context</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="7">        <span class="s2">"show_advanced"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="8">    <span class="p">}</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_template_context</span><span class="p">(</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="13">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="14">        <span class="n">context</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_template_context</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="15">        <span class="n">context</span><span class="p">[</span><span class="s2">"current_user"</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span>
+</span><span data-line="16">        <span class="n">context</span><span class="p">[</span><span class="s2">"settings"</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Settings</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</span><span data-line="17">        <span class="k">return</span> <span class="n">context</span>
+</span></pre></div>
+</div>
+</section>
+<section id="page-layout-options">
+<h3>Page Layout Options<a class="headerlink" href="#page-layout-options" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">WideContentPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">layout</span> <span class="o">=</span> <span class="s2">"full-width"</span>  <span class="c1"># "default", "full-width", or "sidebar"</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="linkview">
+<h2>LinkView<a class="headerlink" href="#linkview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">LinkView</span></code> adds external links to the admin navigation without any associated routes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinkView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">DocumentationLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Documentation"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"book"</span>
+</span><span data-line="6">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"https://docs.example.com"</span>
+</span><span data-line="7">    <span class="n">target</span> <span class="o">=</span> <span class="s2">"_blank"</span>  <span class="c1"># Open in new tab</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">APIDocsLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="10">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"API Reference"</span>
+</span><span data-line="11">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"code"</span>
+</span><span data-line="12">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Developer"</span>
+</span><span data-line="13">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"/api/docs"</span>
+</span><span data-line="14">    <span class="n">target</span> <span class="o">=</span> <span class="s2">"_self"</span>  <span class="c1"># Open in same tab</span>
+</span></pre></div>
+</div>
+<section id="dynamic-urls">
+<h3>Dynamic URLs<a class="headerlink" href="#dynamic-urls" title="Link to this heading">#</a></h3>
+<p>Override <code class="docutils literal notranslate"><span class="pre">get_url</span></code> for dynamic link generation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentDocsLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Environment Docs"</span>
+</span><span data-line="3">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"external-link"</span>
+</span><span data-line="4">
+</span><span data-line="5">    <span class="k">def</span><span class="w"> </span><span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">ENV</span> <span class="o">==</span> <span class="s2">"production"</span><span class="p">:</span>
+</span><span data-line="7">            <span class="k">return</span> <span class="s2">"https://docs.prod.example.com"</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="s2">"https://docs.dev.example.com"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="conditional-links">
+<h3>Conditional Links<a class="headerlink" href="#conditional-links" title="Link to this heading">#</a></h3>
+<p>Control link visibility based on user permissions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">AdminDocsLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Admin Guide"</span>
+</span><span data-line="3">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"https://internal.example.com/admin-guide"</span>
+</span><span data-line="4">
+</span><span data-line="5">    <span class="nd">@classmethod</span>
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="7">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="embedview">
+<h2>EmbedView<a class="headerlink" href="#embedview" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">EmbedView</span></code> embeds external content or custom React components within the admin panel.</p>
+<section id="iframe-embeds">
+<h3>Iframe Embeds<a class="headerlink" href="#iframe-embeds" title="Link to this heading">#</a></h3>
+<p>Embed external dashboards, tools, or documentation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmbedView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">GrafanaMetrics</span><span class="p">(</span><span class="n">EmbedView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Metrics"</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"chart-line"</span>
+</span><span data-line="6">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Monitoring"</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="n">embed_type</span> <span class="o">=</span> <span class="s2">"iframe"</span>
+</span><span data-line="9">    <span class="n">embed_url</span> <span class="o">=</span> <span class="s2">"https://grafana.example.com/d/abc123?orgId=1"</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="c1"># Dimensions</span>
+</span><span data-line="12">    <span class="n">height</span> <span class="o">=</span> <span class="s2">"800px"</span>
+</span><span data-line="13">    <span class="n">width</span> <span class="o">=</span> <span class="s2">"100%"</span>
+</span><span data-line="14">    <span class="n">min_height</span> <span class="o">=</span> <span class="s2">"400px"</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="c1"># Security</span>
+</span><span data-line="17">    <span class="n">sandbox</span> <span class="o">=</span> <span class="s2">"allow-scripts allow-same-origin"</span>
+</span><span data-line="18">    <span class="n">allow</span> <span class="o">=</span> <span class="s2">"fullscreen"</span>
+</span><span data-line="19">    <span class="n">referrer_policy</span> <span class="o">=</span> <span class="s2">"strict-origin-when-cross-origin"</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="c1"># Behavior</span>
+</span><span data-line="22">    <span class="n">loading</span> <span class="o">=</span> <span class="s2">"lazy"</span>  <span class="c1"># "eager" or "lazy"</span>
+</span><span data-line="23">    <span class="n">show_toolbar</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Show refresh/fullscreen buttons</span>
+</span><span data-line="24">    <span class="n">refresh_interval</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># Auto-refresh every 5 minutes</span>
+</span></pre></div>
+</div>
+</section>
+<section id="dynamic-iframe-urls">
+<h3>Dynamic Iframe URLs<a class="headerlink" href="#dynamic-iframe-urls" title="Link to this heading">#</a></h3>
+<p>Generate URLs dynamically, for example to include auth tokens:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserSpecificDashboard</span><span class="p">(</span><span class="n">EmbedView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"My Dashboard"</span>
+</span><span data-line="3">    <span class="n">embed_type</span> <span class="o">=</span> <span class="s2">"iframe"</span>
+</span><span data-line="4">    <span class="n">embed_url</span> <span class="o">=</span> <span class="s2">"https://dashboard.example.com"</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_embed_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="7">        <span class="n">user</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span>
+</span><span data-line="8">        <span class="n">token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generate_dashboard_token</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="9">        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">embed_url</span><span class="si">}</span><span class="s2">?user=</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&amp;token=</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">&amp;theme=dark"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="component-embeds">
+<h3>Component Embeds<a class="headerlink" href="#component-embeds" title="Link to this heading">#</a></h3>
+<p>Embed registered React components:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">ActivityFeed</span><span class="p">(</span><span class="n">EmbedView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Activity Feed"</span>
+</span><span data-line="3">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"activity"</span>
+</span><span data-line="4">
+</span><span data-line="5">    <span class="n">embed_type</span> <span class="o">=</span> <span class="s2">"component"</span>
+</span><span data-line="6">    <span class="n">component_name</span> <span class="o">=</span> <span class="s2">"ActivityFeed"</span>  <span class="c1"># Must be registered in frontend</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="c1"># Static props</span>
+</span><span data-line="9">    <span class="n">props</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="10">        <span class="s2">"limit"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+</span><span data-line="11">        <span class="s2">"showTimestamps"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="12">    <span class="p">}</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="c1"># Layout</span>
+</span><span data-line="15">    <span class="n">layout</span> <span class="o">=</span> <span class="s2">"sidebar"</span>  <span class="c1"># "full", "sidebar", or "card"</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="18"><span class="w">        </span><span class="sd">"""Dynamic props based on current user."""</span>
+</span><span data-line="19">        <span class="n">user</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span>
+</span><span data-line="20">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="21">            <span class="s2">"userId"</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">user</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="22">            <span class="s2">"limit"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+</span><span data-line="23">            <span class="s2">"showTimestamps"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="24">            <span class="s2">"theme"</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">preferences</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"theme"</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">)</span> <span class="k">if</span> <span class="n">user</span> <span class="k">else</span> <span class="s2">"dark"</span><span class="p">,</span>
+</span><span data-line="25">        <span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="iframe-security-options">
+<h3>Iframe Security Options<a class="headerlink" href="#iframe-security-options" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sandbox</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;allow-scripts</span> <span class="pre">allow-same-origin</span> <span class="pre">allow-forms</span> <span class="pre">allow-popups&quot;</span></code></p></td>
+<td><p>Iframe sandbox restrictions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">allow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Feature policy permissions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">referrer_policy</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;strict-origin-when-cross-origin&quot;</span></code></p></td>
+<td><p>Referrer policy</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">loading</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;lazy&quot;</span></code></p></td>
+<td><p>Loading strategy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="layout-options">
+<h3>Layout Options<a class="headerlink" href="#layout-options" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layout</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">full</span></code></p></td>
+<td><p>Full-page embed (default)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sidebar</span></code></p></td>
+<td><p>Sidebar panel embed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">card</span></code></p></td>
+<td><p>Card within dashboard</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="registering-views">
+<h2>Registering Views<a class="headerlink" href="#registering-views" title="Link to this heading">#</a></h2>
+<p>Register all view types in your <code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">ModelView</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Model views</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="6">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">PostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Post</span><span class="p">):</span>
+</span><span data-line="9">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">]</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="c1"># Custom views</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">SettingsView</span><span class="p">(</span><span class="n">InMemoryView</span><span class="p">):</span>
+</span><span data-line="13">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Settings"</span>
+</span><span data-line="14">    <span class="c1"># ...</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Actions</span>
+</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">ClearCacheAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="18">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Clear Cache"</span>
+</span><span data-line="19">    <span class="c1"># ...</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="c1"># Pages</span>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">AboutPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="23">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"About"</span>
+</span><span data-line="24">    <span class="c1"># ...</span>
+</span><span data-line="25">
+</span><span data-line="26"><span class="c1"># Links</span>
+</span><span data-line="27"><span class="k">class</span><span class="w"> </span><span class="nc">DocsLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="28">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Documentation"</span>
+</span><span data-line="29">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"https://docs.example.com"</span>
+</span><span data-line="30">
+</span><span data-line="31"><span class="c1"># Embeds</span>
+</span><span data-line="32"><span class="k">class</span><span class="w"> </span><span class="nc">MetricsEmbed</span><span class="p">(</span><span class="n">EmbedView</span><span class="p">):</span>
+</span><span data-line="33">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Metrics"</span>
+</span><span data-line="34">    <span class="n">embed_url</span> <span class="o">=</span> <span class="s2">"https://grafana.example.com"</span>
+</span><span data-line="35">
+</span><span data-line="36"><span class="c1"># Register all views</span>
+</span><span data-line="37"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="38">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="39">        <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="40">            <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="41">                <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span>
+</span><span data-line="42">                <span class="n">views</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="43">                    <span class="c1"># Model views</span>
+</span><span data-line="44">                    <span class="n">UserAdmin</span><span class="p">,</span>
+</span><span data-line="45">                    <span class="n">PostAdmin</span><span class="p">,</span>
+</span><span data-line="46">                    <span class="c1"># Custom views</span>
+</span><span data-line="47">                    <span class="n">SettingsView</span><span class="p">,</span>
+</span><span data-line="48">                    <span class="c1"># Actions</span>
+</span><span data-line="49">                    <span class="n">ClearCacheAction</span><span class="p">,</span>
+</span><span data-line="50">                    <span class="c1"># Pages</span>
+</span><span data-line="51">                    <span class="n">AboutPage</span><span class="p">,</span>
+</span><span data-line="52">                    <span class="c1"># Links</span>
+</span><span data-line="53">                    <span class="n">DocsLink</span><span class="p">,</span>
+</span><span data-line="54">                    <span class="c1"># Embeds</span>
+</span><span data-line="55">                    <span class="n">MetricsEmbed</span><span class="p">,</span>
+</span><span data-line="56">                <span class="p">],</span>
+</span><span data-line="57">            <span class="p">)</span>
+</span><span data-line="58">        <span class="p">)</span>
+</span><span data-line="59">    <span class="p">]</span>
+</span><span data-line="60"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="view-ordering">
+<h3>View Ordering<a class="headerlink" href="#view-ordering" title="Link to this heading">#</a></h3>
+<p>Control the order of views in the sidebar:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">FirstView</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"First"</span>
+</span><span data-line="3">    <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Lower numbers appear first</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">SecondView</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="6">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Second"</span>
+</span><span data-line="7">    <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">LastView</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="10">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Last"</span>
+</span><span data-line="11">    <span class="n">order</span> <span class="o">=</span> <span class="mi">100</span>
+</span></pre></div>
+</div>
+</section>
+<section id="grouping-with-categories">
+<h3>Grouping with Categories<a class="headerlink" href="#grouping-with-categories" title="Link to this heading">#</a></h3>
+<p>Group views in the sidebar using categories:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Users &amp; Access"</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">RoleAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Role</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Users &amp; Access"</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">ProductAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Product</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Store"</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">ClearCacheAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="11">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Maintenance"</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">class</span><span class="w"> </span><span class="nc">BackupAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="14">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Maintenance"</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="complete-example">
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h2>
+<p>Here’s a comprehensive example combining multiple view types:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">ModelView</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="10">    <span class="n">ActionView</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">ActionResult</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">ColumnDefinition</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">EmbedView</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">FormField</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">LinkView</span><span class="p">,</span>
+</span><span data-line="16">    <span class="n">PageView</span><span class="p">,</span>
+</span><span data-line="17"><span class="p">)</span>
+</span><span data-line="18"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">InMemoryView</span><span class="p">,</span> <span class="n">HTTPAPIView</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Post</span><span class="p">,</span> <span class="n">AuditLog</span>
+</span><span data-line="21">
+</span><span data-line="22">
+</span><span data-line="23"><span class="c1"># Model Views</span>
+</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="25">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Users"</span>
+</span><span data-line="26">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"users"</span>
+</span><span data-line="27">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"User Management"</span>
+</span><span data-line="28">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">]</span>
+</span><span data-line="29">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span><span data-line="30">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="31">
+</span><span data-line="32">
+</span><span data-line="33"><span class="k">class</span><span class="w"> </span><span class="nc">PostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Post</span><span class="p">):</span>
+</span><span data-line="34">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Posts"</span>
+</span><span data-line="35">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"file-text"</span>
+</span><span data-line="36">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Content"</span>
+</span><span data-line="37">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"author"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">]</span>
+</span><span data-line="38">
+</span><span data-line="39">
+</span><span data-line="40"><span class="k">class</span><span class="w"> </span><span class="nc">AuditLogAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">AuditLog</span><span class="p">):</span>
+</span><span data-line="41">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Audit Logs"</span>
+</span><span data-line="42">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"list"</span>
+</span><span data-line="43">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"System"</span>
+</span><span data-line="44">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="45">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="46">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="47">
+</span><span data-line="48">
+</span><span data-line="49"><span class="c1"># Custom View for App Settings</span>
+</span><span data-line="50"><span class="k">class</span><span class="w"> </span><span class="nc">AppSettingsView</span><span class="p">(</span><span class="n">InMemoryView</span><span class="p">):</span>
+</span><span data-line="51">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"App Settings"</span>
+</span><span data-line="52">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"cog"</span>
+</span><span data-line="53">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Configuration"</span>
+</span><span data-line="54">    <span class="n">pk_field</span> <span class="o">=</span> <span class="s2">"key"</span>
+</span><span data-line="55">
+</span><span data-line="56">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="57">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"key"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="58">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"value"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">),</span>
+</span><span data-line="59">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"description"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"text"</span><span class="p">),</span>
+</span><span data-line="60">    <span class="p">]</span>
+</span><span data-line="61">
+</span><span data-line="62">    <span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="63">        <span class="s2">"site_name"</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="64">            <span class="s2">"key"</span><span class="p">:</span> <span class="s2">"site_name"</span><span class="p">,</span>
+</span><span data-line="65">            <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"My Application"</span><span class="p">,</span>
+</span><span data-line="66">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Site name shown in header"</span><span class="p">,</span>
+</span><span data-line="67">        <span class="p">},</span>
+</span><span data-line="68">        <span class="s2">"maintenance_mode"</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="69">            <span class="s2">"key"</span><span class="p">:</span> <span class="s2">"maintenance_mode"</span><span class="p">,</span>
+</span><span data-line="70">            <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+</span><span data-line="71">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Enable site-wide maintenance mode"</span><span class="p">,</span>
+</span><span data-line="72">        <span class="p">},</span>
+</span><span data-line="73">    <span class="p">}</span>
+</span><span data-line="74">
+</span><span data-line="75">
+</span><span data-line="76"><span class="c1"># External API View</span>
+</span><span data-line="77"><span class="k">class</span><span class="w"> </span><span class="nc">GitHubIssuesView</span><span class="p">(</span><span class="n">HTTPAPIView</span><span class="p">):</span>
+</span><span data-line="78">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"GitHub Issues"</span>
+</span><span data-line="79">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"github"</span>
+</span><span data-line="80">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Integrations"</span>
+</span><span data-line="81">
+</span><span data-line="82">    <span class="n">api_base_url</span> <span class="o">=</span> <span class="s2">"https://api.github.com"</span>
+</span><span data-line="83">    <span class="n">api_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"application/vnd.github.v3+json"</span><span class="p">}</span>
+</span><span data-line="84">    <span class="n">list_endpoint</span> <span class="o">=</span> <span class="s2">"/repos/owner/repo/issues"</span>
+</span><span data-line="85">    <span class="n">items_key</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="88">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"number"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="89">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"title"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">searchable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="90">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"state"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"string"</span><span class="p">,</span> <span class="n">filterable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="91">        <span class="n">ColumnDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"created_at"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"datetime"</span><span class="p">,</span> <span class="n">sortable</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="92">    <span class="p">]</span>
+</span><span data-line="93">
+</span><span data-line="94">
+</span><span data-line="95"><span class="c1"># Admin Actions</span>
+</span><span data-line="96"><span class="k">class</span><span class="w"> </span><span class="nc">ClearCacheAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="97">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Clear Cache"</span>
+</span><span data-line="98">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"trash"</span>
+</span><span data-line="99">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Maintenance"</span>
+</span><span data-line="100">    <span class="n">confirmation_message</span> <span class="o">=</span> <span class="s2">"This will clear all cached data. Continue?"</span>
+</span><span data-line="101">
+</span><span data-line="102">    <span class="n">form_fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="103">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="104">            <span class="n">name</span><span class="o">=</span><span class="s2">"cache_type"</span><span class="p">,</span>
+</span><span data-line="105">            <span class="n">label</span><span class="o">=</span><span class="s2">"Cache Type"</span><span class="p">,</span>
+</span><span data-line="106">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"select"</span><span class="p">,</span>
+</span><span data-line="107">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="108">            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="109">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"all"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"All Caches"</span><span class="p">},</span>
+</span><span data-line="110">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"User Cache"</span><span class="p">},</span>
+</span><span data-line="111">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"session"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Session Cache"</span><span class="p">},</span>
+</span><span data-line="112">            <span class="p">],</span>
+</span><span data-line="113">        <span class="p">),</span>
+</span><span data-line="114">    <span class="p">]</span>
+</span><span data-line="115">
+</span><span data-line="116">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ActionResult</span><span class="p">:</span>
+</span><span data-line="117">        <span class="n">cache_type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_type"</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">)</span>
+</span><span data-line="118">        <span class="c1"># await cache_service.clear(cache_type)</span>
+</span><span data-line="119">        <span class="k">return</span> <span class="n">ActionResult</span><span class="p">(</span>
+</span><span data-line="120">            <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="121">            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Successfully cleared </span><span class="si">{</span><span class="n">cache_type</span><span class="si">}</span><span class="s2"> cache!"</span><span class="p">,</span>
+</span><span data-line="122">            <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="123">        <span class="p">)</span>
+</span><span data-line="124">
+</span><span data-line="125">
+</span><span data-line="126"><span class="k">class</span><span class="w"> </span><span class="nc">ExportDataAction</span><span class="p">(</span><span class="n">ActionView</span><span class="p">):</span>
+</span><span data-line="127">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Export Data"</span>
+</span><span data-line="128">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"download"</span>
+</span><span data-line="129">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Data"</span>
+</span><span data-line="130">    <span class="n">submit_label</span> <span class="o">=</span> <span class="s2">"Generate Export"</span>
+</span><span data-line="131">
+</span><span data-line="132">    <span class="n">form_fields</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="133">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="134">            <span class="n">name</span><span class="o">=</span><span class="s2">"format"</span><span class="p">,</span>
+</span><span data-line="135">            <span class="n">label</span><span class="o">=</span><span class="s2">"Export Format"</span><span class="p">,</span>
+</span><span data-line="136">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"select"</span><span class="p">,</span>
+</span><span data-line="137">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="138">            <span class="n">default</span><span class="o">=</span><span class="s2">"csv"</span><span class="p">,</span>
+</span><span data-line="139">            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="140">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"csv"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"CSV"</span><span class="p">},</span>
+</span><span data-line="141">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"json"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"JSON"</span><span class="p">},</span>
+</span><span data-line="142">                <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="s2">"xlsx"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Excel"</span><span class="p">},</span>
+</span><span data-line="143">            <span class="p">],</span>
+</span><span data-line="144">        <span class="p">),</span>
+</span><span data-line="145">        <span class="n">FormField</span><span class="p">(</span>
+</span><span data-line="146">            <span class="n">name</span><span class="o">=</span><span class="s2">"include_deleted"</span><span class="p">,</span>
+</span><span data-line="147">            <span class="n">label</span><span class="o">=</span><span class="s2">"Include deleted records"</span><span class="p">,</span>
+</span><span data-line="148">            <span class="n">field_type</span><span class="o">=</span><span class="s2">"checkbox"</span><span class="p">,</span>
+</span><span data-line="149">        <span class="p">),</span>
+</span><span data-line="150">    <span class="p">]</span>
+</span><span data-line="151">
+</span><span data-line="152">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ActionResult</span><span class="p">:</span>
+</span><span data-line="153">        <span class="n">export_format</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format"</span><span class="p">,</span> <span class="s2">"csv"</span><span class="p">)</span>
+</span><span data-line="154">        <span class="c1"># Generate export and get download URL</span>
+</span><span data-line="155">        <span class="n">download_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"/admin/exports/download/123.</span><span class="si">{</span><span class="n">export_format</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="156">        <span class="k">return</span> <span class="n">ActionResult</span><span class="p">(</span>
+</span><span data-line="157">            <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="158">            <span class="n">message</span><span class="o">=</span><span class="s2">"Export generated successfully!"</span><span class="p">,</span>
+</span><span data-line="159">            <span class="n">redirect</span><span class="o">=</span><span class="n">download_url</span><span class="p">,</span>
+</span><span data-line="160">        <span class="p">)</span>
+</span><span data-line="161">
+</span><span data-line="162">
+</span><span data-line="163"><span class="c1"># Content Pages</span>
+</span><span data-line="164"><span class="k">class</span><span class="w"> </span><span class="nc">AboutPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="165">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"About"</span>
+</span><span data-line="166">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"info-circle"</span>
+</span><span data-line="167">    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">"markdown"</span>
+</span><span data-line="168">    <span class="n">content</span> <span class="o">=</span> <span class="s2">"""</span>
+</span><span data-line="169"><span class="s2"># Admin Panel</span>
+</span><span data-line="170">
+</span><span data-line="171"><span class="s2">Welcome to the administration interface.</span>
+</span><span data-line="172">
+</span><span data-line="173"><span class="s2">## Quick Links</span>
+</span><span data-line="174">
+</span><span data-line="175"><span class="s2">- [User Guide](/docs/user-guide)</span>
+</span><span data-line="176"><span class="s2">- [API Documentation](/api/docs)</span>
+</span><span data-line="177"><span class="s2">- [Support](mailto:support@example.com)</span>
+</span><span data-line="178"><span class="s2">"""</span>
+</span><span data-line="179">
+</span><span data-line="180">
+</span><span data-line="181"><span class="k">class</span><span class="w"> </span><span class="nc">DashboardPage</span><span class="p">(</span><span class="n">PageView</span><span class="p">):</span>
+</span><span data-line="182">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Dashboard"</span>
+</span><span data-line="183">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"tachometer-alt"</span>
+</span><span data-line="184">    <span class="n">content_type</span> <span class="o">=</span> <span class="s2">"dynamic"</span>
+</span><span data-line="185">    <span class="n">refresh_interval</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span data-line="186">
+</span><span data-line="187">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_content</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="188">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="189">            <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"dashboard"</span><span class="p">,</span>
+</span><span data-line="190">            <span class="s2">"widgets"</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="191">                <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Users"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="mi">1234</span><span class="p">},</span>
+</span><span data-line="192">                <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Posts"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="mi">567</span><span class="p">},</span>
+</span><span data-line="193">                <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"stat"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Revenue"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"$12,345"</span><span class="p">},</span>
+</span><span data-line="194">            <span class="p">],</span>
+</span><span data-line="195">        <span class="p">}</span>
+</span><span data-line="196">
+</span><span data-line="197">
+</span><span data-line="198"><span class="c1"># External Links</span>
+</span><span data-line="199"><span class="k">class</span><span class="w"> </span><span class="nc">DocsLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="200">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Documentation"</span>
+</span><span data-line="201">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"book"</span>
+</span><span data-line="202">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Resources"</span>
+</span><span data-line="203">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"https://docs.example.com"</span>
+</span><span data-line="204">    <span class="n">target</span> <span class="o">=</span> <span class="s2">"_blank"</span>
+</span><span data-line="205">
+</span><span data-line="206">
+</span><span data-line="207"><span class="k">class</span><span class="w"> </span><span class="nc">SupportLink</span><span class="p">(</span><span class="n">LinkView</span><span class="p">):</span>
+</span><span data-line="208">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Get Support"</span>
+</span><span data-line="209">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"life-ring"</span>
+</span><span data-line="210">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Resources"</span>
+</span><span data-line="211">    <span class="n">url</span> <span class="o">=</span> <span class="s2">"https://support.example.com"</span>
+</span><span data-line="212">    <span class="n">target</span> <span class="o">=</span> <span class="s2">"_blank"</span>
+</span><span data-line="213">
+</span><span data-line="214">
+</span><span data-line="215"><span class="c1"># Embedded Dashboards</span>
+</span><span data-line="216"><span class="k">class</span><span class="w"> </span><span class="nc">MetricsEmbed</span><span class="p">(</span><span class="n">EmbedView</span><span class="p">):</span>
+</span><span data-line="217">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Server Metrics"</span>
+</span><span data-line="218">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"chart-line"</span>
+</span><span data-line="219">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Monitoring"</span>
+</span><span data-line="220">
+</span><span data-line="221">    <span class="n">embed_type</span> <span class="o">=</span> <span class="s2">"iframe"</span>
+</span><span data-line="222">    <span class="n">embed_url</span> <span class="o">=</span> <span class="s2">"https://grafana.example.com/d/server-metrics"</span>
+</span><span data-line="223">    <span class="n">height</span> <span class="o">=</span> <span class="s2">"600px"</span>
+</span><span data-line="224">    <span class="n">sandbox</span> <span class="o">=</span> <span class="s2">"allow-scripts allow-same-origin"</span>
+</span><span data-line="225">    <span class="n">refresh_interval</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span data-line="226">
+</span><span data-line="227">
+</span><span data-line="228"><span class="c1"># Create the application</span>
+</span><span data-line="229"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="230">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="231">        <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="232">            <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="233">                <span class="n">title</span><span class="o">=</span><span class="s2">"MyApp Admin"</span><span class="p">,</span>
+</span><span data-line="234">                <span class="n">views</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="235">                    <span class="c1"># High-priority pages first</span>
+</span><span data-line="236">                    <span class="n">DashboardPage</span><span class="p">,</span>
+</span><span data-line="237">                    <span class="c1"># Model management</span>
+</span><span data-line="238">                    <span class="n">UserAdmin</span><span class="p">,</span>
+</span><span data-line="239">                    <span class="n">PostAdmin</span><span class="p">,</span>
+</span><span data-line="240">                    <span class="n">AuditLogAdmin</span><span class="p">,</span>
+</span><span data-line="241">                    <span class="c1"># Custom data</span>
+</span><span data-line="242">                    <span class="n">AppSettingsView</span><span class="p">,</span>
+</span><span data-line="243">                    <span class="n">GitHubIssuesView</span><span class="p">,</span>
+</span><span data-line="244">                    <span class="c1"># Actions</span>
+</span><span data-line="245">                    <span class="n">ClearCacheAction</span><span class="p">,</span>
+</span><span data-line="246">                    <span class="n">ExportDataAction</span><span class="p">,</span>
+</span><span data-line="247">                    <span class="c1"># Info pages</span>
+</span><span data-line="248">                    <span class="n">AboutPage</span><span class="p">,</span>
+</span><span data-line="249">                    <span class="c1"># Links</span>
+</span><span data-line="250">                    <span class="n">DocsLink</span><span class="p">,</span>
+</span><span data-line="251">                    <span class="n">SupportLink</span><span class="p">,</span>
+</span><span data-line="252">                    <span class="c1"># Embeds</span>
+</span><span data-line="253">                    <span class="n">MetricsEmbed</span><span class="p">,</span>
+</span><span data-line="254">                <span class="p">],</span>
+</span><span data-line="255">            <span class="p">)</span>
+</span><span data-line="256">        <span class="p">)</span>
+</span><span data-line="257">    <span class="p">]</span>
+</span><span data-line="258"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<p>For complete API documentation, see:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAdminView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ActionView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PageView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LinkView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EmbedView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">InMemoryView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONFileView</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPAPIView</span></code></p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../model-views.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Model Views</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="file-uploads.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">File Uploads</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

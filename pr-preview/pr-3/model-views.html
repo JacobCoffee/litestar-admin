@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Model Views - litestar-admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Custom Views and Embeds" href="user-guide/custom-views.html" /><link rel="prev" title="Configuration Reference" href="configuration.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Model Views"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a><ul>
+<li><a class="reference internal" href="#using-modelview-recommended">Using ModelView (Recommended)</a></li>
+<li><a class="reference internal" href="#using-basemodelview">Using BaseModelView</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#display-configuration">Display Configuration</a><ul>
+<li><a class="reference internal" href="#model-naming">Model Naming</a><ul>
+<li><a class="reference internal" href="#name">name</a></li>
+<li><a class="reference internal" href="#name-plural">name_plural</a></li>
+<li><a class="reference internal" href="#icon">icon</a></li>
+<li><a class="reference internal" href="#category">category</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#column-configuration">Column Configuration</a><ul>
+<li><a class="reference internal" href="#list-view-columns">List View Columns</a><ul>
+<li><a class="reference internal" href="#column-list">column_list</a></li>
+<li><a class="reference internal" href="#column-exclude-list">column_exclude_list</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#search-and-sort">Search and Sort</a><ul>
+<li><a class="reference internal" href="#column-searchable-list">column_searchable_list</a></li>
+<li><a class="reference internal" href="#column-sortable-list">column_sortable_list</a></li>
+<li><a class="reference internal" href="#column-default-sort">column_default_sort</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#form-configuration">Form Configuration</a><ul>
+<li><a class="reference internal" href="#form-columns">form_columns</a></li>
+<li><a class="reference internal" href="#form-excluded-columns">form_excluded_columns</a></li>
+<li><a class="reference internal" href="#form-fieldsets">form_fieldsets</a></li>
+<li><a class="reference internal" href="#form-widgets">form_widgets</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#permissions">Permissions</a><ul>
+<li><a class="reference internal" href="#can-create">can_create</a></li>
+<li><a class="reference internal" href="#can-edit">can_edit</a></li>
+<li><a class="reference internal" href="#can-delete">can_delete</a></li>
+<li><a class="reference internal" href="#can-view-details">can_view_details</a></li>
+<li><a class="reference internal" href="#can-export">can_export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pagination">Pagination</a><ul>
+<li><a class="reference internal" href="#page-size">page_size</a></li>
+<li><a class="reference internal" href="#page-size-options">page_size_options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#access-control-hooks">Access Control Hooks</a><ul>
+<li><a class="reference internal" href="#is-accessible">is_accessible</a></li>
+<li><a class="reference internal" href="#can-create-record">can_create_record</a></li>
+<li><a class="reference internal" href="#can-edit-record">can_edit_record</a></li>
+<li><a class="reference internal" href="#can-delete-record">can_delete_record</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lifecycle-hooks">Lifecycle Hooks</a><ul>
+<li><a class="reference internal" href="#on-model-change">on_model_change</a></li>
+<li><a class="reference internal" href="#after-model-change">after_model_change</a></li>
+<li><a class="reference internal" href="#after-model-delete">after_model_delete</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#helper-methods">Helper Methods</a><ul>
+<li><a class="reference internal" href="#get-list-columns">get_list_columns</a></li>
+<li><a class="reference internal" href="#get-form-columns">get_form_columns</a></li>
+<li><a class="reference internal" href="#get-column-info">get_column_info</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#column-visibility">Column Visibility</a><ul>
+<li><a class="reference internal" href="#how-it-works">How It Works</a></li>
+<li><a class="reference internal" href="#default-visible-columns">Default Visible Columns</a></li>
+<li><a class="reference internal" href="#id1">Column Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rich-text-fields">Rich Text Fields</a><ul>
+<li><a class="reference internal" href="#configuring-rich-text-fields">Configuring Rich Text Fields</a><ul>
+<li><a class="reference internal" href="#using-form-widgets-simple">Using form_widgets (Simple)</a></li>
+<li><a class="reference internal" href="#using-richtextfield-advanced">Using RichTextField (Advanced)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#editor-features">Editor Features</a></li>
+<li><a class="reference internal" href="#example-blog-post-admin">Example: Blog Post Admin</a></li>
+<li><a class="reference internal" href="#html-output">HTML Output</a></li>
+<li><a class="reference internal" href="#xss-sanitization">XSS Sanitization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#complete-example">Complete Example</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Model Views</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="model-views">
+<h1>Model Views<a class="headerlink" href="#model-views" title="Link to this heading">#</a></h1>
+<p>Model views define how your SQLAlchemy models are displayed and managed in the admin panel. This guide covers all customization options and advanced techniques.</p>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h2>
+<p>There are two ways to create model views:</p>
+<section id="using-modelview-recommended">
+<h3>Using ModelView (Recommended)<a class="headerlink" href="#using-modelview-recommended" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ModelView</span></code> class allows you to specify the model as a class parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="6">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-basemodelview">
+<h3>Using BaseModelView<a class="headerlink" href="#using-basemodelview" title="Link to this heading">#</a></h3>
+<p>Alternatively, use <code class="docutils literal notranslate"><span class="pre">BaseModelView</span></code> and set the model as a class attribute:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModelView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">BaseModelView</span><span class="p">):</span>
+</span><span data-line="6">    <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
+</span><span data-line="7">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>Both approaches are functionally equivalent.</p>
+</section>
+</section>
+<section id="display-configuration">
+<h2>Display Configuration<a class="headerlink" href="#display-configuration" title="Link to this heading">#</a></h2>
+<section id="model-naming">
+<h3>Model Naming<a class="headerlink" href="#model-naming" title="Link to this heading">#</a></h3>
+<section id="name">
+<h4>name<a class="headerlink" href="#name" title="Link to this heading">#</a></h4>
+<p>Display name for the model in the sidebar and page headers. Defaults to the model class name.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"User Account"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="name-plural">
+<h4>name_plural<a class="headerlink" href="#name-plural" title="Link to this heading">#</a></h4>
+<p>Plural display name. Defaults to <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">+</span> <span class="pre">&quot;s&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">PersonAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Person</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Person"</span>
+</span><span data-line="3">    <span class="n">name_plural</span> <span class="o">=</span> <span class="s2">"People"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="icon">
+<h4>icon<a class="headerlink" href="#icon" title="Link to this heading">#</a></h4>
+<p>Icon name for the sidebar. Uses FontAwesome icon names.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"user"</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">OrderAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Order</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"shopping-cart"</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">SettingsAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Settings</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"cog"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="category">
+<h4>category<a class="headerlink" href="#category" title="Link to this heading">#</a></h4>
+<p>Group models under a category in the sidebar.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Users &amp; Access"</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">RoleAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Role</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Users &amp; Access"</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">ProductAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Product</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Store"</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">OrderAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Order</span><span class="p">):</span>
+</span><span data-line="11">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Store"</span>
+</span></pre></div>
+</div>
+<p>Models with the same category will be grouped together in the sidebar.</p>
+</section>
+</section>
+</section>
+<section id="column-configuration">
+<h2>Column Configuration<a class="headerlink" href="#column-configuration" title="Link to this heading">#</a></h2>
+<section id="list-view-columns">
+<h3>List View Columns<a class="headerlink" href="#list-view-columns" title="Link to this heading">#</a></h3>
+<section id="column-list">
+<h4>column_list<a class="headerlink" href="#column-list" title="Link to this heading">#</a></h4>
+<p>Specify which columns to display in the list view.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="c1"># Only these columns will be shown</span>
+</span><span data-line="3">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>If not specified, all columns are shown.</p>
+</section>
+<section id="column-exclude-list">
+<h4>column_exclude_list<a class="headerlink" href="#column-exclude-list" title="Link to this heading">#</a></h4>
+<p>Columns to exclude from the list view.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="c1"># Show all columns except these</span>
+</span><span data-line="3">    <span class="n">column_exclude_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"password_hash"</span><span class="p">,</span> <span class="s2">"internal_notes"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="search-and-sort">
+<h3>Search and Sort<a class="headerlink" href="#search-and-sort" title="Link to this heading">#</a></h3>
+<section id="column-searchable-list">
+<h4>column_searchable_list<a class="headerlink" href="#column-searchable-list" title="Link to this heading">#</a></h4>
+<p>Columns that can be searched via the search box.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"phone"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>Search performs case-insensitive partial matching on string columns.</p>
+</section>
+<section id="column-sortable-list">
+<h4>column_sortable_list<a class="headerlink" href="#column-sortable-list" title="Link to this heading">#</a></h4>
+<p>Columns that can be sorted by clicking the column header.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">column_sortable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>If not specified, all columns are sortable by default.</p>
+</section>
+<section id="column-default-sort">
+<h4>column_default_sort<a class="headerlink" href="#column-default-sort" title="Link to this heading">#</a></h4>
+<p>Default sort order when loading the list view.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="c1"># Sort by created_at descending (newest first)</span>
+</span><span data-line="3">    <span class="n">column_default_sort</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"created_at"</span><span class="p">,</span> <span class="s2">"desc"</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">OrderAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Order</span><span class="p">):</span>
+</span><span data-line="6">    <span class="c1"># Sort by id ascending</span>
+</span><span data-line="7">    <span class="n">column_default_sort</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"asc"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="form-configuration">
+<h2>Form Configuration<a class="headerlink" href="#form-configuration" title="Link to this heading">#</a></h2>
+<section id="form-columns">
+<h3>form_columns<a class="headerlink" href="#form-columns" title="Link to this heading">#</a></h3>
+<p>Columns to include in create/edit forms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">form_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"bio"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>If not specified, all non-primary-key columns are included.</p>
+</section>
+<section id="form-excluded-columns">
+<h3>form_excluded_columns<a class="headerlink" href="#form-excluded-columns" title="Link to this heading">#</a></h3>
+<p>Columns to exclude from forms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="c1"># Exclude auto-generated and sensitive fields</span>
+</span><span data-line="3">    <span class="n">form_excluded_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">,</span> <span class="s2">"updated_at"</span><span class="p">,</span> <span class="s2">"password_hash"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="form-fieldsets">
+<h3>form_fieldsets<a class="headerlink" href="#form-fieldsets" title="Link to this heading">#</a></h3>
+<p>Group form fields into collapsible sections for better organization. Each fieldset is a dictionary with the following options:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>The section header displayed to users</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Optional help text shown below the title</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fields</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list[str]</span></code></p></td>
+<td><p>List of field names to include in this section</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">collapsible</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Whether users can collapse/expand this section (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">collapsed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Whether the section starts collapsed (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">form_fieldsets</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="9">        <span class="p">{</span>
+</span><span data-line="10">            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Personal Information"</span><span class="p">,</span>
+</span><span data-line="11">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Basic user information and contact details"</span><span class="p">,</span>
+</span><span data-line="12">            <span class="s2">"fields"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"password"</span><span class="p">],</span>
+</span><span data-line="13">            <span class="s2">"collapsible"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># Always visible</span>
+</span><span data-line="14">        <span class="p">},</span>
+</span><span data-line="15">        <span class="p">{</span>
+</span><span data-line="16">            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Access Control"</span><span class="p">,</span>
+</span><span data-line="17">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"User permissions and account status"</span><span class="p">,</span>
+</span><span data-line="18">            <span class="s2">"fields"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"role"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">],</span>
+</span><span data-line="19">            <span class="s2">"collapsed"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="20">            <span class="s2">"collapsible"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># Users can collapse this section</span>
+</span><span data-line="21">        <span class="p">},</span>
+</span><span data-line="22">    <span class="p">]</span>
+</span></pre></div>
+</div>
+<p>Fieldsets provide visual separation and help users navigate complex forms. The collapsible behavior uses smooth height animations and maintains accessibility with proper ARIA attributes.</p>
+</section>
+<section id="form-widgets">
+<h3>form_widgets<a class="headerlink" href="#form-widgets" title="Link to this heading">#</a></h3>
+<p>Specify custom widget types for specific fields. This allows using specialized input components like rich text editors instead of plain text areas.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlogPost</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">BlogPostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">BlogPost</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">form_widgets</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="9">        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"richtext"</span><span class="p">,</span>  <span class="c1"># Use rich text editor for content field</span>
+</span><span data-line="10">    <span class="p">}</span>
+</span></pre></div>
+</div>
+<p>Available widget types:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Widget</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">richtext</span></code></p></td>
+<td><p>Tiptap-based WYSIWYG editor with formatting toolbar</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>See the <a class="reference internal" href="#rich-text-fields">Rich Text Fields</a> section for more details.</p>
+</section>
+</section>
+<section id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Link to this heading">#</a></h2>
+<p>Control what actions are allowed for each model.</p>
+<section id="can-create">
+<h3>can_create<a class="headerlink" href="#can-create" title="Link to this heading">#</a></h3>
+<p>Allow creating new records.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">LogAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">AuditLog</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Logs are system-generated only</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-edit">
+<h3>can_edit<a class="headerlink" href="#can-edit" title="Link to this heading">#</a></h3>
+<p>Allow editing existing records.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">TransactionAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Transaction</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Transactions are immutable</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-delete">
+<h3>can_delete<a class="headerlink" href="#can-delete" title="Link to this heading">#</a></h3>
+<p>Allow deleting records.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Prevent accidental user deletion</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-view-details">
+<h3>can_view_details<a class="headerlink" href="#can-view-details" title="Link to this heading">#</a></h3>
+<p>Allow viewing detailed record information.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">SecretAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Secret</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_view_details</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Hide detailed view</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-export">
+<h3>can_export<a class="headerlink" href="#can-export" title="Link to this heading">#</a></h3>
+<p>Allow exporting records to CSV/JSON.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">SensitiveDataAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">SensitiveData</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">can_export</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Prevent data export</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="pagination">
+<h2>Pagination<a class="headerlink" href="#pagination" title="Link to this heading">#</a></h2>
+<section id="page-size">
+<h3>page_size<a class="headerlink" href="#page-size" title="Link to this heading">#</a></h3>
+<p>Default number of records per page.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">page_size</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># Default is 25</span>
+</span></pre></div>
+</div>
+</section>
+<section id="page-size-options">
+<h3>page_size_options<a class="headerlink" href="#page-size-options" title="Link to this heading">#</a></h3>
+<p>Available page size options in the dropdown.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">page_size_options</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="access-control-hooks">
+<h2>Access Control Hooks<a class="headerlink" href="#access-control-hooks" title="Link to this heading">#</a></h2>
+<p>Override these methods for dynamic access control based on the current request.</p>
+<section id="is-accessible">
+<h3>is_accessible<a class="headerlink" href="#is-accessible" title="Link to this heading">#</a></h3>
+<p>Control whether the view is accessible at all.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">AdminSettingsAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">AdminSettings</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="4">        <span class="c1"># Only superadmins can access</span>
+</span><span data-line="5">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="6">        <span class="k">return</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"superadmin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-create-record">
+<h3>can_create_record<a class="headerlink" href="#can-create-record" title="Link to this heading">#</a></h3>
+<p>Control whether records can be created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">PostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Post</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_create_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="4">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="5">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="7">        <span class="c1"># Only editors can create posts</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="s2">"editor"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-edit-record">
+<h3>can_edit_record<a class="headerlink" href="#can-edit-record" title="Link to this heading">#</a></h3>
+<p>Control whether a specific record can be edited.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">PostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Post</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_edit_record</span><span class="p">(</span>
+</span><span data-line="4">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">record</span><span class="p">:</span> <span class="n">Post</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="8">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="9">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="11">        <span class="c1"># Users can only edit their own posts</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">author_id</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span> <span class="ow">or</span> <span class="s2">"admin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+<section id="can-delete-record">
+<h3>can_delete_record<a class="headerlink" href="#can-delete-record" title="Link to this heading">#</a></h3>
+<p>Control whether a specific record can be deleted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_delete_record</span><span class="p">(</span>
+</span><span data-line="4">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">record</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="8">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="9">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="11">        <span class="c1"># Cannot delete yourself</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="lifecycle-hooks">
+<h2>Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Link to this heading">#</a></h2>
+<p>Override these methods to add custom logic during CRUD operations.</p>
+<section id="on-model-change">
+<h3>on_model_change<a class="headerlink" href="#on-model-change" title="Link to this heading">#</a></h3>
+<p>Called before creating or updating a record. Use this for validation or data transformation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_model_change</span><span class="p">(</span>
+</span><span data-line="4">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="6">        <span class="n">record</span><span class="p">:</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="7">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">is_create</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="9">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="10">        <span class="c1"># Hash password before saving</span>
+</span><span data-line="11">        <span class="k">if</span> <span class="s2">"password"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="12">            <span class="n">data</span><span class="p">[</span><span class="s2">"password_hash"</span><span class="p">]</span> <span class="o">=</span> <span class="n">hash_password</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"password"</span><span class="p">))</span>
+</span><span data-line="13">
+</span><span data-line="14">        <span class="c1"># Set created_by on create</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="n">is_create</span><span class="p">:</span>
+</span><span data-line="16">            <span class="n">data</span><span class="p">[</span><span class="s2">"created_by"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"admin"</span>
+</span><span data-line="17">
+</span><span data-line="18">        <span class="c1"># Set updated_at on update</span>
+</span><span data-line="19">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_create</span><span class="p">:</span>
+</span><span data-line="20">            <span class="n">data</span><span class="p">[</span><span class="s2">"updated_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+</span><span data-line="21">
+</span><span data-line="22">        <span class="k">return</span> <span class="n">data</span>
+</span></pre></div>
+</div>
+</section>
+<section id="after-model-change">
+<h3>after_model_change<a class="headerlink" href="#after-model-change" title="Link to this heading">#</a></h3>
+<p>Called after creating or updating a record. Use this for side effects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_model_change</span><span class="p">(</span>
+</span><span data-line="4">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">record</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+</span><span data-line="6">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">is_create</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="8">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9">        <span class="k">if</span> <span class="n">is_create</span><span class="p">:</span>
+</span><span data-line="10">            <span class="c1"># Send welcome email</span>
+</span><span data-line="11">            <span class="k">await</span> <span class="n">send_welcome_email</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+</span><span data-line="12">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="13">            <span class="c1"># Log update</span>
+</span><span data-line="14">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> updated"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="after-model-delete">
+<h3>after_model_delete<a class="headerlink" href="#after-model-delete" title="Link to this heading">#</a></h3>
+<p>Called after deleting a record. Use this for cleanup.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_model_delete</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="4">        <span class="c1"># Clean up related files</span>
+</span><span data-line="5">        <span class="k">await</span> <span class="n">delete_user_avatar</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7">        <span class="c1"># Send notification</span>
+</span><span data-line="8">        <span class="k">await</span> <span class="n">notify_admins</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2"> was deleted"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="helper-methods">
+<h2>Helper Methods<a class="headerlink" href="#helper-methods" title="Link to this heading">#</a></h2>
+<p>These methods can be used to access column information programmatically.</p>
+<section id="get-list-columns">
+<h3>get_list_columns<a class="headerlink" href="#get-list-columns" title="Link to this heading">#</a></h3>
+<p>Get the list of columns for the list view.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">columns</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">get_list_columns</span><span class="p">()</span>
+</span><span data-line="2"><span class="c1"># Returns: ["id", "email", "name", "created_at"]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="get-form-columns">
+<h3>get_form_columns<a class="headerlink" href="#get-form-columns" title="Link to this heading">#</a></h3>
+<p>Get the list of columns for forms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># For create form</span>
+</span><span data-line="2"><span class="n">create_columns</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">get_form_columns</span><span class="p">(</span><span class="n">is_create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># For edit form</span>
+</span><span data-line="5"><span class="n">edit_columns</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">get_form_columns</span><span class="p">(</span><span class="n">is_create</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="get-column-info">
+<h3>get_column_info<a class="headerlink" href="#get-column-info" title="Link to this heading">#</a></h3>
+<p>Get metadata for a specific column.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">info</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">get_column_info</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span>
+</span><span data-line="2"><span class="c1"># Returns: {</span>
+</span><span data-line="3"><span class="c1">#     "name": "email",</span>
+</span><span data-line="4"><span class="c1">#     "sortable": True,</span>
+</span><span data-line="5"><span class="c1">#     "searchable": True,</span>
+</span><span data-line="6"><span class="c1">#     "type": "VARCHAR(255)",</span>
+</span><span data-line="7"><span class="c1">#     "nullable": False,</span>
+</span><span data-line="8"><span class="c1">#     "primary_key": False,</span>
+</span><span data-line="9"><span class="c1"># }</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="column-visibility">
+<h2>Column Visibility<a class="headerlink" href="#column-visibility" title="Link to this heading">#</a></h2>
+<p>The admin panel allows users to show or hide columns in data tables. This feature helps users focus on the data most relevant to their tasks.</p>
+<section id="how-it-works">
+<h3>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h3>
+<p>Users can toggle column visibility through a dropdown menu in the table toolbar. The visibility preferences are persisted in the browser’s localStorage, so each user’s settings are remembered across sessions.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p><strong>Per-table persistence</strong>: Each model view stores its own column visibility state</p></li>
+<li><p><strong>Bulk actions</strong>: “Show All” and “Hide All” buttons for quick configuration</p></li>
+<li><p><strong>Minimum columns</strong>: At least one column must remain visible</p></li>
+<li><p><strong>Required columns</strong>: Some columns (like primary keys) may be marked as non-hideable</p></li>
+</ul>
+</section>
+<section id="default-visible-columns">
+<h3>Default Visible Columns<a class="headerlink" href="#default-visible-columns" title="Link to this heading">#</a></h3>
+<p>By default, all columns in <code class="docutils literal notranslate"><span class="pre">column_list</span></code> are visible. The frontend uses a storage key based on the model identity to persist user preferences:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">litestar</span><span class="o">-</span><span class="n">admin</span><span class="p">:</span><span class="n">columns</span><span class="p">:{</span><span class="n">model_identity</span><span class="p">}</span>
+</span></pre></div>
+</div>
+<p>For example, a User model might use <code class="docutils literal notranslate"><span class="pre">litestar-admin:columns:user</span></code>.</p>
+</section>
+<section id="id1">
+<h3>Column Configuration<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Columns can be configured with visibility options through the column metadata:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">]</span>
+</span><span data-line="3">
+</span><span data-line="4">    <span class="c1"># The frontend will show all columns by default</span>
+</span><span data-line="5">    <span class="c1"># Users can hide any column except those marked as required</span>
+</span></pre></div>
+</div>
+<p>The visibility state includes:</p>
+<ul class="simple">
+<li><p>Which columns are currently visible</p></li>
+<li><p>The count of visible vs. total columns (shown in the dropdown button)</p></li>
+<li><p>Visual indicators for hidden columns</p></li>
+</ul>
+</section>
+</section>
+<section id="rich-text-fields">
+<h2>Rich Text Fields<a class="headerlink" href="#rich-text-fields" title="Link to this heading">#</a></h2>
+<p>For content fields that require formatting (like blog posts or descriptions), you can use the rich text editor widget. This provides a WYSIWYG editing experience with a formatting toolbar.</p>
+<section id="configuring-rich-text-fields">
+<h3>Configuring Rich Text Fields<a class="headerlink" href="#configuring-rich-text-fields" title="Link to this heading">#</a></h3>
+<p>There are two ways to configure rich text fields:</p>
+<section id="using-form-widgets-simple">
+<h4>Using form_widgets (Simple)<a class="headerlink" href="#using-form-widgets-simple" title="Link to this heading">#</a></h4>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">form_widgets</span></code> attribute to specify which fields should use the rich text editor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlogPost</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">BlogPostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">BlogPost</span><span class="p">):</span>
+</span><span data-line="8">    <span class="n">form_widgets</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="9">        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"richtext"</span><span class="p">,</span>
+</span><span data-line="10">    <span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-richtextfield-advanced">
+<h4>Using RichTextField (Advanced)<a class="headerlink" href="#using-richtextfield-advanced" title="Link to this heading">#</a></h4>
+<p>For more control over toolbar, validation, and XSS sanitization, use <code class="docutils literal notranslate"><span class="pre">RichTextField</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">RichTextField</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlogPost</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">BlogPostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">BlogPost</span><span class="p">):</span>
+</span><span data-line="9">    <span class="n">rich_text_fields</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">RichTextField</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="10">        <span class="n">RichTextField</span><span class="p">(</span>
+</span><span data-line="11">            <span class="n">name</span><span class="o">=</span><span class="s2">"content"</span><span class="p">,</span>
+</span><span data-line="12">            <span class="n">description</span><span class="o">=</span><span class="s2">"Main article content"</span><span class="p">,</span>
+</span><span data-line="13">            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="14">            <span class="n">toolbar</span><span class="o">=</span><span class="p">[</span><span class="s2">"bold"</span><span class="p">,</span> <span class="s2">"italic"</span><span class="p">,</span> <span class="s2">"link"</span><span class="p">,</span> <span class="s2">"heading"</span><span class="p">,</span> <span class="s2">"bulletList"</span><span class="p">,</span> <span class="s2">"orderedList"</span><span class="p">],</span>
+</span><span data-line="15">            <span class="n">max_length</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+</span><span data-line="16">            <span class="n">allowed_tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"p"</span><span class="p">,</span> <span class="s2">"h1"</span><span class="p">,</span> <span class="s2">"h2"</span><span class="p">,</span> <span class="s2">"h3"</span><span class="p">,</span> <span class="s2">"strong"</span><span class="p">,</span> <span class="s2">"em"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"ul"</span><span class="p">,</span> <span class="s2">"ol"</span><span class="p">,</span> <span class="s2">"li"</span><span class="p">],</span>
+</span><span data-line="17">        <span class="p">),</span>
+</span><span data-line="18">        <span class="n">RichTextField</span><span class="p">(</span>
+</span><span data-line="19">            <span class="n">name</span><span class="o">=</span><span class="s2">"summary"</span><span class="p">,</span>
+</span><span data-line="20">            <span class="n">placeholder</span><span class="o">=</span><span class="s2">"Enter a brief summary..."</span><span class="p">,</span>
+</span><span data-line="21">            <span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+</span><span data-line="22">        <span class="p">),</span>
+</span><span data-line="23">    <span class="p">]</span>
+</span></pre></div>
+</div>
+<p><strong>RichTextField Options</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Field name matching the model attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Help text shown below the editor</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">required</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Whether the field is required</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">placeholder</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Placeholder text when empty</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">toolbar</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list[str]</span></code></p></td>
+<td><p>All buttons</p></td>
+<td><p>Toolbar buttons to display</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_length</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Max character count (plain text)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">allowed_tags</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list[str]</span></code></p></td>
+<td><p>Safe defaults</p></td>
+<td><p>Allowed HTML tags for sanitization</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">label</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p>Auto-generated</p></td>
+<td><p>Custom label for the field</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Available Toolbar Buttons</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bold</span></code>, <code class="docutils literal notranslate"><span class="pre">italic</span></code>, <code class="docutils literal notranslate"><span class="pre">underline</span></code>, <code class="docutils literal notranslate"><span class="pre">strike</span></code> - Text formatting</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">codeBlock</span></code> - Code formatting</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heading</span></code> - H1-H6 headings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bulletList</span></code>, <code class="docutils literal notranslate"><span class="pre">orderedList</span></code> - Lists</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">blockquote</span></code> - Block quotes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link</span></code>, <code class="docutils literal notranslate"><span class="pre">image</span></code> - Media</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">horizontalRule</span></code> - Horizontal line</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">undo</span></code>, <code class="docutils literal notranslate"><span class="pre">redo</span></code> - History</p></li>
+</ul>
+</section>
+</section>
+<section id="editor-features">
+<h3>Editor Features<a class="headerlink" href="#editor-features" title="Link to this heading">#</a></h3>
+<p>The rich text editor is built on <a class="reference external" href="https://tiptap.dev/">Tiptap</a> and includes:</p>
+<p><strong>Text Formatting</strong></p>
+<ul class="simple">
+<li><p>Bold (Ctrl+B)</p></li>
+<li><p>Italic (Ctrl+I)</p></li>
+<li><p>Strikethrough</p></li>
+<li><p>Inline code</p></li>
+</ul>
+<p><strong>Structure</strong></p>
+<ul class="simple">
+<li><p>Headings (H1, H2, H3)</p></li>
+<li><p>Bullet lists</p></li>
+<li><p>Numbered lists</p></li>
+<li><p>Blockquotes</p></li>
+<li><p>Horizontal rules</p></li>
+</ul>
+<p><strong>Links</strong></p>
+<ul class="simple">
+<li><p>Add links with URL editing</p></li>
+<li><p>Remove links</p></li>
+<li><p>Links open in new tabs by default</p></li>
+</ul>
+<p><strong>Code</strong></p>
+<ul class="simple">
+<li><p>Code blocks with syntax highlighting</p></li>
+<li><p>Supports common programming languages via lowlight</p></li>
+</ul>
+<p><strong>History</strong></p>
+<ul class="simple">
+<li><p>Undo (Ctrl+Z)</p></li>
+<li><p>Redo (Ctrl+Shift+Z)</p></li>
+</ul>
+</section>
+<section id="example-blog-post-admin">
+<h3>Example: Blog Post Admin<a class="headerlink" href="#example-blog-post-admin" title="Link to this heading">#</a></h3>
+<p>Here’s a complete example using both form fieldsets and rich text editing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlogPost</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">BlogPostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">BlogPost</span><span class="p">):</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">"""Admin view for BlogPost with rich text content editing."""</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Blog Post"</span>
+</span><span data-line="11">    <span class="n">name_plural</span> <span class="o">=</span> <span class="s2">"Blog Posts"</span>
+</span><span data-line="12">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"edit-3"</span>
+</span><span data-line="13">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Content"</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="s2">"author_id"</span><span class="p">,</span> <span class="s2">"featured"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">]</span>
+</span><span data-line="16">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"title"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">,</span> <span class="s2">"excerpt"</span><span class="p">]</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="c1"># Exclude auto-generated fields from forms</span>
+</span><span data-line="19">    <span class="n">form_excluded_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"created_at"</span><span class="p">,</span> <span class="s2">"updated_at"</span><span class="p">]</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="c1"># Use rich text editor for the content field</span>
+</span><span data-line="22">    <span class="n">form_widgets</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="23">        <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"richtext"</span><span class="p">,</span>
+</span><span data-line="24">    <span class="p">}</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="c1"># Organize form fields into logical sections</span>
+</span><span data-line="27">    <span class="n">form_fieldsets</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="28">        <span class="p">{</span>
+</span><span data-line="29">            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Content"</span><span class="p">,</span>
+</span><span data-line="30">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Main blog post content with rich text editing"</span><span class="p">,</span>
+</span><span data-line="31">            <span class="s2">"fields"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"title"</span><span class="p">,</span> <span class="s2">"slug"</span><span class="p">,</span> <span class="s2">"excerpt"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">],</span>
+</span><span data-line="32">            <span class="s2">"collapsible"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="33">        <span class="p">},</span>
+</span><span data-line="34">        <span class="p">{</span>
+</span><span data-line="35">            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Publishing"</span><span class="p">,</span>
+</span><span data-line="36">            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Publication status and visibility settings"</span><span class="p">,</span>
+</span><span data-line="37">            <span class="s2">"fields"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"status"</span><span class="p">,</span> <span class="s2">"author_id"</span><span class="p">,</span> <span class="s2">"featured"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">],</span>
+</span><span data-line="38">            <span class="s2">"collapsed"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="39">            <span class="s2">"collapsible"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="40">        <span class="p">},</span>
+</span><span data-line="41">    <span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="html-output">
+<h3>HTML Output<a class="headerlink" href="#html-output" title="Link to this heading">#</a></h3>
+<p>The rich text editor outputs standard HTML that can be:</p>
+<ul class="simple">
+<li><p>Stored in <code class="docutils literal notranslate"><span class="pre">TEXT</span></code> or <code class="docutils literal notranslate"><span class="pre">VARCHAR</span></code> database columns</p></li>
+<li><p>Rendered directly in templates with proper sanitization</p></li>
+<li><p>Processed by content pipelines</p></li>
+</ul>
+<p>Example HTML output:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Welcome to Our Blog<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span><span data-line="2"><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This is a <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>formatted<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> paragraph with <span class="p">&lt;</span><span class="nt">em</span><span class="p">&gt;</span>emphasis<span class="p">&lt;/</span><span class="nt">em</span><span class="p">&gt;</span>.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span><span data-line="3"><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="4">  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>First item<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span><span data-line="5">  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Second item<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span><span data-line="6"><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="7"><span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;&lt;</span><span class="nt">code</span> <span class="na">class</span><span class="o">=</span><span class="s">"language-python"</span><span class="p">&gt;</span>print("Hello, World!")<span class="p">&lt;/</span><span class="nt">code</span><span class="p">&gt;&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="xss-sanitization">
+<h3>XSS Sanitization<a class="headerlink" href="#xss-sanitization" title="Link to this heading">#</a></h3>
+<p>Rich text content is automatically sanitized before saving to protect against XSS attacks. The sanitization:</p>
+<ul class="simple">
+<li><p>Removes dangerous tags like <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;iframe&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;object&gt;</span></code></p></li>
+<li><p>Removes event handlers like <code class="docutils literal notranslate"><span class="pre">onclick</span></code>, <code class="docutils literal notranslate"><span class="pre">onerror</span></code></p></li>
+<li><p>Blocks dangerous URL schemes like <code class="docutils literal notranslate"><span class="pre">javascript:</span></code></p></li>
+<li><p>Adds <code class="docutils literal notranslate"><span class="pre">rel=&quot;noopener</span> <span class="pre">noreferrer&quot;</span></code> to external links</p></li>
+</ul>
+<p><strong>Requirements:</strong></p>
+<p>XSS sanitization requires the <code class="docutils literal notranslate"><span class="pre">nh3</span></code> library (Rust ammonia bindings). Install it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar-admin<span class="o">[</span>sanitize<span class="o">]</span>
+</span></pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">nh3</span></code> is not installed, content is saved as-is with a warning logged.</p>
+<p><strong>Customizing Allowed Tags:</strong></p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">allowed_tags</span></code> parameter on <code class="docutils literal notranslate"><span class="pre">RichTextField</span></code> to control which HTML tags are allowed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">RichTextField</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">name</span><span class="o">=</span><span class="s2">"content"</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">allowed_tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"p"</span><span class="p">,</span> <span class="s2">"strong"</span><span class="p">,</span> <span class="s2">"em"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">],</span>  <span class="c1"># Very restrictive</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Default allowed tags include common formatting elements:</p>
+<ul class="simple">
+<li><p>Block: <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code>-<code class="docutils literal notranslate"><span class="pre">h6</span></code>, <code class="docutils literal notranslate"><span class="pre">blockquote</span></code>, <code class="docutils literal notranslate"><span class="pre">pre</span></code>, <code class="docutils literal notranslate"><span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">hr</span></code>, <code class="docutils literal notranslate"><span class="pre">br</span></code>, <code class="docutils literal notranslate"><span class="pre">div</span></code></p></li>
+<li><p>Lists: <code class="docutils literal notranslate"><span class="pre">ul</span></code>, <code class="docutils literal notranslate"><span class="pre">ol</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code></p></li>
+<li><p>Inline: <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">strong</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">em</span></code>, <code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">span</span></code>, <code class="docutils literal notranslate"><span class="pre">mark</span></code></p></li>
+<li><p>Media: <code class="docutils literal notranslate"><span class="pre">img</span></code> (with <code class="docutils literal notranslate"><span class="pre">src</span></code>, <code class="docutils literal notranslate"><span class="pre">alt</span></code> attributes filtered)</p></li>
+<li><p>Tables: <code class="docutils literal notranslate"><span class="pre">table</span></code>, <code class="docutils literal notranslate"><span class="pre">thead</span></code>, <code class="docutils literal notranslate"><span class="pre">tbody</span></code>, <code class="docutils literal notranslate"><span class="pre">tr</span></code>, <code class="docutils literal notranslate"><span class="pre">th</span></code>, <code class="docutils literal notranslate"><span class="pre">td</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="complete-example">
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h2>
+<p>Here’s a comprehensive model view example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Article</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">ArticleAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Article</span><span class="p">):</span>
+</span><span data-line="13"><span class="w">    </span><span class="sd">"""Admin view for Article model with full customization."""</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="c1"># Display settings</span>
+</span><span data-line="16">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Article"</span>
+</span><span data-line="17">    <span class="n">name_plural</span> <span class="o">=</span> <span class="s2">"Articles"</span>
+</span><span data-line="18">    <span class="n">icon</span> <span class="o">=</span> <span class="s2">"newspaper"</span>
+</span><span data-line="19">    <span class="n">category</span> <span class="o">=</span> <span class="s2">"Content"</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="c1"># Column configuration</span>
+</span><span data-line="22">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"author"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">,</span> <span class="s2">"views"</span><span class="p">]</span>
+</span><span data-line="23">    <span class="n">column_exclude_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"content"</span><span class="p">]</span>  <span class="c1"># Too long for list view</span>
+</span><span data-line="24">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"title"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">,</span> <span class="s2">"author"</span><span class="p">]</span>
+</span><span data-line="25">    <span class="n">column_sortable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">,</span> <span class="s2">"views"</span><span class="p">]</span>
+</span><span data-line="26">    <span class="n">column_default_sort</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"published_at"</span><span class="p">,</span> <span class="s2">"desc"</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="c1"># Form configuration</span>
+</span><span data-line="29">    <span class="n">form_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"title"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">,</span> <span class="s2">"author"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">]</span>
+</span><span data-line="30">    <span class="n">form_excluded_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">,</span> <span class="s2">"updated_at"</span><span class="p">,</span> <span class="s2">"views"</span><span class="p">]</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="c1"># Permissions</span>
+</span><span data-line="33">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="34">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="35">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="36">    <span class="n">can_view_details</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="37">    <span class="n">can_export</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="38">
+</span><span data-line="39">    <span class="c1"># Pagination</span>
+</span><span data-line="40">    <span class="n">page_size</span> <span class="o">=</span> <span class="mi">25</span>
+</span><span data-line="41">    <span class="n">page_size_options</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+</span><span data-line="42">
+</span><span data-line="43">    <span class="nd">@classmethod</span>
+</span><span data-line="44">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="45"><span class="w">        </span><span class="sd">"""Only authenticated users can access articles."""</span>
+</span><span data-line="46">        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="47">
+</span><span data-line="48">    <span class="nd">@classmethod</span>
+</span><span data-line="49">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_delete_record</span><span class="p">(</span>
+</span><span data-line="50">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="51">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="52">        <span class="n">record</span><span class="p">:</span> <span class="n">Article</span><span class="p">,</span>
+</span><span data-line="53">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="54"><span class="w">        </span><span class="sd">"""Only admins can delete published articles."""</span>
+</span><span data-line="55">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="56">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="57">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="58">        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"published"</span><span class="p">:</span>
+</span><span data-line="59">            <span class="k">return</span> <span class="s2">"admin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span><span data-line="60">        <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="61">
+</span><span data-line="62">    <span class="nd">@classmethod</span>
+</span><span data-line="63">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_model_change</span><span class="p">(</span>
+</span><span data-line="64">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="65">        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="66">        <span class="n">record</span><span class="p">:</span> <span class="n">Article</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="67">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="68">        <span class="n">is_create</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="69">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="70"><span class="w">        </span><span class="sd">"""Process data before save."""</span>
+</span><span data-line="71">        <span class="c1"># Auto-generate slug from title</span>
+</span><span data-line="72">        <span class="k">if</span> <span class="s2">"title"</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">"slug"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">data</span><span class="p">[</span><span class="s2">"slug"</span><span class="p">]):</span>
+</span><span data-line="73">            <span class="n">data</span><span class="p">[</span><span class="s2">"slug"</span><span class="p">]</span> <span class="o">=</span> <span class="n">slugify</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"title"</span><span class="p">])</span>
+</span><span data-line="74">
+</span><span data-line="75">        <span class="c1"># Set timestamps</span>
+</span><span data-line="76">        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+</span><span data-line="77">        <span class="k">if</span> <span class="n">is_create</span><span class="p">:</span>
+</span><span data-line="78">            <span class="n">data</span><span class="p">[</span><span class="s2">"created_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
+</span><span data-line="79">        <span class="n">data</span><span class="p">[</span><span class="s2">"updated_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
+</span><span data-line="80">
+</span><span data-line="81">        <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="82">
+</span><span data-line="83">    <span class="nd">@classmethod</span>
+</span><span data-line="84">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_model_change</span><span class="p">(</span>
+</span><span data-line="85">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="86">        <span class="n">record</span><span class="p">:</span> <span class="n">Article</span><span class="p">,</span>
+</span><span data-line="87">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="88">        <span class="n">is_create</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="89">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="90"><span class="w">        </span><span class="sd">"""Actions after save."""</span>
+</span><span data-line="91">        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"published"</span><span class="p">:</span>
+</span><span data-line="92">            <span class="c1"># Invalidate cache</span>
+</span><span data-line="93">            <span class="k">await</span> <span class="n">cache</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="sa">f</span><span class="s2">"article:</span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="94">            <span class="c1"># Notify subscribers</span>
+</span><span data-line="95">            <span class="k">await</span> <span class="n">notify_subscribers</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</span><span data-line="96">
+</span><span data-line="97">    <span class="nd">@classmethod</span>
+</span><span data-line="98">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_model_delete</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">Article</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="99"><span class="w">        </span><span class="sd">"""Cleanup after delete."""</span>
+</span><span data-line="100">        <span class="c1"># Remove from search index</span>
+</span><span data-line="101">        <span class="k">await</span> <span class="n">search_index</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="sa">f</span><span class="s2">"article:</span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="configuration.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Configuration Reference</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="user-guide/custom-views.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Custom Views and Embeds</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
+</html>

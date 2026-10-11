@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>User Management - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Relationships" href="relationships.html" /><link rel="prev" title="Storage Configuration" href="storage.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="User Management"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#adminuser-model">AdminUser Model</a><ul>
+<li><a class="reference internal" href="#using-your-own-user-model">Using Your Own User Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#user-management-ui">User Management UI</a><ul>
+<li><a class="reference internal" href="#user-list">User List</a></li>
+<li><a class="reference internal" href="#create-user">Create User</a></li>
+<li><a class="reference internal" href="#edit-user">Edit User</a></li>
+<li><a class="reference internal" href="#password-management">Password Management</a><ul>
+<li><a class="reference internal" href="#change-own-password">Change Own Password</a></li>
+<li><a class="reference internal" href="#admin-password-reset">Admin Password Reset</a></li>
+<li><a class="reference internal" href="#password-reset-via-email">Password Reset via Email</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-endpoints">API Endpoints</a><ul>
+<li><a class="reference internal" href="#list-users">List Users</a></li>
+<li><a class="reference internal" href="#id1">Create User</a></li>
+<li><a class="reference internal" href="#get-user">Get User</a></li>
+<li><a class="reference internal" href="#update-user">Update User</a></li>
+<li><a class="reference internal" href="#delete-user">Delete User</a></li>
+<li><a class="reference internal" href="#activate-user">Activate User</a></li>
+<li><a class="reference internal" href="#deactivate-user">Deactivate User</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#role-based-access">Role-Based Access</a><ul>
+<li><a class="reference internal" href="#default-role-permissions">Default Role Permissions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#password-security">Password Security</a><ul>
+<li><a class="reference internal" href="#password-hashing">Password Hashing</a></li>
+<li><a class="reference internal" href="#password-requirements">Password Requirements</a></li>
+<li><a class="reference internal" href="#secure-password-reset">Secure Password Reset</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#audit-logging">Audit Logging</a></li>
+<li><a class="reference internal" href="#integration-example">Integration Example</a></li>
+<li><a class="reference internal" href="#customization">Customization</a><ul>
+<li><a class="reference internal" href="#custom-user-view">Custom User View</a></li>
+<li><a class="reference internal" href="#custom-password-validation">Custom Password Validation</a></li>
+<li><a class="reference internal" href="#custom-user-creation-hook">Custom User Creation Hook</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">User Management</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="user-management">
+<h1>User Management<a class="headerlink" href="#user-management" title="Link to this heading">#</a></h1>
+<p>litestar-admin includes a built-in user management system for managing admin panel users, including user creation, role assignment, password management, and account activation.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The user management system provides:</p>
+<ul class="simple">
+<li><p><strong>User CRUD</strong>: Create, read, update, and delete admin users</p></li>
+<li><p><strong>Role Assignment</strong>: Assign roles for RBAC (Viewer, Editor, Admin, Superadmin)</p></li>
+<li><p><strong>Password Management</strong>: Secure password hashing, change, and reset</p></li>
+<li><p><strong>Account Status</strong>: Activate and deactivate user accounts</p></li>
+<li><p><strong>Audit Logging</strong>: Track all user management actions</p></li>
+</ul>
+</section>
+<section id="adminuser-model">
+<h2>AdminUser Model<a class="headerlink" href="#adminuser-model" title="Link to this heading">#</a></h2>
+<p>litestar-admin provides a base <code class="docutils literal notranslate"><span class="pre">AdminUser</span></code> model that you can use directly or extend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminUser</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># AdminUser includes:</span>
+</span><span data-line="4"><span class="c1"># - id: Primary key</span>
+</span><span data-line="5"><span class="c1"># - email: Unique email address</span>
+</span><span data-line="6"><span class="c1"># - name: Display name</span>
+</span><span data-line="7"><span class="c1"># - password_hash: Secure password hash</span>
+</span><span data-line="8"><span class="c1"># - role: User role (viewer, editor, admin, superadmin)</span>
+</span><span data-line="9"><span class="c1"># - is_active: Account status</span>
+</span><span data-line="10"><span class="c1"># - created_at: Creation timestamp</span>
+</span><span data-line="11"><span class="c1"># - updated_at: Last update timestamp</span>
+</span></pre></div>
+</div>
+<section id="using-your-own-user-model">
+<h3>Using Your Own User Model<a class="headerlink" href="#using-your-own-user-model" title="Link to this heading">#</a></h3>
+<p>If you have an existing user model, implement the <code class="docutils literal notranslate"><span class="pre">AdminUserProtocol</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminUserProtocol</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="sd">"""Your user model implementing AdminUserProtocol."""</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="nd">@property</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="nd">@property</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">email</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_email</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="nd">@property</span>
+</span><span data-line="15">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="16"><span class="w">        </span><span class="sd">"""Return list of role names."""</span>
+</span><span data-line="17">        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="nd">@property</span>
+</span><span data-line="20">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="21"><span class="w">        </span><span class="sd">"""Return list of permission strings."""</span>
+</span><span data-line="22">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_permissions_for_role</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="k">def</span><span class="w"> </span><span class="nf">verify_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="25"><span class="w">        </span><span class="sd">"""Verify a password against the stored hash."""</span>
+</span><span data-line="26">        <span class="k">return</span> <span class="n">verify_password_hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">password_hash</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="user-management-ui">
+<h2>User Management UI<a class="headerlink" href="#user-management-ui" title="Link to this heading">#</a></h2>
+<p>Access the user management interface at <code class="docutils literal notranslate"><span class="pre">/admin/users</span></code> (requires appropriate permissions).</p>
+<section id="user-list">
+<h3>User List<a class="headerlink" href="#user-list" title="Link to this heading">#</a></h3>
+<p>The user list displays:</p>
+<ul class="simple">
+<li><p>Email address</p></li>
+<li><p>Display name</p></li>
+<li><p>Role badge</p></li>
+<li><p>Account status (active/inactive)</p></li>
+<li><p>Creation date</p></li>
+</ul>
+<p>Features:</p>
+<ul class="simple">
+<li><p>Search by email or name</p></li>
+<li><p>Sort by any column</p></li>
+<li><p>Paginated results</p></li>
+<li><p>Quick actions (edit, activate/deactivate)</p></li>
+</ul>
+</section>
+<section id="create-user">
+<h3>Create User<a class="headerlink" href="#create-user" title="Link to this heading">#</a></h3>
+<p>Create new admin users with:</p>
+<ul class="simple">
+<li><p>Email address (unique)</p></li>
+<li><p>Display name</p></li>
+<li><p>Password (minimum 8 characters)</p></li>
+<li><p>Role selection</p></li>
+<li><p>Initial activation status</p></li>
+</ul>
+</section>
+<section id="edit-user">
+<h3>Edit User<a class="headerlink" href="#edit-user" title="Link to this heading">#</a></h3>
+<p>Update existing users:</p>
+<ul class="simple">
+<li><p>Change email or name</p></li>
+<li><p>Update role assignment</p></li>
+<li><p>Modify activation status</p></li>
+<li><p>Reset password (optional)</p></li>
+</ul>
+</section>
+<section id="password-management">
+<h3>Password Management<a class="headerlink" href="#password-management" title="Link to this heading">#</a></h3>
+<section id="change-own-password">
+<h4>Change Own Password<a class="headerlink" href="#change-own-password" title="Link to this heading">#</a></h4>
+<p>Users can change their own password through the profile page:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/auth/me/change-password</span>
+</span><span data-line="2"><span class="err">Content-Type: application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="err">{</span>
+</span><span data-line="5"><span class="err">    "current_password": "old-password",</span>
+</span><span data-line="6"><span class="err">    "new_password": "new-secure-password"</span>
+</span><span data-line="7"><span class="err">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="admin-password-reset">
+<h4>Admin Password Reset<a class="headerlink" href="#admin-password-reset" title="Link to this heading">#</a></h4>
+<p>Admins can reset any user’s password:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/users/{user_id}/change-password</span>
+</span><span data-line="2"><span class="err">Content-Type: application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="err">{</span>
+</span><span data-line="5"><span class="err">    "new_password": "temporary-password"</span>
+</span><span data-line="6"><span class="err">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="password-reset-via-email">
+<h4>Password Reset via Email<a class="headerlink" href="#password-reset-via-email" title="Link to this heading">#</a></h4>
+<p>For self-service password reset:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/auth/forgot-password</span>
+</span><span data-line="2"><span class="err">Content-Type: application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="err">{</span>
+</span><span data-line="5"><span class="err">    "email": "user@example.com"</span>
+</span><span data-line="6"><span class="err">}</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Email-based password reset requires configuring an email backend.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="api-endpoints">
+<h2>API Endpoints<a class="headerlink" href="#api-endpoints" title="Link to this heading">#</a></h2>
+<section id="list-users">
+<h3>List Users<a class="headerlink" href="#list-users" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">GET /admin/api/users?page=1&amp;page_size=25&amp;search=john</span>
+</span></pre></div>
+</div>
+<p><strong>Response:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="3"><span class="w">        </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">            </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">            </span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">            </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">            </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span>
+</span><span data-line="10"><span class="w">        </span><span class="p">}</span>
+</span><span data-line="11"><span class="w">    </span><span class="p">],</span>
+</span><span data-line="12"><span class="w">    </span><span class="nt">"total"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">    </span><span class="nt">"page"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">    </span><span class="nt">"page_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span>
+</span><span data-line="15"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="id1">
+<h3>Create User<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/users</span>
+</span><span data-line="2"><span class="err">Content-Type: application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="err">{</span>
+</span><span data-line="5"><span class="err">    "email": "newuser@example.com",</span>
+</span><span data-line="6"><span class="err">    "name": "New User",</span>
+</span><span data-line="7"><span class="err">    "password": "secure-password-123",</span>
+</span><span data-line="8"><span class="err">    "role": "editor",</span>
+</span><span data-line="9"><span class="err">    "is_active": true</span>
+</span><span data-line="10"><span class="err">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="get-user">
+<h3>Get User<a class="headerlink" href="#get-user" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">GET /admin/api/users/{user_id}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="update-user">
+<h3>Update User<a class="headerlink" href="#update-user" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">PATCH /admin/api/users/{user_id}</span>
+</span><span data-line="2"><span class="err">Content-Type: application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="err">{</span>
+</span><span data-line="5"><span class="err">    "name": "Updated Name",</span>
+</span><span data-line="6"><span class="err">    "role": "admin"</span>
+</span><span data-line="7"><span class="err">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="delete-user">
+<h3>Delete User<a class="headerlink" href="#delete-user" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">DELETE /admin/api/users/{user_id}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="activate-user">
+<h3>Activate User<a class="headerlink" href="#activate-user" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/users/{user_id}/activate</span>
+</span></pre></div>
+</div>
+</section>
+<section id="deactivate-user">
+<h3>Deactivate User<a class="headerlink" href="#deactivate-user" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="err">POST /admin/api/users/{user_id}/deactivate</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="role-based-access">
+<h2>Role-Based Access<a class="headerlink" href="#role-based-access" title="Link to this heading">#</a></h2>
+<p>User management requires appropriate permissions:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>Required Permission</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>View users</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:read</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Create users</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:create</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Edit users</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:update</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Delete users</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:delete</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Change passwords</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:password</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Manage roles</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">users:roles</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="default-role-permissions">
+<h3>Default Role Permissions<a class="headerlink" href="#default-role-permissions" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>Permissions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Viewer</p></td>
+<td><p>Read-only access to allowed models</p></td>
+</tr>
+<tr class="row-odd"><td><p>Editor</p></td>
+<td><p>Create and edit records</p></td>
+</tr>
+<tr class="row-even"><td><p>Admin</p></td>
+<td><p>Full CRUD + user management</p></td>
+</tr>
+<tr class="row-odd"><td><p>Superadmin</p></td>
+<td><p>Everything + system settings</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="password-security">
+<h2>Password Security<a class="headerlink" href="#password-security" title="Link to this heading">#</a></h2>
+<section id="password-hashing">
+<h3>Password Hashing<a class="headerlink" href="#password-hashing" title="Link to this heading">#</a></h3>
+<p>Passwords are hashed using bcrypt with a secure work factor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">hash_password</span><span class="p">,</span> <span class="n">verify_password</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Hash a password</span>
+</span><span data-line="4"><span class="n">hashed</span> <span class="o">=</span> <span class="n">hash_password</span><span class="p">(</span><span class="s2">"user-password"</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Verify a password</span>
+</span><span data-line="7"><span class="n">is_valid</span> <span class="o">=</span> <span class="n">verify_password</span><span class="p">(</span><span class="s2">"user-password"</span><span class="p">,</span> <span class="n">hashed</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="password-requirements">
+<h3>Password Requirements<a class="headerlink" href="#password-requirements" title="Link to this heading">#</a></h3>
+<p>Configure password requirements in <code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">admin_config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">password_min_length</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">password_require_uppercase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">password_require_lowercase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">password_require_digit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">password_require_special</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="secure-password-reset">
+<h3>Secure Password Reset<a class="headerlink" href="#secure-password-reset" title="Link to this heading">#</a></h3>
+<p>Password reset tokens are:</p>
+<ul class="simple">
+<li><p>Cryptographically secure</p></li>
+<li><p>Time-limited (default: 1 hour)</p></li>
+<li><p>Single-use (invalidated after use)</p></li>
+<li><p>Stored hashed in the database</p></li>
+</ul>
+</section>
+</section>
+<section id="audit-logging">
+<h2>Audit Logging<a class="headerlink" href="#audit-logging" title="Link to this heading">#</a></h2>
+<p>All user management actions are automatically logged:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Logged events:</span>
+</span><span data-line="2"><span class="c1"># - User created</span>
+</span><span data-line="3"><span class="c1"># - User updated (with changed fields)</span>
+</span><span data-line="4"><span class="c1"># - User deleted</span>
+</span><span data-line="5"><span class="c1"># - User activated/deactivated</span>
+</span><span data-line="6"><span class="c1"># - Password changed</span>
+</span><span data-line="7"><span class="c1"># - Role changed</span>
+</span><span data-line="8"><span class="c1"># - Login attempts (success/failure)</span>
+</span></pre></div>
+</div>
+<p>View audit logs at <code class="docutils literal notranslate"><span class="pre">/admin/audit</span></code> or query programmatically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.audit</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_audit_logs</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">logs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_audit_logs</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">action</span><span class="o">=</span><span class="s2">"user.created"</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">actor_id</span><span class="o">=</span><span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">since</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="integration-example">
+<h2>Integration Example<a class="headerlink" href="#integration-example" title="Link to this heading">#</a></h2>
+<p>Complete example with user management enabled:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuthBackend</span><span class="p">,</span> <span class="n">JWTConfig</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Configure authentication</span>
+</span><span data-line="6"><span class="n">jwt_config</span> <span class="o">=</span> <span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"your-secret-key"</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">token_expiry</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_user</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">):</span>
+</span><span data-line="12"><span class="w">    </span><span class="sd">"""Load user from database."""</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">get_by_id_or_email</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">auth_backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="16">    <span class="n">config</span><span class="o">=</span><span class="n">jwt_config</span><span class="p">,</span>
+</span><span data-line="17">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user</span><span class="p">,</span>
+</span><span data-line="18"><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="c1"># Create admin plugin</span>
+</span><span data-line="21"><span class="n">admin_plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="22">    <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="23">        <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span>
+</span><span data-line="24">        <span class="n">auth_backend</span><span class="o">=</span><span class="n">auth_backend</span><span class="p">,</span>
+</span><span data-line="25">        <span class="c1"># User management is automatically enabled</span>
+</span><span data-line="26">        <span class="c1"># when auth_backend is configured</span>
+</span><span data-line="27">    <span class="p">)</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="31">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">admin_plugin</span><span class="p">],</span>
+</span><span data-line="32"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Link to this heading">#</a></h2>
+<section id="custom-user-view">
+<h3>Custom User View<a class="headerlink" href="#custom-user-view" title="Link to this heading">#</a></h3>
+<p>Customize the user management view:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserManagementView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">CustomUserAdmin</span><span class="p">(</span><span class="n">UserManagementView</span><span class="p">):</span>
+</span><span data-line="4">    <span class="c1"># Customize columns</span>
+</span><span data-line="5">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">,</span> <span class="s2">"last_login"</span><span class="p">]</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="c1"># Add search fields</span>
+</span><span data-line="8">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="c1"># Disable delete</span>
+</span><span data-line="11">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="c1"># Custom form fields</span>
+</span><span data-line="14">    <span class="n">form_excluded_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"password_hash"</span><span class="p">,</span> <span class="s2">"created_at"</span><span class="p">,</span> <span class="s2">"updated_at"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="custom-password-validation">
+<h3>Custom Password Validation<a class="headerlink" href="#custom-password-validation" title="Link to this heading">#</a></h3>
+<p>Add custom password validation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">PasswordValidator</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">StrongPasswordValidator</span><span class="p">(</span><span class="n">PasswordValidator</span><span class="p">):</span>
+</span><span data-line="4">    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="5">        <span class="n">errors</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7">        <span class="c1"># Add custom rules</span>
+</span><span data-line="8">        <span class="k">if</span> <span class="n">password</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">common_passwords</span><span class="p">:</span>
+</span><span data-line="9">            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Password is too common"</span><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_email</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_email</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"@"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">password</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+</span><span data-line="12">            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Password cannot contain your email username"</span><span class="p">)</span>
+</span><span data-line="13">
+</span><span data-line="14">        <span class="k">return</span> <span class="n">errors</span>
+</span></pre></div>
+</div>
+</section>
+<section id="custom-user-creation-hook">
+<h3>Custom User Creation Hook<a class="headerlink" href="#custom-user-creation-hook" title="Link to this heading">#</a></h3>
+<p>Execute custom logic when users are created:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">CustomUserAdmin</span><span class="p">(</span><span class="n">UserManagementView</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nd">@classmethod</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_model_change</span><span class="p">(</span>
+</span><span data-line="4">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">record</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span>
+</span><span data-line="6">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">is_create</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="8">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9">        <span class="k">if</span> <span class="n">is_create</span><span class="p">:</span>
+</span><span data-line="10">            <span class="c1"># Send welcome email</span>
+</span><span data-line="11">            <span class="k">await</span> <span class="n">send_welcome_email</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">            <span class="c1"># Create default settings</span>
+</span><span data-line="14">            <span class="k">await</span> <span class="n">create_user_settings</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16">            <span class="c1"># Log to external system</span>
+</span><span data-line="17">            <span class="k">await</span> <span class="n">audit_service</span><span class="o">.</span><span class="n">log_user_created</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../authentication.html"><span class="std std-doc">Authentication</span></a> - Authentication setup</p></li>
+<li><p><a class="reference internal" href="../guards.html"><span class="std std-doc">Guards &amp; RBAC</span></a> - Role-based access control</p></li>
+<li><p><a class="reference internal" href="#audit.md"><span class="xref myst">Audit Logging</span></a> - Audit log configuration</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="storage.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Storage Configuration</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="relationships.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Relationships</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

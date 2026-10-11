@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Storage Configuration - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="User Management" href="user-management.html" /><link rel="prev" title="File Uploads" href="file-uploads.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Storage Configuration"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#storage-backends">Storage Backends</a><ul>
+<li><a class="reference internal" href="#local-filesystem">Local Filesystem</a><ul>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#amazon-s3">Amazon S3</a><ul>
+<li><a class="reference internal" href="#s3-compatible-services">S3-Compatible Services</a></li>
+<li><a class="reference internal" href="#id1">Configuration Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#google-cloud-storage">Google Cloud Storage</a><ul>
+<li><a class="reference internal" href="#id2">Configuration Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#memory-storage">Memory Storage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#file-validation">File Validation</a><ul>
+<li><a class="reference internal" href="#allowed-extensions">Allowed Extensions</a></li>
+<li><a class="reference internal" href="#maximum-file-size">Maximum File Size</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thumbnail-configuration">Thumbnail Configuration</a><ul>
+<li><a class="reference internal" href="#thumbnailconfig-options">ThumbnailConfig Options</a></li>
+<li><a class="reference internal" href="#multiple-thumbnail-sizes">Multiple Thumbnail Sizes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-storage-backend">Using the Storage Backend</a><ul>
+<li><a class="reference internal" href="#direct-usage">Direct Usage</a></li>
+<li><a class="reference internal" href="#upload-with-thumbnail">Upload with Thumbnail</a></li>
+<li><a class="reference internal" href="#generate-thumbnail-for-existing-file">Generate Thumbnail for Existing File</a></li>
+<li><a class="reference internal" href="#get-or-generate-thumbnail">Get or Generate Thumbnail</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#path-structure">Path Structure</a></li>
+<li><a class="reference internal" href="#environment-based-configuration">Environment-Based Configuration</a></li>
+<li><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Storage Configuration</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="storage-configuration">
+<h1>Storage Configuration<a class="headerlink" href="#storage-configuration" title="Link to this heading">#</a></h1>
+<p>litestar-admin supports multiple storage backends for file uploads through the <code class="docutils literal notranslate"><span class="pre">litestar-storages</span></code> integration. This guide covers all available storage options and their configuration.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>Install the storage extra for your preferred backend:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Local Filesystem</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Base installation includes local filesystem support</span>
+</span><span data-line="2">pip<span class="w"> </span>install<span class="w"> </span>litestar-admin
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Amazon S3</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"litestar-admin[storage]"</span>
+</span><span data-line="2">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"litestar-storages[s3]"</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Google Cloud Storage</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"litestar-admin[storage]"</span>
+</span><span data-line="2">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"litestar-storages[gcs]"</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="storage-backends">
+<h2>Storage Backends<a class="headerlink" href="#storage-backends" title="Link to this heading">#</a></h2>
+<section id="local-filesystem">
+<h3>Local Filesystem<a class="headerlink" href="#local-filesystem" title="Link to this heading">#</a></h3>
+<p>Store files on the local filesystem. Best for development and single-server deployments.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">StorageBackendType</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">local_base_path</span><span class="o">=</span><span class="s2">"/var/www/app/uploads"</span><span class="p">,</span>  <span class="c1"># Required</span>
+</span><span data-line="6">    <span class="n">upload_path</span><span class="o">=</span><span class="s2">"admin/files"</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">public_url_base</span><span class="o">=</span><span class="s2">"https://example.com/uploads"</span><span class="p">,</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="configuration-options">
+<h4>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">local_base_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Absolute path to the storage directory</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upload_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Subdirectory for admin uploads (default: <code class="docutils literal notranslate"><span class="pre">uploads/admin</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">public_url_base</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Base URL for serving files</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure the <code class="docutils literal notranslate"><span class="pre">local_base_path</span></code> directory exists and is writable by the application user.</p>
+</div>
+</section>
+</section>
+<section id="amazon-s3">
+<h3>Amazon S3<a class="headerlink" href="#amazon-s3" title="Link to this heading">#</a></h3>
+<p>Store files in Amazon S3 or S3-compatible services (MinIO, DigitalOcean Spaces, etc.).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">StorageBackendType</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">S3</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">s3_bucket</span><span class="o">=</span><span class="s2">"my-app-uploads"</span><span class="p">,</span>  <span class="c1"># Required</span>
+</span><span data-line="6">    <span class="n">s3_region</span><span class="o">=</span><span class="s2">"us-east-1"</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">s3_access_key</span><span class="o">=</span><span class="s2">"AKIAIOSFODNN7EXAMPLE"</span><span class="p">,</span>  <span class="c1"># Or use IAM role</span>
+</span><span data-line="8">    <span class="n">s3_secret_key</span><span class="o">=</span><span class="s2">"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">upload_path</span><span class="o">=</span><span class="s2">"admin/uploads"</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">public_url_base</span><span class="o">=</span><span class="s2">"https://my-app-uploads.s3.amazonaws.com"</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="s3-compatible-services">
+<h4>S3-Compatible Services<a class="headerlink" href="#s3-compatible-services" title="Link to this heading">#</a></h4>
+<p>For MinIO, DigitalOcean Spaces, or other S3-compatible services:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">S3</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">s3_bucket</span><span class="o">=</span><span class="s2">"my-bucket"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">s3_endpoint_url</span><span class="o">=</span><span class="s2">"https://minio.example.com:9000"</span><span class="p">,</span>  <span class="c1"># Custom endpoint</span>
+</span><span data-line="5">    <span class="n">s3_access_key</span><span class="o">=</span><span class="s2">"minioadmin"</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">s3_secret_key</span><span class="o">=</span><span class="s2">"minioadmin"</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">public_url_base</span><span class="o">=</span><span class="s2">"https://minio.example.com:9000/my-bucket"</span><span class="p">,</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="id1">
+<h4>Configuration Options<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s3_bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>S3 bucket name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">s3_region</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>AWS region (e.g., <code class="docutils literal notranslate"><span class="pre">us-east-1</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s3_access_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>AWS access key ID</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">s3_secret_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>AWS secret access key</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s3_endpoint_url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Custom S3 endpoint URL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If access keys are not provided, the SDK will use the default credential chain (environment variables, IAM role, etc.).</p>
+</div>
+</section>
+</section>
+<section id="google-cloud-storage">
+<h3>Google Cloud Storage<a class="headerlink" href="#google-cloud-storage" title="Link to this heading">#</a></h3>
+<p>Store files in Google Cloud Storage.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">StorageBackendType</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">GCS</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">gcs_bucket</span><span class="o">=</span><span class="s2">"my-app-uploads"</span><span class="p">,</span>  <span class="c1"># Required</span>
+</span><span data-line="6">    <span class="n">gcs_project</span><span class="o">=</span><span class="s2">"my-gcp-project"</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">gcs_credentials_path</span><span class="o">=</span><span class="s2">"/path/to/service-account.json"</span><span class="p">,</span>  <span class="c1"># Or use ADC</span>
+</span><span data-line="8">    <span class="n">upload_path</span><span class="o">=</span><span class="s2">"admin/uploads"</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">public_url_base</span><span class="o">=</span><span class="s2">"https://storage.googleapis.com/my-app-uploads"</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="id2">
+<h4>Configuration Options<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gcs_bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>GCS bucket name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gcs_project</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>GCP project ID</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gcs_credentials_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Path to service account JSON</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="memory-storage">
+<h3>Memory Storage<a class="headerlink" href="#memory-storage" title="Link to this heading">#</a></h3>
+<p>In-memory storage for testing. Files are lost when the application restarts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">StorageBackendType</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">upload_path</span><span class="o">=</span><span class="s2">"admin/uploads"</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Memory storage is for testing only. Do not use in production.</p>
+</div>
+</section>
+</section>
+<section id="file-validation">
+<h2>File Validation<a class="headerlink" href="#file-validation" title="Link to this heading">#</a></h2>
+<section id="allowed-extensions">
+<h3>Allowed Extensions<a class="headerlink" href="#allowed-extensions" title="Link to this heading">#</a></h3>
+<p>Whitelist file extensions that can be uploaded:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">local_base_path</span><span class="o">=</span><span class="s2">"./uploads"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">allowed_extensions</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="5">        <span class="c1"># Images</span>
+</span><span data-line="6">        <span class="s2">"jpg"</span><span class="p">,</span> <span class="s2">"jpeg"</span><span class="p">,</span> <span class="s2">"png"</span><span class="p">,</span> <span class="s2">"gif"</span><span class="p">,</span> <span class="s2">"webp"</span><span class="p">,</span> <span class="s2">"svg"</span><span class="p">,</span>
+</span><span data-line="7">        <span class="c1"># Documents</span>
+</span><span data-line="8">        <span class="s2">"pdf"</span><span class="p">,</span> <span class="s2">"doc"</span><span class="p">,</span> <span class="s2">"docx"</span><span class="p">,</span> <span class="s2">"xls"</span><span class="p">,</span> <span class="s2">"xlsx"</span><span class="p">,</span> <span class="s2">"ppt"</span><span class="p">,</span> <span class="s2">"pptx"</span><span class="p">,</span>
+</span><span data-line="9">        <span class="c1"># Archives</span>
+</span><span data-line="10">        <span class="s2">"zip"</span><span class="p">,</span> <span class="s2">"tar"</span><span class="p">,</span> <span class="s2">"gz"</span><span class="p">,</span>
+</span><span data-line="11">    <span class="p">],</span>
+</span><span data-line="12"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Default allowed extensions include common image, document, and archive formats.</p>
+</section>
+<section id="maximum-file-size">
+<h3>Maximum File Size<a class="headerlink" href="#maximum-file-size" title="Link to this heading">#</a></h3>
+<p>Set the maximum allowed file size in bytes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">local_base_path</span><span class="o">=</span><span class="s2">"./uploads"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">max_file_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 50MB</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Default is 10MB.</p>
+</section>
+</section>
+<section id="thumbnail-configuration">
+<h2>Thumbnail Configuration<a class="headerlink" href="#thumbnail-configuration" title="Link to this heading">#</a></h2>
+<p>Configure automatic thumbnail generation for image uploads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">ThumbnailConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage_config</span> <span class="o">=</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">local_base_path</span><span class="o">=</span><span class="s2">"./uploads"</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">thumbnails</span><span class="o">=</span><span class="n">ThumbnailConfig</span><span class="p">(</span>
+</span><span data-line="7">        <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">width</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+</span><span data-line="10">        <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>
+</span><span data-line="11">        <span class="nb">format</span><span class="o">=</span><span class="s2">"jpeg"</span><span class="p">,</span>  <span class="c1"># jpeg, png, or webp</span>
+</span><span data-line="12">        <span class="n">suffix</span><span class="o">=</span><span class="s2">"_thumb"</span><span class="p">,</span>
+</span><span data-line="13">    <span class="p">),</span>
+</span><span data-line="14"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="thumbnailconfig-options">
+<h3>ThumbnailConfig Options<a class="headerlink" href="#thumbnailconfig-options" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Enable thumbnail generation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">width</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">200</span></code></p></td>
+<td><p>Maximum thumbnail width</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">height</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">200</span></code></p></td>
+<td><p>Maximum thumbnail height</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quality</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">85</span></code></p></td>
+<td><p>JPEG/WebP quality (1-100)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jpeg</span></code></p></td>
+<td><p>Output format (jpeg, png, webp)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">suffix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_thumb</span></code></p></td>
+<td><p>Suffix for thumbnail filenames</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="multiple-thumbnail-sizes">
+<h3>Multiple Thumbnail Sizes<a class="headerlink" href="#multiple-thumbnail-sizes" title="Link to this heading">#</a></h3>
+<p>Generate multiple thumbnail sizes using the storage backend directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminStorageBackend</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages.thumbnails</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThumbnailSize</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">storage</span> <span class="o">=</span> <span class="n">AdminStorageBackend</span><span class="p">(</span><span class="n">storage_config</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="7">    <span class="n">ThumbnailSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">"_small"</span><span class="p">),</span>
+</span><span data-line="8">    <span class="n">ThumbnailSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">"_medium"</span><span class="p">),</span>
+</span><span data-line="9">    <span class="n">ThumbnailSize</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="s2">"_large"</span><span class="p">),</span>
+</span><span data-line="10"><span class="p">]</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_with_thumbnails</span><span class="p">(</span>
+</span><span data-line="13">    <span class="n">file_content</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">filename</span><span class="o">=</span><span class="s2">"photo.jpg"</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">model_name</span><span class="o">=</span><span class="s2">"product"</span><span class="p">,</span>
+</span><span data-line="16">    <span class="n">field_name</span><span class="o">=</span><span class="s2">"image"</span><span class="p">,</span>
+</span><span data-line="17">    <span class="n">sizes</span><span class="o">=</span><span class="n">sizes</span><span class="p">,</span>
+</span><span data-line="18">    <span class="nb">format</span><span class="o">=</span><span class="s2">"webp"</span><span class="p">,</span>
+</span><span data-line="19">    <span class="n">quality</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+</span><span data-line="20"><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">storage_path</span><span class="p">)</span>  <span class="c1"># Main image path</span>
+</span><span data-line="23"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">additional_thumbnails</span><span class="p">)</span>  <span class="c1"># {"_small": "...", "_medium": "...", "_large": "..."}</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="using-the-storage-backend">
+<h2>Using the Storage Backend<a class="headerlink" href="#using-the-storage-backend" title="Link to this heading">#</a></h2>
+<section id="direct-usage">
+<h3>Direct Usage<a class="headerlink" href="#direct-usage" title="Link to this heading">#</a></h3>
+<p>Access the storage backend for custom operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminStorageBackend</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">AdminStorageBackend</span><span class="p">(</span><span class="n">storage_config</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Upload a file</span>
+</span><span data-line="6"><span class="n">path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">file_content</span><span class="o">=</span><span class="n">file_bytes</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">filename</span><span class="o">=</span><span class="s2">"document.pdf"</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">model_name</span><span class="o">=</span><span class="s2">"report"</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">field_name</span><span class="o">=</span><span class="s2">"attachment"</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="c1"># Get public URL</span>
+</span><span data-line="14"><span class="n">url</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_public_url</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Check if file exists</span>
+</span><span data-line="17"><span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="c1"># Read file content</span>
+</span><span data-line="20"><span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># Delete a file</span>
+</span><span data-line="23"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="upload-with-thumbnail">
+<h3>Upload with Thumbnail<a class="headerlink" href="#upload-with-thumbnail" title="Link to this heading">#</a></h3>
+<p>Upload an image with automatic thumbnail generation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">main_path</span><span class="p">,</span> <span class="n">thumb_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_with_thumbnail</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">file_content</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">filename</span><span class="o">=</span><span class="s2">"photo.jpg"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">model_name</span><span class="o">=</span><span class="s2">"user"</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">field_name</span><span class="o">=</span><span class="s2">"avatar"</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="generate-thumbnail-for-existing-file">
+<h3>Generate Thumbnail for Existing File<a class="headerlink" href="#generate-thumbnail-for-existing-file" title="Link to this heading">#</a></h3>
+<p>Create a thumbnail for an already-uploaded image:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">thumb_bytes</span><span class="p">,</span> <span class="n">thumb_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">generate_thumbnail</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">path</span><span class="o">=</span><span class="s2">"admin/files/user/avatar/photo.jpg"</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+</span><span data-line="4">    <span class="nb">format</span><span class="o">=</span><span class="s2">"webp"</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="get-or-generate-thumbnail">
+<h3>Get or Generate Thumbnail<a class="headerlink" href="#get-or-generate-thumbnail" title="Link to this heading">#</a></h3>
+<p>Get an existing thumbnail or generate one on-demand:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">thumb_bytes</span><span class="p">,</span> <span class="n">thumb_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_or_generate_thumbnail</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">path</span><span class="o">=</span><span class="s2">"admin/files/user/avatar/photo.jpg"</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="path-structure">
+<h2>Path Structure<a class="headerlink" href="#path-structure" title="Link to this heading">#</a></h2>
+<p>Files are stored with a structured path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="n">upload_path</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">model_name</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">field_name</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">year</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">month</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">filename</span><span class="p">}</span>
+</span></pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">admin</span><span class="o">/</span><span class="n">files</span><span class="o">/</span><span class="n">document</span><span class="o">/</span><span class="n">attachment</span><span class="o">/</span><span class="mi">2024</span><span class="o">/</span><span class="mi">01</span><span class="o">/</span><span class="n">report</span><span class="o">-</span><span class="n">abc123</span><span class="o">.</span><span class="n">pdf</span>
+</span></pre></div>
+</div>
+<p>This structure:</p>
+<ul class="simple">
+<li><p>Organizes files by model and field</p></li>
+<li><p>Prevents filename collisions with unique suffixes</p></li>
+<li><p>Enables easy cleanup and management</p></li>
+<li><p>Allows efficient directory-based queries</p></li>
+</ul>
+</section>
+<section id="environment-based-configuration">
+<h2>Environment-Based Configuration<a class="headerlink" href="#environment-based-configuration" title="Link to this heading">#</a></h2>
+<p>Configure storage based on environment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.contrib.storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageConfig</span><span class="p">,</span> <span class="n">StorageBackendType</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">get_storage_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StorageConfig</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">"""Get storage configuration based on environment."""</span>
+</span><span data-line="6">    <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ENV"</span><span class="p">,</span> <span class="s2">"development"</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">"production"</span><span class="p">:</span>
+</span><span data-line="9">        <span class="k">return</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="10">            <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">S3</span><span class="p">,</span>
+</span><span data-line="11">            <span class="n">s3_bucket</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"S3_BUCKET"</span><span class="p">],</span>
+</span><span data-line="12">            <span class="n">s3_region</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"S3_REGION"</span><span class="p">,</span> <span class="s2">"us-east-1"</span><span class="p">),</span>
+</span><span data-line="13">            <span class="n">public_url_base</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CDN_URL"</span><span class="p">],</span>
+</span><span data-line="14">            <span class="n">max_file_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+</span><span data-line="15">        <span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="k">elif</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">"testing"</span><span class="p">:</span>
+</span><span data-line="18">        <span class="k">return</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="19">            <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">,</span>
+</span><span data-line="20">        <span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="k">else</span><span class="p">:</span>  <span class="c1"># development</span>
+</span><span data-line="23">        <span class="k">return</span> <span class="n">StorageConfig</span><span class="p">(</span>
+</span><span data-line="24">            <span class="n">backend</span><span class="o">=</span><span class="n">StorageBackendType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">,</span>
+</span><span data-line="25">            <span class="n">local_base_path</span><span class="o">=</span><span class="s2">"./uploads"</span><span class="p">,</span>
+</span><span data-line="26">            <span class="n">public_url_base</span><span class="o">=</span><span class="s2">"http://localhost:8000/uploads"</span><span class="p">,</span>
+</span><span data-line="27">        <span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Validate File Types</strong>: Always validate file extensions and MIME types server-side.</p></li>
+<li><p><strong>Set Size Limits</strong>: Configure reasonable file size limits to prevent denial-of-service.</p></li>
+<li><p><strong>Sanitize Filenames</strong>: The storage backend automatically sanitizes filenames to prevent path traversal.</p></li>
+<li><p><strong>Use Signed URLs</strong>: For S3/GCS, consider using signed URLs for private files.</p></li>
+<li><p><strong>Scan Uploads</strong>: Consider integrating virus scanning for uploaded files.</p></li>
+<li><p><strong>Restrict Access</strong>: Use bucket policies or filesystem permissions to restrict access.</p></li>
+</ol>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file-uploads.html"><span class="std std-doc">File Uploads</span></a> - Using file uploads in models</p></li>
+<li><p><a class="reference internal" href="../configuration.html"><span class="std std-doc">Configuration</span></a> - General admin configuration</p></li>
+<li><p><a class="reference internal" href="../model-views.html"><span class="std std-doc">Model Views</span></a> - ModelView setup</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="file-uploads.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">File Uploads</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="user-management.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">User Management</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

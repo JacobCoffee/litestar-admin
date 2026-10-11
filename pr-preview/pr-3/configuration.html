@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Configuration Reference - litestar-admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Model Views" href="model-views.html" /><link rel="prev" title="Getting Started" href="getting-started.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Configuration Reference"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#adminconfig">AdminConfig</a><ul>
+<li><a class="reference internal" href="#basic-settings">Basic Settings</a><ul>
+<li><a class="reference internal" href="#title">title</a></li>
+<li><a class="reference internal" href="#base-url">base_url</a></li>
+<li><a class="reference internal" href="#logo-url">logo_url</a></li>
+<li><a class="reference internal" href="#favicon-url">favicon_url</a></li>
+<li><a class="reference internal" href="#theme">theme</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication">Authentication</a><ul>
+<li><a class="reference internal" href="#auth-backend">auth_backend</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#model-discovery-and-views">Model Discovery and Views</a><ul>
+<li><a class="reference internal" href="#auto-discover">auto_discover</a></li>
+<li><a class="reference internal" href="#views">views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#development">Development</a><ul>
+<li><a class="reference internal" href="#debug">debug</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rate-limiting">Rate Limiting</a><ul>
+<li><a class="reference internal" href="#rate-limit-enabled">rate_limit_enabled</a></li>
+<li><a class="reference internal" href="#rate-limit-requests">rate_limit_requests</a></li>
+<li><a class="reference internal" href="#rate-limit-window-seconds">rate_limit_window_seconds</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#static-files">Static Files</a><ul>
+<li><a class="reference internal" href="#static-path">static_path</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ui-customization">UI Customization</a><ul>
+<li><a class="reference internal" href="#index-title">index_title</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#session-settings">Session Settings</a><ul>
+<li><a class="reference internal" href="#session-cookie-name">session_cookie_name</a></li>
+<li><a class="reference internal" href="#session-cookie-httponly">session_cookie_httponly</a></li>
+<li><a class="reference internal" href="#session-cookie-secure">session_cookie_secure</a></li>
+<li><a class="reference internal" href="#session-cookie-samesite">session_cookie_samesite</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extra-settings">Extra Settings</a><ul>
+<li><a class="reference internal" href="#extra">extra</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#complete-example">Complete Example</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li><a class="reference internal" href="#computed-properties">Computed Properties</a><ul>
+<li><a class="reference internal" href="#api-base-url">api_base_url</a></li>
+<li><a class="reference internal" href="#static-base-url">static_base_url</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#validation">Validation</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Configuration Reference</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="configuration-reference">
+<h1>Configuration Reference<a class="headerlink" href="#configuration-reference" title="Link to this heading">#</a></h1>
+<p>This page provides a complete reference for all configuration options available in litestar-admin.</p>
+<section id="adminconfig">
+<h2>AdminConfig<a class="headerlink" href="#adminconfig" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code> dataclass is the primary way to configure your admin panel. Pass it to the <code class="docutils literal notranslate"><span class="pre">AdminPlugin</span></code> when initializing your application.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">base_url</span><span class="o">=</span><span class="s2">"/admin"</span><span class="p">,</span>
+</span><span data-line="7">        <span class="c1"># ... more options</span>
+</span><span data-line="8">    <span class="p">)</span>
+</span><span data-line="9"><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="basic-settings">
+<h3>Basic Settings<a class="headerlink" href="#basic-settings" title="Link to this heading">#</a></h3>
+<section id="title">
+<h4>title<a class="headerlink" href="#title" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;Admin&quot;</span></code></p></li>
+</ul>
+<p>The title displayed in the admin panel header and browser tab.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"My Application Admin"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="base-url">
+<h4>base_url<a class="headerlink" href="#base-url" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;/admin&quot;</span></code></p></li>
+</ul>
+<p>The base URL path for the admin panel. All admin routes will be prefixed with this path.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Admin available at /dashboard</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"/dashboard"</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Admin available at /app/admin</span>
+</span><span data-line="5"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"/app/admin"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">base_url</span></code> must start with <code class="docutils literal notranslate"><span class="pre">/</span></code> and should not end with <code class="docutils literal notranslate"><span class="pre">/</span></code> (except when set to just <code class="docutils literal notranslate"><span class="pre">/</span></code>).</p>
+</div>
+</section>
+<section id="logo-url">
+<h4>logo_url<a class="headerlink" href="#logo-url" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+<p>URL for a custom logo image displayed in the sidebar header.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">logo_url</span><span class="o">=</span><span class="s2">"/static/images/logo.png"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="favicon-url">
+<h4>favicon_url<a class="headerlink" href="#favicon-url" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+<p>URL for a custom favicon.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">favicon_url</span><span class="o">=</span><span class="s2">"/static/favicon.ico"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="theme">
+<h4>theme<a class="headerlink" href="#theme" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">Literal[&quot;dark&quot;,</span> <span class="pre">&quot;light&quot;]</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;dark&quot;</span></code></p></li>
+</ul>
+<p>The color theme for the admin panel.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Dark theme (default, Cloudflare-inspired)</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">"dark"</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Light theme</span>
+</span><span data-line="5"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">"light"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h3>
+<section id="auth-backend">
+<h4>auth_backend<a class="headerlink" href="#auth-backend" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">AuthBackend</span> <span class="pre">|</span> <span class="pre">None</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+<p>The authentication backend for securing the admin panel. When <code class="docutils literal notranslate"><span class="pre">None</span></code>, the admin panel is publicly accessible.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuthBackend</span><span class="p">,</span> <span class="n">JWTConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">JWTConfig</span><span class="p">(</span><span class="n">secret_key</span><span class="o">=</span><span class="s2">"your-secret-key"</span><span class="p">),</span>
+</span><span data-line="5">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user_from_db</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">auth_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>See <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a> for detailed authentication setup.</p>
+</section>
+</section>
+<section id="model-discovery-and-views">
+<h3>Model Discovery and Views<a class="headerlink" href="#model-discovery-and-views" title="Link to this heading">#</a></h3>
+<section id="auto-discover">
+<h4>auto_discover<a class="headerlink" href="#auto-discover" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+<p>Auto-discovery is on by default. The plugin finds your <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> subclasses, walks their model registries, and generates views for any model that doesn’t already have an explicit <code class="docutils literal notranslate"><span class="pre">ModelView</span></code>. Generated views include all columns, make string columns searchable, and exclude auto-increment PKs from forms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># This is enough — all your models get admin views</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Turn it off if you only want explicitly registered views</span>
+</span><span data-line="5"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">auto_discover</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="p">[</span><span class="n">UserAdmin</span><span class="p">,</span> <span class="n">PostAdmin</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</section>
+<section id="views">
+<h4>views<a class="headerlink" href="#views" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">list[type[BaseAdminView]]</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">[]</span></code></p></li>
+</ul>
+<p>Explicit view classes to register. Use this when you need to customize column lists, permissions, form behavior, or lifecycle hooks for specific models. Auto-discovery skips any model that already has a view registered here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">ModelView</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">]</span>
+</span><span data-line="5">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># UserAdmin is explicit; other models still auto-discovered</span>
+</span><span data-line="8"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">views</span><span class="o">=</span><span class="p">[</span><span class="n">UserAdmin</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="development">
+<h3>Development<a class="headerlink" href="#development" title="Link to this heading">#</a></h3>
+<section id="debug">
+<h4>debug<a class="headerlink" href="#debug" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+<p>Enable debug mode for additional logging and error details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not enable debug mode in production as it may expose sensitive information.</p>
+</div>
+</section>
+</section>
+<section id="rate-limiting">
+<h3>Rate Limiting<a class="headerlink" href="#rate-limiting" title="Link to this heading">#</a></h3>
+<section id="rate-limit-enabled">
+<h4>rate_limit_enabled<a class="headerlink" href="#rate-limit-enabled" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+<p>Whether to enable rate limiting on admin API endpoints.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Disable rate limiting (not recommended for production)</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">rate_limit_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="rate-limit-requests">
+<h4>rate_limit_requests<a class="headerlink" href="#rate-limit-requests" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
+</ul>
+<p>Maximum number of requests allowed per window.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="rate-limit-window-seconds">
+<h4>rate_limit_window_seconds<a class="headerlink" href="#rate-limit-window-seconds" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">60</span></code></p></li>
+</ul>
+<p>Rate limit window duration in seconds.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># 50 requests per 30 seconds</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">rate_limit_window_seconds</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="static-files">
+<h3>Static Files<a class="headerlink" href="#static-files" title="Link to this heading">#</a></h3>
+<section id="static-path">
+<h4>static_path<a class="headerlink" href="#static-path" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+<p>Path to a custom static files directory. When <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses the built-in frontend.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Use custom frontend build</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">static_path</span><span class="o">=</span><span class="s2">"/path/to/custom/frontend/dist"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="ui-customization">
+<h3>UI Customization<a class="headerlink" href="#ui-customization" title="Link to this heading">#</a></h3>
+<section id="index-title">
+<h4>index_title<a class="headerlink" href="#index-title" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;Dashboard&quot;</span></code></p></li>
+</ul>
+<p>Title for the dashboard/index page.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">index_title</span><span class="o">=</span><span class="s2">"Overview"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="session-settings">
+<h3>Session Settings<a class="headerlink" href="#session-settings" title="Link to this heading">#</a></h3>
+<section id="session-cookie-name">
+<h4>session_cookie_name<a class="headerlink" href="#session-cookie-name" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;admin_session&quot;</span></code></p></li>
+</ul>
+<p>Name of the session cookie.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">session_cookie_name</span><span class="o">=</span><span class="s2">"my_admin_session"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="session-cookie-httponly">
+<h4>session_cookie_httponly<a class="headerlink" href="#session-cookie-httponly" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+<p>Whether the session cookie should be HTTP-only (not accessible via JavaScript).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">session_cookie_httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="session-cookie-secure">
+<h4>session_cookie_secure<a class="headerlink" href="#session-cookie-secure" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+<p>Whether the session cookie should only be sent over HTTPS.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Disable for local development</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">session_cookie_secure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Always set <code class="docutils literal notranslate"><span class="pre">session_cookie_secure=True</span></code> in production with HTTPS.</p>
+</div>
+</section>
+<section id="session-cookie-samesite">
+<h4>session_cookie_samesite<a class="headerlink" href="#session-cookie-samesite" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">Literal[&quot;lax&quot;,</span> <span class="pre">&quot;strict&quot;,</span> <span class="pre">&quot;none&quot;]</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">&quot;lax&quot;</span></code></p></li>
+</ul>
+<p>SameSite policy for the session cookie.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">session_cookie_samesite</span><span class="o">=</span><span class="s2">"strict"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="extra-settings">
+<h3>Extra Settings<a class="headerlink" href="#extra-settings" title="Link to this heading">#</a></h3>
+<section id="extra">
+<h4>extra<a class="headerlink" href="#extra" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Type:</strong> <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">Any]</span></code></p></li>
+<li><p><strong>Default:</strong> <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+</ul>
+<p>Additional custom settings for extensibility.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="3">        <span class="s2">"custom_setting"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">,</span>
+</span><span data-line="4">        <span class="s2">"feature_flag"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">}</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="complete-example">
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h2>
+<p>Here’s a comprehensive configuration example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">ModelView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuthBackend</span><span class="p">,</span> <span class="n">JWTConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Define your model views</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="6">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"is_active"</span><span class="p">]</span>
+</span><span data-line="7">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">PostAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Post</span><span class="p">):</span>
+</span><span data-line="10">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"title"</span><span class="p">,</span> <span class="s2">"published"</span><span class="p">]</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="c1"># Create auth backend</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">):</span>
+</span><span data-line="14">    <span class="c1"># Load user from database</span>
+</span><span data-line="15">    <span class="o">...</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">auth_backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="18">    <span class="n">config</span><span class="o">=</span><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="19">        <span class="n">secret_key</span><span class="o">=</span><span class="s2">"your-secure-secret-key"</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">token_expiry</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+</span><span data-line="21">    <span class="p">),</span>
+</span><span data-line="22">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user</span><span class="p">,</span>
+</span><span data-line="23"><span class="p">)</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="c1"># Configure admin</span>
+</span><span data-line="26"><span class="n">config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="27">    <span class="c1"># Basic settings</span>
+</span><span data-line="28">    <span class="n">title</span><span class="o">=</span><span class="s2">"My Application Admin"</span><span class="p">,</span>
+</span><span data-line="29">    <span class="n">base_url</span><span class="o">=</span><span class="s2">"/admin"</span><span class="p">,</span>
+</span><span data-line="30">    <span class="n">logo_url</span><span class="o">=</span><span class="s2">"/static/logo.png"</span><span class="p">,</span>
+</span><span data-line="31">    <span class="n">theme</span><span class="o">=</span><span class="s2">"dark"</span><span class="p">,</span>
+</span><span data-line="32">
+</span><span data-line="33">    <span class="c1"># Authentication</span>
+</span><span data-line="34">    <span class="n">auth_backend</span><span class="o">=</span><span class="n">auth_backend</span><span class="p">,</span>
+</span><span data-line="35">
+</span><span data-line="36">    <span class="c1"># Model views</span>
+</span><span data-line="37">    <span class="n">views</span><span class="o">=</span><span class="p">[</span><span class="n">UserAdmin</span><span class="p">,</span> <span class="n">PostAdmin</span><span class="p">],</span>
+</span><span data-line="38">    <span class="n">auto_discover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="39">
+</span><span data-line="40">    <span class="c1"># Rate limiting</span>
+</span><span data-line="41">    <span class="n">rate_limit_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="42">    <span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+</span><span data-line="43">    <span class="n">rate_limit_window_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+</span><span data-line="44">
+</span><span data-line="45">    <span class="c1"># Session security</span>
+</span><span data-line="46">    <span class="n">session_cookie_secure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="47">    <span class="n">session_cookie_httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="48">    <span class="n">session_cookie_samesite</span><span class="o">=</span><span class="s2">"lax"</span><span class="p">,</span>
+</span><span data-line="49">
+</span><span data-line="50">    <span class="c1"># UI customization</span>
+</span><span data-line="51">    <span class="n">index_title</span><span class="o">=</span><span class="s2">"Dashboard"</span><span class="p">,</span>
+</span><span data-line="52"><span class="p">)</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="c1"># Create plugin</span>
+</span><span data-line="55"><span class="n">plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h2>
+<p>You can load configuration from environment variables:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">title</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"ADMIN_TITLE"</span><span class="p">,</span> <span class="s2">"Admin"</span><span class="p">),</span>
+</span><span data-line="5">    <span class="n">debug</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"DEBUG"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"true"</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">rate_limit_requests</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"RATE_LIMIT_REQUESTS"</span><span class="p">,</span> <span class="s2">"100"</span><span class="p">)),</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="computed-properties">
+<h2>Computed Properties<a class="headerlink" href="#computed-properties" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code> provides several computed properties:</p>
+<section id="api-base-url">
+<h3>api_base_url<a class="headerlink" href="#api-base-url" title="Link to this heading">#</a></h3>
+<p>Returns the full API base URL (e.g., <code class="docutils literal notranslate"><span class="pre">/admin/api</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"/admin"</span><span class="p">)</span>
+</span><span data-line="2"><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">api_base_url</span><span class="p">)</span>  <span class="c1"># "/admin/api"</span>
+</span></pre></div>
+</div>
+</section>
+<section id="static-base-url">
+<h3>static_base_url<a class="headerlink" href="#static-base-url" title="Link to this heading">#</a></h3>
+<p>Returns the full static files base URL (e.g., <code class="docutils literal notranslate"><span class="pre">/admin/static</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"/admin"</span><span class="p">)</span>
+</span><span data-line="2"><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">static_base_url</span><span class="p">)</span>  <span class="c1"># "/admin/static"</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="validation">
+<h2>Validation<a class="headerlink" href="#validation" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code> validates settings on initialization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># This will raise ValueError</span>
+</span><span data-line="2"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>  <span class="c1"># Must start with /</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># This will raise ValueError</span>
+</span><span data-line="5"><span class="n">AdminConfig</span><span class="p">(</span><span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Must be at least 1</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="getting-started.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Getting Started</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="model-views.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Model Views</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
+</html>
