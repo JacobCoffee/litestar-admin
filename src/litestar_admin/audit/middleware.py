@@ -20,8 +20,9 @@ from __future__ import annotations
 import contextlib
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, Literal
 
+from litestar.enums import ScopeType
 from litestar.middleware import AbstractMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_300_MULTIPLE_CHOICES
 
@@ -107,7 +108,7 @@ class AuditMiddleware(AbstractMiddleware):
             middleware = AuditMiddleware(logger, config=config)
     """
 
-    scopes: ClassVar[set[str]] = {"http"}
+    scopes: set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]] = {ScopeType.HTTP}  # noqa: RUF012
 
     def __init__(
         self,

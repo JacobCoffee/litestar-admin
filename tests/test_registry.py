@@ -36,7 +36,8 @@ class TestModelRegistry:
         registry.register(UserAdmin1)
 
         with pytest.raises(
-            ValueError, match="(Model User is already registered|View identity 'user' is already registered)"
+            ValueError,
+            match="(Model User is already registered|View identity 'user' is already registered)",  # noqa: RUF043
         ):
             registry.register(UserAdmin2)
 

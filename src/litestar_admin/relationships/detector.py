@@ -119,7 +119,7 @@ class RelationshipDetector:
             # Get secondary table for MANY_TO_MANY
             secondary_table = None
             if rel_prop.secondary is not None:
-                secondary_table = rel_prop.secondary.name
+                secondary_table = rel_prop.secondary.name  # ty: ignore[unresolved-attribute]
 
             return RelationshipInfo(
                 name=rel_prop.key,

@@ -213,7 +213,7 @@ class CustomView(BaseAdminView):
                     msg = f"Column must be a dict or ColumnDefinition, got {type(col)}"
                     raise TypeError(msg)
             # Update to normalized list (type: ignore needed as we're changing the type)
-            cls.columns = normalized  # type: ignore[assignment]
+            cls.columns = normalized  # type: ignore[assignment]  # ty: ignore[invalid-assignment]
 
     @abstractmethod
     async def get_list(

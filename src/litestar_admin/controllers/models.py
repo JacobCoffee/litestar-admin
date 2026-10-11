@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, Request, delete, get, patch, post, put
 from litestar.exceptions import NotFoundException
@@ -143,7 +143,7 @@ class ModelsController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Models"]
+    tags: list[str] = ["Models"]  # noqa: RUF012
 
     @get(
         "/",
@@ -226,7 +226,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
 
         records, total = await service.list_records(
             offset=offset,
@@ -237,10 +237,10 @@ class ModelsController(Controller):
         )
 
         # Get columns to serialize
-        columns = view_class.get_list_columns()
+        columns = view_class.get_list_columns()  # ty: ignore[unresolved-attribute]
 
         return ListRecordsResponse(
-            items=[_serialize_record(r, columns if columns else None) for r in records],
+            items=[_serialize_record(r, columns or None) for r in records],
             total=total,
             offset=offset,
             limit=limit,
@@ -280,7 +280,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
         record = await service.create_record(data, request=request)
 
         serialized = _serialize_record(record)
@@ -331,7 +331,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
         is_create = mode.lower() == "create"
         return service.get_model_schema(is_create=is_create)
 
@@ -367,7 +367,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
 
         # Convert record_id to appropriate type
         pk = _convert_pk(record_id, service)
@@ -409,13 +409,12 @@ class ModelsController(Controller):
         Raises:
             NotFoundException: If the model or record is not found.
         """
-        print(f"[UPDATE] PUT request for {model_name}/{record_id} with data: {data}")
         try:
             view_class = admin_registry.get_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
         pk = _convert_pk(record_id, service)
 
         # Get old data for change tracking
@@ -436,7 +435,7 @@ class ModelsController(Controller):
             AuditAction.UPDATE,
             model_name,
             record_id,
-            changes=changes if changes else None,
+            changes=changes or None,
         )
 
         return serialized
@@ -477,7 +476,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
         pk = _convert_pk(record_id, service)
 
         # Get old data for change tracking
@@ -498,7 +497,7 @@ class ModelsController(Controller):
             AuditAction.UPDATE,
             model_name,
             record_id,
-            changes=changes if changes else None,
+            changes=changes or None,
         )
 
         return serialized
@@ -540,7 +539,7 @@ class ModelsController(Controller):
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
-        service: AdminService[Any] = AdminService(view_class, db_session)
+        service: AdminService[Any] = AdminService(view_class, db_session)  # ty: ignore[invalid-argument-type]
         pk = _convert_pk(record_id, service)
 
         success = await service.delete_record(pk, soft_delete=soft_delete)
@@ -586,11 +585,9 @@ class ModelsController(Controller):
         from litestar_admin.audit.models import AuditLog
 
         audit_logger = logging.getLogger("litestar_admin.audit")
-        audit_logger.info(f"Audit log: {action.value} on {model_name} record {record_id}")
+        audit_logger.info("Audit log: %s on %s record %s", action.value, model_name, record_id)
 
         try:
-            print(f"[AUDIT] Starting audit log for {action.value} on {model_name} record {record_id}")
-
             entry = await audit_admin_action(
                 connection=request,
                 action=action,
@@ -599,7 +596,6 @@ class ModelsController(Controller):
                 changes=changes,
                 metadata=metadata,
             )
-            print(f"[AUDIT] Created audit entry: {entry.id}, actor: {entry.actor_email}")
 
             # Create the AuditLog model directly and add to session
             audit_log = AuditLog(
@@ -616,20 +612,15 @@ class ModelsController(Controller):
                 user_agent=entry.user_agent,
             )
 
-            print(f"[AUDIT] Session state before add: in_transaction={db_session.in_transaction()}")
             db_session.add(audit_log)
-            print("[AUDIT] Added to session, flushing...")
             await db_session.flush()
-            print("[AUDIT] Flushed, committing...")
             await db_session.commit()
-            print("[AUDIT] Committed successfully!")
             audit_logger.info("Audit entry committed successfully")
-        except Exception as e:
-            print(f"[AUDIT] ERROR: {type(e).__name__}: {e}")
-            audit_logger.error(f"Audit logging failed: {e}", exc_info=True)
-            try:
+        except Exception:
+            audit_logger.exception("Audit logging failed")
+            try:  # noqa: SIM105
                 await db_session.rollback()
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
 

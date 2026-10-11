@@ -27,6 +27,20 @@ jobs:
           enable-cache: false
           version: "0.9.12"
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+
+      - name: Copy frontend build into package static directory
+        run: |
+          rm -rf src/litestar_admin/static
+          cp -r frontend/out src/litestar_admin/static
+
       - name: Build package
         run: uv build
 
@@ -95,7 +109,7 @@ jobs:
           args: --current --strip header
 
       - name: Create GitHub Release (Draft)
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        uses: softprops/action-gh-release@26e8ad27a09a225049a7075d7ec1caa2df6ff332 # v2.6.0
         with:
           draft: true
           files: |
@@ -138,7 +152,7 @@ jobs:
       contents: write
     steps:
       - name: Mark Release as Published
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        uses: softprops/action-gh-release@26e8ad27a09a225049a7075d7ec1caa2df6ff332 # v2.6.0
         with:
           draft: false
 

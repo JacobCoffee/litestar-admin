@@ -79,15 +79,19 @@ class AdminAuthMiddleware(AbstractMiddleware):
     @staticmethod
     async def _send_not_found(send: Send) -> None:
         """Send a plain 404 response to avoid leaking admin panel existence."""
-        await send({
-            "type": "http.response.start",
-            "status": 404,
-            "headers": [(b"content-type", b"text/plain")],
-        })
-        await send({
-            "type": "http.response.body",
-            "body": b"Not Found",
-        })
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 404,
+                "headers": [(b"content-type", b"text/plain")],
+            }
+        )
+        await send(
+            {  # ty: ignore[invalid-argument-type]
+                "type": "http.response.body",
+                "body": b"Not Found",
+            }
+        )
 
     async def _get_user(self, scope: Scope) -> Any | None:
         """Try to authenticate via Bearer token first, then fall back to session."""

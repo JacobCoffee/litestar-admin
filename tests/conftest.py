@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 from typing import TYPE_CHECKING
 
 import pytest
@@ -11,6 +12,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
+
+# litestar-permissions only supports Python 3.12+
+collect_ignore = [] if importlib.util.find_spec("litestar_permissions") else ["test_permissions_integration.py"]
 
 
 # ==============================================================================

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from litestar import Controller, get, post
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
@@ -139,7 +139,7 @@ class AuthController(Controller):
     """
 
     path = "/api/auth"
-    tags: ClassVar[list[str]] = ["Authentication"]
+    tags: list[str] = ["Authentication"]  # noqa: RUF012
 
     @post(
         "/login",
@@ -333,7 +333,7 @@ class AuthController(Controller):
         if not hasattr(admin_config.auth_backend, "change_password"):
             raise PermissionDeniedException(detail="Password change is not supported by this authentication backend")
 
-        success = await admin_config.auth_backend.change_password(
+        success = await admin_config.auth_backend.change_password(  # ty: ignore[call-non-callable]
             request,
             data.current_password,
             data.new_password,

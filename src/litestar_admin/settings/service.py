@@ -300,7 +300,7 @@ class SettingsService:
         stmt = delete(AdminSettings).where(AdminSettings.key == key)
         result = await self._session.execute(stmt)
         await self._session.flush()
-        return result.rowcount > 0
+        return result.rowcount > 0  # ty: ignore[unresolved-attribute]
 
     async def bulk_update(
         self,

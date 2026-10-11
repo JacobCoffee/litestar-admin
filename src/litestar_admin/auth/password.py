@@ -169,7 +169,7 @@ class PasswordHasher:
         if not PasswordHasher._available or PasswordHasher._context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.hash(password)  # type: ignore[union-attr]
+        return PasswordHasher._context.hash(password)  # type: ignore[union-attr]  # ty: ignore[unresolved-attribute]
 
     def verify(self, password: str, password_hash: str) -> bool:
         """Verify a password against its hash.
@@ -195,7 +195,7 @@ class PasswordHasher:
         if not PasswordHasher._available or PasswordHasher._context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.verify(password, password_hash)  # type: ignore[union-attr]
+        return PasswordHasher._context.verify(password, password_hash)  # type: ignore[union-attr]  # ty: ignore[unresolved-attribute]
 
     def needs_rehash(self, password_hash: str) -> bool:
         """Check if a password hash needs to be rehashed.
@@ -224,7 +224,7 @@ class PasswordHasher:
         if not PasswordHasher._available or PasswordHasher._context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.needs_update(password_hash)  # type: ignore[union-attr]
+        return PasswordHasher._context.needs_update(password_hash)  # type: ignore[union-attr]  # ty: ignore[unresolved-attribute]
 
     @classmethod
     def is_available(cls) -> bool:

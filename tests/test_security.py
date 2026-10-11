@@ -353,7 +353,7 @@ class TestTokenSecurity:
         import jwt
 
         # Create an expired token manually
-        now = datetime.datetime.now(tz=datetime.UTC)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         payload = {
             "sub": str(admin_user.id),
             "email": admin_user.email,
@@ -404,7 +404,7 @@ class TestTokenSecurity:
         import jwt
 
         # Create token with different secret
-        now = datetime.datetime.now(tz=datetime.UTC)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         payload = {
             "sub": str(admin_user.id),
             "email": admin_user.email,
@@ -432,7 +432,7 @@ class TestTokenSecurity:
         import jwt
 
         # Create token with different algorithm
-        now = datetime.datetime.now(tz=datetime.UTC)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         payload = {
             "sub": str(admin_user.id),
             "email": admin_user.email,

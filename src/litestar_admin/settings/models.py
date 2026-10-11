@@ -23,9 +23,18 @@ Example:
 
 from __future__ import annotations
 
+import sys
 from datetime import datetime, timezone
-from enum import StrEnum
 from typing import Any
+
+if sys.version_info >= (3, 11):
+    from enum import StrEnum
+else:
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        """Polyfill for enum.StrEnum on Python < 3.11."""
+
 
 from sqlalchemy import Boolean, DateTime, Index, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
