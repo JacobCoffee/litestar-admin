@@ -107,7 +107,7 @@ class ViewRegistry:
 
             # Also remove from model mapping if it's a model view
             if hasattr(view_class, "model") and view_class.model in self._views_by_model:
-                del self._views_by_model[view_class.model]
+                del self._views_by_model[view_class.model]  # ty: ignore[invalid-argument-type]
         else:
             # Unregister by model (backward compatibility for model views)
             if model_or_identity not in self._views_by_model:
@@ -210,7 +210,7 @@ class ViewRegistry:
         Returns:
             List of ModelView/BaseModelView classes.
         """
-        return [view for view in self._views_by_identity.values() if view.view_type == "model"]
+        return [view for view in self._views_by_identity.values() if view.view_type == "model"]  # ty: ignore[invalid-return-type]
 
     def list_custom_views(self) -> list[type[BaseAdminView]]:
         """List only custom (non-model) data views.
@@ -266,10 +266,10 @@ class ViewRegistry:
                 "model": view_class.identity,  # Use identity for URL routing
                 "icon": view_class.icon,
                 "category": view_class.category,
-                "can_create": view_class.can_create,
-                "can_edit": view_class.can_edit,
-                "can_delete": view_class.can_delete,
-                "can_view_details": view_class.can_view_details,
+                "can_create": view_class.can_create,  # ty: ignore[unresolved-attribute]
+                "can_edit": view_class.can_edit,  # ty: ignore[unresolved-attribute]
+                "can_delete": view_class.can_delete,  # ty: ignore[unresolved-attribute]
+                "can_view_details": view_class.can_view_details,  # ty: ignore[unresolved-attribute]
             }
             for view_class in self._views_by_identity.values()
             if view_class.view_type == "model"

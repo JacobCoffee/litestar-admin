@@ -199,7 +199,7 @@ frontend-build: ## Build frontend without copying
 
 ##@ Build & Release
 
-build: clean ## Build package
+build: clean frontend ## Build package (includes frontend)
 	@uv build
 
 clean: ## Clean build artifacts and caches

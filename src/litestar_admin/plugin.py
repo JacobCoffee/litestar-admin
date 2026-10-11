@@ -203,10 +203,10 @@ class AdminPlugin(InitPluginProtocol):
                 SettingsController,
                 UserManagementController,
             ],
-            middleware=middleware if middleware else None,
+            middleware=middleware or None,
         )
 
-    def _configure_static_files(self, app_config: AppConfig) -> None:
+    def _configure_static_files(self, app_config: AppConfig) -> None:  # noqa: C901
         """Configure static file serving for the admin panel frontend.
 
         Sets up a static files router to serve the Next.js static export at the
@@ -429,7 +429,7 @@ class AdminPlugin(InitPluginProtocol):
         logger = get_logger("litestar_admin.discovery")
 
         # Get already-registered models to skip
-        registered_models: set[type[Any]] = {view_class.model for view_class in self._registry}
+        registered_models: set[type[Any]] = {view_class.model for view_class in self._registry}  # ty: ignore[unresolved-attribute]
 
         # Find all DeclarativeBase classes in the application
         bases = get_declarative_bases(app)

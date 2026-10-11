@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, get
 from litestar.status_codes import HTTP_200_OK
@@ -115,7 +115,7 @@ class DashboardController(Controller):
     """
 
     path = "/api/dashboard"
-    tags: ClassVar[list[str]] = ["Dashboard"]
+    tags: list[str] = ["Dashboard"]  # noqa: RUF012
 
     @get(
         "/stats",
@@ -151,7 +151,7 @@ class DashboardController(Controller):
 
             # Attempt to get record count if session is available
             if db_session is not None:
-                count = await self._get_model_count(db_session, view_class.model)
+                count = await self._get_model_count(db_session, view_class.model)  # ty: ignore[invalid-argument-type]
 
             total_records += count
 

@@ -70,7 +70,7 @@ class TestSanitizeHtml:
 
     def test_removes_onclick_attributes(self) -> None:
         """Test that onclick event handlers are removed."""
-        content = '<p onclick="alert(\'XSS\')">Click me</p>'
+        content = "<p onclick=\"alert('XSS')\">Click me</p>"
         result = sanitize_html(content, allowed_tags=["p"])
         assert "onclick" not in result
         assert "<p>Click me</p>" in result
@@ -83,13 +83,13 @@ class TestSanitizeHtml:
 
     def test_removes_onload_attributes(self) -> None:
         """Test that onload event handlers are removed."""
-        content = '<body onload="alert(\'XSS\')"><p>Text</p></body>'
+        content = "<body onload=\"alert('XSS')\"><p>Text</p></body>"
         result = sanitize_html(content, allowed_tags=["p"])
         assert "onload" not in result
 
     def test_removes_javascript_href(self) -> None:
         """Test that javascript: protocol in href is handled."""
-        content = '<a href="javascript:alert(\'XSS\')">Click</a>'
+        content = "<a href=\"javascript:alert('XSS')\">Click</a>"
         result = sanitize_html(content, allowed_tags=["a"])
         assert "javascript:" not in result
 

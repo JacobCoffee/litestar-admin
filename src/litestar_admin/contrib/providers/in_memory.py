@@ -250,7 +250,7 @@ class InMemoryView(CustomView):
         return True
 
     @staticmethod
-    def _apply_filter_operator(
+    def _apply_filter_operator(  # noqa: PLR0912, C901
         items: list[dict[str, Any]],
         field: str,
         operator: str,

@@ -14,7 +14,7 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, Request, delete, get, post
 from litestar.datastructures import UploadFile  # Required for runtime signature
@@ -24,16 +24,15 @@ from litestar.params import Body
 from litestar.response import Redirect, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
-from litestar_admin.logging import get_logger
-
-_logger = get_logger(__name__)
-
-from litestar_admin.contrib.storages import AdminStorageBackend
+from litestar_admin.contrib.storages import AdminStorageBackend  # noqa: TC001
 from litestar_admin.fields.file import (
     FileField,
     ImageField,
     validate_file_field,
 )
+from litestar_admin.logging import get_logger
+
+_logger = get_logger(__name__)
 
 __all__ = [
     "DeleteFileResponse",
@@ -169,7 +168,7 @@ class FilesController(Controller):
     """
 
     path = "/api/files"
-    tags: ClassVar[list[str]] = ["Files"]
+    tags: list[str] = ["Files"]  # noqa: RUF012
 
     @post(
         "/upload",
@@ -177,7 +176,7 @@ class FilesController(Controller):
         summary="Upload a file",
         description="Upload a file for a specific model field.",
     )
-    async def upload_file(
+    async def upload_file(  # noqa: PLR0912, PLR0915, D417
         self,
         request: Request,
         admin_storage: AdminStorageBackend | None = None,
@@ -213,10 +212,10 @@ class FilesController(Controller):
 
         # Debug logging
         _logger.info("=== FILE UPLOAD DEBUG ===")
-        _logger.info(f"model_name: {model_name}")
-        _logger.info(f"field_name: {field_name}")
-        _logger.info(f"admin_storage: {admin_storage}")
-        _logger.info(f"Content-Type: {request.headers.get('content-type')}")
+        _logger.info(f"model_name: {model_name}")  # noqa: G004
+        _logger.info(f"field_name: {field_name}")  # noqa: G004
+        _logger.info(f"admin_storage: {admin_storage}")  # noqa: G004
+        _logger.info(f"Content-Type: {request.headers.get('content-type')}")  # noqa: G004
 
         # Check if storage is configured
         if admin_storage is None:
@@ -237,13 +236,13 @@ class FilesController(Controller):
         # Get uploaded file from form data
         try:
             form_data = await request.form()
-            _logger.info(f"Form data keys: {list(form_data.keys())}")
+            _logger.info(f"Form data keys: {list(form_data.keys())}")  # noqa: G004
             for key, value in form_data.items():
                 _logger.info(
-                    f"  {key}: {type(value).__name__} = {value if not isinstance(value, UploadFile) else f'UploadFile({value.filename})'}"
+                    f"  {key}: {type(value).__name__} = {value if not isinstance(value, UploadFile) else f'UploadFile({value.filename})'}"  # noqa: G004, E501
                 )
         except Exception as e:
-            _logger.error(f"Error parsing form data: {e}")
+            _logger.error(f"Error parsing form data: {e}")  # noqa: TRY400, G004
             return Response(
                 content=ValidationErrorResponse(
                     success=False,
@@ -258,7 +257,7 @@ class FilesController(Controller):
             )
 
         data = form_data.get("data")
-        _logger.info(f"data field: {type(data).__name__ if data else 'None'}")
+        _logger.info(f"data field: {type(data).__name__ if data else 'None'}")  # noqa: G004
         if not isinstance(data, UploadFile):
             return Response(
                 content=ValidationErrorResponse(
@@ -275,7 +274,7 @@ class FilesController(Controller):
 
         # Read file content
         file_content = await data.read()
-        _logger.info(f"File content length: {len(file_content)} bytes")
+        _logger.info(f"File content length: {len(file_content)} bytes")  # noqa: G004
 
         # Only validate if explicit restrictions are provided
         # Otherwise allow any file type through the generic endpoint
@@ -298,15 +297,15 @@ class FilesController(Controller):
                     max_size=max_size,
                 )
 
-            _logger.info(f"File config: extensions={extensions_list}, max_size={max_size}")
+            _logger.info(f"File config: extensions={extensions_list}, max_size={max_size}")  # noqa: G004
 
             # Validate the file
             validation_errors = validate_file_field(data, field_config, file_content=file_content)
-            _logger.info(f"Validation errors: {validation_errors}")
+            _logger.info(f"Validation errors: {validation_errors}")  # noqa: G004
 
             if validation_errors:
                 for err in validation_errors:
-                    _logger.error(f"Validation error: field={err.field_name}, error={err.error}, code={err.error_code}")
+                    _logger.error(f"Validation error: field={err.field_name}, error={err.error}, code={err.error_code}")  # noqa: G004
                 return Response(
                     content=ValidationErrorResponse(
                         success=False,
@@ -327,7 +326,7 @@ class FilesController(Controller):
 
         # Upload the file
         try:
-            _logger.info(f"Starting upload to storage... generate_thumbnail={generate_thumbnail}")
+            _logger.info(f"Starting upload to storage... generate_thumbnail={generate_thumbnail}")  # noqa: G004
             # Generate thumbnail if requested (regardless of validation config)
             should_generate_thumb = generate_thumbnail or (
                 isinstance(field_config, ImageField) and field_config.generate_thumbnail
@@ -340,7 +339,7 @@ class FilesController(Controller):
                     field_name=field_name,
                 )
                 thumbnail_url = admin_storage.get_public_url(thumbnail_path) if thumbnail_path else None
-                _logger.info(f"Thumbnail generated: {thumbnail_path} -> {thumbnail_url}")
+                _logger.info(f"Thumbnail generated: {thumbnail_path} -> {thumbnail_url}")  # noqa: G004
             else:
                 storage_path = await admin_storage.upload(
                     file_content=file_content,
@@ -352,9 +351,9 @@ class FilesController(Controller):
                 thumbnail_url = None
 
             public_url = admin_storage.get_public_url(storage_path)
-            _logger.info(f"Upload successful: {storage_path} -> {public_url}")
+            _logger.info(f"Upload successful: {storage_path} -> {public_url}")  # noqa: G004
         except Exception as e:
-            _logger.error(f"Upload failed: {e}", exc_info=True)
+            _logger.error(f"Upload failed: {e}", exc_info=True)  # noqa: G201, G004
             return Response(
                 content=ValidationErrorResponse(
                     success=False,

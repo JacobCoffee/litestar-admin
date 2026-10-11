@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import secrets
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, get
-from litestar.connection import ASGIConnection
+from litestar.connection import ASGIConnection  # noqa: TC002
 from litestar.exceptions import NotAuthorizedException, NotFoundException
 from litestar.response import Redirect
 from litestar.status_codes import HTTP_200_OK
@@ -29,7 +29,7 @@ class OAuthController(Controller):
     """
 
     path = "/auth/oauth"
-    tags: ClassVar[list[str]] = ["OAuth Authentication"]
+    tags: list[str] = ["OAuth Authentication"]  # noqa: RUF012
 
     @get(
         "/{provider:str}/login",
@@ -65,7 +65,7 @@ class OAuthController(Controller):
             raise NotFoundException(detail=f"OAuth provider '{provider}' not found")
 
         try:
-            auth_url, _ = admin_config.auth_backend.get_authorization_url(provider)
+            auth_url, _ = admin_config.auth_backend.get_authorization_url(provider)  # ty: ignore[call-non-callable]
             return Redirect(path=auth_url)
         except ValueError as e:
             raise NotFoundException(detail=str(e)) from e
@@ -150,7 +150,7 @@ class OAuthController(Controller):
         state_value = request.query_params.get("state")
 
         # Handle the callback
-        user, tokens = await admin_config.auth_backend.handle_callback(
+        user, _tokens = await admin_config.auth_backend.handle_callback(  # ty: ignore[call-non-callable]
             provider_name=provider,
             code=code,
             state=state_value,

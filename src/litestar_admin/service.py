@@ -107,7 +107,7 @@ class AdminService(Generic[T]):
             ValueError: If no primary key is found.
         """
         mapper = inspect(self.model)
-        pk_columns = mapper.primary_key
+        pk_columns = mapper.primary_key  # ty: ignore[unresolved-attribute]
         if not pk_columns:
             msg = f"Model {self.model.__name__} has no primary key"
             raise ValueError(msg)
@@ -442,7 +442,7 @@ class AdminService(Generic[T]):
 
         # Coerce values to proper Python types
         mapper = inspect(self.model)
-        column_map = {c.name: c for c in mapper.columns}
+        column_map = {c.name: c for c in mapper.columns}  # ty: ignore[unresolved-attribute]
         coerced_data = {}
         for key, value in processed_data.items():
             column = column_map.get(key)
@@ -503,7 +503,7 @@ class AdminService(Generic[T]):
 
         # Get column mapping for value coercion
         mapper = inspect(self.model)
-        column_map = {c.name: c for c in mapper.columns}
+        column_map = {c.name: c for c in mapper.columns}  # ty: ignore[unresolved-attribute]
 
         # Apply updates
         if partial:
@@ -585,7 +585,7 @@ class AdminService(Generic[T]):
         """
         mapper = inspect(self.model)
 
-        for column in mapper.columns:
+        for column in mapper.columns:  # ty: ignore[unresolved-attribute]
             column_name = column.name
             # Skip primary key
             if column.primary_key:
@@ -613,7 +613,7 @@ class AdminService(Generic[T]):
 
         if soft_delete and hasattr(record, "deleted_at"):
             # Soft delete: set deleted_at timestamp
-            record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+            record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]  # ty: ignore[invalid-assignment]
             await self._session.flush()
         else:
             # Hard delete
@@ -668,7 +668,7 @@ class AdminService(Generic[T]):
 
             for record in records:
                 if soft_delete and hasattr(record, "deleted_at"):
-                    record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+                    record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]  # ty: ignore[invalid-assignment]
                 else:
                     await self._session.delete(record)
                 deleted_count += 1
@@ -719,7 +719,7 @@ class AdminService(Generic[T]):
         # Get custom widget configuration
         form_widgets = getattr(self._view_class, "form_widgets", {})
 
-        for column in mapper.columns:
+        for column in mapper.columns:  # ty: ignore[unresolved-attribute]
             column_name = column.name
 
             # Skip columns excluded from forms or not in form_columns list
@@ -813,7 +813,7 @@ class AdminService(Generic[T]):
                 }
 
         # Also scan for FK columns that might not have explicit relationship configs
-        for column in mapper.columns:
+        for column in mapper.columns:  # ty: ignore[unresolved-attribute]
             if column.foreign_keys and column.name not in fk_map:
                 # Extract related model name from FK constraint
                 for fk in column.foreign_keys:
@@ -830,7 +830,7 @@ class AdminService(Generic[T]):
 
         return fk_map
 
-    def _column_to_schema(self, column: Any) -> dict[str, Any]:
+    def _column_to_schema(self, column: Any) -> dict[str, Any]:  # noqa: PLR0912, C901
         """Convert a SQLAlchemy column to JSON schema.
 
         Args:

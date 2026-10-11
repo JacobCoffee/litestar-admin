@@ -8,7 +8,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar import Controller, post
 from litestar.datastructures import UploadFile  # noqa: TC002 - Required at runtime for Litestar DI
@@ -219,7 +219,7 @@ class ImportController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Import"]
+    tags: list[str] = ["Import"]  # noqa: RUF012
 
     @post(
         "/{model_name:str}/import/preview",
@@ -751,8 +751,7 @@ class ImportController(Controller):
             success = False
         else:
             message = (
-                f"Import completed with partial success: "
-                f"{imported_count} rows imported, {failed_count} rows failed"
+                f"Import completed with partial success: {imported_count} rows imported, {failed_count} rows failed"
             )
             success = True
 
@@ -848,7 +847,7 @@ class ImportController(Controller):
         except csv.Error:
             # Fallback: count occurrences of each delimiter
             delimiter_counts = {d: sample.count(d) for d in SUPPORTED_DELIMITERS}
-            return max(delimiter_counts, key=delimiter_counts.get)  # type: ignore[arg-type]
+            return max(delimiter_counts, key=delimiter_counts.get)  # type: ignore[arg-type]  # ty: ignore[no-matching-overload]
 
     @staticmethod
     def _parse_csv(content: str, delimiter: str) -> tuple[list[list[str]], list[str], int]:
@@ -1025,10 +1024,10 @@ class ImportController(Controller):
                     name=column.name,
                     type=json_type,
                     format=json_format,
-                    nullable=column.nullable,
+                    nullable=column.nullable,  # ty: ignore[invalid-argument-type]
                     required=is_required,
                     primary_key=column.primary_key,
-                    max_length=max_length,
+                    max_length=max_length,  # ty: ignore[invalid-argument-type]
                 )
             )
 

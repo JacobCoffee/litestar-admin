@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import ClassVar
 
 from litestar import Controller, get
 from litestar.status_codes import HTTP_200_OK
@@ -84,7 +83,7 @@ class ConfigController(Controller):
     """
 
     path = "/api/config"
-    tags: ClassVar[list[str]] = ["Configuration"]
+    tags: list[str] = ["Configuration"]  # noqa: RUF012
 
     @get(
         "/",
@@ -130,11 +129,11 @@ class ConfigController(Controller):
                     )
                 )
         # Also check if auth_backend has OAuth providers
-        elif admin_config.auth_backend is not None:
+        elif admin_config.auth_backend is not None:  # noqa: SIM102
             if hasattr(admin_config.auth_backend, "available_providers"):
                 provider_names = admin_config.auth_backend.available_providers
                 base_url = admin_config.base_url
-                for name in provider_names:
+                for name in provider_names:  # ty: ignore[not-iterable]
                     # Create display name (capitalize, handle special cases)
                     display_name = {
                         "github": "GitHub",

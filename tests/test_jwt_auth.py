@@ -456,7 +456,7 @@ class TestJWTAuthBackendGetCurrentUser:
         import jwt
 
         # Create an expired token manually
-        now = datetime.datetime.now(tz=datetime.UTC)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         payload = {
             "sub": str(mock_user.id),
             "email": mock_user.email,

@@ -6,7 +6,7 @@ import csv
 import json
 from dataclasses import dataclass
 from io import BytesIO, StringIO
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar import Controller, get, post
 from litestar.exceptions import NotFoundException, ValidationException
@@ -95,7 +95,7 @@ class ExportController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Export"]
+    tags: list[str] = ["Export"]  # noqa: RUF012
 
     @get(
         "/{model_name:str}/export",

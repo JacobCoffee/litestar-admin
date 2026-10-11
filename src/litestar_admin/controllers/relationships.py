@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, get
 from litestar.exceptions import NotFoundException
@@ -155,7 +155,7 @@ class RelationshipsController(Controller):
     """
 
     path = "/api/models/{model_name:str}/relationships/{field_name:str}"
-    tags: ClassVar[list[str]] = ["Relationships"]
+    tags: list[str] = ["Relationships"]  # noqa: RUF012
 
     @get(
         "/search",
@@ -366,7 +366,7 @@ def _get_view_and_relationship(
 
     # Use flexible lookup to support both relationship names and FK column names
     detector = get_relationship_detector()
-    rel_info = detector.get_relationship_info_flexible(view_class.model, field_name)
+    rel_info = detector.get_relationship_info_flexible(view_class.model, field_name)  # ty: ignore[unresolved-attribute]
     if rel_info is None:
         raise NotFoundException(f"Relationship '{field_name}' not found on model '{model_name}'")
 
