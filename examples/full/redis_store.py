@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import os
 import time
+import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -251,8 +252,8 @@ class RedisRateLimitStore:
             # Remove expired entries
             pipe.zremrangebyscore(redis_key, 0, window_start)
             # Add current request with timestamp as score
-            # Use timestamp + microseconds to ensure uniqueness
-            pipe.zadd(redis_key, {f"{now}": now})
+            # Add a unique suffix so requests with the same timestamp aren't merged
+            pipe.zadd(redis_key, {f"{now}-{uuid.uuid4().hex}": now})
             # Set TTL to auto-expire the key
             pipe.expire(redis_key, window_duration + 60)  # Extra buffer
             # Get the count
