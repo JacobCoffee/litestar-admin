@@ -104,8 +104,10 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: "3.15"
+          # lupa (via fakeredis[lua], test-only dep) has no Windows wheel for
+          # Python 3.15 yet, so Windows stays on the newest version it supports.
           - os: windows-latest
-            python-version: "3.15"
+            python-version: "3.14"
           - os: ubuntu-latest
             python-version: "3.10"
 
@@ -150,6 +152,10 @@ jobs:
         exclude:
           - os: ubuntu-latest
             python-version: "3.15"
+          - os: windows-latest
+            python-version: "3.14"
+          # lupa (via fakeredis[lua], test-only dep) has no Windows wheel for
+          # Python 3.15 yet and fails to build from source there.
           - os: windows-latest
             python-version: "3.15"
           - os: ubuntu-latest
