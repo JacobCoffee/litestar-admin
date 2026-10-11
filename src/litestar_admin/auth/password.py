@@ -166,10 +166,11 @@ class PasswordHasher:
             >>> hashed.startswith("$argon2")  # If Argon2 is available
             True
         """
-        if not PasswordHasher._available or PasswordHasher._context is None:
+        context = PasswordHasher._context
+        if not PasswordHasher._available or context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.hash(password)  # type: ignore[union-attr]
+        return context.hash(password)
 
     def verify(self, password: str, password_hash: str) -> bool:
         """Verify a password against its hash.
@@ -192,10 +193,11 @@ class PasswordHasher:
             >>> hasher.verify("wrong_password", hashed)
             False
         """
-        if not PasswordHasher._available or PasswordHasher._context is None:
+        context = PasswordHasher._context
+        if not PasswordHasher._available or context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.verify(password, password_hash)  # type: ignore[union-attr]
+        return context.verify(password, password_hash)
 
     def needs_rehash(self, password_hash: str) -> bool:
         """Check if a password hash needs to be rehashed.
@@ -221,10 +223,11 @@ class PasswordHasher:
             ...     # Verify and rehash on next login
             ...     pass
         """
-        if not PasswordHasher._available or PasswordHasher._context is None:
+        context = PasswordHasher._context
+        if not PasswordHasher._available or context is None:
             msg = "No password hashing backend available. Install 'litestar-admin[auth]' or 'passlib[argon2]'."
             raise RuntimeError(msg)
-        return PasswordHasher._context.needs_update(password_hash)  # type: ignore[union-attr]
+        return context.needs_update(password_hash)
 
     @classmethod
     def is_available(cls) -> bool:

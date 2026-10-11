@@ -847,7 +847,7 @@ class ImportController(Controller):
         except csv.Error:
             # Fallback: count occurrences of each delimiter
             delimiter_counts = {d: sample.count(d) for d in SUPPORTED_DELIMITERS}
-            return max(delimiter_counts, key=delimiter_counts.get)  # type: ignore[arg-type]
+            return max(delimiter_counts, key=delimiter_counts.get)  # ty: ignore[no-matching-overload]
 
     @staticmethod
     def _parse_csv(content: str, delimiter: str) -> tuple[list[list[str]], list[str], int]:

@@ -106,7 +106,9 @@ class ViewRegistry:
             view_class = self._views_by_identity.pop(identity)
 
             # Also remove from model mapping if it's a model view
-            if hasattr(view_class, "model") and view_class.model in self._views_by_model:
+            from litestar_admin.views import BaseModelView as _BaseModelView
+
+            if issubclass(view_class, _BaseModelView) and view_class.model in self._views_by_model:
                 del self._views_by_model[view_class.model]
         else:
             # Unregister by model (backward compatibility for model views)
@@ -234,7 +236,9 @@ class ViewRegistry:
         Returns:
             List of ModelView/BaseModelView classes.
         """
-        return [view for view in self._views_by_identity.values() if view.view_type == "model"]
+        from litestar_admin.views import BaseModelView as _BaseModelView
+
+        return [view for view in self._views_by_identity.values() if issubclass(view, _BaseModelView)]
 
     def list_custom_views(self) -> list[type[BaseAdminView]]:
         """List only custom (non-model) data views.
@@ -284,6 +288,8 @@ class ViewRegistry:
         Returns:
             List of dictionaries containing model view metadata.
         """
+        from litestar_admin.views import BaseModelView as _BaseModelView
+
         return [
             {
                 "name": view_class.name,
@@ -296,7 +302,7 @@ class ViewRegistry:
                 "can_view_details": view_class.can_view_details,
             }
             for view_class in self._views_by_identity.values()
-            if view_class.view_type == "model"
+            if issubclass(view_class, _BaseModelView)
         ]
 
     def get_navigation(self) -> dict[str, list[dict[str, Any]]]:
