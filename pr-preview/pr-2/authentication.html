@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Authentication - litestar-admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Guards &amp; RBAC" href="guards.html" /><link rel="prev" title="Keyboard Shortcuts" href="user-guide/keyboard-shortcuts.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Authentication"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#quick-setup-with-jwt">Quick Setup with JWT</a></li>
+<li><a class="reference internal" href="#jwt-configuration">JWT Configuration</a><ul>
+<li><a class="reference internal" href="#required-settings">Required Settings</a><ul>
+<li><a class="reference internal" href="#secret-key">secret_key</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-settings">Token Settings</a><ul>
+<li><a class="reference internal" href="#algorithm">algorithm</a></li>
+<li><a class="reference internal" href="#token-expiry">token_expiry</a></li>
+<li><a class="reference internal" href="#refresh-token-expiry">refresh_token_expiry</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-location">Token Location</a><ul>
+<li><a class="reference internal" href="#id1">token_location</a></li>
+<li><a class="reference internal" href="#token-header">token_header</a></li>
+<li><a class="reference internal" href="#token-prefix">token_prefix</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cookie-settings">Cookie Settings</a><ul>
+<li><a class="reference internal" href="#cookie-name">cookie_name</a></li>
+<li><a class="reference internal" href="#cookie-secure">cookie_secure</a></li>
+<li><a class="reference internal" href="#cookie-httponly">cookie_httponly</a></li>
+<li><a class="reference internal" href="#cookie-samesite">cookie_samesite</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optional-claims">Optional Claims</a><ul>
+<li><a class="reference internal" href="#issuer">issuer</a></li>
+<li><a class="reference internal" href="#audience">audience</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jwtauthbackend">JWTAuthBackend</a><ul>
+<li><a class="reference internal" href="#constructor-arguments">Constructor Arguments</a><ul>
+<li><a class="reference internal" href="#config">config</a></li>
+<li><a class="reference internal" href="#user-loader">user_loader</a></li>
+<li><a class="reference internal" href="#password-verifier-optional">password_verifier (optional)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-adminuser-protocol">The AdminUser Protocol</a><ul>
+<li><a class="reference internal" href="#example-implementation">Example Implementation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#complete-jwt-example">Complete JWT Example</a></li>
+<li><a class="reference internal" href="#session-authentication-sso">Session Authentication (SSO)</a><ul>
+<li><a class="reference internal" href="#quick-setup">Quick Setup</a></li>
+<li><a class="reference internal" href="#how-it-works">How It Works</a></li>
+<li><a class="reference internal" href="#id2">Constructor Arguments</a><ul>
+<li><a class="reference internal" href="#retrieve-user-handler">retrieve_user_handler</a></li>
+<li><a class="reference internal" href="#session-key">session_key</a></li>
+<li><a class="reference internal" href="#authenticate-handler-optional">authenticate_handler (optional)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#complete-example-with-sqlalchemy">Complete Example with SQLAlchemy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-auth-backend">Custom Auth Backend</a></li>
+<li><a class="reference internal" href="#oauth-integration">OAuth Integration</a></li>
+<li><a class="reference internal" href="#auth-api-endpoints">Auth API Endpoints</a><ul>
+<li><a class="reference internal" href="#post-admin-api-auth-login">POST /admin/api/auth/login</a></li>
+<li><a class="reference internal" href="#post-admin-api-auth-logout">POST /admin/api/auth/logout</a></li>
+<li><a class="reference internal" href="#post-admin-api-auth-refresh">POST /admin/api/auth/refresh</a></li>
+<li><a class="reference internal" href="#get-admin-api-auth-me">GET /admin/api/auth/me</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security-best-practices">Security Best Practices</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Authentication</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="authentication">
+<h1>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h1>
+<p>litestar-admin provides flexible authentication options to secure your admin panel. This guide covers JWT authentication, custom backends, and OAuth integration.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Authentication in litestar-admin is handled through pluggable backends that implement the <code class="docutils literal notranslate"><span class="pre">AuthBackend</span></code> protocol. The package includes a built-in JWT backend, and you can create custom backends for other authentication methods.</p>
+</section>
+<section id="quick-setup-with-jwt">
+<h2>Quick Setup with JWT<a class="headerlink" href="#quick-setup-with-jwt" title="Link to this heading">#</a></h2>
+<p>The fastest way to add authentication is using the built-in JWT backend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuthBackend</span><span class="p">,</span> <span class="n">JWTConfig</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">):</span>
+</span><span data-line="6"><span class="w">    </span><span class="sd">"""Load user from database by ID or email."""</span>
+</span><span data-line="7">    <span class="c1"># Your user loading logic here</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="c1"># Create JWT backend</span>
+</span><span data-line="12"><span class="n">jwt_config</span> <span class="o">=</span> <span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="13">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"your-super-secret-key-change-in-production"</span><span class="p">,</span>
+</span><span data-line="14"><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="n">auth_backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="17">    <span class="n">config</span><span class="o">=</span><span class="n">jwt_config</span><span class="p">,</span>
+</span><span data-line="18">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user</span><span class="p">,</span>
+</span><span data-line="19"><span class="p">)</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="c1"># Add to admin config</span>
+</span><span data-line="22"><span class="n">admin_config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="23">    <span class="n">title</span><span class="o">=</span><span class="s2">"Secure Admin"</span><span class="p">,</span>
+</span><span data-line="24">    <span class="n">auth_backend</span><span class="o">=</span><span class="n">auth_backend</span><span class="p">,</span>
+</span><span data-line="25"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="jwt-configuration">
+<h2>JWT Configuration<a class="headerlink" href="#jwt-configuration" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">JWTConfig</span></code> dataclass provides comprehensive options for JWT authentication.</p>
+<section id="required-settings">
+<h3>Required Settings<a class="headerlink" href="#required-settings" title="Link to this heading">#</a></h3>
+<section id="secret-key">
+<h4>secret_key<a class="headerlink" href="#secret-key" title="Link to this heading">#</a></h4>
+<p>The secret key used for signing JWT tokens. This must be kept secure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">secret_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"JWT_SECRET_KEY"</span><span class="p">],</span>  <span class="c1"># Load from environment</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Never hardcode secret keys in your source code. Always use environment variables or a secrets manager.</p>
+</div>
+</section>
+</section>
+<section id="token-settings">
+<h3>Token Settings<a class="headerlink" href="#token-settings" title="Link to this heading">#</a></h3>
+<section id="algorithm">
+<h4>algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">#</a></h4>
+<p>JWT signing algorithm. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;HS256&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">algorithm</span><span class="o">=</span><span class="s2">"HS512"</span><span class="p">,</span>  <span class="c1"># Use HS512 for extra security</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="token-expiry">
+<h4>token_expiry<a class="headerlink" href="#token-expiry" title="Link to this heading">#</a></h4>
+<p>Access token expiry time in seconds. Defaults to <code class="docutils literal notranslate"><span class="pre">3600</span></code> (1 hour).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_expiry</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span>  <span class="c1"># 30 minutes</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="refresh-token-expiry">
+<h4>refresh_token_expiry<a class="headerlink" href="#refresh-token-expiry" title="Link to this heading">#</a></h4>
+<p>Refresh token expiry time in seconds. Defaults to <code class="docutils literal notranslate"><span class="pre">86400</span></code> (24 hours).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">refresh_token_expiry</span><span class="o">=</span><span class="mi">604800</span><span class="p">,</span>  <span class="c1"># 7 days</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="token-location">
+<h3>Token Location<a class="headerlink" href="#token-location" title="Link to this heading">#</a></h3>
+<section id="id1">
+<h4>token_location<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<p>Where to look for the JWT token. Options are <code class="docutils literal notranslate"><span class="pre">&quot;header&quot;</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">&quot;cookie&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Header-based (default)</span>
+</span><span data-line="2"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"header"</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Cookie-based</span>
+</span><span data-line="8"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="9">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"cookie"</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="token-header">
+<h4>token_header<a class="headerlink" href="#token-header" title="Link to this heading">#</a></h4>
+<p>HTTP header name for token extraction. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;Authorization&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_header</span><span class="o">=</span><span class="s2">"X-Admin-Token"</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="token-prefix">
+<h4>token_prefix<a class="headerlink" href="#token-prefix" title="Link to this heading">#</a></h4>
+<p>Prefix for header-based tokens. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;Bearer&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_prefix</span><span class="o">=</span><span class="s2">"Bearer"</span><span class="p">,</span>  <span class="c1"># Token: "Bearer &lt;token&gt;"</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="cookie-settings">
+<h3>Cookie Settings<a class="headerlink" href="#cookie-settings" title="Link to this heading">#</a></h3>
+<p>When using <code class="docutils literal notranslate"><span class="pre">token_location=&quot;cookie&quot;</span></code>:</p>
+<section id="cookie-name">
+<h4>cookie_name<a class="headerlink" href="#cookie-name" title="Link to this heading">#</a></h4>
+<p>Name of the cookie storing the token. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;admin_access_token&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"cookie"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">cookie_name</span><span class="o">=</span><span class="s2">"admin_jwt"</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="cookie-secure">
+<h4>cookie_secure<a class="headerlink" href="#cookie-secure" title="Link to this heading">#</a></h4>
+<p>Whether the cookie should only be sent over HTTPS. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"cookie"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">cookie_secure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Only for local development!</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="cookie-httponly">
+<h4>cookie_httponly<a class="headerlink" href="#cookie-httponly" title="Link to this heading">#</a></h4>
+<p>Whether the cookie should be HTTP-only. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"cookie"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">cookie_httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Prevents JavaScript access</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="cookie-samesite">
+<h4>cookie_samesite<a class="headerlink" href="#cookie-samesite" title="Link to this heading">#</a></h4>
+<p>SameSite attribute for the cookie. Options: <code class="docutils literal notranslate"><span class="pre">&quot;strict&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;lax&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;lax&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"cookie"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">cookie_samesite</span><span class="o">=</span><span class="s2">"strict"</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="optional-claims">
+<h3>Optional Claims<a class="headerlink" href="#optional-claims" title="Link to this heading">#</a></h3>
+<section id="issuer">
+<h4>issuer<a class="headerlink" href="#issuer" title="Link to this heading">#</a></h4>
+<p>Token issuer claim for additional validation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">issuer</span><span class="o">=</span><span class="s2">"https://myapp.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="audience">
+<h4>audience<a class="headerlink" href="#audience" title="Link to this heading">#</a></h4>
+<p>Token audience claim for additional validation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">secret_key</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">audience</span><span class="o">=</span><span class="s2">"myapp-admin"</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="jwtauthbackend">
+<h2>JWTAuthBackend<a class="headerlink" href="#jwtauthbackend" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">JWTAuthBackend</span></code> class handles authentication using the configured JWT settings.</p>
+<section id="constructor-arguments">
+<h3>Constructor Arguments<a class="headerlink" href="#constructor-arguments" title="Link to this heading">#</a></h3>
+<section id="config">
+<h4>config<a class="headerlink" href="#config" title="Link to this heading">#</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">JWTConfig</span></code> instance with JWT settings.</p>
+</section>
+<section id="user-loader">
+<h4>user_loader<a class="headerlink" href="#user-loader" title="Link to this heading">#</a></h4>
+<p>An async callable that takes a user ID (or email) and returns an <code class="docutils literal notranslate"><span class="pre">AdminUser</span></code> object or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AdminUser</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">"""Load user from database."""</span>
+</span><span data-line="3">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</span><span data-line="4">    <span class="k">return</span> <span class="n">user</span>  <span class="c1"># Must implement AdminUser protocol</span>
+</span></pre></div>
+</div>
+</section>
+<section id="password-verifier-optional">
+<h4>password_verifier (optional)<a class="headerlink" href="#password-verifier-optional" title="Link to this heading">#</a></h4>
+<p>An async callable for verifying passwords during login.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">verify_password</span><span class="p">(</span><span class="n">stored_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">"""Verify password against stored hash."""</span>
+</span><span data-line="3">    <span class="k">return</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">checkpw</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">stored_hash</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">config</span><span class="o">=</span><span class="n">jwt_config</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">password_verifier</span><span class="o">=</span><span class="n">verify_password</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="the-adminuser-protocol">
+<h2>The AdminUser Protocol<a class="headerlink" href="#the-adminuser-protocol" title="Link to this heading">#</a></h2>
+<p>Your user class must implement the <code class="docutils literal notranslate"><span class="pre">AdminUser</span></code> protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminUser</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">"""Your user class implementing AdminUser protocol."""</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="nd">@property</span>
+</span><span data-line="8">    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">        </span><span class="sd">"""User's unique identifier."""</span>
+</span><span data-line="10">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="nd">@property</span>
+</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">email</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">        </span><span class="sd">"""User's email address."""</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_email</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="nd">@property</span>
+</span><span data-line="18">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="19"><span class="w">        </span><span class="sd">"""User's role names (e.g., ['admin', 'editor'])."""</span>
+</span><span data-line="20">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roles</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="nd">@property</span>
+</span><span data-line="23">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="24"><span class="w">        </span><span class="sd">"""User's permission strings (e.g., ['models:read', 'models:write'])."""</span>
+</span><span data-line="25">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_permissions</span>
+</span></pre></div>
+</div>
+<section id="example-implementation">
+<h3>Example Implementation<a class="headerlink" href="#example-implementation" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@dataclass</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">AdminUserModel</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">    </span><span class="sd">"""Admin user implementation."""</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="9">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="10">    <span class="n">password_hash</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11">    <span class="n">_roles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span data-line="12">    <span class="n">_permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="nd">@property</span>
+</span><span data-line="15">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="16">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roles</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="nd">@property</span>
+</span><span data-line="19">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="20">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_permissions</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="complete-jwt-example">
+<h2>Complete JWT Example<a class="headerlink" href="#complete-jwt-example" title="Link to this heading">#</a></h2>
+<p>Here’s a complete example with database integration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">import</span><span class="w"> </span><span class="nn">bcrypt</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">AdminPlugin</span>
+</span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTAuthBackend</span><span class="p">,</span> <span class="n">JWTConfig</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># User model (simplified)</span>
+</span><span data-line="17"><span class="nd">@dataclass</span>
+</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="19">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="20">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="21">    <span class="n">password_hash</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="22">    <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="nd">@property</span>
+</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="26">        <span class="k">return</span> <span class="p">[</span><span class="s2">"admin"</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_admin</span> <span class="k">else</span> <span class="p">[</span><span class="s2">"viewer"</span><span class="p">]</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="nd">@property</span>
+</span><span data-line="29">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="30">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+</span><span data-line="31">            <span class="k">return</span> <span class="p">[</span><span class="s2">"models:read"</span><span class="p">,</span> <span class="s2">"models:write"</span><span class="p">,</span> <span class="s2">"models:delete"</span><span class="p">]</span>
+</span><span data-line="32">        <span class="k">return</span> <span class="p">[</span><span class="s2">"models:read"</span><span class="p">]</span>
+</span><span data-line="33">
+</span><span data-line="34">
+</span><span data-line="35"><span class="c1"># Database session (you'd get this from your app state)</span>
+</span><span data-line="36"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_db_session</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncSession</span><span class="p">:</span>
+</span><span data-line="37">    <span class="o">...</span>
+</span><span data-line="38">
+</span><span data-line="39">
+</span><span data-line="40"><span class="c1"># User loader function</span>
+</span><span data-line="41"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_user</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="42"><span class="w">    </span><span class="sd">"""Load user by ID or email."""</span>
+</span><span data-line="43">    <span class="k">async</span> <span class="k">with</span> <span class="n">get_db_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+</span><span data-line="44">        <span class="c1"># Try to load by ID first</span>
+</span><span data-line="45">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">identifier</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+</span><span data-line="46">            <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">identifier</span><span class="p">))</span>
+</span><span data-line="47">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="48">            <span class="c1"># Load by email for authentication</span>
+</span><span data-line="49">            <span class="n">query</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">identifier</span><span class="p">)</span>
+</span><span data-line="50">
+</span><span data-line="51">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span><span data-line="52">        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+</span><span data-line="53">
+</span><span data-line="54">
+</span><span data-line="55"><span class="c1"># Password verification</span>
+</span><span data-line="56"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">verify_password</span><span class="p">(</span><span class="n">stored_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="57"><span class="w">    </span><span class="sd">"""Verify password using bcrypt."""</span>
+</span><span data-line="58">    <span class="k">return</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">checkpw</span><span class="p">(</span>
+</span><span data-line="59">        <span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span>
+</span><span data-line="60">        <span class="n">stored_hash</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span>
+</span><span data-line="61">    <span class="p">)</span>
+</span><span data-line="62">
+</span><span data-line="63">
+</span><span data-line="64"><span class="c1"># JWT configuration</span>
+</span><span data-line="65"><span class="n">jwt_config</span> <span class="o">=</span> <span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="66">    <span class="n">secret_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"JWT_SECRET_KEY"</span><span class="p">],</span>
+</span><span data-line="67">    <span class="n">algorithm</span><span class="o">=</span><span class="s2">"HS256"</span><span class="p">,</span>
+</span><span data-line="68">    <span class="n">token_expiry</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>  <span class="c1"># 1 hour</span>
+</span><span data-line="69">    <span class="n">refresh_token_expiry</span><span class="o">=</span><span class="mi">86400</span> <span class="o">*</span> <span class="mi">7</span><span class="p">,</span>  <span class="c1"># 7 days</span>
+</span><span data-line="70">    <span class="n">token_location</span><span class="o">=</span><span class="s2">"header"</span><span class="p">,</span>
+</span><span data-line="71"><span class="p">)</span>
+</span><span data-line="72">
+</span><span data-line="73"><span class="c1"># Create auth backend</span>
+</span><span data-line="74"><span class="n">auth_backend</span> <span class="o">=</span> <span class="n">JWTAuthBackend</span><span class="p">(</span>
+</span><span data-line="75">    <span class="n">config</span><span class="o">=</span><span class="n">jwt_config</span><span class="p">,</span>
+</span><span data-line="76">    <span class="n">user_loader</span><span class="o">=</span><span class="n">load_user</span><span class="p">,</span>
+</span><span data-line="77">    <span class="n">password_verifier</span><span class="o">=</span><span class="n">verify_password</span><span class="p">,</span>
+</span><span data-line="78"><span class="p">)</span>
+</span><span data-line="79">
+</span><span data-line="80"><span class="c1"># Create admin plugin</span>
+</span><span data-line="81"><span class="n">admin_plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="82">    <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="83">        <span class="n">title</span><span class="o">=</span><span class="s2">"Secure Admin"</span><span class="p">,</span>
+</span><span data-line="84">        <span class="n">auth_backend</span><span class="o">=</span><span class="n">auth_backend</span><span class="p">,</span>
+</span><span data-line="85">    <span class="p">),</span>
+</span><span data-line="86"><span class="p">)</span>
+</span><span data-line="87">
+</span><span data-line="88"><span class="c1"># Create app</span>
+</span><span data-line="89"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="90">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">admin_plugin</span><span class="p">],</span>
+</span><span data-line="91"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="session-authentication-sso">
+<h2>Session Authentication (SSO)<a class="headerlink" href="#session-authentication-sso" title="Link to this heading">#</a></h2>
+<p>If your application already uses Litestar’s session middleware (e.g., <code class="docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">SessionAuthBackend</span></code> to give logged-in users seamless access to the admin panel without a second login. Unauthenticated or non-admin users see a 404 — the admin panel’s existence is not leaked.</p>
+<section id="quick-setup">
+<h3>Quick Setup<a class="headerlink" href="#quick-setup" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminPlugin</span><span class="p">,</span> <span class="n">AdminConfig</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuthBackend</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+</span><span data-line="6"><span class="w">    </span><span class="sd">"""Load admin user from the host app's session."""</span>
+</span><span data-line="7">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_id"</span><span class="p">)</span>
+</span><span data-line="8">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+</span><span data-line="9">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load_user_from_db</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+</span><span data-line="12">    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="14">    <span class="k">return</span> <span class="n">user</span>  <span class="c1"># Must implement AdminUserProtocol</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">backend</span> <span class="o">=</span> <span class="n">SessionAuthBackend</span><span class="p">(</span>
+</span><span data-line="18">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+</span><span data-line="19">    <span class="n">session_key</span><span class="o">=</span><span class="s2">"user_id"</span><span class="p">,</span>  <span class="c1"># Key in session dict (default)</span>
+</span><span data-line="20"><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">admin_plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="23">    <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="24">        <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span>
+</span><span data-line="25">        <span class="n">auth_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+</span><span data-line="26">    <span class="p">),</span>
+</span><span data-line="27"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="how-it-works">
+<h3>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SessionAuthBackend</span></code> follows the same <code class="docutils literal notranslate"><span class="pre">retrieve_user_handler(session,</span> <span class="pre">connection)</span></code> pattern as Litestar’s built-in <code class="docutils literal notranslate"><span class="pre">SessionAuth</span></code>. The host app configures session middleware independently — the admin backend simply reads from <code class="docutils literal notranslate"><span class="pre">connection.session</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">retrieve_user_handler</span></code> receives:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">session</span></code>: The session dictionary (same as <code class="docutils literal notranslate"><span class="pre">connection.session</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connection</span></code>: The <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code> for accessing app state, headers, etc.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Constructor Arguments<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<section id="retrieve-user-handler">
+<h4>retrieve_user_handler<a class="headerlink" href="#retrieve-user-handler" title="Link to this heading">#</a></h4>
+<p>An async callable with signature <code class="docutils literal notranslate"><span class="pre">(dict,</span> <span class="pre">ASGIConnection)</span> <span class="pre">-&gt;</span> <span class="pre">AdminUserProtocol</span> <span class="pre">|</span> <span class="pre">None</span></code>. This is the only required argument.</p>
+</section>
+<section id="session-key">
+<h4>session_key<a class="headerlink" href="#session-key" title="Link to this heading">#</a></h4>
+<p>The key in the session dictionary that holds the user identifier. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;user_id&quot;</span></code>. Used by the backend to short-circuit early when the key is absent.</p>
+</section>
+<section id="authenticate-handler-optional">
+<h4>authenticate_handler (optional)<a class="headerlink" href="#authenticate-handler-optional" title="Link to this heading">#</a></h4>
+<p>An async callable for email/password login via the admin login form. If not provided, the admin login form is effectively disabled — authentication happens entirely through the host app’s session.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_handler</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">credentials</span><span class="p">):</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">"""Optional: allow password login through the admin form too."""</span>
+</span><span data-line="3">    <span class="n">email</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span>
+</span><span data-line="4">    <span class="n">password</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"password"</span><span class="p">)</span>
+</span><span data-line="5">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">verify_and_load</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+</span><span data-line="6">    <span class="k">if</span> <span class="n">user</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+</span><span data-line="7">        <span class="k">return</span> <span class="n">user</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="n">backend</span> <span class="o">=</span> <span class="n">SessionAuthBackend</span><span class="p">(</span>
+</span><span data-line="12">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">authenticate_handler</span><span class="o">=</span><span class="n">authenticate_handler</span><span class="p">,</span>
+</span><span data-line="14"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="complete-example-with-sqlalchemy">
+<h3>Complete Example with SQLAlchemy<a class="headerlink" href="#complete-example-with-sqlalchemy" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminConfig</span><span class="p">,</span> <span class="n">AdminPlugin</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuthBackend</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Your existing user model</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">AdminUserAdapter</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">"""Wrap your app's User model to satisfy AdminUserProtocol."""</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+</span><span data-line="13">        <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="n">user</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="nd">@property</span>
+</span><span data-line="16">    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="nd">@property</span>
+</span><span data-line="19">    <span class="k">def</span><span class="w"> </span><span class="nf">email</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="o">.</span><span class="n">email</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="nd">@property</span>
+</span><span data-line="22">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="o">.</span><span class="n">roles</span><span class="p">]</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="nd">@property</span>
+</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="p">[</span><span class="s2">"admin:access"</span><span class="p">]</span>
+</span><span data-line="26">
+</span><span data-line="27">
+</span><span data-line="28"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+</span><span data-line="29">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_id"</span><span class="p">)</span>
+</span><span data-line="30">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+</span><span data-line="31">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="32">    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>  <span class="c1"># Your DB lookup</span>
+</span><span data-line="33">    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+</span><span data-line="34">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="35">    <span class="k">return</span> <span class="n">AdminUserAdapter</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span data-line="36">
+</span><span data-line="37">
+</span><span data-line="38"><span class="c1"># Session auth backend — no JWT, no secrets to configure</span>
+</span><span data-line="39"><span class="n">backend</span> <span class="o">=</span> <span class="n">SessionAuthBackend</span><span class="p">(</span><span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">)</span>
+</span><span data-line="40">
+</span><span data-line="41"><span class="n">admin_plugin</span> <span class="o">=</span> <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="42">    <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">,</span> <span class="n">auth_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">),</span>
+</span><span data-line="43"><span class="p">)</span>
+</span><span data-line="44">
+</span><span data-line="45"><span class="c1"># Host app with session middleware</span>
+</span><span data-line="46"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">"sessions"</span><span class="p">)</span>
+</span><span data-line="47"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="48">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">admin_plugin</span><span class="p">],</span>
+</span><span data-line="49">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
+</span><span data-line="50">    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">"sessions"</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">"redis://localhost"</span><span class="p">)},</span>
+</span><span data-line="51"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="custom-auth-backend">
+<h2>Custom Auth Backend<a class="headerlink" href="#custom-auth-backend" title="Link to this heading">#</a></h2>
+<p>You can create custom authentication backends by implementing the <code class="docutils literal notranslate"><span class="pre">AuthBackend</span></code> protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthBackend</span><span class="p">,</span> <span class="n">AdminUser</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">CustomAuthBackend</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">"""Custom authentication backend."""</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span>
+</span><span data-line="8">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="10">        <span class="n">credentials</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+</span><span data-line="11">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AdminUser</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">        </span><span class="sd">"""Authenticate user with credentials.</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="sd">        Args:</span>
+</span><span data-line="15"><span class="sd">            connection: The ASGI connection.</span>
+</span><span data-line="16"><span class="sd">            credentials: Dict with 'email' and 'password'.</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="sd">        Returns:</span>
+</span><span data-line="19"><span class="sd">            Authenticated user or None.</span>
+</span><span data-line="20"><span class="sd">        """</span>
+</span><span data-line="21">        <span class="n">email</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span>
+</span><span data-line="22">        <span class="n">password</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"password"</span><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">        <span class="c1"># Your authentication logic</span>
+</span><span data-line="25">        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">your_auth_service</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+</span><span data-line="26">        <span class="k">return</span> <span class="n">user</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_user</span><span class="p">(</span>
+</span><span data-line="29">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="30">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="31">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AdminUser</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="32"><span class="w">        </span><span class="sd">"""Get currently authenticated user.</span>
+</span><span data-line="33">
+</span><span data-line="34"><span class="sd">        Args:</span>
+</span><span data-line="35"><span class="sd">            connection: The ASGI connection.</span>
+</span><span data-line="36">
+</span><span data-line="37"><span class="sd">        Returns:</span>
+</span><span data-line="38"><span class="sd">            Current user or None.</span>
+</span><span data-line="39"><span class="sd">        """</span>
+</span><span data-line="40">        <span class="c1"># Extract session/token from connection</span>
+</span><span data-line="41">        <span class="n">session_id</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"session_id"</span><span class="p">)</span>
+</span><span data-line="42">        <span class="k">if</span> <span class="ow">not</span> <span class="n">session_id</span><span class="p">:</span>
+</span><span data-line="43">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="44">
+</span><span data-line="45">        <span class="k">return</span> <span class="k">await</span> <span class="n">your_session_service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span data-line="46">
+</span><span data-line="47">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span>
+</span><span data-line="48">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="49">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="50">        <span class="n">user</span><span class="p">:</span> <span class="n">AdminUser</span><span class="p">,</span>
+</span><span data-line="51">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="52"><span class="w">        </span><span class="sd">"""Create session for user.</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="sd">        Args:</span>
+</span><span data-line="55"><span class="sd">            connection: The ASGI connection.</span>
+</span><span data-line="56"><span class="sd">            user: The authenticated user.</span>
+</span><span data-line="57">
+</span><span data-line="58"><span class="sd">        Returns:</span>
+</span><span data-line="59"><span class="sd">            Dict with session tokens.</span>
+</span><span data-line="60"><span class="sd">        """</span>
+</span><span data-line="61">        <span class="n">session_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">your_session_service</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span data-line="62">        <span class="k">return</span> <span class="p">{</span><span class="s2">"session_id"</span><span class="p">:</span> <span class="n">session_id</span><span class="p">}</span>
+</span><span data-line="63">
+</span><span data-line="64">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">(</span>
+</span><span data-line="65">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="66">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="67">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="68"><span class="w">        </span><span class="sd">"""Destroy current session.</span>
+</span><span data-line="69">
+</span><span data-line="70"><span class="sd">        Args:</span>
+</span><span data-line="71"><span class="sd">            connection: The ASGI connection.</span>
+</span><span data-line="72"><span class="sd">        """</span>
+</span><span data-line="73">        <span class="n">session_id</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"session_id"</span><span class="p">)</span>
+</span><span data-line="74">        <span class="k">if</span> <span class="n">session_id</span><span class="p">:</span>
+</span><span data-line="75">            <span class="k">await</span> <span class="n">your_session_service</span><span class="o">.</span><span class="n">destroy_session</span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span>
+</span><span data-line="76">
+</span><span data-line="77">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span>
+</span><span data-line="78">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="79">        <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span>
+</span><span data-line="80">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="81"><span class="w">        </span><span class="sd">"""Refresh session tokens.</span>
+</span><span data-line="82">
+</span><span data-line="83"><span class="sd">        Args:</span>
+</span><span data-line="84"><span class="sd">            connection: The ASGI connection.</span>
+</span><span data-line="85">
+</span><span data-line="86"><span class="sd">        Returns:</span>
+</span><span data-line="87"><span class="sd">            New tokens or None if refresh failed.</span>
+</span><span data-line="88"><span class="sd">        """</span>
+</span><span data-line="89">        <span class="c1"># Implement refresh logic</span>
+</span><span data-line="90">        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Or new tokens</span>
+</span></pre></div>
+</div>
+</section>
+<section id="oauth-integration">
+<h2>OAuth Integration<a class="headerlink" href="#oauth-integration" title="Link to this heading">#</a></h2>
+<p>For OAuth authentication, install the oauth extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"litestar-admin[oauth]"</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OAuth integration requires the <code class="docutils literal notranslate"><span class="pre">litestar-oauth</span></code> package. This feature is planned for a future release.</p>
+</div>
+</section>
+<section id="auth-api-endpoints">
+<h2>Auth API Endpoints<a class="headerlink" href="#auth-api-endpoints" title="Link to this heading">#</a></h2>
+<p>When authentication is enabled, the following endpoints are available:</p>
+<section id="post-admin-api-auth-login">
+<h3>POST /admin/api/auth/login<a class="headerlink" href="#post-admin-api-auth-login" title="Link to this heading">#</a></h3>
+<p>Authenticate with credentials.</p>
+<p><strong>Request:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin@example.com"</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"secret123"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Response:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJ..."</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"refresh_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJ..."</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3600"</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="post-admin-api-auth-logout">
+<h3>POST /admin/api/auth/logout<a class="headerlink" href="#post-admin-api-auth-logout" title="Link to this heading">#</a></h3>
+<p>Invalidate current session.</p>
+<p><strong>Response:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Logged out successfully"</span>
+</span><span data-line="3"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="post-admin-api-auth-refresh">
+<h3>POST /admin/api/auth/refresh<a class="headerlink" href="#post-admin-api-auth-refresh" title="Link to this heading">#</a></h3>
+<p>Refresh access token using refresh token.</p>
+<p><strong>Request Header:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">X</span><span class="o">-</span><span class="n">Refresh</span><span class="o">-</span><span class="n">Token</span><span class="p">:</span> <span class="n">eyJ</span><span class="o">...</span>
+</span></pre></div>
+</div>
+<p><strong>Response:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJ..."</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3600"</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="get-admin-api-auth-me">
+<h3>GET /admin/api/auth/me<a class="headerlink" href="#get-admin-api-auth-me" title="Link to this heading">#</a></h3>
+<p>Get current user information.</p>
+<p><strong>Response:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"admin"</span><span class="p">],</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">"permissions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"models:read"</span><span class="p">,</span><span class="w"> </span><span class="s2">"models:write"</span><span class="p">]</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="security-best-practices">
+<h2>Security Best Practices<a class="headerlink" href="#security-best-practices" title="Link to this heading">#</a></h2>
+<ol class="arabic">
+<li><p><strong>Use Strong Secret Keys</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+</span><span data-line="2"><span class="n">secret_key</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><strong>Store Secrets Securely</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2"><span class="n">JWTConfig</span><span class="p">(</span><span class="n">secret_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"JWT_SECRET_KEY"</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><strong>Use HTTPS in Production</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">cookie_secure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Only send over HTTPS</span>
+</span><span data-line="3"><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><strong>Set Appropriate Token Expiry</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">token_expiry</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span>  <span class="c1"># 30 minutes for sensitive apps</span>
+</span><span data-line="3"><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><strong>Enable HTTP-Only Cookies</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">cookie_httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Prevent XSS access</span>
+</span><span data-line="3"><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><strong>Use SameSite Cookies</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">cookie_samesite</span><span class="o">=</span><span class="s2">"strict"</span><span class="p">,</span>  <span class="c1"># Prevent CSRF</span>
+</span><span data-line="3"><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="user-guide/keyboard-shortcuts.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Keyboard Shortcuts</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="guards.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Guards &amp; RBAC</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
+</html>

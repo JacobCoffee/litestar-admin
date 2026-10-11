@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Models API - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Dashboard API" href="dashboard.html" /><link rel="prev" title="Authentication API" href="authentication.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Models API"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="authentication.html">Authentication API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#endpoints">Endpoints</a><ul>
+<li><a class="reference internal" href="#list-registered-models">List Registered Models</a></li>
+<li><a class="reference internal" href="#list-records">List Records</a></li>
+<li><a class="reference internal" href="#get-single-record">Get Single Record</a></li>
+<li><a class="reference internal" href="#create-record">Create Record</a></li>
+<li><a class="reference internal" href="#full-update-record">Full Update Record</a></li>
+<li><a class="reference internal" href="#partial-update-record">Partial Update Record</a></li>
+<li><a class="reference internal" href="#delete-record">Delete Record</a></li>
+<li><a class="reference internal" href="#get-model-schema">Get Model Schema</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-serialization">Data Serialization</a></li>
+<li><a class="reference internal" href="#pagination">Pagination</a></li>
+<li><a class="reference internal" href="#filtering-and-search">Filtering and Search</a></li>
+<li><a class="reference internal" href="#sorting">Sorting</a></li>
+<li><a class="reference internal" href="#primary-key-types">Primary Key Types</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Models API</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="models-api">
+<h1>Models API<a class="headerlink" href="#models-api" title="Link to this heading">#</a></h1>
+<p>The Models API provides CRUD (Create, Read, Update, Delete) operations for all registered models in the admin panel.</p>
+<p>All model endpoints are under <code class="docutils literal notranslate"><span class="pre">/admin/api/models</span></code>.</p>
+<section id="endpoints">
+<h2>Endpoints<a class="headerlink" href="#endpoints" title="Link to this heading">#</a></h2>
+<section id="list-registered-models">
+<h3>List Registered Models<a class="headerlink" href="#list-registered-models" title="Link to this heading">#</a></h3>
+<p>Get a list of all models registered with the admin panel.</p>
+<p class="rubric">GET /api/models</p>
+<p><strong>Headers</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Authorization</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bearer</span> <span class="pre">&lt;access_token&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">GET</span> <span class="nn">/admin/api/models</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">[</span>
+</span><span data-line="2"><span class="w">  </span><span class="p">{</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"users"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">    </span><span class="nt">"can_create"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">    </span><span class="nt">"can_edit"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">    </span><span class="nt">"can_delete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">    </span><span class="nt">"can_view_details"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="11"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="12"><span class="w">  </span><span class="p">{</span>
+</span><span data-line="13"><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Product"</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">    </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Product"</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"box"</span><span class="p">,</span>
+</span><span data-line="16"><span class="w">    </span><span class="nt">"category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Inventory"</span><span class="p">,</span>
+</span><span data-line="17"><span class="w">    </span><span class="nt">"can_create"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">    </span><span class="nt">"can_edit"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">    </span><span class="nt">"can_delete"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">    </span><span class="nt">"can_view_details"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="21"><span class="w">  </span><span class="p">}</span>
+</span><span data-line="22"><span class="p">]</span>
+</span></pre></div>
+</div>
+<p><strong>Response Fields</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Display name of the model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Internal model class name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">icon</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Icon identifier for UI display</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">category</span></code></p></td>
+<td><p>string or null</p></td>
+<td><p>Category for grouping in sidebar</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">can_create</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>Whether new records can be created</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">can_edit</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>Whether records can be edited</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">can_delete</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>Whether records can be deleted</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">can_view_details</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>Whether record details can be viewed</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="list-records">
+<h3>List Records<a class="headerlink" href="#list-records" title="Link to this heading">#</a></h3>
+<p>Get paginated records for a specific model with optional filtering and sorting.</p>
+<p class="rubric">GET /api/models/{model_name}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Query Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">offset</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>0</p></td>
+<td><p>Number of records to skip</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>50</p></td>
+<td><p>Max records to return (max 100)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sort_by</span></code></p></td>
+<td><p>string</p></td>
+<td><p>null</p></td>
+<td><p>Column name to sort by</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sort_order</span></code></p></td>
+<td><p>string</p></td>
+<td><p>“asc”</p></td>
+<td><p>Sort direction: “asc” or “desc”</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">search</span></code></p></td>
+<td><p>string</p></td>
+<td><p>null</p></td>
+<td><p>Search string for searchable columns</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">GET</span> <span class="nn">/admin/api/models/User?offset=0&amp;limit=10&amp;sort_by=created_at&amp;sort_order=desc&amp;search=john</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="3"><span class="w">    </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00"</span>
+</span><span data-line="8"><span class="w">    </span><span class="p">},</span>
+</span><span data-line="9"><span class="w">    </span><span class="p">{</span>
+</span><span data-line="10"><span class="w">      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johnny@example.com"</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Johnny Smith"</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-14T09:15:00"</span>
+</span><span data-line="14"><span class="w">    </span><span class="p">}</span>
+</span><span data-line="15"><span class="w">  </span><span class="p">],</span>
+</span><span data-line="16"><span class="w">  </span><span class="nt">"total"</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+</span><span data-line="17"><span class="w">  </span><span class="nt">"offset"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">  </span><span class="nt">"limit"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+</span><span data-line="19"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Response Fields</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">items</span></code></p></td>
+<td><p>array</p></td>
+<td><p>List of serialized records</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">total</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>Total count of matching records</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">offset</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>Current offset in result set</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>Number of records requested</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'InvalidModel'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="get-single-record">
+<h3>Get Single Record<a class="headerlink" href="#get-single-record" title="Link to this heading">#</a></h3>
+<p>Get a single record by its primary key.</p>
+<p class="rubric">GET /api/models/{model_name}/{record_id}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_id</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The primary key value</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">GET</span> <span class="nn">/admin/api/models/User/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Doe"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00"</span>
+</span><span data-line="8"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Record</span> <span class="pre">'999'</span> <span class="pre">not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">'User'&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="create-record">
+<h3>Create Record<a class="headerlink" href="#create-record" title="Link to this heading">#</a></h3>
+<p>Create a new record for the specified model.</p>
+<p class="rubric">POST /api/models/{model_name}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request Body</strong></p>
+<p>JSON object containing the field values for the new record. Required fields depend on the model definition.</p>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">POST</span> <span class="nn">/admin/api/models/User</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span><span data-line="3"><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="p">{</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"newuser@example.com"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New User"</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="9"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (201 Created)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"newuser@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New User"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-16T14:20:00"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-16T14:20:00"</span>
+</span><span data-line="8"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>422</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Validation</span> <span class="pre">error:</span> <span class="pre">email</span> <span class="pre">is</span> <span class="pre">required&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-update-record">
+<h3>Full Update Record<a class="headerlink" href="#full-update-record" title="Link to this heading">#</a></h3>
+<p>Replace all fields of a record with the provided data.</p>
+<p class="rubric">PUT /api/models/{model_name}/{record_id}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_id</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The primary key value</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request Body</strong></p>
+<p>JSON object containing complete field values. All editable fields should be provided.</p>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">PUT</span> <span class="nn">/admin/api/models/User/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span><span data-line="3"><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="p">{</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated@example.com"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Updated Name"</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+</span><span data-line="9"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Updated Name"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-16T14:25:00"</span>
+</span><span data-line="8"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Record</span> <span class="pre">'999'</span> <span class="pre">not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">'User'&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="partial-update-record">
+<h3>Partial Update Record<a class="headerlink" href="#partial-update-record" title="Link to this heading">#</a></h3>
+<p>Update only the provided fields of a record.</p>
+<p class="rubric">PATCH /api/models/{model_name}/{record_id}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_id</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The primary key value</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request Body</strong></p>
+<p>JSON object containing only the fields to update.</p>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">PATCH</span> <span class="nn">/admin/api/models/User/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span><span data-line="3"><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="p">{</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Partial Update"</span>
+</span><span data-line="7"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Partial Update"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00"</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-16T14:30:00"</span>
+</span><span data-line="8"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Record</span> <span class="pre">'999'</span> <span class="pre">not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">'User'&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="delete-record">
+<h3>Delete Record<a class="headerlink" href="#delete-record" title="Link to this heading">#</a></h3>
+<p>Delete a record by its primary key.</p>
+<p class="rubric">DELETE /api/models/{model_name}/{record_id}</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_id</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The primary key value</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Query Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">soft_delete</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>false</p></td>
+<td><p>If true, perform soft delete if supported</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">DELETE</span> <span class="nn">/admin/api/models/User/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Record '1' deleted successfully"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Record</span> <span class="pre">'999'</span> <span class="pre">not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">'User'&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">soft_delete=true</span></code> is passed, the record is marked as deleted (via a <code class="docutils literal notranslate"><span class="pre">deleted_at</span></code> timestamp) rather than being removed from the database. This only works if the model supports soft deletes.</p>
+</div>
+</section>
+<hr class="docutils" />
+<section id="get-model-schema">
+<h3>Get Model Schema<a class="headerlink" href="#get-model-schema" title="Link to this heading">#</a></h3>
+<p>Get the JSON schema for a model’s fields, useful for dynamic form generation.</p>
+<p class="rubric">GET /api/models/{model_name}/schema</p>
+<p><strong>Path Parameters</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>The name of the registered model</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">GET</span> <span class="nn">/admin/api/models/User/schema</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">"readOnly"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="7"><span class="w">    </span><span class="p">},</span>
+</span><span data-line="8"><span class="w">    </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="9"><span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">      </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"email"</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">"maxLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">255</span>
+</span><span data-line="12"><span class="w">    </span><span class="p">},</span>
+</span><span data-line="13"><span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="14"><span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">      </span><span class="nt">"maxLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
+</span><span data-line="16"><span class="w">    </span><span class="p">},</span>
+</span><span data-line="17"><span class="w">    </span><span class="nt">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"boolean"</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">      </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="20"><span class="w">    </span><span class="p">},</span>
+</span><span data-line="21"><span class="w">    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="22"><span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">      </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"date-time"</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">      </span><span class="nt">"readOnly"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span data-line="25"><span class="w">    </span><span class="p">}</span>
+</span><span data-line="26"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="27"><span class="w">  </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"email"</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">]</span>
+</span><span data-line="28"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>404</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Model</span> <span class="pre">'User'</span> <span class="pre">not</span> <span class="pre">found&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="data-serialization">
+<h2>Data Serialization<a class="headerlink" href="#data-serialization" title="Link to this heading">#</a></h2>
+<p>Records are automatically serialized to JSON with type conversions:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Python Type</p></th>
+<th class="head"><p>JSON Type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">date</span></code></p></td>
+<td><p>ISO 8601 string</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Decimal</span></code></p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">UUID</span></code></p></td>
+<td><p>string</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p></td>
+<td><p>UTF-8 string</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>null</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="pagination">
+<h2>Pagination<a class="headerlink" href="#pagination" title="Link to this heading">#</a></h2>
+<p>All list endpoints use offset-based pagination:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: Number of records to skip (default: 0)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code>: Maximum records to return (default: 50, max: 100)</p></li>
+</ul>
+<p>To paginate through large datasets:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1"># First page
+</span><span data-line="2">GET /api/models/User?offset=0&amp;limit=50
+</span><span data-line="3">
+</span><span data-line="4"># Second page
+</span><span data-line="5">GET /api/models/User?offset=50&amp;limit=50
+</span><span data-line="6">
+</span><span data-line="7"># Third page
+</span><span data-line="8">GET /api/models/User?offset=100&amp;limit=50
+</span></pre></div>
+</div>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">total</span></code> field in the response to determine the total number of pages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">total_pages</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">"total"</span><span class="p">]</span> <span class="o">/</span> <span class="n">limit</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="filtering-and-search">
+<h2>Filtering and Search<a class="headerlink" href="#filtering-and-search" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">search</span></code> parameter performs a case-insensitive search across all columns marked as searchable in the model view configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">column_searchable_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"email"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>With this configuration, <code class="docutils literal notranslate"><span class="pre">?search=john</span></code> would match:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">email:</span> <span class="pre">&quot;john&#64;example.com&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">&quot;John</span> <span class="pre">Doe&quot;</span></code></p></li>
+</ul>
+</section>
+<section id="sorting">
+<h2>Sorting<a class="headerlink" href="#sorting" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">sort_by</span></code> and <code class="docutils literal notranslate"><span class="pre">sort_order</span></code> to control the order of results:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1"># Sort by name ascending
+</span><span data-line="2">GET /api/models/User?sort_by=name&amp;sort_order=asc
+</span><span data-line="3">
+</span><span data-line="4"># Sort by created_at descending (newest first)
+</span><span data-line="5">GET /api/models/User?sort_by=created_at&amp;sort_order=desc
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only sortable columns can be used with <code class="docutils literal notranslate"><span class="pre">sort_by</span></code>. Attempting to sort by a non-sortable column will be ignored.</p>
+</div>
+</section>
+<section id="primary-key-types">
+<h2>Primary Key Types<a class="headerlink" href="#primary-key-types" title="Link to this heading">#</a></h2>
+<p>The API automatically handles different primary key types:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Example URL</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/api/models/User/123</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>UUID</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/api/models/Order/550e8400-e29b-41d4-a716-446655440000</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>String</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/api/models/Setting/theme</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The primary key value in the URL is automatically converted to the appropriate type based on the model’s primary key column definition.</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="authentication.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Authentication API</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="dashboard.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Dashboard API</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

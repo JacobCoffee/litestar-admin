@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Keyboard Shortcuts - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Authentication" href="../authentication.html" /><link rel="prev" title="Audit Log" href="audit-log.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Keyboard Shortcuts"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="audit-log.html">Audit Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#command-palette">Command Palette</a><ul>
+<li><a class="reference internal" href="#opening-the-command-palette">Opening the Command Palette</a></li>
+<li><a class="reference internal" href="#navigating-the-palette">Navigating the Palette</a></li>
+<li><a class="reference internal" href="#search-and-filtering">Search and Filtering</a></li>
+<li><a class="reference internal" href="#command-categories">Command Categories</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#default-keyboard-shortcuts">Default Keyboard Shortcuts</a></li>
+<li><a class="reference internal" href="#keyboard-shortcuts-help-modal">Keyboard Shortcuts Help Modal</a></li>
+<li><a class="reference internal" href="#configuring-keyboard-features">Configuring Keyboard Features</a><ul>
+<li><a class="reference internal" href="#keyboard-navigation-toggle">Keyboard Navigation Toggle</a></li>
+<li><a class="reference internal" href="#show-keyboard-hints">Show Keyboard Hints</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#table-keyboard-navigation">Table Keyboard Navigation</a><ul>
+<li><a class="reference internal" href="#table-navigation-keys">Table Navigation Keys</a></li>
+<li><a class="reference internal" href="#visual-focus-indicator">Visual Focus Indicator</a></li>
+<li><a class="reference internal" href="#enabling-table-navigation">Enabling Table Navigation</a></li>
+<li><a class="reference internal" href="#keyboard-hints-footer">Keyboard Hints Footer</a></li>
+<li><a class="reference internal" href="#using-the-table-navigation-hook">Using the Table Navigation Hook</a></li>
+<li><a class="reference internal" href="#tablekeyboardnavigationoptions">TableKeyboardNavigationOptions</a></li>
+<li><a class="reference internal" href="#accessibility-features">Accessibility Features</a></li>
+<li><a class="reference internal" href="#platform-specific-display">Platform-Specific Display</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-command-palette-programmatically">Using the Command Palette Programmatically</a><ul>
+<li><a class="reference internal" href="#opening-the-palette-from-code">Opening the Palette from Code</a></li>
+<li><a class="reference internal" href="#registering-custom-commands">Registering Custom Commands</a></li>
+<li><a class="reference internal" href="#commanditem-properties">CommandItem Properties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#registering-custom-shortcuts">Registering Custom Shortcuts</a><ul>
+<li><a class="reference internal" href="#using-the-useshortcut-hook">Using the useShortcut Hook</a></li>
+<li><a class="reference internal" href="#using-the-usekeyboardshortcuts-hook">Using the useKeyboardShortcuts Hook</a></li>
+<li><a class="reference internal" href="#keyboardshortcut-configuration">KeyboardShortcut Configuration</a></li>
+<li><a class="reference internal" href="#modifier-keys">Modifier Keys</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#input-field-behavior">Input Field Behavior</a></li>
+<li><a class="reference internal" href="#displaying-shortcuts-in-the-ui">Displaying Shortcuts in the UI</a><ul>
+<li><a class="reference internal" href="#formatting-shortcuts-for-display">Formatting Shortcuts for Display</a></li>
+<li><a class="reference internal" href="#showing-shortcuts-by-category">Showing Shortcuts by Category</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-palette-integration">Command Palette Integration</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li><a class="reference internal" href="#accessibility">Accessibility</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#shortcut-not-working">Shortcut Not Working</a></li>
+<li><a class="reference internal" href="#command-not-appearing-in-palette">Command Not Appearing in Palette</a></li>
+<li><a class="reference internal" href="#platform-detection-issues">Platform Detection Issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Keyboard Shortcuts</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="keyboard-shortcuts">
+<h1>Keyboard Shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Link to this heading">#</a></h1>
+<p>litestar-admin includes a comprehensive keyboard shortcut system and command palette for power users who prefer keyboard-driven navigation. The system provides quick access to navigation, actions, and model operations without reaching for the mouse.</p>
+<section id="command-palette">
+<h2>Command Palette<a class="headerlink" href="#command-palette" title="Link to this heading">#</a></h2>
+<p>The command palette is a spotlight-style search interface that provides instant access to any page, model, or action in your admin panel.</p>
+<section id="opening-the-command-palette">
+<h3>Opening the Command Palette<a class="headerlink" href="#opening-the-command-palette" title="Link to this heading">#</a></h3>
+<p>Press the keyboard shortcut to open the command palette:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Platform</p></th>
+<th class="head"><p>Shortcut</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>macOS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Cmd</span> <span class="pre">+</span> <span class="pre">K</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Windows/Linux</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">K</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The palette appears as a modal overlay with a search input at the top.</p>
+</section>
+<section id="navigating-the-palette">
+<h3>Navigating the Palette<a class="headerlink" href="#navigating-the-palette" title="Link to this heading">#</a></h3>
+<p>Once open, use these keys to navigate:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Arrow</span> <span class="pre">Up</span></code> / <code class="docutils literal notranslate"><span class="pre">Arrow</span> <span class="pre">Down</span></code></p></td>
+<td><p>Move selection up/down</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tab</span></code> / <code class="docutils literal notranslate"><span class="pre">Shift</span> <span class="pre">+</span> <span class="pre">Tab</span></code></p></td>
+<td><p>Move selection down/up</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Enter</span></code></p></td>
+<td><p>Execute selected command</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Escape</span></code></p></td>
+<td><p>Close the palette</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="search-and-filtering">
+<h3>Search and Filtering<a class="headerlink" href="#search-and-filtering" title="Link to this heading">#</a></h3>
+<p>Type in the search input to filter commands. The palette searches across:</p>
+<ul class="simple">
+<li><p>Command labels (e.g., “Go to Users”)</p></li>
+<li><p>Descriptions (e.g., “Manage admin users”)</p></li>
+<li><p>Categories (e.g., “Navigation”, “Models”)</p></li>
+<li><p>Keywords (e.g., model names, identities)</p></li>
+</ul>
+<p>Results are grouped by category and update in real-time as you type.</p>
+</section>
+<section id="command-categories">
+<h3>Command Categories<a class="headerlink" href="#command-categories" title="Link to this heading">#</a></h3>
+<p>The command palette includes commands from several categories:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Navigation</p></td>
+<td><p>Dashboard, Models, Users, Audit Log, Settings</p></td>
+</tr>
+<tr class="row-odd"><td><p>Models</p></td>
+<td><p>View and create commands for each registered model</p></td>
+</tr>
+<tr class="row-even"><td><p>Actions</p></td>
+<td><p>Registered admin actions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pages</p></td>
+<td><p>Custom content pages</p></td>
+</tr>
+<tr class="row-even"><td><p>Embeds</p></td>
+<td><p>Embedded views and dashboards</p></td>
+</tr>
+<tr class="row-odd"><td><p>Custom Views</p></td>
+<td><p>Non-model data views</p></td>
+</tr>
+<tr class="row-even"><td><p>Links</p></td>
+<td><p>External link shortcuts</p></td>
+</tr>
+<tr class="row-odd"><td><p>Quick Actions</p></td>
+<td><p>Common operations like search</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="default-keyboard-shortcuts">
+<h2>Default Keyboard Shortcuts<a class="headerlink" href="#default-keyboard-shortcuts" title="Link to this heading">#</a></h2>
+<p>litestar-admin provides several built-in keyboard shortcuts:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Shortcut</p></th>
+<th class="head"><p>Action</p></th>
+<th class="head"><p>Category</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">K</span></code></p></td>
+<td><p>Open command palette</p></td>
+<td><p>Navigation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">Shift</span> <span class="pre">+</span> <span class="pre">H</span></code></p></td>
+<td><p>Go to dashboard</p></td>
+<td><p>Navigation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">S</span></code></p></td>
+<td><p>Save current item</p></td>
+<td><p>Actions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">N</span></code></p></td>
+<td><p>Create new item</p></td>
+<td><p>Actions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">?</span></code></p></td>
+<td><p>Show keyboard shortcuts help</p></td>
+<td><p>General</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Escape</span></code></p></td>
+<td><p>Close modal or cancel</p></td>
+<td><p>General</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="keyboard-shortcuts-help-modal">
+<h2>Keyboard Shortcuts Help Modal<a class="headerlink" href="#keyboard-shortcuts-help-modal" title="Link to this heading">#</a></h2>
+<p>Press <code class="docutils literal notranslate"><span class="pre">?</span></code> (Shift + /) anywhere in the admin panel to open the keyboard shortcuts help modal. This displays all available shortcuts organized by category:</p>
+<ul class="simple">
+<li><p><strong>Command Palette</strong>: Shortcuts for opening and navigating the command palette</p></li>
+<li><p><strong>Navigation</strong>: Page navigation shortcuts</p></li>
+<li><p><strong>Actions</strong>: Common action shortcuts (save, create new)</p></li>
+<li><p><strong>Table Navigation</strong>: Keyboard navigation for data tables</p></li>
+<li><p><strong>General</strong>: Modal and general shortcuts</p></li>
+</ul>
+<p>You can also access this from the command palette by typing “Keyboard Shortcuts”.</p>
+</section>
+<section id="configuring-keyboard-features">
+<h2>Configuring Keyboard Features<a class="headerlink" href="#configuring-keyboard-features" title="Link to this heading">#</a></h2>
+<p>Keyboard navigation features can be configured in <strong>Settings &gt; Table Settings</strong>:</p>
+<section id="keyboard-navigation-toggle">
+<h3>Keyboard Navigation Toggle<a class="headerlink" href="#keyboard-navigation-toggle" title="Link to this heading">#</a></h3>
+<p>Enable or disable keyboard navigation for data tables. When enabled:</p>
+<ul class="simple">
+<li><p>Arrow keys navigate between rows</p></li>
+<li><p>Home/End jump to first/last row</p></li>
+<li><p>Page Up/Down change pages</p></li>
+<li><p>Enter/Space activate rows</p></li>
+</ul>
+</section>
+<section id="show-keyboard-hints">
+<h3>Show Keyboard Hints<a class="headerlink" href="#show-keyboard-hints" title="Link to this heading">#</a></h3>
+<p>Display a footer bar at the bottom of tables showing available keyboard shortcuts. This helps users discover keyboard navigation features.</p>
+<p>Settings are persisted in localStorage and apply to all tables in the admin panel.</p>
+</section>
+</section>
+<section id="table-keyboard-navigation">
+<h2>Table Keyboard Navigation<a class="headerlink" href="#table-keyboard-navigation" title="Link to this heading">#</a></h2>
+<p>Data tables in litestar-admin support comprehensive keyboard navigation for efficient data browsing without using a mouse.</p>
+<section id="table-navigation-keys">
+<h3>Table Navigation Keys<a class="headerlink" href="#table-navigation-keys" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Arrow</span> <span class="pre">Up</span></code> / <code class="docutils literal notranslate"><span class="pre">Arrow</span> <span class="pre">Down</span></code></p></td>
+<td><p>Navigate between rows</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Home</span></code></p></td>
+<td><p>Go to first row</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">End</span></code></p></td>
+<td><p>Go to last row</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Page</span> <span class="pre">Up</span></code></p></td>
+<td><p>Go to previous page</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Page</span> <span class="pre">Down</span></code></p></td>
+<td><p>Go to next page</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">Home</span></code></p></td>
+<td><p>Go to first row on first page</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">End</span></code></p></td>
+<td><p>Go to last row on last page</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Cmd/Ctrl</span> <span class="pre">+</span> <span class="pre">A</span></code></p></td>
+<td><p>Select all rows (when selection enabled)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Enter</span></code> / <code class="docutils literal notranslate"><span class="pre">Space</span></code></p></td>
+<td><p>Activate row (click) or toggle selection</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Escape</span></code></p></td>
+<td><p>Clear row focus</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="visual-focus-indicator">
+<h3>Visual Focus Indicator<a class="headerlink" href="#visual-focus-indicator" title="Link to this heading">#</a></h3>
+<p>When navigating with the keyboard, the focused row is highlighted with:</p>
+<ul class="simple">
+<li><p>An accent-colored ring around the row</p></li>
+<li><p>A subtle background tint</p></li>
+<li><p>Screen reader announcements for accessibility</p></li>
+</ul>
+</section>
+<section id="enabling-table-navigation">
+<h3>Enabling Table Navigation<a class="headerlink" href="#enabling-table-navigation" title="Link to this heading">#</a></h3>
+<p>Table keyboard navigation is enabled by default. To customize:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">DataTable</span>
+</span><span data-line="2"><span class="w">  </span><span class="na">columns</span><span class="o">=</span><span class="p">{</span><span class="nx">columns</span><span class="p">}</span>
+</span><span data-line="3"><span class="w">  </span><span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="p">}</span>
+</span><span data-line="4"><span class="w">  </span><span class="na">enableKeyboardNavigation</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span><span class="w">  </span><span class="err">//</span><span class="w"> </span><span class="na">Enabled</span><span class="w"> </span><span class="na">by</span><span class="w"> </span><span class="na">default</span>
+</span><span data-line="5"><span class="w">  </span><span class="na">showKeyboardHints</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span><span class="w">         </span><span class="err">//</span><span class="w"> </span><span class="na">Show</span><span class="w"> </span><span class="na">keyboard</span><span class="w"> </span><span class="na">hints</span><span class="w"> </span><span class="na">footer</span>
+</span><span data-line="6"><span class="p">/&gt;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="keyboard-hints-footer">
+<h3>Keyboard Hints Footer<a class="headerlink" href="#keyboard-hints-footer" title="Link to this heading">#</a></h3>
+<p>Set <code class="docutils literal notranslate"><span class="pre">showKeyboardHints={true}</span></code> to display a footer bar with keyboard navigation hints:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">DataTable</span>
+</span><span data-line="2"><span class="w">  </span><span class="na">columns</span><span class="o">=</span><span class="p">{</span><span class="nx">columns</span><span class="p">}</span>
+</span><span data-line="3"><span class="w">  </span><span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="p">}</span>
+</span><span data-line="4"><span class="w">  </span><span class="na">showKeyboardHints</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+</span><span data-line="5"><span class="p">/&gt;</span>
+</span></pre></div>
+</div>
+<p>This displays a row of keyboard hints showing available shortcuts for table navigation.</p>
+</section>
+<section id="using-the-table-navigation-hook">
+<h3>Using the Table Navigation Hook<a class="headerlink" href="#using-the-table-navigation-hook" title="Link to this heading">#</a></h3>
+<p>For custom table implementations, use the <code class="docutils literal notranslate"><span class="pre">useTableKeyboardNavigation</span></code> hook:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useTableKeyboardNavigation</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/hooks"</span><span class="p">;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kd">function</span><span class="w"> </span><span class="nx">CustomTable</span><span class="p">({</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">    </span><span class="nx">focusedRowIndex</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">    </span><span class="nx">handleTableKeyDown</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">    </span><span class="nx">getRowProps</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">    </span><span class="nx">tableRef</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">    </span><span class="nx">isTableFocused</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useTableKeyboardNavigation</span><span class="p">({</span>
+</span><span data-line="11"><span class="w">    </span><span class="nx">rowCount</span><span class="o">:</span><span class="w"> </span><span class="kt">data.length</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">    </span><span class="nx">selectable</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">    </span><span class="nx">onSelectAll</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">handleSelectAll</span><span class="p">(),</span>
+</span><span data-line="14"><span class="w">    </span><span class="nx">onActivateRow</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">index</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">handleRowClick</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="p">]),</span>
+</span><span data-line="15"><span class="w">    </span><span class="nx">onToggleRow</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">index</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">toggleSelection</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="p">]),</span>
+</span><span data-line="16"><span class="w">    </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">currentPage</span><span class="p">,</span>
+</span><span data-line="17"><span class="w">    </span><span class="nx">totalPages</span><span class="o">:</span><span class="w"> </span><span class="kt">totalPages</span><span class="p">,</span>
+</span><span data-line="18"><span class="w">    </span><span class="nx">onPageChange</span><span class="o">:</span><span class="w"> </span><span class="kt">setPage</span><span class="p">,</span>
+</span><span data-line="19"><span class="w">  </span><span class="p">});</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="22"><span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span>
+</span><span data-line="23"><span class="w">      </span><span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">tableRef</span><span class="p">}</span>
+</span><span data-line="24"><span class="w">      </span><span class="na">onKeyDown</span><span class="o">=</span><span class="p">{</span><span class="nx">handleTableKeyDown</span><span class="p">}</span>
+</span><span data-line="25"><span class="w">      </span><span class="na">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="mf">0</span><span class="p">}</span>
+</span><span data-line="26"><span class="w">      </span><span class="na">role</span><span class="o">=</span><span class="s">"grid"</span>
+</span><span data-line="27"><span class="w">    </span><span class="p">&gt;</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+</span><span data-line="29"><span class="w">        </span><span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</span><span data-line="30"><span class="w">          </span><span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">row</span><span class="p">,</span><span class="w"> </span><span class="nx">index</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="31"><span class="w">            </span><span class="kd">const</span><span class="w"> </span><span class="nx">rowProps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getRowProps</span><span class="p">(</span><span class="nx">index</span><span class="p">);</span>
+</span><span data-line="32"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="33"><span class="w">              </span><span class="p">&lt;</span><span class="nt">tr</span>
+</span><span data-line="34"><span class="w">                </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">row</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span>
+</span><span data-line="35"><span class="w">                </span><span class="na">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="nx">rowProps</span><span class="p">.</span><span class="nx">tabIndex</span><span class="p">}</span>
+</span><span data-line="36"><span class="w">                </span><span class="na">data-focused</span><span class="o">=</span><span class="p">{</span><span class="nx">rowProps</span><span class="p">[</span><span class="s2">"data-focused"</span><span class="p">]}</span>
+</span><span data-line="37"><span class="w">                </span><span class="na">onKeyDown</span><span class="o">=</span><span class="p">{</span><span class="nx">rowProps</span><span class="p">.</span><span class="nx">onKeyDown</span><span class="p">}</span>
+</span><span data-line="38"><span class="w">                </span><span class="na">onFocus</span><span class="o">=</span><span class="p">{</span><span class="nx">rowProps</span><span class="p">.</span><span class="nx">onFocus</span><span class="p">}</span>
+</span><span data-line="39"><span class="w">              </span><span class="p">&gt;</span>
+</span><span data-line="40"><span class="w">                </span><span class="p">{</span><span class="cm">/* cells */</span><span class="p">}</span>
+</span><span data-line="41"><span class="w">              </span><span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+</span><span data-line="42"><span class="w">            </span><span class="p">);</span>
+</span><span data-line="43"><span class="w">          </span><span class="p">})}</span>
+</span><span data-line="44"><span class="w">        </span><span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</span><span data-line="45"><span class="w">      </span><span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+</span><span data-line="46"><span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span data-line="47"><span class="w">  </span><span class="p">);</span>
+</span><span data-line="48"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="tablekeyboardnavigationoptions">
+<h3>TableKeyboardNavigationOptions<a class="headerlink" href="#tablekeyboardnavigationoptions" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rowCount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Total number of rows</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">selectable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Enable row selection</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">onSelectAll</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">()</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Select all callback</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">onActivateRow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(index:</span> <span class="pre">number)</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Row activation callback</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">onToggleRow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(index:</span> <span class="pre">number)</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Row toggle callback</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">page</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Current page (1-indexed)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">totalPages</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Total pages</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">onPageChange</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(page:</span> <span class="pre">number)</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Page change callback</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Enable navigation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="accessibility-features">
+<h3>Accessibility Features<a class="headerlink" href="#accessibility-features" title="Link to this heading">#</a></h3>
+<p>Table keyboard navigation follows WAI-ARIA best practices:</p>
+<ul class="simple">
+<li><p>Proper <code class="docutils literal notranslate"><span class="pre">role=&quot;grid&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">role=&quot;row&quot;</span></code> attributes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aria-rowindex</span></code> for screen reader row position</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aria-selected</span></code> for selection state</p></li>
+<li><p>Focus management with <code class="docutils literal notranslate"><span class="pre">tabIndex</span></code></p></li>
+<li><p>Screen reader announcements via live regions</p></li>
+</ul>
+</section>
+<section id="platform-specific-display">
+<h3>Platform-Specific Display<a class="headerlink" href="#platform-specific-display" title="Link to this heading">#</a></h3>
+<p>Shortcuts are displayed with platform-appropriate symbols:</p>
+<p><strong>macOS:</strong></p>
+<ul class="simple">
+<li><p>Command: <code class="docutils literal notranslate"><span class="pre">Cmd</span></code> (displayed as a special symbol)</p></li>
+<li><p>Option: <code class="docutils literal notranslate"><span class="pre">Opt</span></code> (displayed as a special symbol)</p></li>
+<li><p>Shift: displayed as an arrow symbol</p></li>
+</ul>
+<p><strong>Windows/Linux:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">K</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alt</span> <span class="pre">+</span> <span class="pre">...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Shift</span> <span class="pre">+</span> <span class="pre">...</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="using-the-command-palette-programmatically">
+<h2>Using the Command Palette Programmatically<a class="headerlink" href="#using-the-command-palette-programmatically" title="Link to this heading">#</a></h2>
+<section id="opening-the-palette-from-code">
+<h3>Opening the Palette from Code<a class="headerlink" href="#opening-the-palette-from-code" title="Link to this heading">#</a></h3>
+<p>Access the command palette from any component using the <code class="docutils literal notranslate"><span class="pre">useCommandPalette</span></code> hook:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useCommandPalette</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/contexts/CommandPaletteContext"</span><span class="p">;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kd">function</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">open</span><span class="p">,</span><span class="w"> </span><span class="nx">isOpen</span><span class="p">,</span><span class="w"> </span><span class="nx">toggle</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useCommandPalette</span><span class="p">();</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="7"><span class="w">    </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">open</span><span class="p">}&gt;</span>
+</span><span data-line="8"><span class="w">      </span><span class="nx">Open</span><span class="w"> </span><span class="nx">Command</span><span class="w"> </span><span class="nx">Palette</span>
+</span><span data-line="9"><span class="w">    </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span><span data-line="10"><span class="w">  </span><span class="p">);</span>
+</span><span data-line="11"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="registering-custom-commands">
+<h3>Registering Custom Commands<a class="headerlink" href="#registering-custom-commands" title="Link to this heading">#</a></h3>
+<p>Add custom commands to the palette by registering items:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"react"</span><span class="p">;</span>
+</span><span data-line="2"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useCommandPalette</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/contexts/CommandPaletteContext"</span><span class="p">;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kd">function</span><span class="w"> </span><span class="nx">MyFeature</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">registerItems</span><span class="p">,</span><span class="w"> </span><span class="nx">unregisterItems</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useCommandPalette</span><span class="p">();</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="8"><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">customItems</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="9"><span class="w">      </span><span class="p">{</span>
+</span><span data-line="10"><span class="w">        </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"my-custom-action"</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">        </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Run My Action"</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">        </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">"Execute a custom operation"</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">        </span><span class="nx">category</span><span class="o">:</span><span class="w"> </span><span class="s2">"Custom"</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">        </span><span class="nx">icon</span><span class="o">:</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">MyIcon</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"h-4 w-4"</span><span class="w"> </span><span class="p">/&gt;,</span>
+</span><span data-line="15"><span class="w">        </span><span class="nx">keywords</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"custom"</span><span class="p">,</span><span class="w"> </span><span class="s2">"action"</span><span class="p">,</span><span class="w"> </span><span class="s2">"run"</span><span class="p">],</span>
+</span><span data-line="16"><span class="w">        </span><span class="nx">onSelect</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="17"><span class="w">          </span><span class="c1">// Your action logic</span>
+</span><span data-line="18"><span class="w">          </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Custom action executed!"</span><span class="p">);</span>
+</span><span data-line="19"><span class="w">        </span><span class="p">},</span>
+</span><span data-line="20"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="21"><span class="w">      </span><span class="p">{</span>
+</span><span data-line="22"><span class="w">        </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"another-action"</span><span class="p">,</span>
+</span><span data-line="23"><span class="w">        </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Another Action"</span><span class="p">,</span>
+</span><span data-line="24"><span class="w">        </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">"Do something else"</span><span class="p">,</span>
+</span><span data-line="25"><span class="w">        </span><span class="nx">category</span><span class="o">:</span><span class="w"> </span><span class="s2">"Custom"</span><span class="p">,</span>
+</span><span data-line="26"><span class="w">        </span><span class="nx">shortcut</span><span class="o">:</span><span class="w"> </span><span class="s2">"Cmd + Shift + A"</span><span class="p">,</span><span class="w">  </span><span class="c1">// Display hint only</span>
+</span><span data-line="27"><span class="w">        </span><span class="nx">onSelect</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">doSomethingElse</span><span class="p">(),</span>
+</span><span data-line="28"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="29"><span class="w">    </span><span class="p">];</span>
+</span><span data-line="30">
+</span><span data-line="31"><span class="w">    </span><span class="nx">registerItems</span><span class="p">(</span><span class="nx">customItems</span><span class="p">);</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="w">    </span><span class="c1">// Cleanup on unmount</span>
+</span><span data-line="34"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="35"><span class="w">      </span><span class="nx">unregisterItems</span><span class="p">(</span><span class="nx">customItems</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">));</span>
+</span><span data-line="36"><span class="w">    </span><span class="p">};</span>
+</span><span data-line="37"><span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">registerItems</span><span class="p">,</span><span class="w"> </span><span class="nx">unregisterItems</span><span class="p">]);</span>
+</span><span data-line="38">
+</span><span data-line="39"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">My</span><span class="w"> </span><span class="nx">Feature</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span><span data-line="40"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="commanditem-properties">
+<h3>CommandItem Properties<a class="headerlink" href="#commanditem-properties" title="Link to this heading">#</a></h3>
+<p>Each command item supports these properties:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">label</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Display label</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">onSelect</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">()</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Handler when selected</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Secondary description text</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">category</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Grouping category</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">icon</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ReactNode</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Icon component</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shortcut</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Shortcut display hint</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">keywords</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string[]</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Additional search terms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Disable the item</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="registering-custom-shortcuts">
+<h2>Registering Custom Shortcuts<a class="headerlink" href="#registering-custom-shortcuts" title="Link to this heading">#</a></h2>
+<section id="using-the-useshortcut-hook">
+<h3>Using the useShortcut Hook<a class="headerlink" href="#using-the-useshortcut-hook" title="Link to this heading">#</a></h3>
+<p>Register a single keyboard shortcut with automatic cleanup:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useShortcut</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/hooks/useKeyboardShortcuts"</span><span class="p">;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kd">function</span><span class="w"> </span><span class="nx">SaveableForm</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Saving..."</span><span class="p">);</span>
+</span><span data-line="6"><span class="w">  </span><span class="p">};</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="w">  </span><span class="nx">useShortcut</span><span class="p">({</span>
+</span><span data-line="9"><span class="w">    </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"save-form"</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">    </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Save"</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">    </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"s"</span><span class="p">,</span>
+</span><span data-line="12"><span class="w">    </span><span class="nx">modifiers</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"meta"</span><span class="p">],</span><span class="w">  </span><span class="c1">// Cmd on Mac, Ctrl on Windows</span>
+</span><span data-line="13"><span class="w">    </span><span class="nx">handler</span><span class="o">:</span><span class="w"> </span><span class="kt">handleSave</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">"Save the current form"</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">    </span><span class="nx">category</span><span class="o">:</span><span class="w"> </span><span class="s2">"Actions"</span><span class="p">,</span>
+</span><span data-line="16"><span class="w">  </span><span class="p">});</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">form</span><span class="p">&gt;...&lt;/</span><span class="nt">form</span><span class="p">&gt;;</span>
+</span><span data-line="19"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-the-usekeyboardshortcuts-hook">
+<h3>Using the useKeyboardShortcuts Hook<a class="headerlink" href="#using-the-usekeyboardshortcuts-hook" title="Link to this heading">#</a></h3>
+<p>For managing multiple shortcuts:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"react"</span><span class="p">;</span>
+</span><span data-line="2"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useKeyboardShortcuts</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/hooks/useKeyboardShortcuts"</span><span class="p">;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kd">function</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">    </span><span class="nx">registerShortcut</span><span class="p">,</span>
+</span><span data-line="7"><span class="w">    </span><span class="nx">unregisterShortcut</span><span class="p">,</span>
+</span><span data-line="8"><span class="w">    </span><span class="nx">getShortcuts</span><span class="p">,</span>
+</span><span data-line="9"><span class="w">    </span><span class="nx">formatShortcut</span><span class="p">,</span>
+</span><span data-line="10"><span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useKeyboardShortcuts</span><span class="p">();</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="13"><span class="w">    </span><span class="nx">registerShortcut</span><span class="p">({</span>
+</span><span data-line="14"><span class="w">      </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"my-shortcut"</span><span class="p">,</span>
+</span><span data-line="15"><span class="w">      </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"My Action"</span><span class="p">,</span>
+</span><span data-line="16"><span class="w">      </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"m"</span><span class="p">,</span>
+</span><span data-line="17"><span class="w">      </span><span class="nx">modifiers</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"meta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"shift"</span><span class="p">],</span>
+</span><span data-line="18"><span class="w">      </span><span class="nx">handler</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Triggered!"</span><span class="p">),</span>
+</span><span data-line="19"><span class="w">      </span><span class="nx">category</span><span class="o">:</span><span class="w"> </span><span class="s2">"Custom"</span><span class="p">,</span>
+</span><span data-line="20"><span class="w">    </span><span class="p">});</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">unregisterShortcut</span><span class="p">(</span><span class="s2">"my-shortcut"</span><span class="p">);</span>
+</span><span data-line="23"><span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">registerShortcut</span><span class="p">,</span><span class="w"> </span><span class="nx">unregisterShortcut</span><span class="p">]);</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="w">  </span><span class="c1">// Display all shortcuts</span>
+</span><span data-line="26"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">shortcuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getShortcuts</span><span class="p">();</span>
+</span><span data-line="27"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="28"><span class="w">    </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="29"><span class="w">      </span><span class="p">{</span><span class="nx">shortcuts</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">shortcut</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="30"><span class="w">        </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">shortcut</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;</span>
+</span><span data-line="31"><span class="w">          </span><span class="p">{</span><span class="nx">shortcut</span><span class="p">.</span><span class="nx">label</span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">formatShortcut</span><span class="p">(</span><span class="nx">shortcut</span><span class="p">)}</span>
+</span><span data-line="32"><span class="w">        </span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span><span data-line="33"><span class="w">      </span><span class="p">))}</span>
+</span><span data-line="34"><span class="w">    </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="35"><span class="w">  </span><span class="p">);</span>
+</span><span data-line="36"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="keyboardshortcut-configuration">
+<h3>KeyboardShortcut Configuration<a class="headerlink" href="#keyboardshortcut-configuration" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">label</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Human-readable name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Key to trigger (lowercase)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">modifiers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KeyModifier[]</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Required modifier keys</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">handler</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">()</span> <span class="pre">=&gt;</span> <span class="pre">void</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Callback function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Description for command palette</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">category</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Grouping category</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">allowInInput</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Work when input is focused</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Whether shortcut is active</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="modifier-keys">
+<h3>Modifier Keys<a class="headerlink" href="#modifier-keys" title="Link to this heading">#</a></h3>
+<p>Available modifiers:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modifier</p></th>
+<th class="head"><p>macOS</p></th>
+<th class="head"><p>Windows/Linux</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">meta</span></code></p></td>
+<td><p>Command</p></td>
+<td><p>Ctrl</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ctrl</span></code></p></td>
+<td><p>Control</p></td>
+<td><p>Ctrl</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">alt</span></code></p></td>
+<td><p>Option</p></td>
+<td><p>Alt</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shift</span></code></p></td>
+<td><p>Shift</p></td>
+<td><p>Shift</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">meta</span></code> modifier automatically maps to the platform-appropriate key (Command on macOS, Ctrl on Windows/Linux).</p>
+</section>
+</section>
+<section id="input-field-behavior">
+<h2>Input Field Behavior<a class="headerlink" href="#input-field-behavior" title="Link to this heading">#</a></h2>
+<p>By default, keyboard shortcuts are disabled when the user is focused on an input element (text inputs, textareas, selects, or contenteditable elements). This prevents shortcuts from interfering with typing.</p>
+<p>To allow a shortcut to work even when an input is focused:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">useShortcut</span><span class="p">({</span>
+</span><span data-line="2"><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"escape-input"</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Cancel"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"Escape"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nx">modifiers</span><span class="o">:</span><span class="w"> </span><span class="p">[],</span>
+</span><span data-line="6"><span class="w">  </span><span class="nx">handler</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">cancelEdit</span><span class="p">(),</span>
+</span><span data-line="7"><span class="w">  </span><span class="nx">allowInInput</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Works even in inputs</span>
+</span><span data-line="8"><span class="p">});</span>
+</span></pre></div>
+</div>
+</section>
+<section id="displaying-shortcuts-in-the-ui">
+<h2>Displaying Shortcuts in the UI<a class="headerlink" href="#displaying-shortcuts-in-the-ui" title="Link to this heading">#</a></h2>
+<section id="formatting-shortcuts-for-display">
+<h3>Formatting Shortcuts for Display<a class="headerlink" href="#formatting-shortcuts-for-display" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">formatShortcut</span></code> function to display shortcuts with platform-appropriate symbols:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useKeyboardShortcuts</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/hooks/useKeyboardShortcuts"</span><span class="p">;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kd">function</span><span class="w"> </span><span class="nx">ShortcutHint</span><span class="p">({</span><span class="w"> </span><span class="nx">shortcut</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">formatShortcut</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useKeyboardShortcuts</span><span class="p">();</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="7"><span class="w">    </span><span class="p">&lt;</span><span class="nt">kbd</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"px-2 py-1 bg-gray-100 rounded text-sm"</span><span class="p">&gt;</span>
+</span><span data-line="8"><span class="w">      </span><span class="p">{</span><span class="nx">formatShortcut</span><span class="p">(</span><span class="nx">shortcut</span><span class="p">)}</span>
+</span><span data-line="9"><span class="w">    </span><span class="p">&lt;/</span><span class="nt">kbd</span><span class="p">&gt;</span>
+</span><span data-line="10"><span class="w">  </span><span class="p">);</span>
+</span><span data-line="11"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Example output:</strong></p>
+<ul class="simple">
+<li><p>macOS: <code class="docutils literal notranslate"><span class="pre">Cmd</span> <span class="pre">K</span></code> (with symbols)</p></li>
+<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">K</span></code></p></li>
+</ul>
+</section>
+<section id="showing-shortcuts-by-category">
+<h3>Showing Shortcuts by Category<a class="headerlink" href="#showing-shortcuts-by-category" title="Link to this heading">#</a></h3>
+<p>Group and display shortcuts by category:</p>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kd">function</span><span class="w"> </span><span class="nx">ShortcutReference</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">getShortcutsByCategory</span><span class="p">,</span><span class="w"> </span><span class="nx">formatShortcut</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useKeyboardShortcuts</span><span class="p">();</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">categories</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getShortcutsByCategory</span><span class="p">();</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="7"><span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span data-line="8"><span class="w">      </span><span class="p">{</span><span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">categories</span><span class="p">.</span><span class="nx">entries</span><span class="p">()).</span><span class="nx">map</span><span class="p">(([</span><span class="nx">category</span><span class="p">,</span><span class="w"> </span><span class="nx">shortcuts</span><span class="p">])</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="9"><span class="w">        </span><span class="p">&lt;</span><span class="nt">section</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">category</span><span class="p">}&gt;</span>
+</span><span data-line="10"><span class="w">          </span><span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;{</span><span class="nx">category</span><span class="p">}&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span><span data-line="11"><span class="w">          </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="12"><span class="w">            </span><span class="p">{</span><span class="nx">shortcuts</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">shortcut</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+</span><span data-line="13"><span class="w">              </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">shortcut</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;</span>
+</span><span data-line="14"><span class="w">                </span><span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;{</span><span class="nx">shortcut</span><span class="p">.</span><span class="nx">label</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span><span data-line="15"><span class="w">                </span><span class="p">&lt;</span><span class="nt">kbd</span><span class="p">&gt;{</span><span class="nx">formatShortcut</span><span class="p">(</span><span class="nx">shortcut</span><span class="p">)}&lt;/</span><span class="nt">kbd</span><span class="p">&gt;</span>
+</span><span data-line="16"><span class="w">              </span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span><span data-line="17"><span class="w">            </span><span class="p">))}</span>
+</span><span data-line="18"><span class="w">          </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span><span data-line="19"><span class="w">        </span><span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span><span data-line="20"><span class="w">      </span><span class="p">))}</span>
+</span><span data-line="21"><span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span data-line="22"><span class="w">  </span><span class="p">);</span>
+</span><span data-line="23"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="command-palette-integration">
+<h2>Command Palette Integration<a class="headerlink" href="#command-palette-integration" title="Link to this heading">#</a></h2>
+<p>The command palette automatically includes registered keyboard shortcuts. When you register a shortcut with a matching command item, the palette displays the shortcut hint next to the command.</p>
+<p>To show a shortcut in the command palette:</p>
+<ol class="arabic simple">
+<li><p>Register the keyboard shortcut with <code class="docutils literal notranslate"><span class="pre">useShortcut</span></code> or <code class="docutils literal notranslate"><span class="pre">useKeyboardShortcuts</span></code></p></li>
+<li><p>Register a command item with a matching <code class="docutils literal notranslate"><span class="pre">shortcut</span></code> display string</p></li>
+</ol>
+<div class="highlight-tsx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1">// The shortcut</span>
+</span><span data-line="2"><span class="nx">useShortcut</span><span class="p">({</span>
+</span><span data-line="3"><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"go-home"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Go to Dashboard"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"h"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nx">modifiers</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"meta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"shift"</span><span class="p">],</span>
+</span><span data-line="7"><span class="w">  </span><span class="nx">handler</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"/"</span><span class="p">),</span>
+</span><span data-line="8"><span class="p">});</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1">// The command (with shortcut hint)</span>
+</span><span data-line="11"><span class="nx">registerItems</span><span class="p">([{</span>
+</span><span data-line="12"><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"nav-dashboard"</span><span class="p">,</span>
+</span><span data-line="13"><span class="w">  </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">"Go to Dashboard"</span><span class="p">,</span>
+</span><span data-line="14"><span class="w">  </span><span class="nx">shortcut</span><span class="o">:</span><span class="w"> </span><span class="kt">formatShortcutDisplay</span><span class="p">(</span><span class="s2">"H"</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s2">"meta"</span><span class="p">,</span><span class="w"> </span><span class="s2">"shift"</span><span class="p">]),</span><span class="w">  </span><span class="c1">// Shows "Cmd Shift H" on Mac</span>
+</span><span data-line="15"><span class="w">  </span><span class="nx">onSelect</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"/"</span><span class="p">),</span>
+</span><span data-line="16"><span class="p">}]);</span>
+</span></pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Use Standard Shortcuts</strong>: Stick to common conventions (Cmd+S for save, Cmd+N for new, etc.)</p></li>
+<li><p><strong>Avoid Conflicts</strong>: Check for browser and OS shortcut conflicts before registering</p></li>
+<li><p><strong>Provide Feedback</strong>: Show visual feedback when shortcuts are triggered</p></li>
+<li><p><strong>Document Shortcuts</strong>: Make shortcuts discoverable through the command palette or a help page</p></li>
+<li><p><strong>Keep It Simple</strong>: Avoid complex multi-key combinations that are hard to remember</p></li>
+<li><p><strong>Platform Awareness</strong>: Use <code class="docutils literal notranslate"><span class="pre">meta</span></code> for cross-platform compatibility instead of hardcoding <code class="docutils literal notranslate"><span class="pre">ctrl</span></code> or <code class="docutils literal notranslate"><span class="pre">cmd</span></code></p></li>
+</ol>
+</section>
+<section id="accessibility">
+<h2>Accessibility<a class="headerlink" href="#accessibility" title="Link to this heading">#</a></h2>
+<p>The keyboard shortcut system is built with accessibility in mind:</p>
+<ul class="simple">
+<li><p>Command palette is fully keyboard navigable</p></li>
+<li><p>ARIA attributes for screen reader support</p></li>
+<li><p>Focus management when opening/closing the palette</p></li>
+<li><p>Clear visual indicators for selected items</p></li>
+<li><p>Escape key always closes the palette</p></li>
+</ul>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="shortcut-not-working">
+<h3>Shortcut Not Working<a class="headerlink" href="#shortcut-not-working" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Check if an input element has focus (shortcuts are disabled in inputs by default)</p></li>
+<li><p>Verify the shortcut ID is unique</p></li>
+<li><p>Ensure the shortcut is enabled (<code class="docutils literal notranslate"><span class="pre">enabled:</span> <span class="pre">true</span></code>)</p></li>
+<li><p>Check for conflicts with browser shortcuts</p></li>
+</ol>
+</section>
+<section id="command-not-appearing-in-palette">
+<h3>Command Not Appearing in Palette<a class="headerlink" href="#command-not-appearing-in-palette" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Verify the command has a unique <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
+<li><p>Check that <code class="docutils literal notranslate"><span class="pre">registerItems</span></code> was called</p></li>
+<li><p>Ensure the component is mounted within <code class="docutils literal notranslate"><span class="pre">CommandPaletteProvider</span></code></p></li>
+</ol>
+</section>
+<section id="platform-detection-issues">
+<h3>Platform Detection Issues<a class="headerlink" href="#platform-detection-issues" title="Link to this heading">#</a></h3>
+<p>The system uses <code class="docutils literal notranslate"><span class="pre">navigator.platform</span></code> for platform detection. In rare cases (older browsers, unusual environments), this may not work correctly. The fallback is Windows/Linux behavior.</p>
+</section>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="custom-views.html"><span class="std std-doc">Custom Views</span></a> - Building custom admin views</p></li>
+<li><p><a class="reference internal" href="user-management.html"><span class="std std-doc">User Management</span></a> - Managing admin users</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="audit-log.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Audit Log</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../authentication.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Authentication</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Guards &amp; RBAC - litestar-admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Deployment Guide" href="deployment.html" /><link rel="prev" title="Authentication" href="authentication.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Guards &amp; RBAC"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#permissions">Permissions</a><ul>
+<li><a class="reference internal" href="#built-in-permissions">Built-in Permissions</a></li>
+<li><a class="reference internal" href="#checking-permissions">Checking Permissions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#roles">Roles</a><ul>
+<li><a class="reference internal" href="#built-in-roles">Built-in Roles</a></li>
+<li><a class="reference internal" href="#role-permission-mappings">Role Permission Mappings</a></li>
+<li><a class="reference internal" href="#checking-roles">Checking Roles</a></li>
+<li><a class="reference internal" href="#getting-role-permissions">Getting Role Permissions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#guards">Guards</a><ul>
+<li><a class="reference internal" href="#permission-guards">Permission Guards</a></li>
+<li><a class="reference internal" href="#multiple-permissions">Multiple Permissions</a></li>
+<li><a class="reference internal" href="#role-guards">Role Guards</a></li>
+<li><a class="reference internal" href="#multiple-roles">Multiple Roles</a></li>
+<li><a class="reference internal" href="#using-guard-classes-directly">Using Guard Classes Directly</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#guard-error-responses">Guard Error Responses</a></li>
+<li><a class="reference internal" href="#user-assignment">User Assignment</a><ul>
+<li><a class="reference internal" href="#role-based-permissions">Role-Based Permissions</a></li>
+<li><a class="reference internal" href="#direct-permissions">Direct Permissions</a></li>
+<li><a class="reference internal" href="#id1">Multiple Roles</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-permission-checking">Custom Permission Checking</a></li>
+<li><a class="reference internal" href="#combining-guards-with-model-views">Combining Guards with Model Views</a></li>
+<li><a class="reference internal" href="#applying-guards-to-admin-routes">Applying Guards to Admin Routes</a></li>
+<li><a class="reference internal" href="#example-multi-tenant-authorization">Example: Multi-Tenant Authorization</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Guards &amp; RBAC</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="guards-rbac">
+<h1>Guards &amp; RBAC<a class="headerlink" href="#guards-rbac" title="Link to this heading">#</a></h1>
+<p>litestar-admin provides a comprehensive Role-Based Access Control (RBAC) system with permissions and guards. This guide covers how to use and customize access control.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The RBAC system consists of:</p>
+<ul class="simple">
+<li><p><strong>Permissions</strong>: Fine-grained access controls (e.g., <code class="docutils literal notranslate"><span class="pre">models:read</span></code>, <code class="docutils literal notranslate"><span class="pre">models:write</span></code>)</p></li>
+<li><p><strong>Roles</strong>: Collections of permissions (e.g., <code class="docutils literal notranslate"><span class="pre">viewer</span></code>, <code class="docutils literal notranslate"><span class="pre">editor</span></code>, <code class="docutils literal notranslate"><span class="pre">admin</span></code>)</p></li>
+<li><p><strong>Guards</strong>: Litestar guards that enforce permissions and roles on routes</p></li>
+</ul>
+</section>
+<section id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Link to this heading">#</a></h2>
+<p>Permissions follow a <code class="docutils literal notranslate"><span class="pre">resource:action</span></code> naming pattern for clarity.</p>
+<section id="built-in-permissions">
+<h3>Built-in Permissions<a class="headerlink" href="#built-in-permissions" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Model operations</span>
+</span><span data-line="4"><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_READ</span>      <span class="c1"># "models:read" - View/list records</span>
+</span><span data-line="5"><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_WRITE</span>     <span class="c1"># "models:write" - Create/update records</span>
+</span><span data-line="6"><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_DELETE</span>    <span class="c1"># "models:delete" - Delete records</span>
+</span><span data-line="7"><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_EXPORT</span>    <span class="c1"># "models:export" - Export data</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Dashboard</span>
+</span><span data-line="10"><span class="n">Permission</span><span class="o">.</span><span class="n">DASHBOARD_VIEW</span>   <span class="c1"># "dashboard:view" - View dashboard</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="c1"># Administration</span>
+</span><span data-line="13"><span class="n">Permission</span><span class="o">.</span><span class="n">USERS_MANAGE</span>     <span class="c1"># "users:manage" - Manage admin users</span>
+</span><span data-line="14"><span class="n">Permission</span><span class="o">.</span><span class="n">SETTINGS_MANAGE</span>  <span class="c1"># "settings:manage" - Manage settings</span>
+</span><span data-line="15"><span class="n">Permission</span><span class="o">.</span><span class="n">AUDIT_VIEW</span>       <span class="c1"># "audit:view" - View audit logs</span>
+</span></pre></div>
+</div>
+</section>
+<section id="checking-permissions">
+<h3>Checking Permissions<a class="headerlink" href="#checking-permissions" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_has_permission</span><span class="p">,</span> <span class="n">Permission</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">if</span> <span class="n">user_has_permission</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_DELETE</span><span class="p">):</span>
+</span><span data-line="4">    <span class="c1"># User can delete records</span>
+</span><span data-line="5">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="roles">
+<h2>Roles<a class="headerlink" href="#roles" title="Link to this heading">#</a></h2>
+<p>Roles group related permissions together. Each role inherits its own permissions.</p>
+<section id="built-in-roles">
+<h3>Built-in Roles<a class="headerlink" href="#built-in-roles" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">Role</span><span class="o">.</span><span class="n">VIEWER</span>     <span class="c1"># Read-only access</span>
+</span><span data-line="4"><span class="n">Role</span><span class="o">.</span><span class="n">EDITOR</span>     <span class="c1"># Create and update records</span>
+</span><span data-line="5"><span class="n">Role</span><span class="o">.</span><span class="n">ADMIN</span>      <span class="c1"># Full model management + user management</span>
+</span><span data-line="6"><span class="n">Role</span><span class="o">.</span><span class="n">SUPERADMIN</span> <span class="c1"># Complete access to all features</span>
+</span></pre></div>
+</div>
+</section>
+<section id="role-permission-mappings">
+<h3>Role Permission Mappings<a class="headerlink" href="#role-permission-mappings" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>Permissions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VIEWER</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">models:read</span></code>, <code class="docutils literal notranslate"><span class="pre">dashboard:view</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>EDITOR</p></td>
+<td><p>All viewer permissions + <code class="docutils literal notranslate"><span class="pre">models:write</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>ADMIN</p></td>
+<td><p>All editor permissions + <code class="docutils literal notranslate"><span class="pre">models:delete</span></code>, <code class="docutils literal notranslate"><span class="pre">models:export</span></code>, <code class="docutils literal notranslate"><span class="pre">users:manage</span></code>, <code class="docutils literal notranslate"><span class="pre">audit:view</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>SUPERADMIN</p></td>
+<td><p>All permissions including <code class="docutils literal notranslate"><span class="pre">settings:manage</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="checking-roles">
+<h3>Checking Roles<a class="headerlink" href="#checking-roles" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_has_role</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">if</span> <span class="n">user_has_role</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">Role</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">):</span>
+</span><span data-line="4">    <span class="c1"># User is an admin</span>
+</span><span data-line="5">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="getting-role-permissions">
+<h3>Getting Role Permissions<a class="headerlink" href="#getting-role-permissions" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_permissions_for_role</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">permissions</span> <span class="o">=</span> <span class="n">get_permissions_for_role</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">EDITOR</span><span class="p">)</span>
+</span><span data-line="4"><span class="c1"># Returns: {Permission.MODELS_READ, Permission.DASHBOARD_VIEW, Permission.MODELS_WRITE}</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="guards">
+<h2>Guards<a class="headerlink" href="#guards" title="Link to this heading">#</a></h2>
+<p>Guards enforce permissions and roles on Litestar route handlers.</p>
+<section id="permission-guards">
+<h3>Permission Guards<a class="headerlink" href="#permission-guards" title="Link to this heading">#</a></h3>
+<p>Require specific permission(s) to access a route:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">delete</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_permission</span><span class="p">,</span> <span class="n">Permission</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/models/</span><span class="si">{model}</span><span class="s2">/records"</span><span class="p">)</span>
+</span><span data-line="6"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_READ</span><span class="p">)])</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_records</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="nd">@post</span><span class="p">(</span><span class="s2">"/admin/models/</span><span class="si">{model}</span><span class="s2">/records"</span><span class="p">)</span>
+</span><span data-line="12"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_WRITE</span><span class="p">)])</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_record</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="14">    <span class="o">...</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="nd">@delete</span><span class="p">(</span><span class="s2">"/admin/models/</span><span class="si">{model}</span><span class="s2">/records/</span><span class="si">{id}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="18"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_DELETE</span><span class="p">)])</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_record</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="20">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="multiple-permissions">
+<h3>Multiple Permissions<a class="headerlink" href="#multiple-permissions" title="Link to this heading">#</a></h3>
+<p>Require ALL specified permissions (AND logic):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_permission</span><span class="p">,</span> <span class="n">Permission</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/export"</span><span class="p">)</span>
+</span><span data-line="5"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_READ</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_EXPORT</span><span class="p">)])</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">export_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="7">    <span class="c1"># User must have BOTH permissions</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="role-guards">
+<h3>Role Guards<a class="headerlink" href="#role-guards" title="Link to this heading">#</a></h3>
+<p>Require specific role(s) to access a route:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_role</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/settings"</span><span class="p">)</span>
+</span><span data-line="6"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_role</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">)])</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="multiple-roles">
+<h3>Multiple Roles<a class="headerlink" href="#multiple-roles" title="Link to this heading">#</a></h3>
+<p>Require ANY of the specified roles (OR logic):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_role</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/dashboard"</span><span class="p">)</span>
+</span><span data-line="5"><span class="nd">@guards</span><span class="p">([</span><span class="n">require_role</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">,</span> <span class="n">Role</span><span class="o">.</span><span class="n">SUPERADMIN</span><span class="p">)])</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">admin_dashboard</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="7">    <span class="c1"># User needs EITHER admin OR superadmin role</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-guard-classes-directly">
+<h3>Using Guard Classes Directly<a class="headerlink" href="#using-guard-classes-directly" title="Link to this heading">#</a></h3>
+<p>For more control, use the guard classes directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionGuard</span><span class="p">,</span> <span class="n">RoleGuard</span><span class="p">,</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/data"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">PermissionGuard</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_READ</span><span class="p">)])</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="7">    <span class="o">...</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/admin/settings"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">RoleGuard</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">SUPERADMIN</span><span class="p">)])</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="12">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="guard-error-responses">
+<h2>Guard Error Responses<a class="headerlink" href="#guard-error-responses" title="Link to this heading">#</a></h2>
+<p>When a guard denies access, it raises <code class="docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code>:</p>
+<p><strong>No authentication:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"status_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">401</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication required"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Missing permission:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"status_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">401</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Permission 'models:delete' required"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Missing role:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">"status_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">401</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"One of roles 'admin', 'superadmin' required"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="user-assignment">
+<h2>User Assignment<a class="headerlink" href="#user-assignment" title="Link to this heading">#</a></h2>
+<p>Permissions and roles are assigned to users through the <code class="docutils literal notranslate"><span class="pre">AdminUser</span></code> protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="2">    <span class="nd">@property</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="4"><span class="w">        </span><span class="sd">"""Return role names assigned to this user."""</span>
+</span><span data-line="5">        <span class="k">return</span> <span class="p">[</span><span class="s2">"editor"</span><span class="p">]</span>  <span class="c1"># User has editor role</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="nd">@property</span>
+</span><span data-line="8">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="9"><span class="w">        </span><span class="sd">"""Return direct permissions (in addition to role-based)."""</span>
+</span><span data-line="10">        <span class="k">return</span> <span class="p">[</span><span class="s2">"models:export"</span><span class="p">]</span>  <span class="c1"># Extra permission beyond role</span>
+</span></pre></div>
+</div>
+<section id="role-based-permissions">
+<h3>Role-Based Permissions<a class="headerlink" href="#role-based-permissions" title="Link to this heading">#</a></h3>
+<p>Users inherit all permissions from their assigned roles:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="2">    <span class="nd">@property</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="4">        <span class="k">return</span> <span class="p">[</span><span class="s2">"editor"</span><span class="p">]</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="nd">@property</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="p">[]</span>  <span class="c1"># No direct permissions</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># This user has:</span>
+</span><span data-line="11"><span class="c1"># - models:read (from editor role)</span>
+</span><span data-line="12"><span class="c1"># - dashboard:view (from editor role)</span>
+</span><span data-line="13"><span class="c1"># - models:write (from editor role)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="direct-permissions">
+<h3>Direct Permissions<a class="headerlink" href="#direct-permissions" title="Link to this heading">#</a></h3>
+<p>Assign permissions directly for fine-grained control:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="2">    <span class="nd">@property</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="4">        <span class="k">return</span> <span class="p">[</span><span class="s2">"viewer"</span><span class="p">]</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="nd">@property</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="p">[</span><span class="s2">"models:export"</span><span class="p">]</span>  <span class="c1"># Extra permission beyond viewer role</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># This user has:</span>
+</span><span data-line="11"><span class="c1"># - models:read (from viewer role)</span>
+</span><span data-line="12"><span class="c1"># - dashboard:view (from viewer role)</span>
+</span><span data-line="13"><span class="c1"># - models:export (direct permission)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="id1">
+<h3>Multiple Roles<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Users can have multiple roles:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="2">    <span class="nd">@property</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="nf">roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="4">        <span class="k">return</span> <span class="p">[</span><span class="s2">"viewer"</span><span class="p">,</span> <span class="s2">"editor"</span><span class="p">]</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="nd">@property</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># This user has union of all role permissions</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="custom-permission-checking">
+<h2>Custom Permission Checking<a class="headerlink" href="#custom-permission-checking" title="Link to this heading">#</a></h2>
+<p>For complex authorization logic, implement custom checking:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">user_has_permission</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_edit_record</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">"""Check if user can edit a specific record."""</span>
+</span><span data-line="6">    <span class="c1"># Must have write permission</span>
+</span><span data-line="7">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_has_permission</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_WRITE</span><span class="p">):</span>
+</span><span data-line="8">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="c1"># Additional business logic</span>
+</span><span data-line="11">    <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">owner_id</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="c1"># Admins can edit anything</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="s2">"admin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+<section id="combining-guards-with-model-views">
+<h2>Combining Guards with Model Views<a class="headerlink" href="#combining-guards-with-model-views" title="Link to this heading">#</a></h2>
+<p>Use guards in conjunction with model view access control:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">user_has_permission</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">OrderAdmin</span><span class="p">(</span><span class="n">ModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">Order</span><span class="p">):</span>
+</span><span data-line="6">    <span class="c1"># Static permissions</span>
+</span><span data-line="7">    <span class="n">can_create</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="8">    <span class="n">can_edit</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="9">    <span class="n">can_delete</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Disable delete for all</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="nd">@classmethod</span>
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">        </span><span class="sd">"""Only users with models:read can access."""</span>
+</span><span data-line="14">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="17">        <span class="k">return</span> <span class="n">user_has_permission</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_READ</span><span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="nd">@classmethod</span>
+</span><span data-line="20">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_delete_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="21"><span class="w">        </span><span class="sd">"""Only admins can delete cancelled orders."""</span>
+</span><span data-line="22">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="23">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="24">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="25">        <span class="c1"># Only allow deleting cancelled orders</span>
+</span><span data-line="26">        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">"cancelled"</span><span class="p">:</span>
+</span><span data-line="27">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="28">        <span class="k">return</span> <span class="s2">"admin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span>
+</span></pre></div>
+</div>
+</section>
+<section id="applying-guards-to-admin-routes">
+<h2>Applying Guards to Admin Routes<a class="headerlink" href="#applying-guards-to-admin-routes" title="Link to this heading">#</a></h2>
+<p>Guards are automatically applied to admin API routes based on your auth configuration. You can also add custom guards:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_role</span><span class="p">,</span> <span class="n">Role</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Create a custom admin router with additional guards</span>
+</span><span data-line="6"><span class="n">admin_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">path</span><span class="o">=</span><span class="s2">"/admin/custom"</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="9">    <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">require_role</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">ADMIN</span><span class="p">)],</span>  <span class="c1"># Extra guard for this router</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="example-multi-tenant-authorization">
+<h2>Example: Multi-Tenant Authorization<a class="headerlink" href="#example-multi-tenant-authorization" title="Link to this heading">#</a></h2>
+<p>Here’s an example of implementing tenant-based authorization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelView</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">user_has_permission</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">TenantModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+</span><span data-line="6"><span class="w">    </span><span class="sd">"""Base view with tenant isolation."""</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="nd">@classmethod</span>
+</span><span data-line="9">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_accessible</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">        </span><span class="sd">"""Check tenant access."""</span>
+</span><span data-line="11">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="12">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="14">
+</span><span data-line="15">        <span class="c1"># Superadmins can access any tenant</span>
+</span><span data-line="16">        <span class="k">if</span> <span class="s2">"superadmin"</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+</span><span data-line="17">            <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="18">
+</span><span data-line="19">        <span class="c1"># Regular users can only access their tenant</span>
+</span><span data-line="20">        <span class="n">tenant_id</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"X-Tenant-ID"</span><span class="p">)</span>
+</span><span data-line="21">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">tenant_id</span><span class="p">)</span> <span class="o">==</span> <span class="n">tenant_id</span>
+</span><span data-line="22">
+</span><span data-line="23">    <span class="nd">@classmethod</span>
+</span><span data-line="24">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">can_delete_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="25"><span class="w">        </span><span class="sd">"""Only allow deleting own tenant's records."""</span>
+</span><span data-line="26">        <span class="n">user</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s2">"user"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="27">        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="29">
+</span><span data-line="30">        <span class="c1"># Must have delete permission</span>
+</span><span data-line="31">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_has_permission</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">MODELS_DELETE</span><span class="p">):</span>
+</span><span data-line="32">            <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="33">
+</span><span data-line="34">        <span class="c1"># Check tenant ownership</span>
+</span><span data-line="35">        <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">tenant_id</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">tenant_id</span>
+</span></pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Use Roles for General Access</strong>
+Assign roles rather than individual permissions when possible.</p></li>
+<li><p><strong>Use Permissions for Fine-Grained Control</strong>
+Add direct permissions only when role-based access is insufficient.</p></li>
+<li><p><strong>Implement Defense in Depth</strong>
+Use guards on routes AND access control in model views.</p></li>
+<li><p><strong>Log Access Denials</strong>
+Use the audit system to track authorization failures.</p></li>
+<li><p><strong>Test Authorization</strong>
+Write tests for all permission scenarios.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_viewer_cannot_delete</span><span class="p">():</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">"""Test that viewers cannot delete records."""</span>
+</span><span data-line="3">    <span class="n">viewer_user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">roles</span><span class="o">=</span><span class="p">[</span><span class="s2">"viewer"</span><span class="p">])</span>
+</span><span data-line="4">
+</span><span data-line="5">    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">NotAuthorizedException</span><span class="p">):</span>
+</span><span data-line="6">        <span class="k">await</span> <span class="n">delete_record</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">viewer_user</span><span class="p">,</span> <span class="n">record_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="authentication.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Authentication</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="deployment.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Deployment Guide</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
+</html>

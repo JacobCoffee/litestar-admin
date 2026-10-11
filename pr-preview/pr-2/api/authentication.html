@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Authentication API - litestar-admin</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Models API" href="models.html" /><link rel="prev" title="API Reference" href="index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Authentication API"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#endpoints">Endpoints</a><ul>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#logout">Logout</a></li>
+<li><a class="reference internal" href="#refresh-token">Refresh Token</a></li>
+<li><a class="reference internal" href="#get-current-user">Get Current User</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication-flow">Authentication Flow</a></li>
+<li><a class="reference internal" href="#roles-and-permissions">Roles and Permissions</a><ul>
+<li><a class="reference internal" href="#available-roles">Available Roles</a></li>
+<li><a class="reference internal" href="#available-permissions">Available Permissions</a></li>
+<li><a class="reference internal" href="#role-permission-mapping">Role-Permission Mapping</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-auth-backends">Custom Auth Backends</a></li>
+<li><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Authentication API</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="authentication-api">
+<h1>Authentication API<a class="headerlink" href="#authentication-api" title="Link to this heading">#</a></h1>
+<p>The authentication API handles user login, logout, token refresh, and retrieving current user information.</p>
+<p>All authentication endpoints are under <code class="docutils literal notranslate"><span class="pre">/admin/api/auth</span></code>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>litestar-admin uses a pluggable authentication system. The default implementation uses JWT (JSON Web Tokens) with access and refresh tokens:</p>
+<ul class="simple">
+<li><p><strong>Access Token</strong>: Short-lived token (default: 15 minutes) for API requests</p></li>
+<li><p><strong>Refresh Token</strong>: Long-lived token (default: 7 days) for obtaining new access tokens</p></li>
+</ul>
+</section>
+<section id="endpoints">
+<h2>Endpoints<a class="headerlink" href="#endpoints" title="Link to this heading">#</a></h2>
+<section id="login">
+<h3>Login<a class="headerlink" href="#login" title="Link to this heading">#</a></h3>
+<p>Authenticate a user with email and password credentials.</p>
+<p class="rubric">POST /api/auth/login</p>
+<p><strong>Request Body</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">email</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>User’s email address</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>User’s password</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">POST</span> <span class="nn">/admin/api/auth/login</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="p">{</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin@example.com"</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"secretpassword"</span>
+</span><span data-line="7"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"refresh_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="s2">"900"</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
+<td><p>string</p></td>
+<td><p>JWT for authenticating API requests</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Token for obtaining new access tokens</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">token_type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Always “bearer”</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">expires_in</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Access token lifetime in seconds</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>401</p></td>
+<td><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid email or password"</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>401</p></td>
+<td><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication is not configured"</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="logout">
+<h3>Logout<a class="headerlink" href="#logout" title="Link to this heading">#</a></h3>
+<p>End the current user session and invalidate tokens.</p>
+<p class="rubric">POST /api/auth/logout</p>
+<p><strong>Headers</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Authorization</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bearer</span> <span class="pre">&lt;access_token&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">POST</span> <span class="nn">/admin/api/auth/logout</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Logged out successfully"</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Response</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>401</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Authentication</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">configured&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="refresh-token">
+<h3>Refresh Token<a class="headerlink" href="#refresh-token" title="Link to this heading">#</a></h3>
+<p>Exchange a refresh token for a new access token.</p>
+<p class="rubric">POST /api/auth/refresh</p>
+<p><strong>Request Body</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The refresh token from login</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">POST</span> <span class="nn">/admin/api/auth/refresh</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="p">{</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"refresh_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"access_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"refresh_token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"token_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bearer"</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"expires_in"</span><span class="p">:</span><span class="w"> </span><span class="s2">"900"</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>401</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Invalid</span> <span class="pre">or</span> <span class="pre">expired</span> <span class="pre">refresh</span> <span class="pre">token&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>401</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Authentication</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">configured&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some auth backends may return the same refresh token, while others rotate it on each refresh.</p>
+</div>
+</section>
+<hr class="docutils" />
+<section id="get-current-user">
+<h3>Get Current User<a class="headerlink" href="#get-current-user" title="Link to this heading">#</a></h3>
+<p>Return information about the currently authenticated user.</p>
+<p class="rubric">GET /api/auth/me</p>
+<p><strong>Headers</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Header</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Authorization</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bearer</span> <span class="pre">&lt;access_token&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Example Request</strong></p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nf">GET</span> <span class="nn">/admin/api/auth/me</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</span><span data-line="2"><span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+</span></pre></div>
+</div>
+<p><strong>Success Response (200 OK)</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin@example.com"</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"admin"</span><span class="p">],</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">"permissions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"models:read"</span><span class="p">,</span><span class="w"> </span><span class="s2">"models:write"</span><span class="p">,</span><span class="w"> </span><span class="s2">"models:delete"</span><span class="p">]</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p>string or integer</p></td>
+<td><p>User’s unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">email</span></code></p></td>
+<td><p>string</p></td>
+<td><p>User’s email address</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">roles</span></code></p></td>
+<td><p>array</p></td>
+<td><p>List of assigned role names</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">permissions</span></code></p></td>
+<td><p>array</p></td>
+<td><p>List of permission strings</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Error Responses</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>401</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Authentication</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">configured&quot;}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>403</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;detail&quot;:</span> <span class="pre">&quot;Not</span> <span class="pre">authenticated&quot;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="authentication-flow">
+<h2>Authentication Flow<a class="headerlink" href="#authentication-flow" title="Link to this heading">#</a></h2>
+<p>Here’s a typical authentication flow for a frontend application:</p>
+<ol class="arabic simple">
+<li><p><strong>Login</strong>: Client sends credentials to <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/auth/login</span></code></p></li>
+<li><p><strong>Token Receipt</strong>: Server returns access_token and refresh_token</p></li>
+<li><p><strong>Token Storage</strong>: Client stores tokens securely (httpOnly cookies or secure storage)</p></li>
+<li><p><strong>API Requests</strong>: Client includes <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">{access_token}</span></code> header</p></li>
+<li><p><strong>Token Expiration</strong>: Access token expires (default: 15 minutes)</p></li>
+<li><p><strong>Token Refresh</strong>: Client sends refresh_token to <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/auth/refresh</span></code></p></li>
+<li><p><strong>New Tokens</strong>: Server returns fresh access_token (and optionally new refresh_token)</p></li>
+</ol>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">Client                    Admin API                Auth Backend
+</span><span data-line="2">  |                           |                         |
+</span><span data-line="3">  |-- POST /auth/login ------&gt;|                         |
+</span><span data-line="4">  |   {email, password}       |-- authenticate() ------&gt;|
+</span><span data-line="5">  |                           |&lt;-- user or null --------|
+</span><span data-line="6">  |&lt;-- {access_token,         |                         |
+</span><span data-line="7">  |     refresh_token} -------|                         |
+</span><span data-line="8">  |                           |                         |
+</span><span data-line="9">  |-- GET /api/models -------&gt;|                         |
+</span><span data-line="10">  |   Authorization: Bearer   |-- validate token ------&gt;|
+</span><span data-line="11">  |                           |&lt;-- user ----------------|
+</span><span data-line="12">  |&lt;-- model data ------------|                         |
+</span><span data-line="13">  |                           |                         |
+</span><span data-line="14">  |   [token expires]         |                         |
+</span><span data-line="15">  |                           |                         |
+</span><span data-line="16">  |-- POST /auth/refresh ----&gt;|                         |
+</span><span data-line="17">  |   {refresh_token}         |-- refresh() -----------&gt;|
+</span><span data-line="18">  |                           |&lt;-- new tokens ----------|
+</span><span data-line="19">  |&lt;-- {access_token,         |                         |
+</span><span data-line="20">  |     refresh_token} -------|                         |
+</span></pre></div>
+</div>
+</section>
+<section id="roles-and-permissions">
+<h2>Roles and Permissions<a class="headerlink" href="#roles-and-permissions" title="Link to this heading">#</a></h2>
+<p>litestar-admin includes a built-in RBAC (Role-Based Access Control) system.</p>
+<section id="available-roles">
+<h3>Available Roles<a class="headerlink" href="#available-roles" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">viewer</span></code></p></td>
+<td><p>Read-only access to models and dashboard</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">editor</span></code></p></td>
+<td><p>Can create and update records</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">admin</span></code></p></td>
+<td><p>Full model management, user management, audit access</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">superadmin</span></code></p></td>
+<td><p>Complete access to all features</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="available-permissions">
+<h3>Available Permissions<a class="headerlink" href="#available-permissions" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Permission</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">models:read</span></code></p></td>
+<td><p>Read and list model records</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">models:write</span></code></p></td>
+<td><p>Create and update records</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">models:delete</span></code></p></td>
+<td><p>Delete records</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">models:export</span></code></p></td>
+<td><p>Export model data</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dashboard:view</span></code></p></td>
+<td><p>View the admin dashboard</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">users:manage</span></code></p></td>
+<td><p>Manage admin users</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">settings:manage</span></code></p></td>
+<td><p>Manage admin settings</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">audit:view</span></code></p></td>
+<td><p>View audit logs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="role-permission-mapping">
+<h3>Role-Permission Mapping<a class="headerlink" href="#role-permission-mapping" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>Permissions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">viewer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">models:read</span></code>, <code class="docutils literal notranslate"><span class="pre">dashboard:view</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">editor</span></code></p></td>
+<td><p>viewer + <code class="docutils literal notranslate"><span class="pre">models:write</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">admin</span></code></p></td>
+<td><p>editor + <code class="docutils literal notranslate"><span class="pre">models:delete</span></code>, <code class="docutils literal notranslate"><span class="pre">models:export</span></code>, <code class="docutils literal notranslate"><span class="pre">users:manage</span></code>, <code class="docutils literal notranslate"><span class="pre">audit:view</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">superadmin</span></code></p></td>
+<td><p>admin + <code class="docutils literal notranslate"><span class="pre">settings:manage</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="custom-auth-backends">
+<h2>Custom Auth Backends<a class="headerlink" href="#custom-auth-backends" title="Link to this heading">#</a></h2>
+<p>You can implement custom authentication by creating a class that implements the <code class="docutils literal notranslate"><span class="pre">AuthBackend</span></code> protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthBackend</span><span class="p">,</span> <span class="n">AdminUser</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">MyAuthBackend</span><span class="p">(</span><span class="n">AuthBackend</span><span class="p">):</span>
+</span><span data-line="4">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">credentials</span><span class="p">):</span>
+</span><span data-line="5">        <span class="c1"># Verify credentials, return AdminUser or None</span>
+</span><span data-line="6">        <span class="o">...</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+</span><span data-line="9">        <span class="c1"># Extract and validate token, return AdminUser or None</span>
+</span><span data-line="10">        <span class="o">...</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+</span><span data-line="13">        <span class="c1"># Create tokens, return {"access_token": ..., "refresh_token": ...}</span>
+</span><span data-line="14">        <span class="o">...</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+</span><span data-line="17">        <span class="c1"># Invalidate tokens if needed</span>
+</span><span data-line="18">        <span class="o">...</span>
+</span><span data-line="19">
+</span><span data-line="20">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+</span><span data-line="21">        <span class="c1"># Validate refresh token, return new tokens or None</span>
+</span><span data-line="22">        <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>Then configure it in <code class="docutils literal notranslate"><span class="pre">AdminConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="3">        <span class="n">AdminPlugin</span><span class="p">(</span>
+</span><span data-line="4">            <span class="n">config</span><span class="o">=</span><span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="5">                <span class="n">auth_backend</span><span class="o">=</span><span class="n">MyAuthBackend</span><span class="p">(),</span>
+</span><span data-line="6">            <span class="p">)</span>
+</span><span data-line="7">        <span class="p">)</span>
+</span><span data-line="8">    <span class="p">]</span>
+</span><span data-line="9"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading">#</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Never expose tokens in URLs or logs. Always use HTTPS in production.</p>
+</div>
+<p>Best practices for token handling:</p>
+<ol class="arabic simple">
+<li><p><strong>Store tokens securely</strong>: Use <code class="docutils literal notranslate"><span class="pre">httpOnly</span></code> cookies or secure storage mechanisms</p></li>
+<li><p><strong>Use short access token lifetimes</strong>: 15 minutes is a reasonable default</p></li>
+<li><p><strong>Implement token rotation</strong>: Rotate refresh tokens on each use</p></li>
+<li><p><strong>Validate on every request</strong>: Always verify the token signature and expiration</p></li>
+<li><p><strong>Use HTTPS</strong>: Never transmit tokens over unencrypted connections</p></li>
+</ol>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">API Reference</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="models.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Models API</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

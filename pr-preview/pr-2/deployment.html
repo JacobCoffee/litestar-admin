@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="lime" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Deployment Guide - litestar-admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="api/index.html" /><link rel="prev" title="Guards &amp; RBAC" href="guards.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a1351a40" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Deployment Guide"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-admin/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Learn</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-views.html">Model Views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/custom-views.html">Custom Views and Embeds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/file-uploads.html">File Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/storage.html">Storage Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/user-management.html">User Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/relationships.html">Relationships</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/audit-log.html">Audit Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/keyboard-shortcuts.html">Keyboard Shortcuts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guards.html">Guards &amp; RBAC</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment Guide</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/authentication.html">Authentication API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dashboard.html">Dashboard API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/export.html">Export API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/import.html">Import API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/bulk-actions.html">Bulk Actions API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/JacobCoffee/litestar-admin">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://discord.gg/litestar-919193495116337154">Discord</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#pre-deployment-checklist">Pre-Deployment Checklist</a></li>
+<li><a class="reference internal" href="#security-configuration">Security Configuration</a><ul>
+<li><a class="reference internal" href="#secret-keys">Secret Keys</a></li>
+<li><a class="reference internal" href="#https-configuration">HTTPS Configuration</a></li>
+<li><a class="reference internal" href="#rate-limiting">Rate Limiting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#database-configuration">Database Configuration</a><ul>
+<li><a class="reference internal" href="#production-database-setup">Production Database Setup</a></li>
+<li><a class="reference internal" href="#environment-specific-configuration">Environment-Specific Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deployment-options">Deployment Options</a><ul>
+<li><a class="reference internal" href="#docker-deployment">Docker Deployment</a></li>
+<li><a class="reference internal" href="#kubernetes-deployment">Kubernetes Deployment</a></li>
+<li><a class="reference internal" href="#systemd-service">Systemd Service</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reverse-proxy-configuration">Reverse Proxy Configuration</a><ul>
+<li><a class="reference internal" href="#nginx">Nginx</a></li>
+<li><a class="reference internal" href="#caddy">Caddy</a></li>
+<li><a class="reference internal" href="#traefik">Traefik</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
+<li><a class="reference internal" href="#health-check-endpoint">Health Check Endpoint</a></li>
+<li><a class="reference internal" href="#logging-configuration">Logging Configuration</a></li>
+<li><a class="reference internal" href="#metrics-with-prometheus">Metrics with Prometheus</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#audit-logging">Audit Logging</a></li>
+<li><a class="reference internal" href="#scaling-considerations">Scaling Considerations</a><ul>
+<li><a class="reference internal" href="#horizontal-scaling">Horizontal Scaling</a></li>
+<li><a class="reference internal" href="#redis-for-rate-limiting">Redis for Rate Limiting</a></li>
+<li><a class="reference internal" href="#caching">Caching</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#troubleshooting-production-issues">Troubleshooting Production Issues</a><ul>
+<li><a class="reference internal" href="#common-issues">Common Issues</a></li>
+<li><a class="reference internal" href="#debug-mode">Debug Mode</a></li>
+<li><a class="reference internal" href="#log-analysis">Log Analysis</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Deployment Guide</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="deployment-guide">
+<h1>Deployment Guide<a class="headerlink" href="#deployment-guide" title="Link to this heading">#</a></h1>
+<p>This guide covers best practices for deploying litestar-admin to production environments.</p>
+<section id="pre-deployment-checklist">
+<h2>Pre-Deployment Checklist<a class="headerlink" href="#pre-deployment-checklist" title="Link to this heading">#</a></h2>
+<p>Before deploying, ensure you have:</p>
+<ul class="contains-task-list simple">
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Configured authentication with a secure secret key</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Enabled HTTPS for all traffic</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Set secure cookie options</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Configured rate limiting</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Set up audit logging</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Tested all admin functionality</p></li>
+<li class="task-list-item"><p><input class="task-list-item-checkbox" disabled="disabled" type="checkbox">Configured proper database connections</p></li>
+</ul>
+</section>
+<section id="security-configuration">
+<h2>Security Configuration<a class="headerlink" href="#security-configuration" title="Link to this heading">#</a></h2>
+<section id="secret-keys">
+<h3>Secret Keys<a class="headerlink" href="#secret-keys" title="Link to this heading">#</a></h3>
+<p>Never use hardcoded or weak secret keys in production:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Generate a secure key for development</span>
+</span><span data-line="5"><span class="c1"># Run once: print(secrets.token_urlsafe(32))</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Load from environment in production</span>
+</span><span data-line="8"><span class="n">secret_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ADMIN_JWT_SECRET"</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">if</span> <span class="ow">not</span> <span class="n">secret_key</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"ADMIN_JWT_SECRET environment variable must be set"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="https-configuration">
+<h3>HTTPS Configuration<a class="headerlink" href="#https-configuration" title="Link to this heading">#</a></h3>
+<p>Always use HTTPS in production:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminConfig</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">JWTConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">jwt_config</span> <span class="o">=</span> <span class="n">JWTConfig</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">secret_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"ADMIN_JWT_SECRET"</span><span class="p">],</span>
+</span><span data-line="6">    <span class="n">cookie_secure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Only send cookies over HTTPS</span>
+</span><span data-line="7">    <span class="n">cookie_samesite</span><span class="o">=</span><span class="s2">"strict"</span><span class="p">,</span>  <span class="c1"># Prevent CSRF</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">admin_config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="11">    <span class="n">auth_backend</span><span class="o">=</span><span class="n">auth_backend</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">session_cookie_secure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">session_cookie_httponly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">session_cookie_samesite</span><span class="o">=</span><span class="s2">"lax"</span><span class="p">,</span>
+</span><span data-line="15"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="rate-limiting">
+<h3>Rate Limiting<a class="headerlink" href="#rate-limiting" title="Link to this heading">#</a></h3>
+<p>Configure appropriate rate limits for your traffic:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">admin_config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">rate_limit_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1"># Requests per window</span>
+</span><span data-line="4">    <span class="n">rate_limit_window_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  <span class="c1"># 1 minute window</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>For high-traffic deployments, use a distributed rate limit store like Redis.</p>
+</section>
+</section>
+<section id="database-configuration">
+<h2>Database Configuration<a class="headerlink" href="#database-configuration" title="Link to this heading">#</a></h2>
+<section id="production-database-setup">
+<h3>Production Database Setup<a class="headerlink" href="#production-database-setup" title="Link to this heading">#</a></h3>
+<p>Use a production-ready database with connection pooling:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">db_config</span> <span class="o">=</span> <span class="n">SQLAlchemyConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="c1"># PostgreSQL with asyncpg driver</span>
+</span><span data-line="5">    <span class="n">connection_string</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"DATABASE_URL"</span><span class="p">],</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="c1"># Connection pool settings</span>
+</span><span data-line="8">    <span class="n">pool_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">max_overflow</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">pool_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">pool_recycle</span><span class="o">=</span><span class="mi">1800</span><span class="p">,</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="c1"># Echo SQL for debugging (disable in production)</span>
+</span><span data-line="14">    <span class="n">echo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="15"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="environment-specific-configuration">
+<h3>Environment-Specific Configuration<a class="headerlink" href="#environment-specific-configuration" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">ENVIRONMENT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"ENVIRONMENT"</span><span class="p">,</span> <span class="s2">"development"</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">if</span> <span class="n">ENVIRONMENT</span> <span class="o">==</span> <span class="s2">"production"</span><span class="p">:</span>
+</span><span data-line="6">    <span class="n">db_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"DATABASE_URL"</span><span class="p">]</span>
+</span><span data-line="7">    <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="8">    <span class="n">cookie_secure</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="9"><span class="k">else</span><span class="p">:</span>
+</span><span data-line="10">    <span class="n">db_url</span> <span class="o">=</span> <span class="s2">"sqlite+aiosqlite:///dev.db"</span>
+</span><span data-line="11">    <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="12">    <span class="n">cookie_secure</span> <span class="o">=</span> <span class="kc">False</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="deployment-options">
+<h2>Deployment Options<a class="headerlink" href="#deployment-options" title="Link to this heading">#</a></h2>
+<section id="docker-deployment">
+<h3>Docker Deployment<a class="headerlink" href="#docker-deployment" title="Link to this heading">#</a></h3>
+<p>Create a production Dockerfile:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c"># Dockerfile</span>
+</span><span data-line="2"><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c"># Install dependencies</span>
+</span><span data-line="7"><span class="k">COPY</span><span class="w"> </span>pyproject.toml<span class="w"> </span>uv.lock<span class="w"> </span>./
+</span><span data-line="8"><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>uv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uv<span class="w"> </span>sync<span class="w"> </span>--frozen<span class="w"> </span>--no-dev
+</span><span data-line="9">
+</span><span data-line="10"><span class="c"># Copy application</span>
+</span><span data-line="11"><span class="k">COPY</span><span class="w"> </span>src/<span class="w"> </span>src/
+</span><span data-line="12">
+</span><span data-line="13"><span class="c"># Set environment</span>
+</span><span data-line="14"><span class="k">ENV</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/app/src
+</span><span data-line="15"><span class="k">ENV</span><span class="w"> </span><span class="nv">PYTHONDONTWRITEBYTECODE</span><span class="o">=</span><span class="m">1</span>
+</span><span data-line="16"><span class="k">ENV</span><span class="w"> </span><span class="nv">PYTHONUNBUFFERED</span><span class="o">=</span><span class="m">1</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c"># Run with uvicorn</span>
+</span><span data-line="19"><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">"uvicorn"</span><span class="p">,</span><span class="w"> </span><span class="s2">"app:app"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--host"</span><span class="p">,</span><span class="w"> </span><span class="s2">"0.0.0.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--port"</span><span class="p">,</span><span class="w"> </span><span class="s2">"8000"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>Docker Compose for local testing:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># docker-compose.yml</span>
+</span><span data-line="2"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"3.8"</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="nt">services</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">app</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span data-line="7"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"8000:8000"</span>
+</span><span data-line="9"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DATABASE_URL=postgresql+asyncpg://user:pass@db:5432/app</span>
+</span><span data-line="11"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}</span>
+</span><span data-line="12"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ENVIRONMENT=production</span>
+</span><span data-line="13"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="w">  </span><span class="nt">db</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16</span>
+</span><span data-line="18"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+</span><span data-line="19"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">POSTGRES_USER=user</span>
+</span><span data-line="20"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">POSTGRES_PASSWORD=pass</span>
+</span><span data-line="21"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">POSTGRES_DB=app</span>
+</span><span data-line="22"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+</span><span data-line="23"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres_data:/var/lib/postgresql/data</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="nt">volumes</span><span class="p">:</span>
+</span><span data-line="26"><span class="w">  </span><span class="nt">postgres_data</span><span class="p">:</span>
+</span></pre></div>
+</div>
+</section>
+<section id="kubernetes-deployment">
+<h3>Kubernetes Deployment<a class="headerlink" href="#kubernetes-deployment" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># deployment.yaml</span>
+</span><span data-line="2"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+</span><span data-line="3"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+</span><span data-line="4"><span class="nt">metadata</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">litestar-admin</span>
+</span><span data-line="6"><span class="nt">spec</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</span><span data-line="8"><span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">litestar-admin</span>
+</span><span data-line="11"><span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">litestar-admin</span>
+</span><span data-line="15"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+</span><span data-line="16"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+</span><span data-line="18"><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your-registry/litestar-admin:latest</span>
+</span><span data-line="19"><span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+</span><span data-line="20"><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span>
+</span><span data-line="21"><span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+</span><span data-line="22"><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DATABASE_URL</span>
+</span><span data-line="23"><span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span data-line="24"><span class="w">                </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span data-line="25"><span class="w">                  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
+</span><span data-line="26"><span class="w">                  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database-url</span>
+</span><span data-line="27"><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ADMIN_JWT_SECRET</span>
+</span><span data-line="28"><span class="w">              </span><span class="nt">valueFrom</span><span class="p">:</span>
+</span><span data-line="29"><span class="w">                </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span data-line="30"><span class="w">                  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
+</span><span data-line="31"><span class="w">                  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jwt-secret</span>
+</span><span data-line="32"><span class="w">          </span><span class="nt">resources</span><span class="p">:</span>
+</span><span data-line="33"><span class="w">            </span><span class="nt">requests</span><span class="p">:</span>
+</span><span data-line="34"><span class="w">              </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"256Mi"</span>
+</span><span data-line="35"><span class="w">              </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"250m"</span>
+</span><span data-line="36"><span class="w">            </span><span class="nt">limits</span><span class="p">:</span>
+</span><span data-line="37"><span class="w">              </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"512Mi"</span>
+</span><span data-line="38"><span class="w">              </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"500m"</span>
+</span><span data-line="39"><span class="w">          </span><span class="nt">livenessProbe</span><span class="p">:</span>
+</span><span data-line="40"><span class="w">            </span><span class="nt">httpGet</span><span class="p">:</span>
+</span><span data-line="41"><span class="w">              </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/admin/api/health</span>
+</span><span data-line="42"><span class="w">              </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span>
+</span><span data-line="43"><span class="w">            </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</span><span data-line="44"><span class="w">            </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</span><span data-line="45"><span class="w">          </span><span class="nt">readinessProbe</span><span class="p">:</span>
+</span><span data-line="46"><span class="w">            </span><span class="nt">httpGet</span><span class="p">:</span>
+</span><span data-line="47"><span class="w">              </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/admin/api/health</span>
+</span><span data-line="48"><span class="w">              </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span>
+</span><span data-line="49"><span class="w">            </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</span><span data-line="50"><span class="w">            </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</span></pre></div>
+</div>
+</section>
+<section id="systemd-service">
+<h3>Systemd Service<a class="headerlink" href="#systemd-service" title="Link to this heading">#</a></h3>
+<p>For traditional server deployments:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># /etc/systemd/system/litestar-admin.service</span>
+</span><span data-line="2"><span class="k">[Unit]</span>
+</span><span data-line="3"><span class="na">Description</span><span class="o">=</span><span class="s">Litestar Admin Application</span>
+</span><span data-line="4"><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="k">[Service]</span>
+</span><span data-line="7"><span class="na">Type</span><span class="o">=</span><span class="s">exec</span>
+</span><span data-line="8"><span class="na">User</span><span class="o">=</span><span class="s">www-data</span>
+</span><span data-line="9"><span class="na">Group</span><span class="o">=</span><span class="s">www-data</span>
+</span><span data-line="10"><span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/opt/litestar-admin</span>
+</span><span data-line="11"><span class="na">Environment</span><span class="o">=</span><span class="s">"PATH=/opt/litestar-admin/.venv/bin"</span>
+</span><span data-line="12"><span class="na">Environment</span><span class="o">=</span><span class="s">"DATABASE_URL=postgresql+asyncpg://user:pass@localhost/app"</span>
+</span><span data-line="13"><span class="na">Environment</span><span class="o">=</span><span class="s">"ADMIN_JWT_SECRET=your-secret-key"</span>
+</span><span data-line="14"><span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/litestar-admin/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000 --workers 4</span>
+</span><span data-line="15"><span class="na">Restart</span><span class="o">=</span><span class="s">always</span>
+</span><span data-line="16"><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">[Install]</span>
+</span><span data-line="19"><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></pre></div>
+</div>
+<p>Enable and start:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>litestar-admin
+</span><span data-line="2">sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>litestar-admin
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="reverse-proxy-configuration">
+<h2>Reverse Proxy Configuration<a class="headerlink" href="#reverse-proxy-configuration" title="Link to this heading">#</a></h2>
+<section id="nginx">
+<h3>Nginx<a class="headerlink" href="#nginx" title="Link to this heading">#</a></h3>
+<div class="highlight-nginx notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">upstream</span><span class="w"> </span><span class="s">litestar_admin</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+</span><span data-line="3"><span class="w">    </span><span class="kn">keepalive</span><span class="w"> </span><span class="mi">64</span><span class="p">;</span>
+</span><span data-line="4"><span class="p">}</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="7"><span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="w"> </span><span class="s">http2</span><span class="p">;</span>
+</span><span data-line="8"><span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">admin.example.com</span><span class="p">;</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="w">    </span><span class="kn">ssl_certificate</span><span class="w"> </span><span class="s">/etc/ssl/certs/admin.example.com.crt</span><span class="p">;</span>
+</span><span data-line="11"><span class="w">    </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/ssl/private/admin.example.com.key</span><span class="p">;</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="w">    </span><span class="c1"># Security headers</span>
+</span><span data-line="14"><span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Frame-Options</span><span class="w"> </span><span class="s">"SAMEORIGIN"</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+</span><span data-line="15"><span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Content-Type-Options</span><span class="w"> </span><span class="s">"nosniff"</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+</span><span data-line="16"><span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-XSS-Protection</span><span class="w"> </span><span class="s">"1</span><span class="p">;</span><span class="w"> </span><span class="kn">mode=block"</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+</span><span data-line="17"><span class="w">    </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Referrer-Policy</span><span class="w"> </span><span class="s">"strict-origin-when-cross-origin"</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="w">    </span><span class="c1"># Admin panel</span>
+</span><span data-line="20"><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/admin</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="21"><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://litestar_admin</span><span class="p">;</span>
+</span><span data-line="22"><span class="w">        </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
+</span><span data-line="23"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
+</span><span data-line="24"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span data-line="25"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span><span data-line="26"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span>
+</span><span data-line="27"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">""</span><span class="p">;</span>
+</span><span data-line="28">
+</span><span data-line="29"><span class="w">        </span><span class="c1"># WebSocket support (if needed)</span>
+</span><span data-line="30"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Upgrade</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
+</span><span data-line="31"><span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">"upgrade"</span><span class="p">;</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="w">        </span><span class="c1"># Timeouts</span>
+</span><span data-line="34"><span class="w">        </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
+</span><span data-line="35"><span class="w">        </span><span class="kn">proxy_send_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
+</span><span data-line="36"><span class="w">        </span><span class="kn">proxy_read_timeout</span><span class="w"> </span><span class="s">60s</span><span class="p">;</span>
+</span><span data-line="37"><span class="w">    </span><span class="p">}</span>
+</span><span data-line="38">
+</span><span data-line="39"><span class="w">    </span><span class="c1"># Static files with caching</span>
+</span><span data-line="40"><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/admin/static</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="41"><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://litestar_admin</span><span class="p">;</span>
+</span><span data-line="42"><span class="w">        </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="s">1y</span><span class="p">;</span>
+</span><span data-line="43"><span class="w">        </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Cache-Control</span><span class="w"> </span><span class="s">"public,</span><span class="w"> </span><span class="s">immutable"</span><span class="p">;</span>
+</span><span data-line="44"><span class="w">    </span><span class="p">}</span>
+</span><span data-line="45"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="caddy">
+<h3>Caddy<a class="headerlink" href="#caddy" title="Link to this heading">#</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">admin.example.com {
+</span><span data-line="2">    reverse_proxy localhost:8000
+</span><span data-line="3">
+</span><span data-line="4">    header {
+</span><span data-line="5">        X-Frame-Options "SAMEORIGIN"
+</span><span data-line="6">        X-Content-Type-Options "nosniff"
+</span><span data-line="7">        X-XSS-Protection "1; mode=block"
+</span><span data-line="8">        Referrer-Policy "strict-origin-when-cross-origin"
+</span><span data-line="9">    }
+</span><span data-line="10">}
+</span></pre></div>
+</div>
+</section>
+<section id="traefik">
+<h3>Traefik<a class="headerlink" href="#traefik" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># traefik dynamic configuration</span>
+</span><span data-line="2"><span class="nt">http</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">routers</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">admin</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">      </span><span class="nt">rule</span><span class="p">:</span><span class="w"> </span><span class="s">"Host(`admin.example.com`)"</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">litestar-admin</span>
+</span><span data-line="7"><span class="w">      </span><span class="nt">entryPoints</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">websecure</span>
+</span><span data-line="9"><span class="w">      </span><span class="nt">tls</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">        </span><span class="nt">certResolver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">letsencrypt</span>
+</span><span data-line="11"><span class="w">      </span><span class="nt">middlewares</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">security-headers</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="w">  </span><span class="nt">services</span><span class="p">:</span>
+</span><span data-line="15"><span class="w">    </span><span class="nt">litestar-admin</span><span class="p">:</span>
+</span><span data-line="16"><span class="w">      </span><span class="nt">loadBalancer</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">        </span><span class="nt">servers</span><span class="p">:</span>
+</span><span data-line="18"><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">"http://app:8000"</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="w">  </span><span class="nt">middlewares</span><span class="p">:</span>
+</span><span data-line="21"><span class="w">    </span><span class="nt">security-headers</span><span class="p">:</span>
+</span><span data-line="22"><span class="w">      </span><span class="nt">headers</span><span class="p">:</span>
+</span><span data-line="23"><span class="w">        </span><span class="nt">frameDeny</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span data-line="24"><span class="w">        </span><span class="nt">contentTypeNosniff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span data-line="25"><span class="w">        </span><span class="nt">browserXssFilter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span data-line="26"><span class="w">        </span><span class="nt">referrerPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"strict-origin-when-cross-origin"</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="monitoring">
+<h2>Monitoring<a class="headerlink" href="#monitoring" title="Link to this heading">#</a></h2>
+<section id="health-check-endpoint">
+<h3>Health Check Endpoint<a class="headerlink" href="#health-check-endpoint" title="Link to this heading">#</a></h3>
+<p>The admin API includes a health check endpoint:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">curl<span class="w"> </span>https://admin.example.com/admin/api/health
+</span></pre></div>
+</div>
+</section>
+<section id="logging-configuration">
+<h3>Logging Configuration<a class="headerlink" href="#logging-configuration" title="Link to this heading">#</a></h3>
+<p>Configure structured logging for production:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">structlog</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">processors</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="6">        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">filter_by_level</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_logger_name</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s2">"iso"</span><span class="p">),</span>
+</span><span data-line="10">        <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">JSONRenderer</span><span class="p">(),</span>
+</span><span data-line="11">    <span class="p">],</span>
+</span><span data-line="12">    <span class="n">wrapper_class</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">BoundLogger</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">context_class</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">logger_factory</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">LoggerFactory</span><span class="p">(),</span>
+</span><span data-line="15">    <span class="n">cache_logger_on_first_use</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="16"><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># Set log level</span>
+</span><span data-line="19"><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="metrics-with-prometheus">
+<h3>Metrics with Prometheus<a class="headerlink" href="#metrics-with-prometheus" title="Link to this heading">#</a></h3>
+<p>Export metrics for monitoring:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">prometheus_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">Histogram</span><span class="p">,</span> <span class="n">generate_latest</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">admin_requests</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+</span><span data-line="4">    <span class="s2">"admin_requests_total"</span><span class="p">,</span>
+</span><span data-line="5">    <span class="s2">"Total admin requests"</span><span class="p">,</span>
+</span><span data-line="6">    <span class="p">[</span><span class="s2">"method"</span><span class="p">,</span> <span class="s2">"endpoint"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">],</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">admin_latency</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+</span><span data-line="10">    <span class="s2">"admin_request_duration_seconds"</span><span class="p">,</span>
+</span><span data-line="11">    <span class="s2">"Admin request latency"</span><span class="p">,</span>
+</span><span data-line="12">    <span class="p">[</span><span class="s2">"method"</span><span class="p">,</span> <span class="s2">"endpoint"</span><span class="p">],</span>
+</span><span data-line="13"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="audit-logging">
+<h2>Audit Logging<a class="headerlink" href="#audit-logging" title="Link to this heading">#</a></h2>
+<p>Configure audit logging for compliance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_admin.audit</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditLogger</span><span class="p">,</span> <span class="n">AuditEntry</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">DatabaseAuditLogger</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">"""Store audit logs in database."""</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_factory</span><span class="p">):</span>
+</span><span data-line="8">        <span class="bp">self</span><span class="o">.</span><span class="n">_session_factory</span> <span class="o">=</span> <span class="n">session_factory</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">AuditEntry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+</span><span data-line="12">            <span class="n">record</span> <span class="o">=</span> <span class="n">AuditLog</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+</span><span data-line="13">            <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</span><span data-line="14">            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AuditEntry</span><span class="p">]:</span>
+</span><span data-line="17">        <span class="c1"># Query implementation</span>
+</span><span data-line="18">        <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="scaling-considerations">
+<h2>Scaling Considerations<a class="headerlink" href="#scaling-considerations" title="Link to this heading">#</a></h2>
+<section id="horizontal-scaling">
+<h3>Horizontal Scaling<a class="headerlink" href="#horizontal-scaling" title="Link to this heading">#</a></h3>
+<p>For multiple instances, ensure:</p>
+<ol class="arabic simple">
+<li><p><strong>Shared Session Storage</strong>: Use Redis or database-backed sessions</p></li>
+<li><p><strong>Distributed Rate Limiting</strong>: Use Redis-backed rate limit store</p></li>
+<li><p><strong>Load Balancer Configuration</strong>: Enable sticky sessions if needed</p></li>
+</ol>
+</section>
+<section id="redis-for-rate-limiting">
+<h3>Redis for Rate Limiting<a class="headerlink" href="#redis-for-rate-limiting" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Example Redis rate limit store (implement based on your needs)</span>
+</span><span data-line="2"><span class="k">class</span><span class="w"> </span><span class="nc">RedisRateLimitStore</span><span class="p">:</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">redis_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="4">        <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span> <span class="o">=</span> <span class="n">aioredis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">redis_url</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">increment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="7">        <span class="n">full_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"rate_limit:</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="8">        <span class="n">pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">pipeline</span><span class="p">()</span>
+</span><span data-line="9">        <span class="n">pipe</span><span class="o">.</span><span class="n">incr</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
+</span><span data-line="10">        <span class="n">pipe</span><span class="o">.</span><span class="n">expire</span><span class="p">(</span><span class="n">full_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_window_seconds</span><span class="p">(</span><span class="n">window</span><span class="p">))</span>
+</span><span data-line="11">        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="caching">
+<h3>Caching<a class="headerlink" href="#caching" title="Link to this heading">#</a></h3>
+<p>Add caching for frequently accessed data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">cache_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(</span><span class="n">redis_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"REDIS_URL"</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="troubleshooting-production-issues">
+<h2>Troubleshooting Production Issues<a class="headerlink" href="#troubleshooting-production-issues" title="Link to this heading">#</a></h2>
+<section id="common-issues">
+<h3>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>502 Bad Gateway</strong></p>
+<ul class="simple">
+<li><p>Check if the application is running</p></li>
+<li><p>Verify proxy configuration</p></li>
+<li><p>Check for startup errors in logs</p></li>
+</ul>
+</li>
+<li><p><strong>Authentication Failures</strong></p>
+<ul class="simple">
+<li><p>Verify JWT secret is set correctly</p></li>
+<li><p>Check cookie settings for HTTPS</p></li>
+<li><p>Verify user loader function</p></li>
+</ul>
+</li>
+<li><p><strong>Slow Performance</strong></p>
+<ul class="simple">
+<li><p>Enable connection pooling</p></li>
+<li><p>Check database query performance</p></li>
+<li><p>Add caching for static data</p></li>
+</ul>
+</li>
+<li><p><strong>Rate Limit Issues</strong></p>
+<ul class="simple">
+<li><p>Verify rate limit configuration</p></li>
+<li><p>Check for proper client IP detection behind proxy</p></li>
+<li><p>Consider distributed rate limiting</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="debug-mode">
+<h3>Debug Mode<a class="headerlink" href="#debug-mode" title="Link to this heading">#</a></h3>
+<p>Temporarily enable debug mode for troubleshooting (never in production traffic):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">admin_config</span> <span class="o">=</span> <span class="n">AdminConfig</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enable only for debugging</span>
+</span><span data-line="3"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="log-analysis">
+<h3>Log Analysis<a class="headerlink" href="#log-analysis" title="Link to this heading">#</a></h3>
+<p>Key log patterns to watch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Failed authentication attempts</span>
+</span><span data-line="2">grep<span class="w"> </span><span class="s2">"Authentication required"</span><span class="w"> </span>/var/log/app/admin.log
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Rate limit hits</span>
+</span><span data-line="5">grep<span class="w"> </span><span class="s2">"429"</span><span class="w"> </span>/var/log/nginx/access.log
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Database errors</span>
+</span><span data-line="8">grep<span class="w"> </span><span class="s2">"DatabaseError"</span><span class="w"> </span>/var/log/app/admin.log
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="guards.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Guards &amp; RBAC</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="api/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">API Reference</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/JacobCoffee/litestar-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
+</html>
