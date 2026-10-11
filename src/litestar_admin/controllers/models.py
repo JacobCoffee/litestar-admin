@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, Request, delete, get, patch, post, put
 from litestar.exceptions import NotFoundException
@@ -143,7 +144,7 @@ class ModelsController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Models"]
+    tags = ("Models",)
 
     @get(
         "/",
@@ -222,7 +223,7 @@ class ModelsController(Controller):
             sort_order = "asc"
 
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -276,7 +277,7 @@ class ModelsController(Controller):
             NotFoundException: If the model is not registered.
         """
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -327,7 +328,7 @@ class ModelsController(Controller):
             NotFoundException: If the model is not registered.
         """
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -363,7 +364,7 @@ class ModelsController(Controller):
             NotFoundException: If the model or record is not found.
         """
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -409,9 +410,8 @@ class ModelsController(Controller):
         Raises:
             NotFoundException: If the model or record is not found.
         """
-        print(f"[UPDATE] PUT request for {model_name}/{record_id} with data: {data}")
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -473,7 +473,7 @@ class ModelsController(Controller):
             NotFoundException: If the model or record is not found.
         """
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -536,7 +536,7 @@ class ModelsController(Controller):
             NotFoundException: If the model or record is not found.
         """
         try:
-            view_class = admin_registry.get_view_by_name(model_name)
+            view_class = admin_registry.get_model_view_by_name(model_name)
         except KeyError as exc:
             raise NotFoundException(f"Model '{model_name}' not found") from exc
 
@@ -586,10 +586,10 @@ class ModelsController(Controller):
         from litestar_admin.audit.models import AuditLog
 
         audit_logger = logging.getLogger("litestar_admin.audit")
-        audit_logger.info(f"Audit log: {action.value} on {model_name} record {record_id}")
+        audit_logger.info("Audit log: %s on %s record %s", action.value, model_name, record_id)
 
         try:
-            print(f"[AUDIT] Starting audit log for {action.value} on {model_name} record {record_id}")
+            audit_logger.debug("Starting audit log for %s on %s record %s", action.value, model_name, record_id)
 
             entry = await audit_admin_action(
                 connection=request,
@@ -599,7 +599,7 @@ class ModelsController(Controller):
                 changes=changes,
                 metadata=metadata,
             )
-            print(f"[AUDIT] Created audit entry: {entry.id}, actor: {entry.actor_email}")
+            audit_logger.debug("Created audit entry: %s, actor: %s", entry.id, entry.actor_email)
 
             # Create the AuditLog model directly and add to session
             audit_log = AuditLog(
@@ -616,21 +616,14 @@ class ModelsController(Controller):
                 user_agent=entry.user_agent,
             )
 
-            print(f"[AUDIT] Session state before add: in_transaction={db_session.in_transaction()}")
             db_session.add(audit_log)
-            print("[AUDIT] Added to session, flushing...")
             await db_session.flush()
-            print("[AUDIT] Flushed, committing...")
             await db_session.commit()
-            print("[AUDIT] Committed successfully!")
             audit_logger.info("Audit entry committed successfully")
-        except Exception as e:
-            print(f"[AUDIT] ERROR: {type(e).__name__}: {e}")
-            audit_logger.error(f"Audit logging failed: {e}", exc_info=True)
-            try:
+        except Exception:
+            audit_logger.exception("Audit logging failed")
+            with contextlib.suppress(Exception):
                 await db_session.rollback()
-            except Exception:
-                pass
 
 
 def _convert_pk(pk_str: str, service: AdminService[Any]) -> Any:

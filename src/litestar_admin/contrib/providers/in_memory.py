@@ -6,12 +6,52 @@ useful for settings, configuration, caching, or testing scenarios.
 
 from __future__ import annotations
 
+import operator
 import uuid
+from collections.abc import Callable
 from typing import Any, ClassVar, Literal
 
 from litestar_admin.views.custom import CustomView, ListResult
 
 __all__ = ["InMemoryView"]
+
+
+def _numeric_or_string_comparator(compare: Callable[[Any, Any], bool]) -> Callable[[Any, Any, str, str], bool]:
+    """Build a filter comparator that compares numerically, falling back to strings.
+
+    Args:
+        compare: A two-argument comparison function (e.g. operator.gt).
+
+    Returns:
+        A comparator matching the `_FILTER_OPERATORS` signature.
+    """
+
+    def _compare(item_value: Any, value: Any, str_item_value: str, str_value: str) -> bool:
+        try:
+            return compare(float(item_value), float(value))
+        except (ValueError, TypeError):
+            return compare(str_item_value, str_value)
+
+    return _compare
+
+
+_FILTER_OPERATORS: dict[str, Callable[[Any, Any, str, str], bool]] = {
+    "equals": lambda iv, v, _siv, _sv: str(iv) == str(v),
+    "notEquals": lambda iv, v, _siv, _sv: str(iv) != str(v),
+    "contains": lambda _iv, _v, siv, sv: sv in siv,
+    "startsWith": lambda _iv, _v, siv, sv: siv.startswith(sv),
+    "endsWith": lambda _iv, _v, siv, sv: siv.endswith(sv),
+    "isEmpty": lambda iv, _v, _siv, _sv: not iv or iv == "",
+    "isNotEmpty": lambda iv, _v, _siv, _sv: bool(iv) and iv != "",
+    "gt": _numeric_or_string_comparator(operator.gt),
+    "greaterThan": _numeric_or_string_comparator(operator.gt),
+    "gte": _numeric_or_string_comparator(operator.ge),
+    "greaterThanOrEqual": _numeric_or_string_comparator(operator.ge),
+    "lt": _numeric_or_string_comparator(operator.lt),
+    "lessThan": _numeric_or_string_comparator(operator.lt),
+    "lte": _numeric_or_string_comparator(operator.le),
+    "lessThanOrEqual": _numeric_or_string_comparator(operator.le),
+}
 
 
 class InMemoryView(CustomView):
@@ -270,55 +310,14 @@ class InMemoryView(CustomView):
         if value is None:
             return items
 
+        matcher = _FILTER_OPERATORS.get(operator, _FILTER_OPERATORS["equals"])
+        str_value = str(value).lower()
         result = []
         for item in items:
             item_value = item.get(field)
             if item_value is None:
                 continue
-
-            match = False
-            str_item_value = str(item_value).lower()
-            str_value = str(value).lower()
-
-            if operator == "equals":
-                match = str(item_value) == str(value)
-            elif operator == "contains":
-                match = str_value in str_item_value
-            elif operator == "startsWith":
-                match = str_item_value.startswith(str_value)
-            elif operator == "endsWith":
-                match = str_item_value.endswith(str_value)
-            elif operator in ("gt", "greaterThan"):
-                try:
-                    match = float(item_value) > float(value)
-                except (ValueError, TypeError):
-                    match = str_item_value > str_value
-            elif operator in ("gte", "greaterThanOrEqual"):
-                try:
-                    match = float(item_value) >= float(value)
-                except (ValueError, TypeError):
-                    match = str_item_value >= str_value
-            elif operator in ("lt", "lessThan"):
-                try:
-                    match = float(item_value) < float(value)
-                except (ValueError, TypeError):
-                    match = str_item_value < str_value
-            elif operator in ("lte", "lessThanOrEqual"):
-                try:
-                    match = float(item_value) <= float(value)
-                except (ValueError, TypeError):
-                    match = str_item_value <= str_value
-            elif operator == "notEquals":
-                match = str(item_value) != str(value)
-            elif operator == "isEmpty":
-                match = not item_value or item_value == ""
-            elif operator == "isNotEmpty":
-                match = bool(item_value) and item_value != ""
-            else:
-                # Default to equality
-                match = str(item_value) == str(value)
-
-            if match:
+            if matcher(item_value, value, str(item_value).lower(), str_value):
                 result.append(item)
 
         return result

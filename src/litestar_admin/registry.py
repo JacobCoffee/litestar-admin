@@ -157,6 +157,30 @@ class ViewRegistry:
             raise KeyError(msg)
         return self._views_by_identity[identity]
 
+    def get_model_view_by_name(self, name: str) -> type[BaseModelView]:
+        """Get a model view class by identity (URL-safe name).
+
+        Like `get_view_by_name`, but narrows the result to model views only,
+        for callers (e.g. CRUD controllers) that require model-specific
+        attributes such as `model` or `get_list_columns`.
+
+        Args:
+            name: The view identity to look up (case-insensitive).
+
+        Returns:
+            The registered model view class with the given identity.
+
+        Raises:
+            KeyError: If the identity is not registered or is not a model view.
+        """
+        from litestar_admin.views import BaseModelView as _BaseModelView
+
+        view_class = self.get_view_by_name(name)
+        if not issubclass(view_class, _BaseModelView):
+            msg = f"View '{name}' is not a model view"
+            raise KeyError(msg)
+        return view_class
+
     def has_view(self, identity: str) -> bool:
         """Check if a view identity is registered.
 

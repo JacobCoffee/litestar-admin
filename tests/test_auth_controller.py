@@ -468,4 +468,4 @@ class TestControllerConfiguration:
 
     def test_controller_tags(self) -> None:
         """Test controller tags for OpenAPI."""
-        assert AuthController.tags == ["Authentication"]
+        assert AuthController.tags == ("Authentication",)

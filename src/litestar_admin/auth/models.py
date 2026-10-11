@@ -34,9 +34,15 @@ Example:
 
 from __future__ import annotations
 
+import sys
 import uuid
 from datetime import datetime, timezone
-from typing import Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING or sys.version_info < (3, 11):
+    from typing_extensions import Self
+else:
+    from typing import Self
 
 from sqlalchemy import JSON, Boolean, DateTime, Index, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -123,7 +129,7 @@ class AdminUser(AdminUserBase):
                 await session.commit()
     """
 
-    __tablename__: ClassVar[str] = "admin_users"
+    __tablename__ = "admin_users"
 
     # Primary key
     id: Mapped[str] = mapped_column(

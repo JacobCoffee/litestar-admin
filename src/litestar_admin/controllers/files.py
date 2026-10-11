@@ -14,7 +14,7 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, Request, delete, get, post
 from litestar.datastructures import UploadFile  # Required for runtime signature
@@ -24,16 +24,11 @@ from litestar.params import Body
 from litestar.response import Redirect, Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 
+from litestar_admin.contrib.storages import AdminStorageBackend  # noqa: TC001 - Required at runtime for Litestar DI
+from litestar_admin.fields.file import FileField, ImageField, validate_file_field
 from litestar_admin.logging import get_logger
 
 _logger = get_logger(__name__)
-
-from litestar_admin.contrib.storages import AdminStorageBackend
-from litestar_admin.fields.file import (
-    FileField,
-    ImageField,
-    validate_file_field,
-)
 
 __all__ = [
     "DeleteFileResponse",
@@ -169,7 +164,7 @@ class FilesController(Controller):
     """
 
     path = "/api/files"
-    tags: ClassVar[list[str]] = ["Files"]
+    tags = ("Files",)
 
     @post(
         "/upload",
@@ -189,13 +184,8 @@ class FilesController(Controller):
         optional thumbnail generation.
 
         Args:
+            request: The incoming request, used to read query params and form data.
             admin_storage: The storage backend for file operations.
-            data: The uploaded file from the multipart form.
-            model_name: The name of the model this file belongs to.
-            field_name: The name of the field this file belongs to.
-            allowed_extensions: Comma-separated list of allowed extensions.
-            max_size: Maximum file size in bytes.
-            generate_thumbnail: Whether to generate a thumbnail (for images).
 
         Returns:
             UploadFileResponse on success, or validation error response.
@@ -203,7 +193,6 @@ class FilesController(Controller):
         Raises:
             ValidationException: If the file fails validation.
         """
-        # Get query params
         model_name = request.query_params.get("model_name", "unknown")
         field_name = request.query_params.get("field_name", "file")
         allowed_extensions = request.query_params.get("allowed_extensions")
@@ -211,162 +200,48 @@ class FilesController(Controller):
         max_size = int(max_size_str) if max_size_str else None
         generate_thumbnail = request.query_params.get("generate_thumbnail", "false").lower() == "true"
 
-        # Debug logging
-        _logger.info("=== FILE UPLOAD DEBUG ===")
-        _logger.info(f"model_name: {model_name}")
-        _logger.info(f"field_name: {field_name}")
-        _logger.info(f"admin_storage: {admin_storage}")
-        _logger.info(f"Content-Type: {request.headers.get('content-type')}")
-
-        # Check if storage is configured
         if admin_storage is None:
-            _logger.error("Storage not configured!")
-            return Response(
-                content=ValidationErrorResponse(
-                    success=False,
-                    errors=[
-                        {
-                            "field": field_name,
-                            "error": "File storage is not configured. Configure storage in AdminConfig.",
-                        }
-                    ],
-                ),
-                status_code=HTTP_200_OK,
+            _logger.error("Storage not configured for file upload")
+            return self._file_error_response(
+                field_name, "File storage is not configured. Configure storage in AdminConfig."
             )
 
-        # Get uploaded file from form data
         try:
             form_data = await request.form()
-            _logger.info(f"Form data keys: {list(form_data.keys())}")
-            for key, value in form_data.items():
-                _logger.info(
-                    f"  {key}: {type(value).__name__} = {value if not isinstance(value, UploadFile) else f'UploadFile({value.filename})'}"
-                )
         except Exception as e:
-            _logger.error(f"Error parsing form data: {e}")
-            return Response(
-                content=ValidationErrorResponse(
-                    success=False,
-                    errors=[
-                        {
-                            "field": field_name,
-                            "error": f"Error parsing form data: {e}",
-                        }
-                    ],
-                ),
-                status_code=HTTP_200_OK,
-            )
+            _logger.exception("Error parsing form data")
+            return self._file_error_response(field_name, f"Error parsing form data: {e}")
 
         data = form_data.get("data")
-        _logger.info(f"data field: {type(data).__name__ if data else 'None'}")
         if not isinstance(data, UploadFile):
-            return Response(
-                content=ValidationErrorResponse(
-                    success=False,
-                    errors=[
-                        {
-                            "field": field_name,
-                            "error": "No file uploaded. Please select a file.",
-                        }
-                    ],
-                ),
-                status_code=HTTP_200_OK,
-            )
+            return self._file_error_response(field_name, "No file uploaded. Please select a file.")
 
-        # Read file content
         file_content = await data.read()
-        _logger.info(f"File content length: {len(file_content)} bytes")
 
-        # Only validate if explicit restrictions are provided
-        # Otherwise allow any file type through the generic endpoint
-        if allowed_extensions or max_size:
-            extensions_list = None
-            if allowed_extensions:
-                extensions_list = [ext.strip() for ext in allowed_extensions.split(",")]
+        field_config, error_response = self._validate_upload(
+            data,
+            file_content,
+            field_name,
+            allowed_extensions=allowed_extensions,
+            max_size=max_size,
+            generate_thumbnail=generate_thumbnail,
+        )
+        if error_response is not None:
+            return error_response
 
-            if generate_thumbnail:
-                field_config: FileField = ImageField(
-                    name=field_name,
-                    allowed_extensions=extensions_list,
-                    max_size=max_size,
-                    generate_thumbnail=True,
-                )
-            else:
-                field_config = FileField(
-                    name=field_name,
-                    allowed_extensions=extensions_list,
-                    max_size=max_size,
-                )
-
-            _logger.info(f"File config: extensions={extensions_list}, max_size={max_size}")
-
-            # Validate the file
-            validation_errors = validate_file_field(data, field_config, file_content=file_content)
-            _logger.info(f"Validation errors: {validation_errors}")
-
-            if validation_errors:
-                for err in validation_errors:
-                    _logger.error(f"Validation error: field={err.field_name}, error={err.error}, code={err.error_code}")
-                return Response(
-                    content=ValidationErrorResponse(
-                        success=False,
-                        errors=[
-                            {
-                                "field": err.field_name,
-                                "error": err.error,
-                                "code": err.error_code,
-                            }
-                            for err in validation_errors
-                        ],
-                    ),
-                    status_code=422,
-                )
-        else:
-            _logger.info("No validation restrictions specified, allowing any file type")
-            field_config = None
-
-        # Upload the file
         try:
-            _logger.info(f"Starting upload to storage... generate_thumbnail={generate_thumbnail}")
-            # Generate thumbnail if requested (regardless of validation config)
-            should_generate_thumb = generate_thumbnail or (
-                isinstance(field_config, ImageField) and field_config.generate_thumbnail
+            storage_path, thumbnail_path, thumbnail_url, public_url = await self._store_upload(
+                admin_storage,
+                file_content,
+                data.filename or "unnamed",
+                model_name,
+                field_name,
+                generate_thumbnail=generate_thumbnail,
+                field_config=field_config,
             )
-            if should_generate_thumb:
-                storage_path, thumbnail_path = await admin_storage.upload_with_thumbnail(
-                    file_content=file_content,
-                    filename=data.filename or "unnamed",
-                    model_name=model_name,
-                    field_name=field_name,
-                )
-                thumbnail_url = admin_storage.get_public_url(thumbnail_path) if thumbnail_path else None
-                _logger.info(f"Thumbnail generated: {thumbnail_path} -> {thumbnail_url}")
-            else:
-                storage_path = await admin_storage.upload(
-                    file_content=file_content,
-                    filename=data.filename or "unnamed",
-                    model_name=model_name,
-                    field_name=field_name,
-                )
-                thumbnail_path = None
-                thumbnail_url = None
-
-            public_url = admin_storage.get_public_url(storage_path)
-            _logger.info(f"Upload successful: {storage_path} -> {public_url}")
         except Exception as e:
-            _logger.error(f"Upload failed: {e}", exc_info=True)
-            return Response(
-                content=ValidationErrorResponse(
-                    success=False,
-                    errors=[
-                        {
-                            "field": field_name,
-                            "error": f"Upload failed: {e}",
-                        }
-                    ],
-                ),
-                status_code=500,
-            )
+            _logger.exception("Upload failed")
+            return self._file_error_response(field_name, f"Upload failed: {e}", status_code=500)
 
         return UploadFileResponse(
             success=True,
@@ -378,6 +253,125 @@ class FilesController(Controller):
             thumbnail_path=thumbnail_path,
             thumbnail_url=thumbnail_url,
         )
+
+    @staticmethod
+    def _file_error_response(
+        field_name: str, message: str, status_code: int = HTTP_200_OK
+    ) -> Response[ValidationErrorResponse]:
+        """Build a single-field validation error response.
+
+        Args:
+            field_name: The field the error applies to.
+            message: The human-readable error message.
+            status_code: The HTTP status code to return.
+
+        Returns:
+            A Response wrapping a ValidationErrorResponse.
+        """
+        return Response(
+            content=ValidationErrorResponse(success=False, errors=[{"field": field_name, "error": message}]),
+            status_code=status_code,
+        )
+
+    @staticmethod
+    def _validate_upload(
+        data: UploadFile,
+        file_content: bytes,
+        field_name: str,
+        *,
+        allowed_extensions: str | None,
+        max_size: int | None,
+        generate_thumbnail: bool,
+    ) -> tuple[FileField | None, Response[ValidationErrorResponse] | None]:
+        """Validate an uploaded file against field restrictions, if any were given.
+
+        Args:
+            data: The uploaded file.
+            file_content: The raw file bytes.
+            field_name: The name of the field the file belongs to.
+            allowed_extensions: Comma-separated list of allowed extensions.
+            max_size: Maximum file size in bytes.
+            generate_thumbnail: Whether a thumbnail should be generated for images.
+
+        Returns:
+            A tuple of the resolved field config (or None if no restrictions were
+            requested) and an error response (or None if validation passed).
+        """
+        if not (allowed_extensions or max_size):
+            return None, None
+
+        extensions_list = [ext.strip() for ext in allowed_extensions.split(",")] if allowed_extensions else None
+        field_config: FileField = (
+            ImageField(name=field_name, allowed_extensions=extensions_list, max_size=max_size, generate_thumbnail=True)
+            if generate_thumbnail
+            else FileField(name=field_name, allowed_extensions=extensions_list, max_size=max_size)
+        )
+
+        validation_errors = validate_file_field(data, field_config, file_content=file_content)
+        if not validation_errors:
+            return field_config, None
+
+        for err in validation_errors:
+            _logger.error("Validation error: field=%s, error=%s, code=%s", err.field_name, err.error, err.error_code)
+        return field_config, Response(
+            content=ValidationErrorResponse(
+                success=False,
+                errors=[
+                    {"field": err.field_name, "error": err.error, "code": err.error_code} for err in validation_errors
+                ],
+            ),
+            status_code=422,
+        )
+
+    @staticmethod
+    async def _store_upload(
+        admin_storage: AdminStorageBackend,
+        file_content: bytes,
+        filename: str,
+        model_name: str,
+        field_name: str,
+        *,
+        generate_thumbnail: bool,
+        field_config: FileField | None,
+    ) -> tuple[str, str | None, str | None, str]:
+        """Store an uploaded file, generating a thumbnail if requested.
+
+        Args:
+            admin_storage: The storage backend for file operations.
+            file_content: The raw file bytes.
+            filename: The original filename.
+            model_name: The name of the model this file belongs to.
+            field_name: The name of the field this file belongs to.
+            generate_thumbnail: Whether a thumbnail should be generated for images.
+            field_config: The resolved field config, if validation ran.
+
+        Returns:
+            A tuple of (storage_path, thumbnail_path, thumbnail_url, public_url).
+        """
+        should_generate_thumb = generate_thumbnail or (
+            isinstance(field_config, ImageField) and field_config.generate_thumbnail
+        )
+        if should_generate_thumb:
+            storage_path, thumbnail_path = await admin_storage.upload_with_thumbnail(
+                file_content=file_content,
+                filename=filename,
+                model_name=model_name,
+                field_name=field_name,
+            )
+            thumbnail_url = admin_storage.get_public_url(thumbnail_path) if thumbnail_path else None
+        else:
+            storage_path = await admin_storage.upload(
+                file_content=file_content,
+                filename=filename,
+                model_name=model_name,
+                field_name=field_name,
+            )
+            thumbnail_path = None
+            thumbnail_url = None
+
+        public_url = admin_storage.get_public_url(storage_path)
+        _logger.info("Upload successful: %s -> %s", storage_path, public_url)
+        return storage_path, thumbnail_path, thumbnail_url, public_url
 
     @post(
         "/upload/validate",

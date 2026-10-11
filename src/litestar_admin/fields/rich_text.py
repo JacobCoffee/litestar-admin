@@ -279,11 +279,7 @@ def validate_rich_text_field(
         return errors
 
     # Check max length on plain text
-    if (
-        plain_text is not None
-        and field_config.max_length is not None
-        and not field_config.is_length_valid(plain_text)
-    ):
+    if plain_text is not None and field_config.max_length is not None and not field_config.is_length_valid(plain_text):
         errors.append(
             RichTextFieldValidationError(
                 field_name=field_config.name,

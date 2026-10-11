@@ -8,7 +8,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar import Controller, post
 from litestar.datastructures import UploadFile  # noqa: TC002 - Required at runtime for Litestar DI
@@ -219,7 +219,7 @@ class ImportController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Import"]
+    tags = ("Import",)
 
     @post(
         "/{model_name:str}/import/preview",
@@ -751,8 +751,7 @@ class ImportController(Controller):
             success = False
         else:
             message = (
-                f"Import completed with partial success: "
-                f"{imported_count} rows imported, {failed_count} rows failed"
+                f"Import completed with partial success: {imported_count} rows imported, {failed_count} rows failed"
             )
             success = True
 
@@ -792,7 +791,7 @@ class ImportController(Controller):
         if not registry.has_model_by_name(model_name):
             msg = f"Model '{model_name}' not found"
             raise NotFoundException(msg)
-        return registry.get_view_by_name(model_name)
+        return registry.get_model_view_by_name(model_name)
 
     @staticmethod
     async def _read_file_with_encoding(upload_file: UploadFile) -> tuple[str, str]:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from litestar_admin.relationships import RelationshipDetector, get_relationship_detector
 from litestar_admin.views.admin_view import BaseAdminView
@@ -63,7 +63,7 @@ class BaseModelView(BaseAdminView):
     name_plural: ClassVar[str] = ""
     icon: ClassVar[str] = "table"
     category: ClassVar[str | None] = None
-    view_type: ClassVar[str] = "model"  # Override from BaseAdminView
+    view_type: ClassVar[Literal["model"]] = "model"  # Override from BaseAdminView
 
     # Column configuration
     column_list: ClassVar[list[str]] = []

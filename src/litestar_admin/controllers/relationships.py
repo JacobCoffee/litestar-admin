@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, get
 from litestar.exceptions import NotFoundException
@@ -155,7 +155,7 @@ class RelationshipsController(Controller):
     """
 
     path = "/api/models/{model_name:str}/relationships/{field_name:str}"
-    tags: ClassVar[list[str]] = ["Relationships"]
+    tags = ("Relationships",)
 
     @get(
         "/search",
@@ -360,7 +360,7 @@ def _get_view_and_relationship(
         NotFoundException: If the model or relationship is not found.
     """
     try:
-        view_class = admin_registry.get_view_by_name(model_name)
+        view_class = admin_registry.get_model_view_by_name(model_name)
     except KeyError as exc:
         raise NotFoundException(f"Model '{model_name}' not found") from exc
 

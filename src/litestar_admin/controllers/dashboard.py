@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, get
 from litestar.status_codes import HTTP_200_OK
@@ -115,7 +115,7 @@ class DashboardController(Controller):
     """
 
     path = "/api/dashboard"
-    tags: ClassVar[list[str]] = ["Dashboard"]
+    tags = ("Dashboard",)
 
     @get(
         "/stats",

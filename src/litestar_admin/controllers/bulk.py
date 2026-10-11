@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 from litestar import Controller, post
 from litestar.exceptions import HTTPException, NotFoundException
@@ -127,7 +127,7 @@ class BulkActionsController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Bulk Actions"]
+    tags = ("Bulk Actions",)
 
     @post(
         "/{model_name:str}/bulk/delete",
@@ -324,4 +324,4 @@ class BulkActionsController(Controller):
                 status_code=HTTP_404_NOT_FOUND,
                 detail=f"Model '{model_name}' not found",
             )
-        return registry.get_view_by_name(model_name)
+        return registry.get_model_view_by_name(model_name)

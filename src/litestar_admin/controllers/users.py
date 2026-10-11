@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from litestar_admin.auth.password_reset import PasswordResetService
@@ -383,7 +383,7 @@ class UserManagementController(Controller):
     """
 
     path = "/api/users"
-    tags: ClassVar[list[str]] = ["User Management"]
+    tags = ("User Management",)
 
     @get(
         "/",

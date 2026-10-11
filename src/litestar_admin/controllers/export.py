@@ -6,7 +6,7 @@ import csv
 import json
 from dataclasses import dataclass
 from io import BytesIO, StringIO
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar import Controller, get, post
 from litestar.exceptions import NotFoundException, ValidationException
@@ -95,7 +95,7 @@ class ExportController(Controller):
     """
 
     path = "/api/models"
-    tags: ClassVar[list[str]] = ["Export"]
+    tags = ("Export",)
 
     @get(
         "/{model_name:str}/export",
@@ -262,7 +262,7 @@ class ExportController(Controller):
         if not registry.has_model_by_name(model_name):
             msg = f"Model '{model_name}' not found"
             raise NotFoundException(msg)
-        return registry.get_view_by_name(model_name)
+        return registry.get_model_view_by_name(model_name)
 
     @staticmethod
     def _get_primary_key_column(model: type[Any]) -> str:

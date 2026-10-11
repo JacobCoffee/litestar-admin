@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from litestar import Controller, get, post
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
@@ -139,7 +139,7 @@ class AuthController(Controller):
     """
 
     path = "/api/auth"
-    tags: ClassVar[list[str]] = ["Authentication"]
+    tags = ("Authentication",)
 
     @post(
         "/login",

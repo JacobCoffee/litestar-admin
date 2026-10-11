@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
     from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.schema import Column
+    from sqlalchemy.orm import Mapper
     from sqlalchemy.sql import ColumnElement
 
     from litestar_admin.views import BaseModelView
@@ -97,7 +97,22 @@ class AdminService(Generic[T]):
         """Return the model class."""
         return self._view_class.model
 
-    def _get_primary_key_column(self) -> Column[Any]:
+    def _get_mapper(self) -> Mapper[Any]:
+        """Get the SQLAlchemy mapper for the model.
+
+        Returns:
+            The SQLAlchemy Mapper for the service's model.
+
+        Raises:
+            ValueError: If the model is not a mapped SQLAlchemy class.
+        """
+        mapper = inspect(self.model)
+        if mapper is None:
+            msg = f"Could not inspect model {self.model.__name__}: not a mapped SQLAlchemy class"
+            raise ValueError(msg)
+        return mapper
+
+    def _get_primary_key_column(self) -> ColumnElement[Any]:
         """Get the primary key column for the model.
 
         Returns:
@@ -106,7 +121,7 @@ class AdminService(Generic[T]):
         Raises:
             ValueError: If no primary key is found.
         """
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
         pk_columns = mapper.primary_key
         if not pk_columns:
             msg = f"Model {self.model.__name__} has no primary key"
@@ -441,7 +456,7 @@ class AdminService(Generic[T]):
         )
 
         # Coerce values to proper Python types
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
         column_map = {c.name: c for c in mapper.columns}
         coerced_data = {}
         for key, value in processed_data.items():
@@ -502,7 +517,7 @@ class AdminService(Generic[T]):
         )
 
         # Get column mapping for value coercion
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
         column_map = {c.name: c for c in mapper.columns}
 
         # Apply updates
@@ -583,7 +598,7 @@ class AdminService(Generic[T]):
             record: The record to update.
             data: The data to apply.
         """
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
 
         for column in mapper.columns:
             column_name = column.name
@@ -612,8 +627,7 @@ class AdminService(Generic[T]):
             return False
 
         if soft_delete and hasattr(record, "deleted_at"):
-            # Soft delete: set deleted_at timestamp
-            record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+            record.deleted_at = datetime.now(tz=timezone.utc)  # ty: ignore[invalid-assignment]
             await self._session.flush()
         else:
             # Hard delete
@@ -668,7 +682,7 @@ class AdminService(Generic[T]):
 
             for record in records:
                 if soft_delete and hasattr(record, "deleted_at"):
-                    record.deleted_at = datetime.now(tz=timezone.utc)  # type: ignore[attr-defined]
+                    record.deleted_at = datetime.now(tz=timezone.utc)  # ty: ignore[invalid-assignment]
                 else:
                     await self._session.delete(record)
                 deleted_count += 1
@@ -702,7 +716,7 @@ class AdminService(Generic[T]):
         Returns:
             Dictionary representing the JSON schema.
         """
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
         properties: dict[str, Any] = {}
         required: list[str] = []
 
@@ -801,7 +815,7 @@ class AdminService(Generic[T]):
             Dictionary mapping FK column names to relationship details.
         """
         fk_map: dict[str, dict[str, Any]] = {}
-        mapper = inspect(self.model)
+        mapper = self._get_mapper()
 
         # Check for explicit relationship configurations from the view
         for rel_info in self._view_class.relationship_fields():
@@ -848,21 +862,59 @@ class AdminService(Generic[T]):
         type_info = _SQLALCHEMY_TYPE_MAP.get(type_name, {"type": "string"})
         schema.update(type_info)
 
-        # Handle Enum types - extract enum values for dropdown
-        if type_name == "ENUM" and hasattr(column.type, "enums"):
-            schema["type"] = "string"
-            # Get enum values (handles both native SQL enums and Python enum classes)
-            enum_values = column.type.enums
-            if hasattr(column.type, "enum_class") and column.type.enum_class:
-                # Python Enum class - extract values
-                enum_values = [e.value for e in column.type.enum_class]
-            schema["enum"] = list(enum_values)
+        self._apply_enum_schema(schema, column, type_name)
 
         # Add maxLength for string types with length
         if type_name in ("STRING", "VARCHAR", "CHAR") and hasattr(column.type, "length") and column.type.length:
             schema["maxLength"] = column.type.length
 
-        # Add format for common field names
+        self._apply_format_schema(schema, column)
+
+        # Add nullable info using JSON schema pattern
+        if column.nullable:
+            current_type = schema.get("type")
+            if current_type:
+                schema["type"] = [current_type, "null"]
+
+        # Add primary key info
+        if column.primary_key:
+            schema["readOnly"] = True
+
+        self._apply_default_schema(schema, column)
+
+        # Add description from column doc if available
+        if column.doc:
+            schema["description"] = column.doc
+
+        return schema
+
+    @staticmethod
+    def _apply_enum_schema(schema: dict[str, Any], column: Any, type_name: str) -> None:
+        """Add enum values to the schema for ENUM columns, in place.
+
+        Args:
+            schema: The schema dict being built, mutated in place.
+            column: The SQLAlchemy column.
+            type_name: The uppercased SQLAlchemy type name.
+        """
+        if type_name != "ENUM" or not hasattr(column.type, "enums"):
+            return
+        schema["type"] = "string"
+        # Get enum values (handles both native SQL enums and Python enum classes)
+        enum_values = column.type.enums
+        if hasattr(column.type, "enum_class") and column.type.enum_class:
+            # Python Enum class - extract values
+            enum_values = [e.value for e in column.type.enum_class]
+        schema["enum"] = list(enum_values)
+
+    @staticmethod
+    def _apply_format_schema(schema: dict[str, Any], column: Any) -> None:
+        """Add a JSON schema `format` hint based on common field names, in place.
+
+        Args:
+            schema: The schema dict being built, mutated in place.
+            column: The SQLAlchemy column.
+        """
         column_lower = column.name.lower()
         if column_lower in ("email", "email_address", "user_email"):
             schema["format"] = "email"
@@ -881,29 +933,19 @@ class AdminService(Generic[T]):
         ):
             schema["format"] = "textarea"
 
-        # Add nullable info using JSON schema pattern
-        if column.nullable:
-            current_type = schema.get("type")
-            if current_type:
-                schema["type"] = [current_type, "null"]
+    @staticmethod
+    def _apply_default_schema(schema: dict[str, Any], column: Any) -> None:
+        """Add the column's Python-side default value to the schema, in place.
 
-        # Add primary key info
-        if column.primary_key:
-            schema["readOnly"] = True
-
-        # Add default value if present (Python-side default)
-        if column.default is not None:
-            default_arg = column.default.arg
-            # Handle callable defaults (skip them) vs literal values
-            if not callable(default_arg):
-                # Handle enum defaults
-                if hasattr(default_arg, "value"):
-                    schema["default"] = default_arg.value
-                else:
-                    schema["default"] = default_arg
-
-        # Add description from column doc if available
-        if column.doc:
-            schema["description"] = column.doc
-
-        return schema
+        Args:
+            schema: The schema dict being built, mutated in place.
+            column: The SQLAlchemy column.
+        """
+        if column.default is None:
+            return
+        default_arg = column.default.arg
+        # Handle callable defaults (skip them) vs literal values
+        if callable(default_arg):
+            return
+        # Handle enum defaults
+        schema["default"] = default_arg.value if hasattr(default_arg, "value") else default_arg

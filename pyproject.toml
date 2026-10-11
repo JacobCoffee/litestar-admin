@@ -35,6 +35,7 @@ dependencies = [
     "advanced-alchemy>=0.10.0",
     "sqlalchemy[asyncio]>=2.0.0",
     "aiofiles>=25.1.0",
+    "typing-extensions>=4.0.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
@@ -138,6 +139,7 @@ max-complexity = 12
 ]
 "examples/**/*" = ["ARG", "B008", "D", "FAST", "FBT", "PLR1714", "RET504", "RUF012", "S101", "S104", "S106", "SIM108", "T201", "TC002"]
 "src/litestar_admin/controllers/**/*" = ["B008"]  # Litestar Parameter defaults
+"docs/conf.py" = ["INP001"]  # Sphinx config, not a package module
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

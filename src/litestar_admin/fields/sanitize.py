@@ -86,13 +86,15 @@ DEFAULT_TAG_ATTRIBUTES: dict[str, frozenset[str]] = {
 }
 
 # URL schemes that are safe for href and src attributes
-SAFE_URL_SCHEMES: frozenset[str] = frozenset({
-    "http",
-    "https",
-    "mailto",
-    "tel",
-    "data",  # For base64 embedded images
-})
+SAFE_URL_SCHEMES: frozenset[str] = frozenset(
+    {
+        "http",
+        "https",
+        "mailto",
+        "tel",
+        "data",  # For base64 embedded images
+    }
+)
 
 
 def sanitize_html(

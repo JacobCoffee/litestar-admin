@@ -23,13 +23,25 @@ Example:
 
 from __future__ import annotations
 
+import sys
 from datetime import datetime, timezone
-from enum import StrEnum
 from typing import Any
 
 from sqlalchemy import Boolean, DateTime, Index, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
+
+if sys.version_info >= (3, 11):
+    from enum import StrEnum
+else:
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        """Backport of `enum.StrEnum` for Python < 3.11."""
+
+        def __str__(self) -> str:
+            return str(self.value)
+
 
 __all__ = ["AdminSettings", "AdminSettingsBase", "SettingsCategory"]
 

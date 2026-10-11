@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import os
 import sys
+from pathlib import Path
 
 # Add source directory to path for autodoc
-sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, str(Path("../src").resolve()))
 
 # Project information
 project = "litestar-admin"

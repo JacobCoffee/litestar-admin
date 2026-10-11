@@ -17,7 +17,7 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, ClassVar
+from typing import Any
 
 from litestar import Controller, delete, get, post, put
 from litestar.exceptions import NotFoundException
@@ -144,7 +144,7 @@ class SettingsController(Controller):
     """
 
     path = "/api/settings"
-    tags: ClassVar[list[str]] = ["Settings"]
+    tags = ("Settings",)
 
     @get(
         "/",

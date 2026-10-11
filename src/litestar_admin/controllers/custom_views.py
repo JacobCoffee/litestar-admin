@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from litestar import Controller, Request, delete, get, post, put
 from litestar.exceptions import NotFoundException, PermissionDeniedException
@@ -368,7 +368,7 @@ class CustomViewsController(Controller):
     """
 
     path = "/api/views/custom"
-    tags: ClassVar[list[str]] = ["Custom Views"]
+    tags = ("Custom Views",)
 
     @get(
         "/",
@@ -458,10 +458,7 @@ class CustomViewsController(Controller):
         effective_limit = limit or page_size or 25
         effective_limit = min(max(1, effective_limit), 100)
 
-        if offset is not None:
-            effective_page = (offset // effective_limit) + 1
-        else:
-            effective_page = page or 1
+        effective_page = (offset // effective_limit) + 1 if offset is not None else (page or 1)
         effective_page = max(1, effective_page)
 
         # Parse filters if provided
@@ -767,7 +764,7 @@ class ActionsController(Controller):
     """
 
     path = "/api/views/actions"
-    tags: ClassVar[list[str]] = ["Actions"]
+    tags = ("Actions",)
 
     @get(
         "/",
@@ -925,7 +922,7 @@ class PagesController(Controller):
     """
 
     path = "/api/views/pages"
-    tags: ClassVar[list[str]] = ["Pages"]
+    tags = ("Pages",)
 
     @get(
         "/",
@@ -1099,7 +1096,7 @@ class EmbedsController(Controller):
     """
 
     path = "/api/views/embeds"
-    tags: ClassVar[list[str]] = ["Embeds"]
+    tags = ("Embeds",)
 
     @get(
         "/",
@@ -1247,7 +1244,7 @@ class LinksController(Controller):
     """
 
     path = "/api/views/links"
-    tags: ClassVar[list[str]] = ["Links"]
+    tags = ("Links",)
 
     @get(
         "/",

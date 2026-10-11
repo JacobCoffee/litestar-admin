@@ -18,14 +18,13 @@ from litestar import Litestar, get
 from litestar.middleware.base import AbstractMiddleware
 from litestar.testing import AsyncTestClient
 from litestar.types import Receive, Scope, Send
+from litestar_permissions import PermissionsConfig, require_permission, require_role
+from litestar_permissions.models import create_models
+from litestar_permissions.resolver import PermissionResolver
 from sqlalchemy import String, Uuid
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.pool import StaticPool
-
-from litestar_permissions import PermissionsConfig, require_permission, require_role
-from litestar_permissions.models import create_models
-from litestar_permissions.resolver import PermissionResolver
 
 
 # ---------------------------------------------------------------------------
@@ -211,12 +210,14 @@ async def seed_data() -> dict[str, str]:
         await session.flush()
 
         # Role -> Permission links
-        session.add_all([
-            RolePermission(role_id=reader_role.id, permission_id=perm_read.id),
-            RolePermission(role_id=writer_role.id, permission_id=perm_write.id),
-            RolePermission(role_id=admin_role.id, permission_id=perm_read.id),
-            RolePermission(role_id=admin_role.id, permission_id=perm_write.id),
-        ])
+        session.add_all(
+            [
+                RolePermission(role_id=reader_role.id, permission_id=perm_read.id),
+                RolePermission(role_id=writer_role.id, permission_id=perm_write.id),
+                RolePermission(role_id=admin_role.id, permission_id=perm_read.id),
+                RolePermission(role_id=admin_role.id, permission_id=perm_write.id),
+            ]
+        )
 
         # User -> Role assignments
         session.add(UserRoleAssignment(user_id=regular_user.id, role_id=reader_role.id))

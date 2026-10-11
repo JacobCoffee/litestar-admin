@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import ClassVar
 
 from litestar import Controller, get
 from litestar.status_codes import HTTP_200_OK
@@ -84,7 +83,7 @@ class ConfigController(Controller):
     """
 
     path = "/api/config"
-    tags: ClassVar[list[str]] = ["Configuration"]
+    tags = ("Configuration",)
 
     @get(
         "/",
@@ -130,26 +129,25 @@ class ConfigController(Controller):
                     )
                 )
         # Also check if auth_backend has OAuth providers
-        elif admin_config.auth_backend is not None:
-            if hasattr(admin_config.auth_backend, "available_providers"):
-                provider_names = admin_config.auth_backend.available_providers
-                base_url = admin_config.base_url
-                for name in provider_names:
-                    # Create display name (capitalize, handle special cases)
-                    display_name = {
-                        "github": "GitHub",
-                        "google": "Google",
-                        "discord": "Discord",
-                        "demo": "Demo",
-                    }.get(name, name.title())
+        elif admin_config.auth_backend is not None and hasattr(admin_config.auth_backend, "available_providers"):
+            provider_names = admin_config.auth_backend.available_providers
+            base_url = admin_config.base_url
+            for name in provider_names:
+                # Create display name (capitalize, handle special cases)
+                display_name = {
+                    "github": "GitHub",
+                    "google": "Google",
+                    "discord": "Discord",
+                    "demo": "Demo",
+                }.get(name, name.title())
 
-                    oauth_providers.append(
-                        OAuthProvider(
-                            name=name,
-                            display_name=display_name,
-                            login_url=f"{base_url}/auth/oauth/{name}/login",
-                        )
+                oauth_providers.append(
+                    OAuthProvider(
+                        name=name,
+                        display_name=display_name,
+                        login_url=f"{base_url}/auth/oauth/{name}/login",
                     )
+                )
 
         return ConfigResponse(
             title=admin_config.title,

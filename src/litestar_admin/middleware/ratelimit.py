@@ -23,8 +23,9 @@ import asyncio
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, cast, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, cast, runtime_checkable
 
+from litestar.enums import ScopeType
 from litestar.middleware import AbstractMiddleware
 from litestar.status_codes import HTTP_429_TOO_MANY_REQUESTS
 
@@ -544,7 +545,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             )
     """
 
-    scopes: ClassVar[set[str]] = {"http"}
+    scopes = {ScopeType.HTTP}  # noqa: RUF012
 
     def __init__(
         self,
