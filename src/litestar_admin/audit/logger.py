@@ -293,7 +293,8 @@ class InMemoryAuditLogger:
         Returns:
             List of matching audit entries, sorted by timestamp descending.
         """
-        results = list(self._entries)
+        # Newest-inserted first so entries with equal timestamps stay most-recent-first after the stable sort
+        results = list(reversed(self._entries))
 
         # Apply filters
         if filters.action is not None:
